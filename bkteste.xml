@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<K2>
+<METADATA>
+	<CLASS Name="Variáveis"> 
+		<ATTRIBUTE Name="ID" Type="String" />
+		<ATTRIBUTE Name="Potência" Type="Number" />
+	</CLASS>
+	
+	<CLASS Name="Equipamento" Icone="Equipamento.jpg">
+			<ATTRIBUTE Name="Name" Type="String" />
+			<ATTRIBUTE Name="DtFabricação" Type="Date" />
+			<ATTRIBUTE Name="Potencia" Type="Number" />
+	</CLASS>
+
+	
+	<CLASS Name="Bomba" Icone="Bomba.jpg">
+			<ATTRIBUTE Name="NameBomba" Type="String" />
+			<ATTRIBUTE Name="PotenciaBomba" Type="Number" />
+	</CLASS>
+	
+	<CLASS Name="BombaNuclear" Parent="Bomba" Icone="Nuclear.jpg">
+			<ATTRIBUTE Name="Carga" Type="Number" Sources="PLC,User,History,Simulation" ValidityInterval="600000" Deadline = "20000" Simulation="AVGFUZZY" />
+	</CLASS>		
+	
+	<CLASS Name="MotorElétrico" Parent="Equipamento" Icone="motor_eletrico.jpg">
+			<ATTRIBUTE Name="Fase" Type="List" Options="Monofasico, Trifasico" />
+			<ATTRIBUTE Name="Status" Type="List" Options="PowerOff, PowerOn, Starting" />
+			<ATTRIBUTE Name="CurrentPower" Type="Number" KeepHistory="500" Sources="History" />
+	</CLASS>
+</METADATA>
+
+<WORKSPACES>
+   
+  <WORKSPACE Name = "Chãodefábrica" Top="0" Left="0" Width="1000" Height="500" BackgroundImage="Chao.jpg">
+	<OBJECT ID="V" Class="Variáveis" />
+	
+	<OBJECT ID="M101" Class="MotorElétrico" Left="100" Top= "100">
+		<ATTRIBUTE Name="CurrentPower">
+				<VALUE When="22/04/2012 18:23:01" Value="10.1234" Certainty="100" Source="User"/>
+				<VALUE When="20/04/2012 18:24:02" Value="9.232" Certainty="100" Source="User"/>
+		</ATTRIBUTE>
+	</OBJECT>
+	<OBJECT ID="B1" Class="BombaNuclear" Left="100" Top= "100">
+		<ATTRIBUTE Name="Carga">
+			<VALUE When="20/04/2012 18:24:02" Value="9.232" Certainty="100" Source="User"/>
+			<VALUE When="20/05/2012 18:24:02" Value="19.232" Certainty="90" Source="User"/>
+		</ATTRIBUTE>
+	</OBJECT>
+  </WORKSPACE>
+</WORKSPACES>
+
+<RULES>
+	<RULE Rule="for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230" />
+	<RULE Rule="if the Status of M101 is Starting then inform to the operator that 'O Motor M101 parou!' and set the CurrentPower of the M101 = 0.001" />
+	<RULE Rule="if the Status of M101 less than or equal Starting or the Status of M101 greater than or equal PowerOff then inform to the operator that 'O Motor M101 parou!' and set the CurrentPower of the M101 = 0.001" />
+	<RULE Rule="if the Name of M101 equal 'teste' then inform to the operator that 'O Motor M101 parou!' and set the CurrentPower of the M101 = 0.001" />
+	<RULE Rule="if the DtFabricação of M101 greater than or equal '10/05/2011' then inform to the operator that 'O Motor M101 parou!' and set the CurrentPower of the M101 = 0.001" />
+	<RULE Rule="initially unconditionally then set the CurrentPower of the M101 = 1.3212" Certainty="90" />
+	<RULE Rule="initially unconditionally then set the Carga of the B1 = 1222.323 and inform to the operator that 'ATENÇÃO M101.CurrentPower = ' the CurrentPower of the M101 'ok?'"  />
+	<RULE Rule="initially if the Carga of B1 greater than 0 then set the Potência of the V = 123.21111"  />
+	
+</RULES>		
+
+</K2>
