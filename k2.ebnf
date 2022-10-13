@@ -5,13 +5,13 @@ Rule =  [  unconditionally then Consequent
 		|  initially Rule.
 
 
-Expression =  {[ "(" ] } the Attribute [of ( DynamicReference | Object ) ]  \n
+Expression =  { "("  } the Attribute [of ( DynamicReference | Object ) ]  \n
 		(is 
 		| equal 
 		| less than [or equal] 
 		| greater than [ or equal] 
 		| different) 
-		(ListType |Constant | Text) {[ ")" ]}  
+		(ListType |Constant | Text) { ")" }  
 		{[( and | or ) Expression ]}.
 
 
@@ -34,7 +34,7 @@ Consequent =   ( Set
 		| invoke 
 		| halt 
 		| conclude  )
-		{ [and Consequent] }.
+		{ and Consequent }.
 
 Set = set the Attribute of ( DynamicReference | the ( Class | Object ) ) ("=" | to) Constant.
 

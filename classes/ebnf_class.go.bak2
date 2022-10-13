@@ -1,0 +1,235 @@
+package classes
+
+import (
+	"fmt"
+	"io/ioutil"
+	"strings"
+	"unicode"
+)
+
+type TokenType byte
+
+const (
+	Trace TokenType = iota
+	Reference
+	Literal
+	String
+	Control
+	Jump
+)
+
+type Token struct {
+	id        int
+	token     string
+	tokentype TokenType
+	next      []*Token
+}
+
+type Rule struct {
+	id     int
+	name   string
+	tokens []Token
+}
+
+type EBNF struct {
+	rules []Rule
+}
+
+type EBNF_STACK struct {
+	itens []Token
+}
+
+func (s *EBNF_STACK) push(item Token) {
+	s.itens = append(s.itens, item)
+}
+
+func (s *EBNF_STACK) get() *Token {
+	return &s.itens[len(s.itens)-1]
+}
+
+func (s *EBNF_STACK) pop() *Token {
+	var item = s.itens[len(s.itens)-1]
+	s.itens = s.itens[:len(s.itens)-1]
+	return &item
+}
+
+func (e *EBNF) newRule(str string) int {
+	var rule Rule
+	rule.id = len(e.rules) + 1
+	rule.name = str
+	e.rules = append(e.rules, rule)
+	return len(e.rules) - 1
+}
+
+func (e *EBNF) newToken(rule int, str string, tokentype TokenType, nexts ...Token) {
+	var token Token
+	token.id = len(e.rules[rule].tokens) + 1
+	token.token = str
+	token.tokentype = tokentype
+	for _, jump := range nexts {
+		token.next = append(token.next, &jump)
+	}
+	e.rules[rule].tokens = append(e.rules[rule].tokens, token)
+}
+
+func (e *EBNF) newJump(node *Token, nexts ...Token) {
+	for _, jump := range nexts {
+		node.next = append(node.next, &jump)
+	}
+}
+
+func (e *EBNF) ReadToken(Tokenfile string) int {
+
+	file, err := ioutil.ReadFile(Tokenfile)
+	if err != nil {
+		fmt.Printf("Could not read the file due to this %s error \n", err)
+	}
+	Token := string(file)
+	Token = strings.Replace(Token, "\r\n", "", -1)
+	Token = strings.Replace(Token, "\\n", "", -1)
+	Token = strings.Replace(Token, "\t", " ", -1)
+	for strings.Contains(Token, "  ") {
+		Token = strings.Replace(Token, "  ", " ", -1)
+	}
+
+	rules := strings.Split(Token, ".")
+	for _, rule := range rules {
+		tokens := strings.Split(rule, "=")
+		if len(tokens) > 1 {
+			var rule = e.newRule(tokens[0])
+			tokens[1] = "=" + tokens[1] + "."
+			var inWord = false
+			var inString = false
+			var inRule = false
+			var start = 0
+			for i, c := range tokens[1] {
+				switch {
+				case c == '=' || c == '[' || c == ']' || c == '{' || c == '}' || c == '.' || c == '|' || c == ' ' || c == '"' || c == '(' || c == ')':
+					if inString {
+						if c == '"' {
+							var tokentype = Literal
+							e.newToken(rule, tokens[1][start:i], tokentype)
+							inString = false
+						}
+					} else if inWord {
+						var tokentype = Literal
+						if inRule {
+							tokentype = Reference
+						}
+						e.newToken(rule, tokens[1][start:i], tokentype)
+						inWord = false
+						inRule = false
+					} else {
+						if c == '"' {
+							start = i
+							inString = true
+						}
+					}
+					if c != ' ' {
+						if c == '|' {
+							e.newToken(rule, string(c), Jump)
+						} else {
+							e.newToken(rule, string(c), Control)
+						}
+					}
+				case unicode.IsLower(c) && !inWord && !inString:
+					start = i
+					inWord = true
+				case unicode.IsUpper(c) && !inWord && !inString:
+					start = i
+					inWord = true
+					inRule = true
+				default:
+				}
+			}
+			e.parsingRule(rule)
+		}
+	}
+	return 1
+}
+
+type PAIR struct {
+	begin int
+	end   int
+}
+
+func findPair(p []PAIR, i int) int {
+	var ret = 0
+	for k, x := range p {
+		if x.begin <= i && x.end >= i && (p[k].begin > p[ret].begin || p[k].end < p[ret].end) {
+			ret = k
+		}
+	}
+	return ret
+}
+
+func (e *EBNF) parsingRule(rule int) {
+	var pairs []PAIR
+	var _b = 0
+	var _e = len(e.rules[rule].tokens) - 1
+	for _e > _b {
+		str1 := e.rules[rule].tokens[_b].token
+		str2 := e.rules[rule].tokens[_e].token
+		if str1 == "=" && str2 == "." {
+			pairs = append(pairs, PAIR{_b, _e})
+			_b++
+			_e--
+		} else if str1 == "{" && str2 == "}" {
+			pairs = append(pairs, PAIR{_b, _e})
+			_b++
+			_e--
+		} else if str1 == "(" && str2 == ")" {
+			pairs = append(pairs, PAIR{_b, _e})
+			_b++
+			_e--
+		} else if str1 == "[" && str2 == "]" {
+			pairs = append(pairs, PAIR{_b, _e})
+			_b++
+			_e--
+		} else if e.rules[rule].tokens[_b].tokentype == Control {
+			_e--
+		} else if e.rules[rule].tokens[_e].tokentype == Control {
+			_b++
+		} else {
+			_b++
+			_e--
+		}
+	}
+	for i := 0; i < len(e.rules[rule].tokens)-1; i++ {
+		var p = findPair(pairs, i)
+		if e.rules[rule].tokens[i].tokentype != Jump {
+			e.newJump(&e.rules[rule].tokens[i], e.rules[rule].tokens[i+1])
+		} else {
+			e.newJump(&e.rules[rule].tokens[i], e.rules[rule].tokens[pairs[p].end])
+			e.newJump(&e.rules[rule].tokens[pairs[p].begin], e.rules[rule].tokens[i+1])
+		}
+		if e.rules[rule].tokens[i].token == "{" {
+			e.newJump(&e.rules[rule].tokens[pairs[p].end], e.rules[rule].tokens[pairs[p].begin])
+		}
+		if e.rules[rule].tokens[i].token == "[" {
+			e.newJump(&e.rules[rule].tokens[pairs[p].begin], e.rules[rule].tokens[pairs[p].end])
+		}
+	}
+}
+
+func (e *EBNF) findRule(key string) int {
+	for i, r := range e.rules {
+		if r.name == key {
+			return i
+		}
+	}
+	return -1
+}
+
+func (e *EBNF) PrintEBNF() {
+	fmt.Println("----------EBNF tree--------------")
+	for _, r := range e.rules {
+		fmt.Println("====> Rule: ", r.name)
+		for _, t := range r.tokens {
+			fmt.Println("id: ", t.id, " token: ", t.token, " type: ", t.tokentype)
+			for _, t2 := range t.next {
+				fmt.Println("...jump to ", t2.token, " #", t2.id)
+			}
+		}
+	}
+}

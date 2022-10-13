@@ -1,5 +1,1 @@
-Rule =  [  unconditionally then Consequent
-		|  for any Class [ DynamicReference ]] if Expression then Consequent 
-		|  when Expression then Consequent
-		|  whenever Expression then Consequent
-		|  initially Rule.
+Set = set the Attribute of ( DynamicReference | the ( Class | Object ) ) ("=" | to) Constant.
