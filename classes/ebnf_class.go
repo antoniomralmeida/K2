@@ -11,7 +11,7 @@ import (
 type TokenType byte
 
 const (
-	Trace TokenType = iota
+	Null TokenType = iota
 	Reference
 	Literal
 	String
