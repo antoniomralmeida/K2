@@ -53,14 +53,14 @@ type KBClass struct {
 	Name        string        `bson:"name"`
 	Icon        string        `bson:"icon"`
 	Parent      bson.ObjectId `bson:"parent_id,omitempty"`
-	ParentClass *KBClass      `bson:"parentclass,omitempty"`
+	ParentClass *KBClass      `bson:"-"`
 	Attributes  []KBAttribute `bson:"attributes"`
 }
 
 type KBRule struct {
 	Id   bson.ObjectId `bson:"_id,omitempty"`
 	Rule string        `bson:"rule"`
-	bin  []*Token      `bson:"bin,omitempty"`
+	bin  []*Token      `bson:"-"`
 }
 
 type KnowledgeBase struct {
@@ -73,7 +73,7 @@ type KnowledgeBase struct {
 
 type KBHistory struct {
 	Id        bson.ObjectId `bson:"_id,omitempty"`
-	Object    bson.ObjectId `bson:"object_id"`
+	Attribute bson.ObjectId `bson:"object_id"`
 	When      time.Time     `bson:"when"`
 	Value     string        `bson:"value"`
 	Certainty float64       `bson:"certainty"`
@@ -81,9 +81,10 @@ type KBHistory struct {
 }
 
 type KBAttributeObject struct {
+	Id          bson.ObjectId `bson:"id"`
 	Attribute   bson.ObjectId `bson:"attribute_id"`
-	Value       bson.ObjectId `bson:"history_id,omitempty"`
-	KbAttribute *KBAttribute  `bson:"kbattribute,omitempty"`
+	KbAttribute *KBAttribute  `bson:"-"`
+	KbHistory   *KBHistory    `bson:"-"`
 }
 
 type KBObject struct {
@@ -91,7 +92,7 @@ type KBObject struct {
 	Class      bson.ObjectId       `bson:"class_id"`
 	Top        int                 `bson:"top"`
 	Left       int                 `bson:"left"`
-	Bkclass    *KBClass            `bson:"bkclass,omitempty"`
+	Bkclass    *KBClass            `bson:"-"`
 	Attributes []KBAttributeObject `bson:"attributes"`
 }
 
@@ -186,15 +187,28 @@ func (kb *KnowledgeBase) UpdateWorkspace(w *KBWorkspace) {
 	}
 }
 
-func (kb *KnowledgeBase) NewObject(w int, o *KBObject) {
-	c := kb.findClass(o.Bkclass.Id)
-	if c != -1 {
-		o.Class = kb.Classes[c].Id
-		kb.Workspaces[w].Objects = append(kb.Workspaces[w].Objects, *o)
-		kb.UpdateWorkspace(&kb.Workspaces[w])
-	} else {
-		log.Fatal("Class of object " + o.Name + " not found!")
+func (kb *KnowledgeBase) NewObject(w int, o *KBObject, c *KBClass) {
+	o.Class = c.Id
+	kb.Workspaces[w].Objects = append(kb.Workspaces[w].Objects, *o)
+	oi := len(kb.Workspaces[w].Objects) - 1
+	for _, x := range kb.FindAttributes(c) {
+		n := KBAttributeObject{Id: bson.NewObjectId(), Attribute: x.Id, KbAttribute: x}
+		kb.Workspaces[w].Objects[oi].Attributes = append(kb.Workspaces[w].Objects[oi].Attributes, n)
 	}
+	kb.UpdateWorkspace(&kb.Workspaces[w])
+
+}
+
+func (kb *KnowledgeBase) SaveValue(w int, a *KBAttributeObject, h *KBHistory) {
+	h.Id = bson.NewObjectId()
+	h.Attribute = a.Id
+	h.When = time.Now()
+	collection := kb.db.C("History")
+	err := collection.Insert(h)
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.KbHistory = h
 }
 
 func (kb *KnowledgeBase) GetClass(name string) *KBClass {
@@ -207,8 +221,17 @@ func (kb *KnowledgeBase) GetClass(name string) *KBClass {
 	return &ret
 }
 
-func (kb *KnowledgeBase) findClass(id bson.ObjectId) int {
+func (kb *KnowledgeBase) FindClass(id bson.ObjectId) int {
 	return kb.findClassBin(id, 0, len(kb.Classes)-1)
+}
+
+func (kb *KnowledgeBase) FindWorkspaceByName(name string) int {
+	for i, x := range kb.Workspaces {
+		if x.Workspace == name {
+			return i
+		}
+	}
+	return -1
 }
 
 func (kb *KnowledgeBase) FindAttributes(c *KBClass) []*KBAttribute {
@@ -255,7 +278,7 @@ func (kb *KnowledgeBase) ReadBK() {
 
 	for j, c := range kb.Classes {
 		if c.Parent != "" {
-			pc := kb.findClass(c.Parent)
+			pc := kb.FindClass(c.Parent)
 			if pc != -1 {
 				kb.Classes[j].ParentClass = &kb.Classes[pc]
 			} else {
@@ -271,6 +294,7 @@ func (kb *KnowledgeBase) ReadBK() {
 	}
 
 	collection = kb.db.C("Workspace")
+	history := kb.db.C("History")
 	err = collection.Find(bson.M{}).All(&kb.Workspaces)
 	if err != nil {
 		log.Fatal(err)
@@ -289,7 +313,7 @@ func (kb *KnowledgeBase) ReadBK() {
 
 	for i, w := range kb.Workspaces {
 		for j, o := range w.Objects {
-			c := kb.findClass(o.Class)
+			c := kb.FindClass(o.Class)
 			if c != -1 {
 				kb.Workspaces[i].Objects[j].Bkclass = &kb.Classes[c]
 				attrs := kb.FindAttributes(&kb.Classes[c])
@@ -309,6 +333,11 @@ func (kb *KnowledgeBase) ReadBK() {
 					if kb.Workspaces[i].Objects[j].Attributes[i].KbAttribute == nil {
 						log.Fatal("Attribute not found ", x.Attribute)
 					}
+					//Obter ultimo valor
+					err = history.Find(bson.D{{"Attribute", x.Id}}).Sort("When").One(kb.Workspaces[i].Objects[j].Attributes[i].KbHistory)
+					if err != nil {
+						log.Fatal(err)
+					}
 				}
 			} else {
 				log.Fatal("Class of object " + o.Name + " not found!")
@@ -316,27 +345,3 @@ func (kb *KnowledgeBase) ReadBK() {
 		}
 	}
 }
-
-/*
-
-	rules := db.C("Rule")
-	r1 := KBRule{Rule: "for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230"}
-	rules.Insert(&r1)
-
-	a1 := KBAttribute{Name: "Nome", AType: KBString, Sources: []KBSource{User}}
-	a2 := KBAttribute{Name: "Data", AType: KBDate, Sources: []KBSource{User}}
-	a3 := KBAttribute{Name: "Potência", AType: KBNumber, Sources: []KBSource{User, PLC}}
-	c1 := KBClass{Id: bson.NewObjectId(), Name: "MotorElétrico", Attributes: []KBAttribute{a1, a2, a3}}
-	classes := db.C("Class")
-
-	classes.Insert(&c1)
-
-	fmt.Println(c1)
-
-	wdb := db.C("Workspace")
-	o1 := KBObject{Class: c1.Id, Attributes: []KBAttributeObject{KBAttributeObject{Name: "Nome"}}}
-	w1 := KBWorkspace{Workspace: "Chão de Fábrica", Objects: []KBObject{o1}}
-
-	err = wdb.Insert(&w1)
-	fmt.Println(err)
-*/
