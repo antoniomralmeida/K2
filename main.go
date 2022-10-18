@@ -19,14 +19,24 @@ func main() {
 	kb := classes.KnowledgeBase{}
 
 	kb.ConnectDB("mongodb://localhost:27017", "K2")
+	kb.ReadEBNF("k2.ebnf")
 	kb.ReadBK()
 
 	w1 := kb.FindWorkspaceByName("Chão de fábrica")
+	//w1 := kb.NewWorkspace("Chão de fábrica", "chao.jpg")
 
-	o1 := kb.FindObjectByName(w1, "M01")
+	o1 := kb.FindObjectByName(w1, "M02")
 	ao1 := kb.FindAttributeObject(o1, "Potência")
 
-	fmt.Println(ao1.KbAttribute.Name, ao1.KbHistory.Value)
+	//c1 := kb.FindClassByName("MotorElétrico")
+
+	//o1 := kb.NewObject(w1, c1, "M01")
+	//kb.NewObject(w1, c1, "M02")
+	//ao1 := kb.FindAttributeObject(o1, "Potência")
+
+	//kb.SaveValue(ao1, "120", classes.User)
+
+	fmt.Println(o1.Name, ao1.KbAttribute.Name, ao1.Value())
 
 	//	kb.NewRule("for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230")
 

@@ -36,6 +36,14 @@ const (
 	Interpolation              = "interpolation"
 )
 
+type KnowledgeBase struct {
+	Classes    []KBClass
+	Rules      []KBRule
+	Workspaces []KBWorkspace
+	ebnf       *EBNF
+	db         *mgo.Database
+}
+
 type KBAttribute struct {
 	Id               bson.ObjectId   `bson:"id,omitempty"`
 	Name             string          `bson:"name"`
@@ -63,14 +71,6 @@ type KBRule struct {
 	bin  []*Token      `bson:"-"`
 }
 
-type KnowledgeBase struct {
-	Classes    []KBClass
-	Rules      []KBRule
-	Workspaces []KBWorkspace
-	ebnf       *EBNF
-	db         *mgo.Database
-}
-
 type KBHistory struct {
 	Id        bson.ObjectId `bson:"_id,omitempty"`
 	Attribute bson.ObjectId `bson:"attribute_id"`
@@ -85,6 +85,14 @@ type KBAttributeObject struct {
 	Attribute   bson.ObjectId `bson:"attribute_id"`
 	KbAttribute *KBAttribute  `bson:"-"`
 	KbHistory   *KBHistory    `bson:"-"`
+}
+
+func (ao *KBAttributeObject) Value() string {
+	if ao.KbHistory != nil {
+		return ao.KbHistory.Value
+	} else {
+		return ""
+	}
 }
 
 type KBObject struct {
@@ -204,15 +212,23 @@ func (kb *KnowledgeBase) NewObject(ws *KBWorkspace, c *KBClass, name string) *KB
 }
 
 func (kb *KnowledgeBase) FindObjectByName(ws *KBWorkspace, name string) *KBObject {
-	for i, _ := range ws.Objects {
-		if ws.Objects[i].Name == name {
-			return &ws.Objects[i]
-		}
-	}
-	log.Fatal("Object not found!")
-	return nil
+	return kb.findObjectByNameBin(ws, name, 0, len(ws.Objects)-1)
 }
 
+func (kb *KnowledgeBase) findObjectByNameBin(ws *KBWorkspace, name string, i int, j int) *KBObject {
+	if j >= i {
+		avg := (i + j) / 2
+		if ws.Objects[avg].Name == name {
+			return &ws.Objects[avg]
+		} else if ws.Objects[avg].Name > name {
+			return kb.findObjectByNameBin(ws, name, i, avg-1)
+		} else {
+			return kb.findObjectByNameBin(ws, name, avg+1, j)
+		}
+	} else {
+		return nil
+	}
+}
 func (kb *KnowledgeBase) SaveValue(attr *KBAttributeObject, value string, source KBSource) *KBHistory {
 	if attr != nil {
 		h := KBHistory{Id: bson.NewObjectId(), Attribute: attr.Id, When: time.Now(), Value: value, Source: source}
@@ -299,6 +315,7 @@ func (kb *KnowledgeBase) ReadBK() {
 	}
 
 	for j, c := range kb.Classes {
+		log.Println("Prepare Class ", c.Name)
 		if c.Parent != "" {
 			pc := kb.FindClassById(c.Parent)
 			if pc != nil {
@@ -323,17 +340,18 @@ func (kb *KnowledgeBase) ReadBK() {
 	}
 	idx, err = collection.Indexes()
 	if len(idx) == 1 {
-		err = collection.EnsureIndex(mgo.Index{Key: []string{"name"}, Unique: true})
+		err = collection.EnsureIndex(mgo.Index{Key: []string{"workspace"}, Unique: true})
 		if err != nil {
 			log.Fatal(err)
 		}
-		err = collection.EnsureIndex(mgo.Index{Key: []string{"name", "objects.name"}, Unique: true})
+		err = collection.EnsureIndex(mgo.Index{Key: []string{"workspace", "objects.name"}, Unique: true})
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
 
 	for i, w := range kb.Workspaces {
+		log.Println("Prepare Workspace ", w.Workspace)
 		for j, o := range w.Objects {
 			c := kb.FindClassById(o.Class)
 			if c != nil {
@@ -368,5 +386,14 @@ func (kb *KnowledgeBase) ReadBK() {
 				log.Fatal("Class of object " + o.Name + " not found!")
 			}
 		}
+		sort.Slice(kb.Workspaces[i].Objects, func(a, b int) bool {
+			return kb.Workspaces[i].Objects[a].Name < kb.Workspaces[i].Objects[b].Name
+		})
 	}
+}
+
+func (kb *KnowledgeBase) ReadEBNF(file string) {
+	ebnf := EBNF{}
+	kb.ebnf = &ebnf
+	kb.ebnf.ReadToken(file)
 }

@@ -3,6 +3,7 @@ package classes
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"strconv"
 	"strings"
 	"unicode"
@@ -80,18 +81,14 @@ func isElementExist(s []*Token, str *Token) bool {
 
 func (e *EBNF) findOptions(pt *Token, stack *[]*Token, level int) []*Token {
 	var ret []*Token
-	//fmt.Println("findOptions: ", pt.String(), level)
 	if level < 10 {
 		if pt.tokentype == Control && pt.token == "." && len(*stack) > 0 {
-			//fmt.Println(*stack)
 			pt = (*stack)[len(*stack)-1]
 			x := (*stack)[:len(*stack)-1]
 			stack = &x
-			//fmt.Println(pt, *stack)
 		}
 
 		for _, x := range pt.next {
-			//fmt.Println("....", x.String())
 			if x.tokentype == Control || x.tokentype == Jump {
 				for _, k := range e.findOptions(x, stack, level+1) {
 					if !isElementExist(ret, k) {
@@ -101,7 +98,6 @@ func (e *EBNF) findOptions(pt *Token, stack *[]*Token, level int) []*Token {
 			} else if x.tokentype == Reference {
 				*stack = append(*stack, x)
 				n := e.rules[x.rule_jump].tokens[0]
-				//fmt.Println(stack)
 				for _, k := range e.findOptions(n, stack, level+1) {
 					if !isElementExist(ret, k) {
 						ret = append(ret, k)
@@ -124,7 +120,7 @@ func (e *EBNF) Parsing(cmd string) []*Token {
 	for strings.Contains(cmd, "  ") {
 		cmd = strings.Replace(cmd, "  ", " ", -1)
 	}
-	fmt.Println("Parsing command...")
+	log.Println("Parsing command...")
 	var inWord = false
 	var inString = false
 	var inNumber = false
@@ -185,23 +181,23 @@ func (e *EBNF) Parsing(cmd string) []*Token {
 			}
 		}
 		if !ok || len(opts) == 0 {
-			fmt.Println(", compiller error in ", x, " when the expected was: ")
+			log.Println(", compiller error in ", x, " when the expected was: ")
 			for _, y := range opts {
-				fmt.Println("... ", y.token)
+				log.Println("... ", y.token)
 			}
 			return opts
 		}
 	}
 	for _, y := range pt.next {
 		if y.token == "." && y.tokentype == Control {
-			fmt.Println(", compilation successfully!")
+			log.Println(", compilation successfully!")
 			return opts
 		}
 	}
 	opts = e.findOptions(pt, &stack, 0)
-	fmt.Println(", incomplete sentence when the expected was: ")
+	log.Println(", incomplete sentence when the expected was: ")
 	for _, y := range opts {
-		fmt.Println("... ", y.token)
+		log.Println("... ", y.token)
 	}
 	return opts
 }
@@ -237,7 +233,7 @@ func (e *EBNF) ReadToken(Tokenfile string) int {
 
 	file, err := ioutil.ReadFile(Tokenfile)
 	if err != nil {
-		fmt.Printf("Could not read the file due to this %s error \n", err)
+		log.Println("Could not read the file due to this %s error \n", err)
 	}
 	ebnf_txt := string(file)
 	ebnf_txt = strings.Replace(ebnf_txt, "\r\n", "", -1)
@@ -261,7 +257,6 @@ func (e *EBNF) ReadToken(Tokenfile string) int {
 		}
 		if len(left) > 0 {
 			var nrule = e.newRule(left)
-			fmt.Println("Tokening rule ", nrule.name)
 			var inWord = false
 			var inString = false
 			var inRule = false
@@ -339,9 +334,7 @@ func findPair(p []PAIR, i int) int {
 }
 
 func (e *EBNF) findClose(rule *Rule, symb int, token string, i int, level int) int {
-	//fmt.Println("findClose: ", symb, token, i, level)
 	for j := i + 1; j < len(rule.tokens); j++ {
-		//fmt.Println("....", rule.tokens[j].token, rule.tokens[j].tokentype)
 		if rule.tokens[j].tokentype == Control {
 			s := symbols[symb]
 			if rule.tokens[j].token == s.end && level == 0 {
@@ -358,18 +351,16 @@ func (e *EBNF) findClose(rule *Rule, symb int, token string, i int, level int) i
 
 func (e *EBNF) parsingRule(rule *Rule) {
 	var pairs []PAIR
-	fmt.Println("Parsing rule ", rule.name)
+	log.Println("Parsing rule ", rule.name)
 	for i := 0; i < len(rule.tokens); i++ {
 		if rule.tokens[i].tokentype == Control {
 			s := e.findSymbol(rule.tokens[i].token, false)
-			//fmt.Println(i, rule.tokens[i].token, s)
 			if s != -1 {
 				c := e.findClose(rule, s, rule.tokens[i].token, i, 0)
 				if c == -1 {
-					fmt.Println("Parssing erro in token ", rule.tokens[i].token, " #", rule.tokens[i].id, s, i)
+					log.Println("Parssing erro in token ", rule.tokens[i].token, " #", rule.tokens[i].id, s, i)
 					return
 				}
-				//fmt.Println(PAIR{i, c})
 				pairs = append(pairs, PAIR{i, c})
 				if rule.tokens[i].token == "\"" || rule.tokens[i].token == "'" && c != -1 {
 					i = c + 1
@@ -377,10 +368,8 @@ func (e *EBNF) parsingRule(rule *Rule) {
 			}
 		}
 	}
-	//fmt.Println(pairs)
 	for i := 0; i < len(rule.tokens)-1; i++ {
 		var p = findPair(pairs, i)
-		//fmt.Println(i, p)
 		if rule.tokens[i].tokentype != Jump {
 			e.newJump(rule.tokens[i], rule.tokens[i+1])
 		} else {
