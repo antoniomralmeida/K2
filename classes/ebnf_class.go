@@ -1,9 +1,11 @@
 package classes
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"main/lib"
 	"strconv"
 	"strings"
 	"unicode"
@@ -15,14 +17,138 @@ const (
 	Null TokenType = iota
 	Reference
 	Literal
-	String
+	Text
 	Control
 	Jump
 	Object
+	DynamicReference
+	Attribute
+	Constant
+	Class
+	ListType
 )
 
+var TokenTypeStr = []string{"", "Reference", "Literal", "Text", "Control", "Jump", "Object", "DynamicReference", "Attribute", "Constant", "Class", "ListType"}
+
 func (me TokenType) String() string {
-	return [...]string{"", "Reference", "Literal", "String", "Control", "Jump", "Object"}[me]
+	return TokenTypeStr[me]
+}
+
+func (me TokenType) Size() int {
+	return len(TokenTypeStr)
+}
+
+type TokenBin byte
+
+const (
+	b_null TokenBin = iota
+	b_open_par
+	b_close_par
+	b_iqual
+	b_activate
+	b_and
+	b_any
+	b_change
+	b_conclude
+	b_create
+	b_deactivate
+	b_delete
+	b_different
+	b_equal
+	b_focus
+	b_for
+	b_greater
+	b_halt
+	b_hide
+	b_if
+	b_inform
+	b_initially
+	b_insert
+	b_invoke
+	b_is
+	b_less
+	b_move
+	b_of
+	b_operator
+	b_or
+	b_remove
+	b_rotate
+	b_set
+	b_show
+	b_start
+	b_than
+	b_that
+	b_the
+	b_then
+	b_to
+	b_transfer
+	b_unconditionally
+	b_when
+	b_whenever
+)
+
+var TokenBinStr = []string{
+	"",
+	"(",
+	")",
+	"=",
+	"activate",
+	"and",
+	"any",
+	"change",
+	"conclude",
+	"create",
+	"deactivate",
+	"delete",
+	"different",
+	"equal",
+	"focus",
+	"for",
+	"greater",
+	"halt",
+	"hide",
+	"if",
+	"inform",
+	"initially",
+	"insert",
+	"invoke",
+	"is",
+	"less",
+	"move",
+	"of",
+	"operator",
+	"or",
+	"remove",
+	"rotate",
+	"set",
+	"show",
+	"start",
+	"than",
+	"that",
+	"the",
+	"then",
+	"to",
+	"transfer",
+	"unconditionally",
+	"when",
+	"whenever"}
+
+func (me TokenBin) String() string {
+	return TokenBinStr[me]
+}
+
+func (me TokenBin) Size() int {
+	return len(TokenBinStr)
+}
+
+type BIN struct {
+	tokentype       TokenType
+	typebin         TokenBin
+	token           string
+	class           *KBClass
+	object          *KBObject
+	attribute       *KBAttribute
+	attributeObject *KBAttributeObject
 }
 
 type Token struct {
@@ -31,11 +157,36 @@ type Token struct {
 	rule_id   int
 	rule_jump int
 	token     string
+	bin       TokenBin
 	next      []*Token
 }
 
 func (t *Token) String() string {
-	return " #" + strconv.Itoa(t.id) + ",token=" + t.token + ",type=" + t.tokentype.String()
+	return " #" + strconv.Itoa(t.id) + ",token:" + t.token + ",type:" + t.tokentype.String() + ",bin:" + t.bin.String()
+}
+
+func (b *BIN) findTokenBin(i byte, j byte) TokenBin {
+	if j >= i {
+		avg := (i + j) / 2
+		tb := TokenBin(avg)
+		if b.token == tb.String() {
+			return tb
+		} else if b.token >= tb.String() {
+			return b.findTokenBin(avg+1, j)
+		} else {
+			return b.findTokenBin(i, avg-1)
+		}
+	}
+	return TokenBin(0)
+}
+
+func (b *BIN) setTokenBin() {
+	if b.tokentype == Literal {
+		b.typebin = b.findTokenBin(0, byte(b.typebin.Size()-1))
+		if b.typebin == b_null {
+			log.Fatal("Literal unknown!", b.token)
+		}
+	}
 }
 
 type Rule struct {
@@ -48,8 +199,6 @@ type EBNF struct {
 	rules []*Rule
 	base  *Token
 }
-
-var _debug int
 
 type SYMBOL struct {
 	begin string
@@ -113,14 +262,14 @@ func (e *EBNF) findOptions(pt *Token, stack *[]*Token, level int) []*Token {
 	return ret
 }
 
-func (e *EBNF) Parsing(cmd string) []*Token {
+func (e *EBNF) Parsing(cmd string) ([]*Token, []*BIN, error) {
 	cmd = strings.Replace(cmd, "\r\n", "", -1)
 	cmd = strings.Replace(cmd, "\\n", "", -1)
 	cmd = strings.Replace(cmd, "\t", " ", -1)
 	for strings.Contains(cmd, "  ") {
 		cmd = strings.Replace(cmd, "  ", " ", -1)
 	}
-	log.Println("Parsing command...")
+	log.Println("Parsing Prodution Rule: ", cmd)
 	var inWord = false
 	var inString = false
 	var inNumber = false
@@ -165,41 +314,44 @@ func (e *EBNF) Parsing(cmd string) []*Token {
 	var pt = e.base
 	var stack []*Token
 	var opts []*Token
-
-	//tokens = tokens[:len(tokens)-1] // remove endline
+	var bin []*BIN
 	for _, x := range tokens {
-		fmt.Print(x, " ")
 		var ok = false
 		opts = e.findOptions(pt, &stack, 0)
 		for _, y := range opts {
 			if (y.token == x) ||
-				(y.tokentype == Object && y.token == "DynamicReference" && len(x) == 1) ||
-				(y.tokentype == Object && len(x) > 1) {
+				(y.tokentype == DynamicReference) ||
+				((y.tokentype == Object || y.tokentype == Class || y.tokentype == Attribute || y.tokentype == Constant) && unicode.IsUpper(rune(x[0]))) ||
+				(y.tokentype == Text && (rune(x[0]) == '\'' || rune(x[0]) == '"') ||
+					(y.tokentype == Constant && lib.IsNumber(x))) {
 				ok = true
 				pt = y
 				break
 			}
 		}
 		if !ok || len(opts) == 0 {
-			log.Println(", compiller error in ", x, " when the expected was: ")
+			str := "Compiller error in " + x + " when the expected was: "
 			for _, y := range opts {
-				log.Println("... ", y.token)
+				str = str + "... " + y.token
 			}
-			return opts
+			return opts, nil, errors.New(str)
 		}
+		code := BIN{tokentype: pt.tokentype, token: x}
+		code.setTokenBin()
+		bin = append(bin, &code)
 	}
 	for _, y := range pt.next {
 		if y.token == "." && y.tokentype == Control {
 			log.Println(", compilation successfully!")
-			return opts
+			return nil, bin, nil
 		}
 	}
 	opts = e.findOptions(pt, &stack, 0)
-	log.Println(", incomplete sentence when the expected was: ")
+	str := "Incomplete sentence when the expected was: "
 	for _, y := range opts {
-		log.Println("... ", y.token)
+		str = str + "... " + y.token
 	}
-	return opts
+	return opts, nil, errors.New(str)
 }
 
 func (e *EBNF) newRule(str string) *Rule {
@@ -211,12 +363,7 @@ func (e *EBNF) newRule(str string) *Rule {
 }
 
 func (e *EBNF) newToken(rule *Rule, str string, tokentype TokenType, nexts ...*Token) {
-	var token Token
-	token.id = len(rule.tokens)
-	token.token = strings.Trim(str, " ")
-	token.rule_id = rule.id
-	token.tokentype = tokentype
-
+	token := Token{id: len(rule.tokens) + 1, token: strings.Trim(str, " "), rule_id: rule.id, tokentype: tokentype}
 	for _, jump := range nexts {
 		token.next = append(token.next, jump)
 	}
@@ -309,8 +456,17 @@ func (e *EBNF) ReadToken(Tokenfile string) int {
 			if t.tokentype == Reference {
 				t.rule_jump = e.findRule(t.token)
 				if t.rule_jump == -1 {
-					t.tokentype = Object
+					for z := 1; z < t.tokentype.Size(); z++ {
+						if t.token == TokenType(z).String() {
+							t.tokentype = TokenType(z)
+							break
+						}
+					}
+					if t.tokentype == Reference {
+						log.Fatal("Reference not found! ", t.token)
+					}
 				}
+
 			}
 		}
 	}
