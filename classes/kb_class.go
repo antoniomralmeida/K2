@@ -1,7 +1,9 @@
 package classes
 
 import (
+	"fmt"
 	"log"
+	"main/lib"
 	"sort"
 	"time"
 
@@ -142,9 +144,11 @@ func (kb *KnowledgeBase) findClassBin(id bson.ObjectId, i int, j int) *KBClass {
 	}
 }
 
-func (kb *KnowledgeBase) AddAttribute(c *KBClass, a *KBAttribute) {
-	a.Id = bson.NewObjectId()
-	c.Attributes = append(c.Attributes, *a)
+func (kb *KnowledgeBase) AddAttribute(c *KBClass, attrs ...*KBAttribute) {
+	for i, _ := range attrs {
+		attrs[i].Id = bson.NewObjectId()
+		c.Attributes = append(c.Attributes, *attrs[i])
+	}
 	collection := kb.db.C("Class")
 	err := collection.UpdateId(c.Id, c)
 	if err != nil {
@@ -449,7 +453,38 @@ func (kb *KnowledgeBase) ReadBK() {
 				if bin[j].attribute == nil && bin[j].attributeObject == nil {
 					log.Println("Attribute not found in KB! ", x.token)
 				}
+			case Constant:
+				{
+					if !lib.IsNumber(x.token) {
+						ok := false
+						for z := j - 1; z >= 0; z-- {
+							if bin[z].tokentype == Attribute {
+								if bin[z].attributeObject != nil {
+									for _, o := range bin[z].attributeObject.KbAttribute.Options {
+										//fmt.Println(x.token, o)
+										if x.token == o {
+											ok = true
+											break
+										}
+									}
+								} else if bin[z].attribute != nil {
+									for _, o := range bin[z].attribute.Options {
+										//fmt.Println(x.token, o)
+										if x.token == o {
+											ok = true
+											break
+										}
+									}
+								}
+							}
+						}
+						if !ok {
+							log.Println("Constant not found in KB! ", x.token)
+						}
+					}
+				}
 			}
+			fmt.Println(bin[j])
 		}
 		kb.Rules[i].bin = bin
 	}
