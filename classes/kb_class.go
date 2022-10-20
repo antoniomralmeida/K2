@@ -1,7 +1,6 @@
 package classes
 
 import (
-	"fmt"
 	"log"
 	"main/lib"
 	"sort"
@@ -45,6 +44,7 @@ type KnowledgeBase struct {
 	Objects    []KBObject
 	ebnf       *EBNF
 	db         *mgo.Database
+	stack      []*KBRule
 }
 
 type KBAttribute struct {
@@ -60,18 +60,167 @@ type KBAttribute struct {
 }
 
 type KBClass struct {
-	Id          bson.ObjectId `bson:"_id,omitempty"`
-	Name        string        `bson:"name"`
-	Icon        string        `bson:"icon"`
-	Parent      bson.ObjectId `bson:"parent_id,omitempty"`
-	ParentClass *KBClass      `bson:"-"`
-	Attributes  []KBAttribute `bson:"attributes"`
+	Id              bson.ObjectId `bson:"_id,omitempty"`
+	Name            string        `bson:"name"`
+	Icon            string        `bson:"icon"`
+	Parent          bson.ObjectId `bson:"parent_id,omitempty"`
+	Attributes      []KBAttribute `bson:"attributes"`
+	ParentClass     *KBClass      `bson:"-"`
+	antecedentRules []*KBRule     `bson:"-"`
+	consequentRules []*KBRule     `bson:"-"`
+}
+
+func (c *KBClass) addAntecedentRules(r *KBRule) {
+	found := false
+	for i, _ := range c.antecedentRules {
+		if c.antecedentRules[i] == r {
+			found = true
+			break
+		}
+	}
+	if !found {
+		c.antecedentRules = append(c.antecedentRules, r)
+	}
+}
+
+func (c *KBClass) addConsequentRules(r *KBRule) {
+	found := false
+	for i, _ := range c.consequentRules {
+		if c.consequentRules[i] == r {
+			found = true
+			break
+		}
+	}
+	if !found {
+		c.consequentRules = append(c.consequentRules, r)
+	}
 }
 
 type KBRule struct {
-	Id   bson.ObjectId `bson:"_id,omitempty"`
-	Rule string        `bson:"rule"`
-	bin  []*BIN        `bson:"-"`
+	Id       bson.ObjectId `bson:"_id,omitempty"`
+	Rule     string        `bson:"rule"`
+	Priority byte          `bson:"priority"` //0..100
+	bin      []*BIN        `bson:"-"`
+}
+
+func (kb *KnowledgeBase) linkerRule(r *KBRule, bin []*BIN) {
+	// Find references of objects in KB
+	log.Println("Linking Prodution Rule: ", r.Id)
+	consequent := -1
+	for j, x := range bin {
+		switch x.typebin {
+		case b_initially:
+			kb.stack = append(kb.stack, r)
+		case b_then:
+			consequent = j
+		}
+		switch x.tokentype {
+		case Object:
+			if bin[j].object == nil {
+				bin[j].object = kb.FindObjectByName(x.token)
+			}
+		case Class:
+			if bin[j].class == nil {
+				bin[j].class = kb.FindClassByName(x.token, true)
+			}
+		case Attribute:
+			ref := -1
+			if bin[j+1].typebin == b_of {
+				ref = j + 3
+			} else {
+				for z := j - 1; z >= 0; z-- {
+					if bin[z].tokentype == Object || bin[z].tokentype == Class {
+						ref = z
+						break
+					}
+				}
+			}
+			if ref != -1 {
+				if bin[ref].tokentype == Object {
+					if bin[ref].object == nil {
+						bin[ref].object = kb.FindObjectByName(bin[ref].token)
+					}
+					bin[j].attribute = kb.FindAttributeObjectByClass(bin[ref].object, x.token)
+					break
+				} else if bin[ref].tokentype == Class {
+					if bin[ref].class == nil {
+						bin[j].class = kb.FindClassByName(x.token, true)
+					}
+					bin[j].attribute = kb.FindAttribute(bin[ref].class, x.token)
+					break
+				}
+			} else {
+				log.Fatal("Attribute not found in KB! ", x.token)
+			}
+		case DynamicReference:
+			{
+				if consequent == -1 {
+					for z := j - 1; z >= 0; z-- {
+						if bin[z].tokentype == Object {
+							bin[j].object = bin[z].object
+							break
+						} else if bin[z].tokentype == Class {
+							bin[j].class = bin[z].class
+							break
+						}
+					}
+				} else {
+					for z := consequent - 1; z >= 0; z-- {
+						if bin[z].tokentype == DynamicReference && bin[z].token == x.token {
+							bin[j].object = bin[z].object
+							bin[j].class = bin[z].class
+							break
+						}
+					}
+				}
+			}
+
+		case Constant:
+			{
+				if !lib.IsNumber(x.token) {
+					ok := false
+					for z := j - 1; z >= 0; z-- {
+						if bin[z].tokentype == Attribute {
+							if bin[z].attribute != nil {
+								for _, o := range bin[z].attribute.Options {
+									if x.token == o {
+										ok = true
+										break
+									}
+								}
+							}
+						}
+					}
+					if !ok {
+						log.Fatal("Constant not found in KB! ", x.token)
+					}
+				}
+			}
+		}
+		cl := bin[j].class
+		if bin[j].object != nil {
+			cl = bin[j].object.Bkclass
+		}
+		if cl != nil {
+			if consequent != -1 {
+				cl.addConsequentRules(r)
+			} else {
+				cl.addAntecedentRules(r)
+			}
+		}
+		//fmt.Println(bin[j])
+	}
+	r.bin = bin
+}
+func (r *KBRule) Run() {
+	for _, x := range r.bin {
+		switch x.typebin {
+		case b_initially:
+			{
+
+			}
+		}
+	}
 }
 
 type KBHistory struct {
@@ -270,11 +419,11 @@ func (kb *KnowledgeBase) SaveValue(attr *KBAttributeObject, value string, source
 	}
 }
 
-func (kb *KnowledgeBase) FindClassByName(name string) *KBClass {
+func (kb *KnowledgeBase) FindClassByName(name string, mandatory bool) *KBClass {
 	var ret KBClass
 	collection := kb.db.C("Class")
 	err := collection.Find(bson.D{{"name", name}}).One(&ret)
-	if err != nil {
+	if err != nil && mandatory {
 		log.Fatal(err)
 	}
 	return kb.FindClassById(ret.Id)
@@ -317,11 +466,36 @@ func (kb *KnowledgeBase) FindAttributeObject(obj *KBObject, attr string) *KBAttr
 	return nil
 }
 
-func (kb *KnowledgeBase) NewRule(rule string) *KBRule {
-	r := KBRule{Rule: rule}
+func (kb *KnowledgeBase) NewAttributeObject(obj *KBObject, attr *KBAttribute) *KBAttributeObject {
+	a := KBAttributeObject{Attribute: attr.Id, Id: bson.NewObjectId()}
+	obj.Attributes = append(obj.Attributes, a)
+	collection := kb.db.C("Object")
+	err := collection.UpdateId(obj.Id, obj)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return &a
+}
+
+func (kb *KnowledgeBase) FindAttributeObjectByClass(obj *KBObject, attr string) *KBAttribute {
+	for i, _ := range obj.Bkclass.Attributes {
+		if obj.Bkclass.Attributes[i].Name == attr {
+			return &obj.Bkclass.Attributes[i]
+		}
+	}
+	return nil
+}
+
+func (kb *KnowledgeBase) NewRule(priority byte, rule string) *KBRule {
+	_, bin, err := kb.ebnf.Parsing(kb, rule)
+	if err != nil {
+		log.Fatal(err)
+	}
+	r := KBRule{Rule: rule, Priority: priority}
 	r.Id = bson.NewObjectId()
+	kb.linkerRule(&r, bin)
 	collection := kb.db.C("Rule")
-	err := collection.Insert(r)
+	err = collection.Insert(r)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -424,75 +598,26 @@ func (kb *KnowledgeBase) ReadBK() {
 	}
 
 	collection = kb.db.C("Rule")
-	err = collection.Find(bson.M{}).Sort("_id").All(&kb.Rules)
+	err = collection.Find(bson.M{}).Sort("-priority").All(&kb.Rules)
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	for i, _ := range kb.Rules {
-		_, bin, err := kb.ebnf.Parsing(kb.Rules[i].Rule)
+		_, bin, err := kb.ebnf.Parsing(kb, kb.Rules[i].Rule)
 		if err != nil {
 			log.Fatal(err)
 		}
-		// Find references of objects in KB
-		for j, x := range bin {
-			switch x.tokentype {
-			case Object:
-				bin[j].object = kb.FindObjectByName(x.token)
-			case Class:
-				bin[j].class = kb.FindClassByName(x.token)
-			case Attribute:
-				for z := j - 1; z >= 0; z-- {
-					if bin[z].tokentype == Object {
-						bin[j].attributeObject = kb.FindAttributeObject(bin[z].object, x.token)
-						break
-					} else if bin[z].tokentype == Class {
-						bin[j].attribute = kb.FindAttribute(bin[z].class, x.token)
-						break
-					}
-				}
-				if bin[j].attribute == nil && bin[j].attributeObject == nil {
-					log.Println("Attribute not found in KB! ", x.token)
-				}
-			case Constant:
-				{
-					if !lib.IsNumber(x.token) {
-						ok := false
-						for z := j - 1; z >= 0; z-- {
-							if bin[z].tokentype == Attribute {
-								if bin[z].attributeObject != nil {
-									for _, o := range bin[z].attributeObject.KbAttribute.Options {
-										//fmt.Println(x.token, o)
-										if x.token == o {
-											ok = true
-											break
-										}
-									}
-								} else if bin[z].attribute != nil {
-									for _, o := range bin[z].attribute.Options {
-										//fmt.Println(x.token, o)
-										if x.token == o {
-											ok = true
-											break
-										}
-									}
-								}
-							}
-						}
-						if !ok {
-							log.Println("Constant not found in KB! ", x.token)
-						}
-					}
-				}
-			}
-			fmt.Println(bin[j])
-		}
-		kb.Rules[i].bin = bin
+		kb.linkerRule(&kb.Rules[i], bin)
 	}
-
 }
 
 func (kb *KnowledgeBase) ReadEBNF(file string) {
 	ebnf := EBNF{}
 	kb.ebnf = &ebnf
 	kb.ebnf.ReadToken(file)
+}
+
+func (kb *KnowledgeBase) PrintEBNF() {
+	kb.ebnf.PrintEBNF()
 }

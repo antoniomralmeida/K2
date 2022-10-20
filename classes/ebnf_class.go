@@ -189,14 +189,14 @@ func (b *BIN) setTokenBin() {
 	}
 }
 
-type Rule struct {
+type Statement struct {
 	id     int
 	name   string
 	tokens []*Token
 }
 
 type EBNF struct {
-	rules []*Rule
+	rules []*Statement
 	base  *Token
 }
 
@@ -262,7 +262,7 @@ func (e *EBNF) findOptions(pt *Token, stack *[]*Token, level int) []*Token {
 	return ret
 }
 
-func (e *EBNF) Parsing(cmd string) ([]*Token, []*BIN, error) {
+func (e *EBNF) Parsing(kb *KnowledgeBase, cmd string) ([]*Token, []*BIN, error) {
 	cmd = strings.Replace(cmd, "\r\n", "", -1)
 	cmd = strings.Replace(cmd, "\\n", "", -1)
 	cmd = strings.Replace(cmd, "\t", " ", -1)
@@ -319,14 +319,28 @@ func (e *EBNF) Parsing(cmd string) ([]*Token, []*BIN, error) {
 		var ok = false
 		opts = e.findOptions(pt, &stack, 0)
 		for _, y := range opts {
+			//fmt.Println(x, y)
 			if (y.token == x) ||
-				(y.tokentype == DynamicReference) ||
-				((y.tokentype == Object || y.tokentype == Class || y.tokentype == Attribute || y.tokentype == Constant) && unicode.IsUpper(rune(x[0]))) ||
+				(y.tokentype == DynamicReference && len(x) == 1) ||
+				((y.tokentype == Object || y.tokentype == Class || y.tokentype == Attribute || y.tokentype == Constant || y.tokentype == Reference) && unicode.IsUpper(rune(x[0]))) ||
 				(y.tokentype == Text && (rune(x[0]) == '\'' || rune(x[0]) == '"') ||
 					(y.tokentype == Constant && lib.IsNumber(x))) {
-				ok = true
-				pt = y
-				break
+				if y.tokentype == Class {
+					if kb.FindClassByName(x, false) != nil {
+						ok = true
+					}
+				} else if y.tokentype == Object {
+					if kb.FindObjectByName(x) != nil {
+						ok = true
+					}
+				} else {
+					ok = true
+				}
+				if ok {
+					pt = y
+					break
+
+				}
 			}
 		}
 		if !ok || len(opts) == 0 {
@@ -354,15 +368,15 @@ func (e *EBNF) Parsing(cmd string) ([]*Token, []*BIN, error) {
 	return opts, nil, errors.New(str)
 }
 
-func (e *EBNF) newRule(str string) *Rule {
-	var rule Rule
+func (e *EBNF) newStatement(str string) *Statement {
+	var rule Statement
 	rule.id = len(e.rules) + 1
 	rule.name = strings.Trim(str, " ")
 	e.rules = append(e.rules, &rule)
 	return &rule
 }
 
-func (e *EBNF) newToken(rule *Rule, str string, tokentype TokenType, nexts ...*Token) {
+func (e *EBNF) newToken(rule *Statement, str string, tokentype TokenType, nexts ...*Token) {
 	token := Token{id: len(rule.tokens) + 1, token: strings.Trim(str, " "), rule_id: rule.id, tokentype: tokentype}
 	for _, jump := range nexts {
 		token.next = append(token.next, jump)
@@ -403,7 +417,7 @@ func (e *EBNF) ReadToken(Tokenfile string) int {
 			}
 		}
 		if len(left) > 0 {
-			var nrule = e.newRule(left)
+			var nrule = e.newStatement(left)
 			var inWord = false
 			var inString = false
 			var inRule = false
@@ -447,7 +461,7 @@ func (e *EBNF) ReadToken(Tokenfile string) int {
 				default:
 				}
 			}
-			e.parsingRule(nrule)
+			e.parsingStatement(nrule)
 		}
 	}
 
@@ -489,7 +503,7 @@ func findPair(p []PAIR, i int) int {
 	return ret
 }
 
-func (e *EBNF) findClose(rule *Rule, symb int, token string, i int, level int) int {
+func (e *EBNF) findClose(rule *Statement, symb int, token string, i int, level int) int {
 	for j := i + 1; j < len(rule.tokens); j++ {
 		if rule.tokens[j].tokentype == Control {
 			s := symbols[symb]
@@ -505,7 +519,7 @@ func (e *EBNF) findClose(rule *Rule, symb int, token string, i int, level int) i
 	return -1
 }
 
-func (e *EBNF) parsingRule(rule *Rule) {
+func (e *EBNF) parsingStatement(rule *Statement) {
 	var pairs []PAIR
 	log.Println("Parsing rule ", rule.name)
 	for i := 0; i < len(rule.tokens); i++ {

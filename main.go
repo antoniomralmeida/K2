@@ -20,6 +20,11 @@ func main() {
 	kb.ConnectDB("mongodb://localhost:27017", "K2")
 	kb.ReadEBNF("k2.ebnf")
 	kb.ReadBK()
+	//kb.PrintEBNF()
+	//kb.Run()
+	//kb.NewRule(90, "for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230")
+	//kb.NewRule(100, "initially unconditionally then set the Status of the M01 to PowerOn")
+
 	/*
 	   c1 := kb.FindClassByName("MotorElétrico")
 
