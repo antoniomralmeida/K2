@@ -162,7 +162,7 @@ type KBClass struct {
 }
 
 type BIN struct {
-	Tokentype       ebnf.Tokentype
+	tokentype       ebnf.Tokentype
 	typebin         TokenBin
 	token           string
 	class           *KBClass

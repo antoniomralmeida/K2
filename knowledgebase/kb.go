@@ -15,29 +15,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func (me TokenBin) String() string {
-	return TokenBinStr[me]
-}
-
-func (me TokenBin) Size() int {
-	return len(TokenBinStr)
-}
-
-func (b *BIN) findTokenBin(i byte, j byte) TokenBin {
-	if j >= i {
-		avg := (i + j) / 2
-		tb := TokenBin(avg)
-		if b.GetToken() == tb.String() {
-			return tb
-		} else if b.GetToken() >= tb.String() {
-			return b.findTokenBin(avg+1, j)
-		} else {
-			return b.findTokenBin(i, avg-1)
-		}
-	}
-	return TokenBin(0)
-}
-
 func (kb *KnowledgeBase) Parsing(cmd string) ([]*ebnf.Token, []*BIN, error) {
 	cmd = strings.Replace(cmd, "\r\n", "", -1)
 	cmd = strings.Replace(cmd, "\\n", "", -1)
@@ -126,7 +103,7 @@ func (kb *KnowledgeBase) Parsing(cmd string) ([]*ebnf.Token, []*BIN, error) {
 			}
 			return opts, nil, errors.New(str)
 		}
-		code := BIN{Tokentype: pt.GetTokenType(), token: x}
+		code := BIN{tokentype: pt.GetTokenType(), token: x}
 		code.setTokenBin()
 		bin = append(bin, &code)
 	}
@@ -338,24 +315,16 @@ func (kb *KnowledgeBase) NewClass(c *KBClass) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	kb.Classes = append(kb.Classes, *c)
-	err = collection.Find(bson.M{}).Sort("_id").All(&kb.Classes)
-	if err != nil {
-		log.Fatal(err)
-	}
+	log.Fatal(db.FindAll(&kb.Classes, "_id"))
 }
 
 func (kb *KnowledgeBase) UpdateClass(c *KBClass) {
-	collection := kb.db.C("Class")
 	for i, _ := range c.Attributes {
 		if c.Attributes[i].Id == "" {
 			c.Attributes[i].Id = bson.NewObjectId()
 		}
 	}
-	err := collection.UpdateId(c.Id, c)
-	if err != nil {
-		log.Fatal(err)
-	}
+	log.Fatal(db.Persist(c))
 }
 
 func (kb *KnowledgeBase) NewWorkspace(name string, icone string) *KBWorkspace {
