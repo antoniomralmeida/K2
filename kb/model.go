@@ -1,4 +1,4 @@
-package knowledgebase
+package kb
 
 import (
 	"time"
@@ -129,11 +129,15 @@ var TokenBinStr = []string{
 	"when",
 	"whenever"}
 
+type KBClassPt *KBClass
+
 type KnowledgeBase struct {
 	Classes    []KBClass
+	IdxClasses map[bson.ObjectId]KBClassPt
 	Rules      []KBRule
 	Workspaces []KBWorkspace
 	Objects    []KBObject
+	IdxObjects map[string]*KBObject
 	ebnf       *ebnf.EBNF
 	stack      []*KBRule
 }

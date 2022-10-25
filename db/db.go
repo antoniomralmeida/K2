@@ -6,12 +6,11 @@ import (
 	"gopkg.in/mgo.v2"
 )
 
-type DB struct {
-	db_read  *mgo.Database
-	db_write *mgo.Database
-}
+var db *mgo.Database
 
-var db DB
+func GetDb() *mgo.Database {
+	return db
+}
 
 func ConnectDB(uri string, dbName string) {
 	log.Println("ConnectDB")
@@ -20,7 +19,5 @@ func ConnectDB(uri string, dbName string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	db.db_read = session.DB(dbName)
-	db.db_write = session.DB(dbName)
-
+	db = session.DB(dbName)
 }

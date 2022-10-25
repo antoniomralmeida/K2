@@ -29,7 +29,7 @@ type Token struct {
 type Statement struct {
 	id     int
 	name   string
-	Tokens []*Token
+	tokens []*Token
 }
 
 type EBNF struct {
