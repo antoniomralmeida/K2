@@ -40,7 +40,7 @@ const (
 	b_null TokenBin = iota
 	b_open_par
 	b_close_par
-	b_iqual
+	b_equal_sym
 	b_activate
 	b_and
 	b_any
@@ -83,51 +83,7 @@ const (
 	b_whenever
 )
 
-var TokenBinStr = []string{
-	"",
-	"(",
-	")",
-	"=",
-	"activate",
-	"and",
-	"any",
-	"change",
-	"conclude",
-	"create",
-	"deactivate",
-	"delete",
-	"different",
-	"equal",
-	"focus",
-	"for",
-	"greater",
-	"halt",
-	"hide",
-	"if",
-	"inform",
-	"initially",
-	"insert",
-	"invoke",
-	"is",
-	"less",
-	"move",
-	"of",
-	"operator",
-	"or",
-	"remove",
-	"rotate",
-	"set",
-	"show",
-	"start",
-	"than",
-	"that",
-	"the",
-	"then",
-	"to",
-	"transfer",
-	"unconditionally",
-	"when",
-	"whenever"}
+var TokenBinStr map[string]TokenBin
 
 type KBClassPt *KBClass
 
@@ -186,7 +142,7 @@ type KBHistory struct {
 	Id        bson.ObjectId `bson:"_id,omitempty"`
 	Attribute bson.ObjectId `bson:"attribute_id"`
 	When      time.Time     `bson:"when"`
-	Value     string        `bson:"value"`
+	Value     any           `bson:"value"`
 	Certainty float64       `bson:"certainty,omitempty"`
 	Source    KBSource      `bson:"source"`
 }
@@ -202,20 +158,24 @@ type KBObject struct {
 	Id         bson.ObjectId       `bson:"_id"`
 	Name       string              `bson:"name"`
 	Class      bson.ObjectId       `bson:"class_id"`
-	Top        int                 `bson:"top"`
-	Left       int                 `bson:"left"`
 	Attributes []KBAttributeObject `bson:"attributes"`
 	Bkclass    *KBClass            `bson:"-"`
 }
 
+type KBObjectWS struct {
+	Object   bson.ObjectId `bson:"object_id"`
+	Top      int           `bson:"top"`
+	Left     int           `bson:"left"`
+	KBObject *KBObject     `bson:"-"`
+}
+
 type KBWorkspace struct {
-	Id              bson.ObjectId   `bson:"_id,omitempty"`
-	Workspace       string          `bson:"workspace"`
-	Top             int             `bson:"top"`
-	Left            int             `bson:"left"`
-	Width           int             `bson:"width"`
-	Height          int             `bson:"height"`
-	BackgroundImage string          `bson:"backgroundimage,omitempty"`
-	Objects         []bson.ObjectId `bson:"objects"`
-	KBObjects       []*KBObject     `bson:"-"`
+	Id              bson.ObjectId `bson:"_id,omitempty"`
+	Workspace       string        `bson:"workspace"`
+	Top             int           `bson:"top"`
+	Left            int           `bson:"left"`
+	Width           int           `bson:"width"`
+	Height          int           `bson:"height"`
+	BackgroundImage string        `bson:"backgroundimage,omitempty"`
+	Objects         []KBObjectWS  `bson:"objects"`
 }

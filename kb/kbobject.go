@@ -8,13 +8,13 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func (class *KBObject) Persist() error {
+func (o *KBObject) Persist() error {
 	collection := db.GetDb().C("KBObject")
-	if class.Id == "" {
-		class.Id = bson.NewObjectId()
-		return collection.Insert(class)
+	if o.Id == "" {
+		o.Id = bson.NewObjectId()
+		return collection.Insert(o)
 	} else {
-		return collection.UpdateId(class.Id, class)
+		return collection.UpdateId(o.Id, o)
 	}
 }
 

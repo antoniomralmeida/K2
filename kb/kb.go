@@ -16,6 +16,51 @@ import (
 func (kb *KnowledgeBase) Init() {
 	kb.IdxClasses = make(map[bson.ObjectId]KBClassPt)
 	kb.IdxObjects = make(map[string]*KBObject)
+	TokenBinStr = map[string]TokenBin{
+		"":                b_null,
+		"(":               b_open_par,
+		")":               b_close_par,
+		"=":               b_equal_sym,
+		"activate":        b_activate,
+		"and":             b_and,
+		"any":             b_any,
+		"change":          b_change,
+		"conclude":        b_conclude,
+		"create":          b_create,
+		"deactivate":      b_deactivate,
+		"delete":          b_delete,
+		"different":       b_different,
+		"equal":           b_equal,
+		"focus":           b_focus,
+		"for":             b_for,
+		"greater":         b_greater,
+		"halt":            b_halt,
+		"hide":            b_hide,
+		"if":              b_if,
+		"inform":          b_inform,
+		"initially":       b_initially,
+		"insert":          b_insert,
+		"invoke":          b_invoke,
+		"is":              b_is,
+		"less":            b_less,
+		"move":            b_move,
+		"of":              b_of,
+		"operator":        b_operator,
+		"or":              b_or,
+		"remove":          b_remove,
+		"rotate":          b_rotate,
+		"set":             b_set,
+		"show":            b_show,
+		"start":           b_start,
+		"than":            b_than,
+		"that":            b_than,
+		"the":             b_the,
+		"then":            b_then,
+		"to":              b_to,
+		"transfer":        b_transfer,
+		"unconditionally": b_unconditionally,
+		"when":            b_when,
+		"whenever":        b_whenever}
 }
 
 func (kb *KnowledgeBase) ParsingCommand(cmd string) ([]*ebnf.Token, []*BIN, error) {
@@ -311,11 +356,9 @@ func (kb *KnowledgeBase) NewObject(c *KBClass, name string) *KBObject {
 	return &o
 }
 
-func (kb *KnowledgeBase) LinkObjects(ws *KBWorkspace, objs ...*KBObject) {
-	for i, _ := range objs {
-		ws.Objects = append(ws.Objects, objs[i].Id)
-		ws.KBObjects = append(ws.KBObjects, objs[i])
-	}
+func (kb *KnowledgeBase) LinkObjects(ws *KBWorkspace, obj *KBObject, left int, top int) {
+	ows := KBObjectWS{Object: obj.Id, Left: left, Top: top, KBObject: obj}
+	ws.Objects = append(ws.Objects, ows)
 	kb.UpdateWorkspace(ws)
 }
 
@@ -340,7 +383,7 @@ func (kb *KnowledgeBase) findObjectByNameBin(name string, i int, j int) *KBObjec
 }
 */
 
-func (kb *KnowledgeBase) SaveValue(attr *KBAttributeObject, value string, source KBSource) *KBHistory {
+func (kb *KnowledgeBase) SaveValue(attr *KBAttributeObject, value any, source KBSource) *KBHistory {
 	if attr != nil {
 		h := KBHistory{Attribute: attr.Id, When: time.Now(), Value: value, Source: source}
 		lib.LogFatal(h.Persist())
@@ -421,8 +464,8 @@ func (kb *KnowledgeBase) NewRule(rule string, priority byte) *KBRule {
 		log.Fatal(err)
 	}
 	r := KBRule{Rule: rule, Priority: priority}
+	lib.LogFatal(r.Persist())
 	kb.linkerRule(&r, bin)
-	log.Fatal(r.Persist())
 	kb.Rules = append(kb.Rules, r)
 	return &r
 }

@@ -1,1 +1,0 @@
-Set = set the Attribute of ( DynamicReference | the ( Class | Object ) ) ("=" | to) Constant.

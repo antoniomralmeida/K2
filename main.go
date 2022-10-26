@@ -20,7 +20,7 @@ func main() {
 	kb1 := kb.KnowledgeBase{}
 	kb1.Init()
 
-	kb1.ReadEBNF("k2.ebnf")
+	kb1.ReadEBNF("./ebnf/k2.ebnf")
 	kb1.ReadBK()
 	//kb.PrintEBNF()
 	//kb.Run()
@@ -72,16 +72,24 @@ func main() {
 
 		w1 := kb1.NewWorkspace("Chão de fábrica", "chao.jpg")
 	*/
+	//w1 := kb1.FindWorkspaceByName("Chão de fábrica")
+	//w1 := kb1.NewWorkspace("Chão de fábrica", "chao.jpg")
+	//c1 := kb1.FindClassByName("MotorElétrico", true)
+
+	//o1 := kb1.NewObject(c1, "M01")
+
+	//o1 := kb1.FindObjectByName("M01")
+	//kb1.LinkObjects(w1, o1, 10, 100)
 
 	//c1 := kb1.FindClassByName("MotorElétrico", true)
 
 	//o1 := kb1.NewObject(c1, "M01")
 	//kb1.NewObject(c1, "M02")
 
-	o1 := kb1.FindObjectByName("M01")
+	//o1 := kb1.FindObjectByName("M01")
 
-	ao1 := kb1.FindAttributeObject(o1, "Potência")
-	kb1.SaveValue(ao1, "121", kb.User)
+	//ao1 := kb1.FindAttributeObject(o1, "Potência")
+	//kb1.SaveValue(ao1, 200.1, kb.User)
 
 	kb1.NewRule("for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230", 100)
 
