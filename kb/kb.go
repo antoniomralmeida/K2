@@ -61,6 +61,32 @@ func (kb *KnowledgeBase) Init() {
 		"unconditionally": b_unconditionally,
 		"when":            b_when,
 		"whenever":        b_whenever}
+
+}
+
+func (kb *KnowledgeBase) Scan() error {
+	lib.Log("Scaning...")
+	if len(kb.stack) > 0 {
+		localstack := kb.stack
+		mark := len(localstack) - 1
+		sort.Slice(localstack, func(i, j int) bool {
+			return (localstack[i].Priority > localstack[j].Priority) || (localstack[i].Priority == localstack[j].Priority && localstack[j].lastexecution.After(localstack[i].lastexecution))
+		})
+
+		for len(localstack) > 0 {
+			r := localstack[0]
+			r.Run()
+			localstack = localstack[1:]
+		}
+		kb.stack = kb.stack[mark:]
+	}
+	for i, _ := range kb.Rules {
+		if kb.Rules[i].ExecutionInterval != 0 && time.Now().After(kb.Rules[i].lastexecution.Add(time.Duration(kb.Rules[i].ExecutionInterval)*time.Millisecond)) {
+			kb.stack = append(kb.stack, &kb.Rules[i])
+		}
+	}
+	time.Sleep(1 * time.Second)
+	return nil
 }
 
 func (kb *KnowledgeBase) ParsingCommand(cmd string) ([]*ebnf.Token, []*BIN, error) {
@@ -458,12 +484,12 @@ func (kb *KnowledgeBase) FindAttributeObjectByClass(obj *KBObject, attr string) 
 	return nil
 }
 
-func (kb *KnowledgeBase) NewRule(rule string, priority byte) *KBRule {
+func (kb *KnowledgeBase) NewRule(rule string, priority byte, interval int) *KBRule {
 	_, bin, err := kb.ParsingCommand(rule)
 	if err != nil {
 		log.Fatal(err)
 	}
-	r := KBRule{Rule: rule, Priority: priority}
+	r := KBRule{Rule: rule, Priority: priority, ExecutionInterval: interval}
 	lib.LogFatal(r.Persist())
 	kb.linkerRule(&r, bin)
 	kb.Rules = append(kb.Rules, r)

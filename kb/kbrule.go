@@ -1,11 +1,16 @@
 package kb
 
 import (
+	"log"
+	"time"
+
 	"github.com/antoniomralmeida/k2/db"
 	"gopkg.in/mgo.v2/bson"
 )
 
 func (r *KBRule) Run() {
+
+	log.Println("run...", r.Rule)
 	for _, x := range r.bin {
 		switch x.typebin {
 		case b_initially:
@@ -14,6 +19,7 @@ func (r *KBRule) Run() {
 			}
 		}
 	}
+	r.lastexecution = time.Now()
 }
 
 func (r *KBRule) Persist() error {

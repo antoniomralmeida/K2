@@ -132,10 +132,12 @@ type BIN struct {
 }
 
 type KBRule struct {
-	Id       bson.ObjectId `bson:"_id,omitempty"`
-	Rule     string        `bson:"rule"`
-	Priority byte          `bson:"priority"` //0..100
-	bin      []*BIN        `bson:"-"`
+	Id                bson.ObjectId `bson:"_id,omitempty"`
+	Rule              string        `bson:"rule"`
+	Priority          byte          `bson:"priority"` //0..
+	ExecutionInterval int           `bson:"interval"`
+	bin               []*BIN        `bson:"-"`
+	lastexecution     time.Time     `bson:"-"`
 }
 
 type KBHistory struct {
@@ -143,7 +145,7 @@ type KBHistory struct {
 	Attribute bson.ObjectId `bson:"attribute_id"`
 	When      time.Time     `bson:"when"`
 	Value     any           `bson:"value"`
-	Certainty float64       `bson:"certainty,omitempty"`
+	Certainty float32       `bson:"certainty,omitempty"`
 	Source    KBSource      `bson:"source"`
 }
 
