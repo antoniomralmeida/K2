@@ -85,17 +85,23 @@ const (
 
 var TokenBinStr map[string]TokenBin
 
-type KBClassPt *KBClass
-
 type KnowledgeBase struct {
-	Classes    []KBClass
-	IdxClasses map[bson.ObjectId]KBClassPt
-	Rules      []KBRule
-	Workspaces []KBWorkspace
-	Objects    []KBObject
-	IdxObjects map[string]*KBObject
-	ebnf       *ebnf.EBNF
-	stack      []*KBRule
+	Id         bson.ObjectId              `bson:"_id,omitempty"`
+	Name       string                     `bson:"name"`
+	Classes    []KBClass                  `bson:"-"`
+	IdxClasses map[bson.ObjectId]*KBClass `bson:"-"`
+	Rules      []KBRule                   `bson:"-"`
+	Workspaces []KBWorkspace              `bson:"-"`
+	Objects    []KBObject                 `bson:"-"`
+	IdxObjects map[string]*KBObject       `bson:"-"`
+	ebnf       *ebnf.EBNF                 `bson:"-"`
+	stack      []*KBRule                  `bson:"-"`
+	mutex      KBMutex                    `bson:"-"`
+}
+
+type KBMutex struct {
+	Id        bson.ObjectId `bson:"_id,omitempty"`
+	LastKBRun time.Time     `bson:"lastkbrun"`
 }
 
 type KBAttribute struct {
@@ -104,9 +110,9 @@ type KBAttribute struct {
 	AType            KBAttributeType `bson:"atype"`
 	Options          []string        `bson:"options,omitempty"`
 	Sources          []KBSource      `bson:"sources"`
-	KeepHistory      int             `bson:"keephistory"`
-	ValidityInterval int             `bson:"validityinterval"`
-	Deadline         int             `bson:"deadline"`
+	KeepHistory      int64           `bson:"keephistory"`
+	ValidityInterval int64           `bson:"validityinterval"`
+	Deadline         int64           `bson:"deadline"`
 	Simulation       KBSimulation    `bson:"simulation,omitempty"`
 }
 
@@ -122,13 +128,14 @@ type KBClass struct {
 }
 
 type BIN struct {
-	tokentype       ebnf.Tokentype
-	typebin         TokenBin
-	token           string
-	class           *KBClass
-	object          *KBObject
-	attribute       *KBAttribute
-	attributeObject *KBAttributeObject
+	tokentype ebnf.Tokentype
+	typebin   TokenBin
+	token     string
+	class     *KBClass
+	attribute *KBAttribute
+
+	objects          []*KBObject
+	attributeObjects []*KBAttributeObject
 }
 
 type KBRule struct {

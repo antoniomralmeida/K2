@@ -18,7 +18,7 @@ func (o *KBObject) Persist() error {
 	}
 }
 
-func FindAllObjects(sort string, os *[]KBObject) error {
+func FindAllObjects(filter bson.M, sort string, os *[]KBObject) error {
 	collection := db.GetDb().C("KBObject")
 	idx, err := collection.Indexes()
 	if len(idx) == 1 {
@@ -27,5 +27,5 @@ func FindAllObjects(sort string, os *[]KBObject) error {
 			log.Fatal(err)
 		}
 	}
-	return collection.Find(bson.M{}).Sort(sort).All(os)
+	return collection.Find(filter).Sort(sort).All(os)
 }

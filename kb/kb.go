@@ -2,75 +2,27 @@ package kb
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 	"unicode"
 
+	"github.com/antoniomralmeida/k2/db"
 	"github.com/antoniomralmeida/k2/ebnf"
 	"github.com/antoniomralmeida/k2/lib"
 	"gopkg.in/mgo.v2/bson"
 )
 
-func (kb *KnowledgeBase) Init() {
-	kb.IdxClasses = make(map[bson.ObjectId]KBClassPt)
-	kb.IdxObjects = make(map[string]*KBObject)
-	TokenBinStr = map[string]TokenBin{
-		"":                b_null,
-		"(":               b_open_par,
-		")":               b_close_par,
-		"=":               b_equal_sym,
-		"activate":        b_activate,
-		"and":             b_and,
-		"any":             b_any,
-		"change":          b_change,
-		"conclude":        b_conclude,
-		"create":          b_create,
-		"deactivate":      b_deactivate,
-		"delete":          b_delete,
-		"different":       b_different,
-		"equal":           b_equal,
-		"focus":           b_focus,
-		"for":             b_for,
-		"greater":         b_greater,
-		"halt":            b_halt,
-		"hide":            b_hide,
-		"if":              b_if,
-		"inform":          b_inform,
-		"initially":       b_initially,
-		"insert":          b_insert,
-		"invoke":          b_invoke,
-		"is":              b_is,
-		"less":            b_less,
-		"move":            b_move,
-		"of":              b_of,
-		"operator":        b_operator,
-		"or":              b_or,
-		"remove":          b_remove,
-		"rotate":          b_rotate,
-		"set":             b_set,
-		"show":            b_show,
-		"start":           b_start,
-		"than":            b_than,
-		"that":            b_than,
-		"the":             b_the,
-		"then":            b_then,
-		"to":              b_to,
-		"transfer":        b_transfer,
-		"unconditionally": b_unconditionally,
-		"when":            b_when,
-		"whenever":        b_whenever}
-
-}
-
-func (kb *KnowledgeBase) Scan() error {
-	lib.Log("Scaning...")
+func (kb *KnowledgeBase) Scan() {
+	log.Println("Scaning...")
 	if len(kb.stack) > 0 {
 		localstack := kb.stack
 		mark := len(localstack) - 1
 		sort.Slice(localstack, func(i, j int) bool {
-			return (localstack[i].Priority > localstack[j].Priority) || (localstack[i].Priority == localstack[j].Priority && localstack[j].lastexecution.After(localstack[i].lastexecution))
+			return (localstack[i].Priority > localstack[j].Priority) || (localstack[i].Priority == localstack[j].Priority && localstack[j].lastexecution.Unix() > localstack[i].lastexecution.Unix())
 		})
 
 		for len(localstack) > 0 {
@@ -85,8 +37,22 @@ func (kb *KnowledgeBase) Scan() error {
 			kb.stack = append(kb.stack, &kb.Rules[i])
 		}
 	}
-	time.Sleep(1 * time.Second)
-	return nil
+}
+
+func (kb *KnowledgeBase) Run(wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	diff := time.Now().Sub(kb.mutex.LastKBRun)
+	if diff.Seconds() < 5 {
+		return
+	}
+	kb.mutex.LastKBRun = time.Now()
+	kb.mutex.Persist()
+	fmt.Println("K2 System started! Press CTRL+C to shutdown.")
+	for {
+		kb.Scan()
+		time.Sleep(1 * time.Second)
+	}
 }
 
 func (kb *KnowledgeBase) ParsingCommand(cmd string) ([]*ebnf.Token, []*BIN, error) {
@@ -208,12 +174,19 @@ func (kb *KnowledgeBase) linkerRule(r *KBRule, bin []*BIN) {
 		}
 		switch x.GetTokentype() {
 		case ebnf.Object:
-			if bin[j].object == nil {
-				bin[j].object = kb.FindObjectByName(x.GetToken())
+			if len(bin[j].objects) == 0 {
+				obj := kb.FindObjectByName(r.bin[j].token)
+				bin[j].objects = append(bin[j].objects, obj)
 			}
 		case ebnf.Class:
 			if bin[j].class == nil {
-				bin[j].class = kb.FindClassByName(x.GetToken(), true)
+				c := kb.FindClassByName(x.GetToken(), true)
+				bin[j].class = c
+				objs := []KBObject{}
+				lib.LogFatal(FindAllObjects(bson.M{"class_id": c.Id}, "_id", &objs))
+				for _, y := range objs {
+					bin[j].objects = append(bin[j].objects, kb.IdxObjects[y.Name])
+				}
 			}
 		case ebnf.Attribute:
 			ref := -1
@@ -229,16 +202,31 @@ func (kb *KnowledgeBase) linkerRule(r *KBRule, bin []*BIN) {
 			}
 			if ref != -1 {
 				if bin[ref].GetTokentype() == ebnf.Object {
-					if bin[ref].object == nil {
-						bin[ref].object = kb.FindObjectByName(bin[ref].GetToken())
-					}
-					bin[j].attribute = kb.FindAttributeObjectByClass(bin[ref].object, x.GetToken())
-					break
-				} else if bin[ref].GetTokentype() == ebnf.Class {
-					if bin[ref].class == nil {
-						bin[j].class = kb.FindClassByName(x.GetToken(), true)
+					if len(bin[j].objects) == 0 {
+						obj := kb.FindObjectByName(r.bin[j].token)
+						bin[j].objects = append(bin[j].objects, obj)
 					}
 					bin[j].attribute = kb.FindAttribute(bin[ref].class, x.GetToken())
+					if len(bin[j].objects) > 0 {
+						atro := kb.FindAttributeObject(bin[ref].objects[0], x.GetToken())
+						bin[j].attributeObjects = append(bin[j].attributeObjects, atro)
+					}
+					break
+				} else if bin[ref].GetTokentype() == ebnf.Class {
+					c := bin[ref].class
+					if c == nil {
+						c = kb.FindClassByName(x.GetToken(), true)
+						bin[j].class = c
+					}
+					bin[j].attribute = kb.FindAttribute(c, x.GetToken())
+					objs := []KBObject{}
+					lib.LogFatal(FindAllObjects(bson.M{"class_id": c.Id}, "_id", &objs))
+					for _, y := range objs {
+						obj := kb.IdxObjects[y.Name]
+						bin[j].objects = append(bin[j].objects, obj)
+						atro := kb.FindAttributeObject(obj, x.GetToken())
+						bin[j].attributeObjects = append(bin[j].attributeObjects, atro)
+					}
 					break
 				}
 			} else {
@@ -248,18 +236,16 @@ func (kb *KnowledgeBase) linkerRule(r *KBRule, bin []*BIN) {
 			{
 				if consequent == -1 {
 					for z := j - 1; z >= 0; z-- {
-						if bin[z].GetTokentype() == ebnf.Object {
-							bin[j].object = bin[z].object
-							break
-						} else if bin[z].GetTokentype() == ebnf.Class {
+						if bin[z].GetTokentype() == ebnf.Object || bin[z].GetTokentype() == ebnf.Class {
 							bin[j].class = bin[z].class
+							bin[j].objects = bin[z].objects
 							break
 						}
 					}
 				} else {
 					for z := consequent - 1; z >= 0; z-- {
 						if bin[z].GetTokentype() == ebnf.DynamicReference && bin[z].GetToken() == x.GetToken() {
-							bin[j].object = bin[z].object
+							bin[j].objects = bin[z].objects
 							bin[j].class = bin[z].class
 							break
 						}
@@ -290,9 +276,6 @@ func (kb *KnowledgeBase) linkerRule(r *KBRule, bin []*BIN) {
 			}
 		}
 		cl := bin[j].class
-		if bin[j].object != nil {
-			cl = bin[j].object.Bkclass
-		}
 		if cl != nil {
 			if consequent != -1 {
 				cl.addConsequentRules(r)
@@ -304,23 +287,6 @@ func (kb *KnowledgeBase) linkerRule(r *KBRule, bin []*BIN) {
 	}
 	r.bin = bin
 }
-
-/*
-	func (kb *KnowledgeBase) findClassBin(id bson.ObjectId, i int, j int) *KBClass {
-		if j >= i {
-			avg := (i + j) / 2
-			if kb.Classes[avg].Id == id {
-				return &kb.Classes[avg]
-			} else if kb.Classes[avg].Id < id {
-				return kb.findClassBin(id, i, avg-1)
-			} else {
-				return kb.findClassBin(id, avg+1, j)
-			}
-		} else {
-			return nil
-		}
-	}
-*/
 func (kb *KnowledgeBase) AddAttribute(c *KBClass, attrs ...*KBAttribute) {
 	for i, _ := range attrs {
 		attrs[i].Id = bson.NewObjectId()
@@ -392,35 +358,6 @@ func (kb *KnowledgeBase) FindObjectByName(name string) *KBObject {
 	return kb.IdxObjects[name]
 }
 
-/*
-func (kb *KnowledgeBase) findObjectByNameBin(name string, i int, j int) *KBObject {
-	if j >= i {
-		avg := (i + j) / 2
-		if kb.Objects[avg].Name == name {
-			return &kb.Objects[avg]
-		} else if kb.Objects[avg].Name > name {
-			return kb.findObjectByNameBin(name, i, avg-1)
-		} else {
-			return kb.findObjectByNameBin(name, avg+1, j)
-		}
-	} else {
-		return nil
-	}
-}
-*/
-
-func (kb *KnowledgeBase) SaveValue(attr *KBAttributeObject, value any, source KBSource) *KBHistory {
-	if attr != nil {
-		h := KBHistory{Attribute: attr.Id, When: time.Now(), Value: value, Source: source}
-		lib.LogFatal(h.Persist())
-		attr.KbHistory = &h
-		return &h
-	} else {
-		log.Fatal("Invalid Attribute of Object!")
-		return nil
-	}
-}
-
 func (kb *KnowledgeBase) FindClassByName(name string, mandatory bool) *KBClass {
 	var ret KBClass
 	err := ret.FindOne(bson.D{{"name", name}})
@@ -430,11 +367,6 @@ func (kb *KnowledgeBase) FindClassByName(name string, mandatory bool) *KBClass {
 	return kb.IdxClasses[ret.Id]
 }
 
-/*
-	func (kb *KnowledgeBase) FindClassById(id bson.ObjectId) *KBClass {
-		return kb.findClassBin(id, 0, len(kb.Classes)-1)
-	}
-*/
 func (kb *KnowledgeBase) FindAttribute(c *KBClass, name string) *KBAttribute {
 	attrs := kb.FindAttributes(c)
 	for i, x := range attrs {
@@ -475,15 +407,6 @@ func (kb *KnowledgeBase) NewAttributeObject(obj *KBObject, attr *KBAttribute) *K
 	return &a
 }
 
-func (kb *KnowledgeBase) FindAttributeObjectByClass(obj *KBObject, attr string) *KBAttribute {
-	for i, _ := range obj.Bkclass.Attributes {
-		if obj.Bkclass.Attributes[i].Name == attr {
-			return &obj.Bkclass.Attributes[i]
-		}
-	}
-	return nil
-}
-
 func (kb *KnowledgeBase) NewRule(rule string, priority byte, interval int) *KBRule {
 	_, bin, err := kb.ParsingCommand(rule)
 	if err != nil {
@@ -496,8 +419,68 @@ func (kb *KnowledgeBase) NewRule(rule string, priority byte, interval int) *KBRu
 	return &r
 }
 
-func (kb *KnowledgeBase) ReadBK() {
-	log.Println("ReadBK")
+func (kb *KnowledgeBase) Init(ebnffile string) {
+	log.Println("Init KB")
+	TokenBinStr = map[string]TokenBin{
+		"":                b_null,
+		"(":               b_open_par,
+		")":               b_close_par,
+		"=":               b_equal_sym,
+		"activate":        b_activate,
+		"and":             b_and,
+		"any":             b_any,
+		"change":          b_change,
+		"conclude":        b_conclude,
+		"create":          b_create,
+		"deactivate":      b_deactivate,
+		"delete":          b_delete,
+		"different":       b_different,
+		"equal":           b_equal,
+		"focus":           b_focus,
+		"for":             b_for,
+		"greater":         b_greater,
+		"halt":            b_halt,
+		"hide":            b_hide,
+		"if":              b_if,
+		"inform":          b_inform,
+		"initially":       b_initially,
+		"insert":          b_insert,
+		"invoke":          b_invoke,
+		"is":              b_is,
+		"less":            b_less,
+		"move":            b_move,
+		"of":              b_of,
+		"operator":        b_operator,
+		"or":              b_or,
+		"remove":          b_remove,
+		"rotate":          b_rotate,
+		"set":             b_set,
+		"show":            b_show,
+		"start":           b_start,
+		"than":            b_than,
+		"that":            b_than,
+		"the":             b_the,
+		"then":            b_then,
+		"to":              b_to,
+		"transfer":        b_transfer,
+		"unconditionally": b_unconditionally,
+		"when":            b_when,
+		"whenever":        b_whenever}
+
+	kb.FindOne()
+	if kb.Name == "" {
+		kb.Name = "K2 System KB"
+	}
+	kb.Persist()
+	kb.IdxClasses = make(map[bson.ObjectId]*KBClass)
+	kb.IdxObjects = make(map[string]*KBObject)
+
+	ebnf := ebnf.EBNF{}
+	kb.ebnf = &ebnf
+	kb.ebnf.ReadToken(ebnffile)
+	kb.mutex.FindOne()
+	kb.mutex.Persist()
+
 	FindAllClasses("_id", &kb.Classes)
 	for j, _ := range kb.Classes {
 		kb.IdxClasses[kb.Classes[j].Id] = &kb.Classes[j]
@@ -515,7 +498,7 @@ func (kb *KnowledgeBase) ReadBK() {
 		}
 	}
 
-	FindAllObjects("name", &kb.Objects)
+	FindAllObjects(bson.M{}, "name", &kb.Objects)
 	for j, o := range kb.Objects {
 		kb.IdxObjects[o.Name] = &kb.Objects[j]
 		c := kb.IdxClasses[o.Class]
@@ -567,12 +550,21 @@ func (kb *KnowledgeBase) ReadBK() {
 	}
 }
 
-func (kb *KnowledgeBase) ReadEBNF(file string) {
-	ebnf := ebnf.EBNF{}
-	kb.ebnf = &ebnf
-	kb.ebnf.ReadToken(file)
-}
-
 func (kb *KnowledgeBase) PrintEBNF() {
 	kb.ebnf.PrintEBNF()
+}
+
+func (kb *KnowledgeBase) Persist() error {
+	collection := db.GetDb().C("KnowledgeBase")
+	if kb.Id == "" {
+		kb.Id = bson.NewObjectId()
+		return collection.Insert(kb)
+	} else {
+		return collection.UpdateId(kb.Id, kb)
+	}
+}
+
+func (kb *KnowledgeBase) FindOne() error {
+	collection := db.GetDb().C("KnowledgeBase")
+	return collection.Find(bson.D{}).One(kb)
 }

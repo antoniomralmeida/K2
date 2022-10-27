@@ -3,6 +3,7 @@ package web
 import (
 	"log"
 	"os"
+	"sync"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -15,15 +16,11 @@ type Divs struct {
 	Workspacee string
 }
 
-var runnig = false
-
-func Run() {
-
-	if runnig {
-		return
-	}
-
-	app := fiber.New()
+func Run(wg *sync.WaitGroup) {
+	defer wg.Done()
+	app := fiber.New(fiber.Config{AppName: "K2 System v1.0.1",
+		DisableStartupMessage: true,
+		Prefork:               true})
 
 	file, err := os.OpenFile("./log/web.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
@@ -48,6 +45,7 @@ func Run() {
 	app.Post("/api-*", func(c *fiber.Ctx) error {
 		return c.SendString(c.Params("*"))
 	})
-	runnig = true
 	app.Listen(":3000")
+	wg.Done()
+
 }
