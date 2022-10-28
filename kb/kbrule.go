@@ -74,6 +74,7 @@ oulter:
 					log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
 				}
 				fmt.Println(r.bin[i].class, r.bin[i].token)
+				//FIXME: A classe está vazia e não deveria
 				if r.bin[i].class == nil {
 					log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
 				}
@@ -145,7 +146,7 @@ oulter:
 		for ix := range attrs {
 			vls := []any{}
 			idx[ix] = ctrl{0, len(attrs[ix]) - 1}
-			for iy, _ := range attrs[ix] {
+			for iy := range attrs[ix] {
 				value := attrs[ix][iy].Value()
 				vls = append(vls, value)
 			}
@@ -200,7 +201,8 @@ func (r *KBRule) RunConsequent(objs []*KBObject) {
 			if r.bin[i].tokentype != ebnf.Text {
 				log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
 			}
-
+		case b_set:
+			//TODO: Acionar regras em forward chaining
 		}
 	}
 }

@@ -1,9 +1,7 @@
 package kb
 
-import "fmt"
-
 func (me TokenBin) String() string {
-	return fmt.Sprintf("%v", me)
+	return string(me)
 }
 
 func (me TokenBin) Size() int {

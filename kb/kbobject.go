@@ -18,6 +18,11 @@ func (o *KBObject) Persist() error {
 	}
 }
 
+func (o *KBObject) Delete() error {
+	//TODO: Reiniciar KB
+	return nil
+}
+
 func FindAllObjects(filter bson.M, sort string, os *[]KBObject) error {
 	collection := db.GetDb().C("KBObject")
 	idx, err := collection.Indexes()

@@ -34,3 +34,8 @@ func (class *KBClass) FindOne(p bson.D) error {
 	collection := db.GetDb().C("KBClass")
 	return collection.Find(p).One(class)
 }
+
+func (class *KBClass) Delete() error {
+	//TODO: Restart KB
+	return nil
+}
