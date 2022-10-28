@@ -40,7 +40,7 @@ func (kb *KnowledgeBase) Scan() error {
 		kb.stack = kb.stack[mark:]
 		kb.mutex.Unlock()
 	}
-	for i, _ := range kb.Rules {
+	for i := range kb.Rules {
 		if kb.Rules[i].ExecutionInterval != 0 && time.Now().After(kb.Rules[i].lastexecution.Add(time.Duration(kb.Rules[i].ExecutionInterval)*time.Millisecond)) {
 			kb.mutex.Lock()
 			kb.stack = append(kb.stack, &kb.Rules[i])
@@ -63,7 +63,7 @@ func (kb *KnowledgeBase) Run(wg *sync.WaitGroup) {
 		_, err := scheduler.Add(&tasks.Task{
 			Interval: time.Duration(5 * time.Second),
 			TaskFunc: func() error {
-				kb.Scan()
+				go kb.Scan()
 				return nil
 			},
 		})
@@ -71,7 +71,7 @@ func (kb *KnowledgeBase) Run(wg *sync.WaitGroup) {
 		_, err = scheduler.Add(&tasks.Task{
 			Interval: time.Duration(60 * time.Second),
 			TaskFunc: func() error {
-				kb.ReLink()
+				go kb.ReLink()
 				return nil
 			},
 		})
@@ -105,10 +105,10 @@ func (kb *KnowledgeBase) Run(wg *sync.WaitGroup) {
 
 func (kb *KnowledgeBase) ReLink() error {
 	log.Println("ReLink...")
-	for i, _ := range kb.Objects {
+	for i := range kb.Objects {
 		if !kb.Objects[i].parsed {
-			for j, _ := range kb.Rules {
-				for k, _ := range kb.Rules[j].bkclasses {
+			for j := range kb.Rules {
+				for k := range kb.Rules[j].bkclasses {
 					if kb.Rules[j].bkclasses[k] == kb.Objects[i].Bkclass {
 						_, bin, err := kb.ParsingCommand(kb.Rules[j].Rule)
 						lib.LogFatal(err)
@@ -358,7 +358,7 @@ func (kb *KnowledgeBase) linkerRule(r *KBRule, bin []*BIN) {
 		if cl != nil {
 			r.addClass(cl)
 		}
-		for z, _ := range bin[j].objects {
+		for z := range bin[j].objects {
 			bin[j].objects[z].parsed = true
 		}
 	}
@@ -367,7 +367,7 @@ func (kb *KnowledgeBase) linkerRule(r *KBRule, bin []*BIN) {
 	kb.mutex.Unlock()
 }
 func (kb *KnowledgeBase) AddAttribute(c *KBClass, attrs ...*KBAttribute) {
-	for i, _ := range attrs {
+	for i := range attrs {
 		attrs[i].Id = bson.NewObjectId()
 		c.Attributes = append(c.Attributes, *attrs[i])
 	}
@@ -375,7 +375,7 @@ func (kb *KnowledgeBase) AddAttribute(c *KBClass, attrs ...*KBAttribute) {
 }
 
 func (kb *KnowledgeBase) NewClass(c *KBClass) {
-	for i, _ := range c.Attributes {
+	for i := range c.Attributes {
 		c.Attributes[i].Id = bson.NewObjectId()
 	}
 	err := c.Persist()
@@ -387,7 +387,7 @@ func (kb *KnowledgeBase) NewClass(c *KBClass) {
 }
 
 func (kb *KnowledgeBase) UpdateClass(c *KBClass) {
-	for i, _ := range c.Attributes {
+	for i := range c.Attributes {
 		if c.Attributes[i].Id == "" {
 			c.Attributes[i].Id = bson.NewObjectId()
 		}
@@ -407,7 +407,7 @@ func (kb *KnowledgeBase) UpdateWorkspace(w *KBWorkspace) {
 }
 
 func (kb *KnowledgeBase) FindWorkspaceByName(name string) *KBWorkspace {
-	for i, _ := range kb.Workspaces {
+	for i := range kb.Workspaces {
 		if kb.Workspaces[i].Workspace == name {
 			return &kb.Workspaces[i]
 		}
@@ -437,9 +437,9 @@ func (kb *KnowledgeBase) FindObjectByName(name string) *KBObject {
 	return kb.IdxObjects[name]
 }
 
-func (kb *KnowledgeBase) FindClassByName(name string, mandatory bool) *KBClass {
+func (kb *KnowledgeBase) FindClassByName(nm string, mandatory bool) *KBClass {
 	var ret KBClass
-	err := ret.FindOne(bson.D{{"name", name}})
+	err := ret.FindOne(bson.D{{"name", nm}})
 	if err != nil && mandatory {
 		log.Fatal(err)
 	}
@@ -459,11 +459,9 @@ func (kb *KnowledgeBase) FindAttribute(c *KBClass, name string) *KBAttribute {
 func (kb *KnowledgeBase) FindAttributes(c *KBClass) []*KBAttribute {
 	var ret []*KBAttribute
 	if c.ParentClass != nil {
-		for _, x := range kb.FindAttributes(c.ParentClass) {
-			ret = append(ret, x)
-		}
+		ret = append(ret, kb.FindAttributes(c.ParentClass)...)
 	} else {
-		for i, _ := range c.Attributes {
+		for i := range c.Attributes {
 			ret = append(ret, &c.Attributes[i])
 		}
 	}
@@ -471,7 +469,7 @@ func (kb *KnowledgeBase) FindAttributes(c *KBClass) []*KBAttribute {
 }
 
 func (kb *KnowledgeBase) FindAttributeObject(obj *KBObject, attr string) *KBAttributeObject {
-	for i, _ := range obj.Attributes {
+	for i := range obj.Attributes {
 		if obj.Attributes[i].KbAttribute.Name == attr {
 			return &obj.Attributes[i]
 		}
@@ -558,7 +556,7 @@ func (kb *KnowledgeBase) Init(ebnffile string) {
 	kb.ebnf.ReadToken(ebnffile)
 
 	FindAllClasses("_id", &kb.Classes)
-	for j, _ := range kb.Classes {
+	for j := range kb.Classes {
 		kb.IdxClasses[kb.Classes[j].Id] = &kb.Classes[j]
 	}
 
@@ -617,7 +615,7 @@ func (kb *KnowledgeBase) Init(ebnffile string) {
 
 	FindAllRules("_id", &kb.Rules)
 
-	for i, _ := range kb.Rules {
+	for i := range kb.Rules {
 		_, bin, err := kb.ParsingCommand(kb.Rules[i].Rule)
 		if err != nil {
 			log.Fatal(err)
