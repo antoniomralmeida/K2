@@ -49,3 +49,7 @@ func Run(wg *sync.WaitGroup) {
 	wg.Done()
 
 }
+
+func IsMainThread() bool {
+	return !fiber.IsChild()
+}

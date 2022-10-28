@@ -1,6 +1,7 @@
 package kb
 
 import (
+	"sync"
 	"time"
 
 	"github.com/antoniomralmeida/k2/ebnf"
@@ -96,12 +97,7 @@ type KnowledgeBase struct {
 	IdxObjects map[string]*KBObject       `bson:"-"`
 	ebnf       *ebnf.EBNF                 `bson:"-"`
 	stack      []*KBRule                  `bson:"-"`
-	mutex      KBMutex                    `bson:"-"`
-}
-
-type KBMutex struct {
-	Id        bson.ObjectId `bson:"_id,omitempty"`
-	LastKBRun time.Time     `bson:"lastkbrun"`
+	mutex      sync.Mutex                 `bson:"-"`
 }
 
 type KBAttribute struct {
@@ -114,17 +110,17 @@ type KBAttribute struct {
 	ValidityInterval int64           `bson:"validityinterval"`
 	Deadline         int64           `bson:"deadline"`
 	Simulation       KBSimulation    `bson:"simulation,omitempty"`
+	antecedentRules  []*KBRule       `bson:"-"`
+	consequentRules  []*KBRule       `bson:"-"`
 }
 
 type KBClass struct {
-	Id              bson.ObjectId `bson:"_id,omitempty"`
-	Name            string        `bson:"name"`
-	Icon            string        `bson:"icon"`
-	Parent          bson.ObjectId `bson:"parent_id,omitempty"`
-	Attributes      []KBAttribute `bson:"attributes"`
-	ParentClass     *KBClass      `bson:"-"`
-	antecedentRules []*KBRule     `bson:"-"`
-	consequentRules []*KBRule     `bson:"-"`
+	Id          bson.ObjectId `bson:"_id,omitempty"`
+	Name        string        `bson:"name"`
+	Icon        string        `bson:"icon"`
+	Parent      bson.ObjectId `bson:"parent_id,omitempty"`
+	Attributes  []KBAttribute `bson:"attributes"`
+	ParentClass *KBClass      `bson:"-"`
 }
 
 type BIN struct {
@@ -145,6 +141,9 @@ type KBRule struct {
 	ExecutionInterval int           `bson:"interval"`
 	bin               []*BIN        `bson:"-"`
 	lastexecution     time.Time     `bson:"-"`
+	bkclasses         []*KBClass    `bson:"-"`
+	consequent        int           `bson:"-"`
+	relink            bool          `bson:"-"`
 }
 
 type KBHistory struct {
@@ -169,6 +168,7 @@ type KBObject struct {
 	Class      bson.ObjectId       `bson:"class_id"`
 	Attributes []KBAttributeObject `bson:"attributes"`
 	Bkclass    *KBClass            `bson:"-"`
+	parsed     bool                `bson:"-"`
 }
 
 type KBObjectWS struct {

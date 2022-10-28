@@ -8,32 +8,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func (c *KBClass) addAntecedentRules(r *KBRule) {
-	found := false
-	for i, _ := range c.antecedentRules {
-		if c.antecedentRules[i] == r {
-			found = true
-			break
-		}
-	}
-	if !found {
-		c.antecedentRules = append(c.antecedentRules, r)
-	}
-}
-
-func (c *KBClass) addConsequentRules(r *KBRule) {
-	found := false
-	for i, _ := range c.consequentRules {
-		if c.consequentRules[i] == r {
-			found = true
-			break
-		}
-	}
-	if !found {
-		c.consequentRules = append(c.consequentRules, r)
-	}
-}
-
 func FindAllClasses(sort string, cs *[]KBClass) error {
 	collection := db.GetDb().C("KBClass")
 	idx, err := collection.Indexes()

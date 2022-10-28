@@ -3,36 +3,40 @@ package kb
 import (
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/antoniomralmeida/k2/db"
 	"github.com/antoniomralmeida/k2/ebnf"
+	"github.com/antoniomralmeida/k2/lib"
+	"github.com/apaxa-go/eval"
 	"gopkg.in/mgo.v2/bson"
 )
 
 func (r *KBRule) Run() {
 
+	type ctrl struct {
+		i   int
+		max int
+	}
 	log.Println("run...", r.Id)
+	fmt.Println("run...", r.Rule)
 
-	dr := make(map[string]int)
+	attrs := make(map[string][]*KBAttributeObject)
+	objs := make(map[string][]*KBObject)
+
 	conditionally := false
-	conclude := false
-	for i := 0; i < len(r.bin); i++ {
+	expression := ""
+oulter:
+	for i := 0; i < len(r.bin); {
 		switch r.bin[i].typebin {
 		case b_unconditionally:
-			if conclude {
-				log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
-			}
 			conditionally = true
 		case b_then:
 			if !conditionally {
-				break
+				break oulter
 			}
-			conclude = true
 		case b_for:
-			if conclude {
-				log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
-			}
 			i++
 			if r.bin[i].typebin != b_any {
 				log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
@@ -52,13 +56,10 @@ func (r *KBRule) Run() {
 
 			if r.bin[i+1].tokentype == ebnf.DynamicReference {
 				i++
-				dr[r.bin[i].token] = i
 			}
 		case b_if:
-			expression := ""
-			if conclude {
-				log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
-			}
+
+		inner:
 			for {
 
 				i++
@@ -72,7 +73,15 @@ func (r *KBRule) Run() {
 				if r.bin[i].tokentype != ebnf.Attribute {
 					log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
 				}
-				expression = expression + "{{" + r.bin[i].token + "}}"
+				fmt.Println(r.bin[i].class, r.bin[i].token)
+				if r.bin[i].class == nil {
+					log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+				}
+				key := "{{" + r.bin[i].class.Name + "." + r.bin[i].token + "}}"
+				expression = expression + key
+				attrs[key] = r.bin[i].attributeObjects
+				objs[key] = r.bin[i].objects
+
 				i++
 				if r.bin[i].typebin == b_of {
 					i++
@@ -83,9 +92,9 @@ func (r *KBRule) Run() {
 				}
 				switch r.bin[i].typebin {
 				case b_is:
-					expression = expression + "="
+					expression = expression + "=="
 				case b_equal:
-					expression = expression + "="
+					expression = expression + "=="
 				case b_different:
 					expression = expression + "!="
 				case b_less:
@@ -111,21 +120,89 @@ func (r *KBRule) Run() {
 				for ; r.bin[i].typebin == b_close_par; i++ {
 					expression = expression + r.bin[i].token
 				}
-				i++
+
 				switch r.bin[i].typebin {
 				case b_then:
-					break
+					break inner
 				case b_and:
+					i++
 					expression = expression + " " + r.bin[i].token + " "
 				case b_or:
+					i++
 					expression = expression + " " + r.bin[i].token + " "
 				}
 			}
 			fmt.Println(expression)
+		default:
+			i++
+		}
+	}
+
+	if !conditionally {
+		values := make(map[string][]any)
+		idx := make(map[string]ctrl)
+		idx2 := []string{}
+		for ix := range attrs {
+			vls := []any{}
+			idx[ix] = ctrl{0, len(attrs[ix]) - 1}
+			for iy, _ := range attrs[ix] {
+				value := attrs[ix][iy].Value()
+				vls = append(vls, value)
+			}
+			values[ix] = vls
+			idx2 = append(idx2, ix)
+		}
+		iz := 0
+	i00:
+		for {
+			exp := expression
+			obs := []*KBObject{}
+			for ix := range attrs {
+				key := "{{" + ix + "}}"
+				value := fmt.Sprint(values[ix][idx[ix].i])
+				exp = strings.Replace(exp, key, value, -1)
+				obs = append(obs, objs[ix][idx[ix].i])
+			}
+			exp = "bool(" + exp + ")"
+			expr, err := eval.ParseString(exp, "")
+			lib.LogFatal(err)
+			result, err := expr.EvalToInterface(nil)
+			lib.LogFatal(err)
+			if result == true {
+				r.RunConsequent(obs)
+			}
+		i01:
+			for {
+				ix := idx2[iz]
+				if idx[ix].i < idx[ix].max {
+					idx[ix] = ctrl{idx[ix].i + 1, idx[ix].max}
+					break i01
+				} else {
+					if iz >= len(idx2)-1 {
+						break i00
+					}
+					iz++
+				}
+			}
+		}
+	} else {
+		r.RunConsequent([]*KBObject{})
+	}
+
+	r.lastexecution = time.Now()
+}
+
+func (r *KBRule) RunConsequent(objs []*KBObject) {
+	for i := r.consequent; i < len(r.bin); {
+		switch r.bin[i].typebin {
+		case b_inform:
+			i += 4
+			if r.bin[i].tokentype != ebnf.Text {
+				log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+			}
 
 		}
 	}
-	r.lastexecution = time.Now()
 }
 
 func (r *KBRule) Persist() error {
@@ -141,4 +218,21 @@ func (r *KBRule) Persist() error {
 func FindAllRules(sort string, rs *[]KBRule) error {
 	collection := db.GetDb().C("KBRule")
 	return collection.Find(bson.M{}).Sort(sort).All(rs)
+}
+
+func (r *KBRule) addClass(c *KBClass) {
+	found := false
+	for i, _ := range r.bkclasses {
+		if r.bkclasses[i] == c {
+			found = true
+			break
+		}
+	}
+	if !found {
+		r.bkclasses = append(r.bkclasses, c)
+	}
+}
+
+func (r *KBRule) GetBins() []*BIN {
+	return r.bin
 }

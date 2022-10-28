@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"sort"
 	"strings"
 	"sync"
@@ -13,13 +14,18 @@ import (
 	"github.com/antoniomralmeida/k2/db"
 	"github.com/antoniomralmeida/k2/ebnf"
 	"github.com/antoniomralmeida/k2/lib"
+	"github.com/antoniomralmeida/k2/web"
+	"github.com/eiannone/keyboard"
+	"github.com/madflojo/tasks"
 	"gopkg.in/mgo.v2/bson"
 )
 
-func (kb *KnowledgeBase) Scan() {
+func (kb *KnowledgeBase) Scan() error {
 	log.Println("Scaning...")
 	if len(kb.stack) > 0 {
+		kb.mutex.Lock()
 		localstack := kb.stack
+		kb.mutex.Unlock()
 		mark := len(localstack) - 1
 		sort.Slice(localstack, func(i, j int) bool {
 			return (localstack[i].Priority > localstack[j].Priority) || (localstack[i].Priority == localstack[j].Priority && localstack[j].lastexecution.Unix() > localstack[i].lastexecution.Unix())
@@ -30,29 +36,90 @@ func (kb *KnowledgeBase) Scan() {
 			r.Run()
 			localstack = localstack[1:]
 		}
+		kb.mutex.Lock()
 		kb.stack = kb.stack[mark:]
+		kb.mutex.Unlock()
 	}
 	for i, _ := range kb.Rules {
 		if kb.Rules[i].ExecutionInterval != 0 && time.Now().After(kb.Rules[i].lastexecution.Add(time.Duration(kb.Rules[i].ExecutionInterval)*time.Millisecond)) {
+			kb.mutex.Lock()
 			kb.stack = append(kb.stack, &kb.Rules[i])
+			kb.mutex.Unlock()
 		}
 	}
+	return nil
 }
 
 func (kb *KnowledgeBase) Run(wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	diff := time.Now().Sub(kb.mutex.LastKBRun)
-	if diff.Seconds() < 5 {
-		return
+	if web.IsMainThread() {
+
+		// Start the Scheduler
+		scheduler := tasks.New()
+		defer scheduler.Stop()
+
+		// Add tasks
+		_, err := scheduler.Add(&tasks.Task{
+			Interval: time.Duration(5 * time.Second),
+			TaskFunc: func() error {
+				kb.Scan()
+				return nil
+			},
+		})
+		lib.LogFatal(err)
+		_, err = scheduler.Add(&tasks.Task{
+			Interval: time.Duration(60 * time.Second),
+			TaskFunc: func() error {
+				kb.ReLink()
+				return nil
+			},
+		})
+		lib.LogFatal(err)
+
+		log.Println("K2 System started!")
+		keysEvents, err := keyboard.GetKeys(10)
+		if err != nil {
+			panic(err)
+		}
+		defer func() {
+			_ = keyboard.Close()
+		}()
+		fmt.Println("K2 System started! Press ESC to shutdown")
+
+		for {
+			event := <-keysEvents
+			if event.Err != nil {
+				panic(event.Err)
+			}
+			if event.Key == keyboard.KeyEsc {
+				fmt.Printf("Shutdown...")
+				scheduler.Stop()
+				wg.Done()
+				os.Exit(0)
+			}
+		}
 	}
-	kb.mutex.LastKBRun = time.Now()
-	kb.mutex.Persist()
-	fmt.Println("K2 System started! Press CTRL+C to shutdown.")
-	for {
-		kb.Scan()
-		time.Sleep(1 * time.Second)
+
+}
+
+func (kb *KnowledgeBase) ReLink() error {
+	log.Println("ReLink...")
+	for i, _ := range kb.Objects {
+		if !kb.Objects[i].parsed {
+			for j, _ := range kb.Rules {
+				for k, _ := range kb.Rules[j].bkclasses {
+					if kb.Rules[j].bkclasses[k] == kb.Objects[i].Bkclass {
+						_, bin, err := kb.ParsingCommand(kb.Rules[j].Rule)
+						lib.LogFatal(err)
+						kb.linkerRule(&kb.Rules[j], bin)
+					}
+				}
+			}
+			kb.Objects[i].parsed = true
+		}
 	}
+	return nil
 }
 
 func (kb *KnowledgeBase) ParsingCommand(cmd string) ([]*ebnf.Token, []*BIN, error) {
@@ -168,9 +235,12 @@ func (kb *KnowledgeBase) linkerRule(r *KBRule, bin []*BIN) {
 	for j, x := range bin {
 		switch x.typebin {
 		case b_initially:
+			kb.mutex.Lock()
 			kb.stack = append(kb.stack, r)
+			kb.mutex.Unlock()
 		case b_then:
 			consequent = j
+			r.consequent = j + 1
 		}
 		switch x.GetTokentype() {
 		case ebnf.Object:
@@ -205,6 +275,7 @@ func (kb *KnowledgeBase) linkerRule(r *KBRule, bin []*BIN) {
 					if len(bin[j].objects) == 0 {
 						obj := kb.FindObjectByName(r.bin[j].token)
 						bin[j].objects = append(bin[j].objects, obj)
+						bin[j].class = obj.Bkclass
 					}
 					bin[j].attribute = kb.FindAttribute(bin[ref].class, x.GetToken())
 					if len(bin[j].objects) > 0 {
@@ -275,17 +346,25 @@ func (kb *KnowledgeBase) linkerRule(r *KBRule, bin []*BIN) {
 				}
 			}
 		}
-		cl := bin[j].class
-		if cl != nil {
+		a := bin[j].attribute
+		if a != nil {
 			if consequent != -1 {
-				cl.addConsequentRules(r)
+				a.addConsequentRules(r)
 			} else {
-				cl.addAntecedentRules(r)
+				a.addAntecedentRules(r)
 			}
 		}
-		//fmt.Println(bin[j])
+		cl := bin[j].class
+		if cl != nil {
+			r.addClass(cl)
+		}
+		for z, _ := range bin[j].objects {
+			bin[j].objects[z].parsed = true
+		}
 	}
+	kb.mutex.Lock()
 	r.bin = bin
+	kb.mutex.Unlock()
 }
 func (kb *KnowledgeBase) AddAttribute(c *KBClass, attrs ...*KBAttribute) {
 	for i, _ := range attrs {
@@ -409,9 +488,7 @@ func (kb *KnowledgeBase) NewAttributeObject(obj *KBObject, attr *KBAttribute) *K
 
 func (kb *KnowledgeBase) NewRule(rule string, priority byte, interval int) *KBRule {
 	_, bin, err := kb.ParsingCommand(rule)
-	if err != nil {
-		log.Fatal(err)
-	}
+	lib.LogFatal(err)
 	r := KBRule{Rule: rule, Priority: priority, ExecutionInterval: interval}
 	lib.LogFatal(r.Persist())
 	kb.linkerRule(&r, bin)
@@ -421,6 +498,7 @@ func (kb *KnowledgeBase) NewRule(rule string, priority byte, interval int) *KBRu
 
 func (kb *KnowledgeBase) Init(ebnffile string) {
 	log.Println("Init KB")
+
 	TokenBinStr = map[string]TokenBin{
 		"":                b_null,
 		"(":               b_open_par,
@@ -478,8 +556,6 @@ func (kb *KnowledgeBase) Init(ebnffile string) {
 	ebnf := ebnf.EBNF{}
 	kb.ebnf = &ebnf
 	kb.ebnf.ReadToken(ebnffile)
-	kb.mutex.FindOne()
-	kb.mutex.Persist()
 
 	FindAllClasses("_id", &kb.Classes)
 	for j, _ := range kb.Classes {
