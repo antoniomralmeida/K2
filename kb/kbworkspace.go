@@ -20,9 +20,9 @@ func (w *KBWorkspace) Persist() error {
 
 func FindAllWorkspaces(sort string, ws *[]KBWorkspace) error {
 	collection := db.GetDb().C("KBWorkspace")
-	idx, err := collection.Indexes()
+	idx, _ := collection.Indexes()
 	if len(idx) == 1 {
-		err = collection.EnsureIndex(mgo.Index{Key: []string{"workspace"}, Unique: true})
+		err := collection.EnsureIndex(mgo.Index{Key: []string{"workspace"}, Unique: true})
 		if err != nil {
 			log.Fatal(err)
 		}

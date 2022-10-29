@@ -10,9 +10,9 @@ import (
 
 func FindAllClasses(sort string, cs *[]KBClass) error {
 	collection := db.GetDb().C("KBClass")
-	idx, err := collection.Indexes()
+	idx, _ := collection.Indexes()
 	if len(idx) == 1 {
-		err = collection.EnsureIndex(mgo.Index{Key: []string{"name"}, Unique: true})
+		err := collection.EnsureIndex(mgo.Index{Key: []string{"name"}, Unique: true})
 		if err != nil {
 			log.Fatal(err)
 		}

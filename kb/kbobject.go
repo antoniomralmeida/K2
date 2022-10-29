@@ -25,9 +25,9 @@ func (o *KBObject) Delete() error {
 
 func FindAllObjects(filter bson.M, sort string, os *[]KBObject) error {
 	collection := db.GetDb().C("KBObject")
-	idx, err := collection.Indexes()
+	idx, _ := collection.Indexes()
 	if len(idx) == 1 {
-		err = collection.EnsureIndex(mgo.Index{Key: []string{"name"}, Unique: true})
+		err := collection.EnsureIndex(mgo.Index{Key: []string{"name"}, Unique: true})
 		if err != nil {
 			log.Fatal(err)
 		}

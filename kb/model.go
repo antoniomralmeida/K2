@@ -12,27 +12,27 @@ type KBAttributeType string
 
 const (
 	KBString KBAttributeType = "String"
-	KBDate                   = "Date"
-	KBNumber                 = "Number"
-	KBList                   = "List"
+	KBDate   KBAttributeType = "Date"
+	KBNumber KBAttributeType = "Number"
+	KBList   KBAttributeType = "List"
 )
 
 type KBSource string
 
 const (
 	User       KBSource = "User"
-	PLC                 = "PLC"
-	History             = "History"
-	Simulation          = "Simulation"
+	PLC        KBSource = "PLC"
+	History    KBSource = "History"
+	Simulation KBSource = "Simulation"
 )
 
 type KBSimulation string
 
 const (
 	Default       KBSimulation = ""
-	MonteCarlo                 = "Monte Carlo"
-	MovingAverage              = "Moving Average"
-	Interpolation              = "interpolation"
+	MonteCarlo    KBSimulation = "Monte Carlo"
+	MovingAverage KBSimulation = "Moving Average"
+	Interpolation KBSimulation = "interpolation"
 )
 
 type TokenBin byte

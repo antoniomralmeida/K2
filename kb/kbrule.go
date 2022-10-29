@@ -224,7 +224,7 @@ func FindAllRules(sort string, rs *[]KBRule) error {
 
 func (r *KBRule) addClass(c *KBClass) {
 	found := false
-	for i, _ := range r.bkclasses {
+	for i := range r.bkclasses {
 		if r.bkclasses[i] == c {
 			found = true
 			break
