@@ -15,10 +15,10 @@ func main() {
 	lib.LogInit()
 	db.ConnectDB("mongodb://localhost:27017", "K2")
 
-	kb1 := kb.KnowledgeBase{}
-	kb1.Init("./ebnf/k2.ebnf")
+	var kbbase = kb.KnowledgeBase{}
+	kbbase.Init("./ebnf/k2.ebnf")
 	wg.Add(10)
-	go kb1.Run(&wg)
-	go web.Run(&wg)
+	//go kbbase.Run(&wg)
+	go web.Run(&wg, &kbbase)
 	wg.Wait()
 }

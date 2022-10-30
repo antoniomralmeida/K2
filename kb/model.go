@@ -160,6 +160,7 @@ type KBAttributeObject struct {
 	Attribute   bson.ObjectId `bson:"attribute_id"`
 	KbAttribute *KBAttribute  `bson:"-"`
 	KbHistory   *KBHistory    `bson:"-"`
+	KbObject    *KBObject     `bson:"-"`
 	//TODO: https://nabto.com/guide-iot-protocols-standards/, definir protocolo para IOT SET and SET
 }
 
@@ -188,4 +189,11 @@ type KBWorkspace struct {
 	Height          int           `bson:"height"`
 	BackgroundImage string        `bson:"backgroundimage,omitempty"`
 	Objects         []KBObjectWS  `bson:"objects"`
+}
+
+type DataInput struct {
+	Id      bson.ObjectId   `json:"id"`
+	Name    string          `json:"name"`
+	Atype   KBAttributeType `json:"atype"`
+	Options []string        `json:"options"`
 }

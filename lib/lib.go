@@ -4,6 +4,7 @@ import (
 	"log"
 	"strconv"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/leemcloughlin/logfile"
 )
 
@@ -35,4 +36,8 @@ func LogFatal(e error) {
 
 func Log(msg string) {
 	log.Println(msg)
+}
+
+func IsMainThread() bool {
+	return !fiber.IsChild()
 }

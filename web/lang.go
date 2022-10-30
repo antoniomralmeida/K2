@@ -14,11 +14,15 @@ func Init() {
 			"title":     "K2 System KnowledgeBase",
 			"datainput": "Data Input",
 			"user":      "User",
+			"workspace": "Workspace",
+			"alerts":    "Alerts",
 		},
 		"pt": {
 			"title":     "K2 System KnowledgeBase",
 			"datainput": "Entrada de Dados",
 			"user":      "Usuário",
+			"workspace": "Área de trabalho",
+			"alerts":    "Alertas",
 		},
 	}
 

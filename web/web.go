@@ -1,11 +1,11 @@
 package web
 
 import (
-	"html/template"
 	"log"
 	"os"
 	"sync"
 
+	"github.com/antoniomralmeida/k2/kb"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
@@ -16,12 +16,15 @@ type Context struct {
 	Title     string
 	DataInput string
 	Workspace string
+	Alerts    string
 }
 
 var ctxweb = Context{}
+var kbbase *kb.KnowledgeBase
 
-func Run(wg *sync.WaitGroup) {
+func Run(wg *sync.WaitGroup, kb *kb.KnowledgeBase) {
 	defer wg.Done()
+	kbbase = kb
 
 	Init()
 
@@ -44,24 +47,8 @@ func Run(wg *sync.WaitGroup) {
 	app.Static("/js", "./web/assets/js")
 	app.Static("/vendor", "./web/assets/vendor")
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		lang := c.GetReqHeaders()["Accept-Language"]
-		ctxweb.Title = Translate("title", lang)
-		ctxweb.DataInput = Translate("datainput", lang)
+	Routes(app)
 
-		model := template.Must(template.ParseFiles("./web/assets/gomodel.html"))
-		model.Execute(c, ctxweb)
-		c.Response().Header.Add("Content-Type", "text/html")
-		return c.SendStatus(fiber.StatusOK)
-	})
-
-	app.Post("/api-*", func(c *fiber.Ctx) error {
-		return c.SendString(c.Params("*"))
-	})
 	app.Listen(":3000")
 	wg.Done()
-}
-
-func IsMainThread() bool {
-	return !fiber.IsChild()
 }

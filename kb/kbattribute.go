@@ -25,3 +25,12 @@ func (a *KBAttribute) addConsequentRules(r *KBRule) {
 		a.consequentRules = append(a.consequentRules, r)
 	}
 }
+
+func (a *KBAttribute) isSource(s KBSource) bool {
+	for i := range a.Sources {
+		if a.Sources[i] == s {
+			return true
+		}
+	}
+	return false
+}

@@ -14,7 +14,6 @@ import (
 	"github.com/antoniomralmeida/k2/db"
 	"github.com/antoniomralmeida/k2/ebnf"
 	"github.com/antoniomralmeida/k2/lib"
-	"github.com/antoniomralmeida/k2/web"
 	"github.com/eiannone/keyboard"
 	"github.com/madflojo/tasks"
 	"gopkg.in/mgo.v2/bson"
@@ -53,7 +52,7 @@ func (kb *KnowledgeBase) Scan() error {
 func (kb *KnowledgeBase) Run(wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	if web.IsMainThread() {
+	if lib.IsMainThread() {
 
 		// Start the Scheduler
 		scheduler := tasks.New()
@@ -447,7 +446,7 @@ func (kb *KnowledgeBase) NewObject(c *KBClass, name string) *KBObject {
 
 	o := KBObject{Name: name, Class: c.Id, Bkclass: c}
 	for _, x := range kb.FindAttributes(c) {
-		n := KBAttributeObject{Id: bson.NewObjectId(), Attribute: x.Id, KbAttribute: x}
+		n := KBAttributeObject{Id: bson.NewObjectId(), Attribute: x.Id, KbAttribute: x, KbObject: &o}
 		o.Attributes = append(o.Attributes, n)
 	}
 	lib.LogFatal(o.Persist())
@@ -612,6 +611,7 @@ func (kb *KnowledgeBase) Init(ebnffile string) {
 				return attrs[i].Id < attrs[j].Id
 			})
 			for k, x := range o.Attributes {
+				kb.Objects[j].Attributes[k].KbObject = &kb.Objects[j]
 				for l, y := range attrs {
 					if y.Id == x.Attribute {
 						kb.Objects[j].Attributes[k].KbAttribute = attrs[l]
@@ -670,4 +670,18 @@ func (kb *KnowledgeBase) Persist() error {
 func (kb *KnowledgeBase) FindOne() error {
 	collection := db.GetDb().C("KnowledgeBase")
 	return collection.Find(bson.D{}).One(kb)
+}
+
+func (kb *KnowledgeBase) GetDataInput() []*DataInput {
+	ret := []*DataInput{}
+	for i := range kb.Objects {
+		for j := range kb.Objects[i].Attributes {
+			a := &kb.Objects[i].Attributes[j]
+			if a.KbHistory == nil && a.KbAttribute.isSource(User) {
+				di := DataInput{Id: a.Id, Name: a.KbObject.Name + "." + a.KbAttribute.Name, Atype: a.KbAttribute.AType, Options: a.KbAttribute.Options}
+				ret = append(ret, &di)
+			}
+		}
+	}
+	return ret
 }
