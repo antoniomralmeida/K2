@@ -13,12 +13,13 @@ func (ao *KBAttributeObject) Value() any {
 			diff := time.Now().Sub(ao.KbHistory.When)
 			if diff.Milliseconds() > ao.KbAttribute.Deadline {
 				ao.KbHistory = nil
-				//TODO: Acionar regras em backward
-				//TODO: Create uma tarefa de simulação
-				//TODO: As tarefas de busca de valor devem ter timite de tempo
+				//TODO: Acionar regras em backward chaning
+				//TODO: Criar uma tarefa de simulação
+				//TODO: As tarefas de busca de valor devem ter limite de tempo
 				//TODO: Criar formulário web para receber valores de atributos de origem User (assincrono)
-				//TODO: Levar em consideração a certeze na obteção de um valor PLC e User 100%, criar regra de envelhecimento da certeza
-				//TODO: a certeza de um valor simulado deve analizer os quadrantes da curva normal do historico de valor
+				//TODO: Levar em consideração a certeza na obteção de um valor PLC e User 100%
+				//TODO: Criar regra de envelhecimento da certeza, com base na disperção e na validade do dado
+				//TODO: a certeza de um valor simulado deve analizar os quadrantes da curva normal do historico de valor
 				//TODO: a certeza por inferencia deve usar logica fuzzi
 
 				return nil

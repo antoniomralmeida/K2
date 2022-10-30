@@ -35,10 +35,10 @@ const (
 	Interpolation KBSimulation = "interpolation"
 )
 
-type TokenBin byte
+type LiteralBin byte
 
 const (
-	b_null TokenBin = iota
+	b_null LiteralBin = iota
 	b_open_par
 	b_close_par
 	b_equal_sym
@@ -84,7 +84,7 @@ const (
 	b_whenever
 )
 
-var TokenBinStr map[string]TokenBin
+var LiteralBinStr map[string]LiteralBin
 
 type KnowledgeBase struct {
 	Id         bson.ObjectId              `bson:"_id,omitempty"`
@@ -124,11 +124,11 @@ type KBClass struct {
 }
 
 type BIN struct {
-	tokentype ebnf.Tokentype
-	typebin   TokenBin
-	token     string
-	class     *KBClass
-	attribute *KBAttribute
+	tokentype  ebnf.Tokentype
+	literalbin LiteralBin
+	token      string
+	class      *KBClass
+	attribute  *KBAttribute
 
 	objects          []*KBObject
 	attributeObjects []*KBAttributeObject
@@ -160,6 +160,7 @@ type KBAttributeObject struct {
 	Attribute   bson.ObjectId `bson:"attribute_id"`
 	KbAttribute *KBAttribute  `bson:"-"`
 	KbHistory   *KBHistory    `bson:"-"`
+	//TODO: https://nabto.com/guide-iot-protocols-standards/, definir protocolo para IOT SET and SET
 }
 
 type KBObject struct {

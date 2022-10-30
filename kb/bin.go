@@ -16,13 +16,13 @@ func (b *BIN) GetTokentype() ebnf.Tokentype {
 
 func (b *BIN) setTokenBin() {
 	if b.GetTokentype() == ebnf.Literal {
-		b.typebin = TokenBinStr[b.token]
-		if b.typebin == b_null {
+		b.literalbin = LiteralBinStr[b.token]
+		if b.literalbin == b_null {
 			log.Fatal("Literal unknown!", b.GetToken())
 		}
 	}
 }
 
 func (b *BIN) String() string {
-	return "token: " + b.token + ", type:" + b.tokentype.String() + ", bin:" + b.typebin.String()
+	return "token: " + b.token + ", type:" + b.tokentype.String() + ", bin:" + b.literalbin.String()
 }

@@ -1,6 +1,7 @@
 package web
 
 import (
+	"html/template"
 	"log"
 	"os"
 	"sync"
@@ -10,14 +11,20 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 )
 
-type Divs struct {
-	User       string
-	Title      string
-	Workspacee string
+type Context struct {
+	User      string
+	Title     string
+	DataInput string
+	Workspace string
 }
+
+var ctxweb = Context{}
 
 func Run(wg *sync.WaitGroup) {
 	defer wg.Done()
+
+	Init()
+
 	app := fiber.New(fiber.Config{AppName: "K2 System v1.0.1",
 		DisableStartupMessage: true,
 		Prefork:               true})
@@ -38,16 +45,21 @@ func Run(wg *sync.WaitGroup) {
 	app.Static("/vendor", "./web/assets/vendor")
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		d := Divs{Title: "teste"}
+		lang := c.GetReqHeaders()["Accept-Language"]
+		ctxweb.Title = Translate("title", lang)
+		ctxweb.DataInput = Translate("datainput", lang)
 
-		return c.Render("./web/assets/gomodel.html", d)
+		model := template.Must(template.ParseFiles("./web/assets/gomodel.html"))
+		model.Execute(c, ctxweb)
+		c.Response().Header.Add("Content-Type", "text/html")
+		return c.SendStatus(fiber.StatusOK)
 	})
+
 	app.Post("/api-*", func(c *fiber.Ctx) error {
 		return c.SendString(c.Params("*"))
 	})
 	app.Listen(":3000")
 	wg.Done()
-
 }
 
 func IsMainThread() bool {

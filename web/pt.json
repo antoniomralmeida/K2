@@ -1,0 +1,9 @@
+{"messages": {
+    "title":       "K2 System KnowledgeBase",
+    "dataentry":   "Entrada de Dados",
+    "user": "Usuário",
+    "description": "The number of messages a person has",
+    "one": "{{.Name}} has {{.Count}} message.",
+    "other": "{{.Name}} has {{.Count}} messages."
+    }
+}

@@ -231,9 +231,11 @@ func (kb *KnowledgeBase) ParsingCommand(cmd string) ([]*ebnf.Token, []*BIN, erro
 func (kb *KnowledgeBase) linkerRule(r *KBRule, bin []*BIN) {
 	// Find references of objects in KB
 	log.Println("Linking Prodution Rule: ", r.Id)
+
+	dr := make(map[string]*KBClass)
 	consequent := -1
 	for j, x := range bin {
-		switch x.typebin {
+		switch x.literalbin {
 		case b_initially:
 			kb.mutex.Lock()
 			kb.stack = append(kb.stack, r)
@@ -260,8 +262,8 @@ func (kb *KnowledgeBase) linkerRule(r *KBRule, bin []*BIN) {
 			}
 		case ebnf.Attribute:
 			ref := -1
-			if bin[j+1].typebin == b_of {
-				ref = j + 3
+			if bin[j+1].literalbin == b_of {
+				ref = j + 2
 			} else {
 				for z := j - 1; z >= 0; z-- {
 					if bin[z].GetTokentype() == ebnf.Object || bin[z].GetTokentype() == ebnf.Class {
@@ -287,7 +289,27 @@ func (kb *KnowledgeBase) linkerRule(r *KBRule, bin []*BIN) {
 					c := bin[ref].class
 					if c == nil {
 						c = kb.FindClassByName(x.GetToken(), true)
-						bin[j].class = c
+						bin[ref].class = c
+					}
+					bin[j].class = c
+					bin[j].attribute = kb.FindAttribute(c, x.GetToken())
+					objs := []KBObject{}
+					lib.LogFatal(FindAllObjects(bson.M{"class_id": c.Id}, "_id", &objs))
+					for _, y := range objs {
+						obj := kb.IdxObjects[y.Name]
+						bin[j].objects = append(bin[j].objects, obj)
+						atro := kb.FindAttributeObject(obj, x.GetToken())
+						bin[j].attributeObjects = append(bin[j].attributeObjects, atro)
+					}
+					break
+				} else if bin[ref].GetTokentype() == ebnf.DynamicReference {
+					c := bin[ref].class
+					if c == nil {
+						c = dr[bin[ref].token]
+						bin[ref].class = c
+					}
+					if c == nil {
+						log.Fatal("Attribute class not found in KB! ", x.GetToken())
 					}
 					bin[j].attribute = kb.FindAttribute(c, x.GetToken())
 					objs := []KBObject{}
@@ -299,6 +321,8 @@ func (kb *KnowledgeBase) linkerRule(r *KBRule, bin []*BIN) {
 						bin[j].attributeObjects = append(bin[j].attributeObjects, atro)
 					}
 					break
+				} else {
+
 				}
 			} else {
 				log.Fatal("Attribute not found in KB! ", x.GetToken())
@@ -310,6 +334,7 @@ func (kb *KnowledgeBase) linkerRule(r *KBRule, bin []*BIN) {
 						if bin[z].GetTokentype() == ebnf.Object || bin[z].GetTokentype() == ebnf.Class {
 							bin[j].class = bin[z].class
 							bin[j].objects = bin[z].objects
+							dr[x.token] = bin[j].class
 							break
 						}
 					}
@@ -318,6 +343,7 @@ func (kb *KnowledgeBase) linkerRule(r *KBRule, bin []*BIN) {
 						if bin[z].GetTokentype() == ebnf.DynamicReference && bin[z].GetToken() == x.GetToken() {
 							bin[j].objects = bin[z].objects
 							bin[j].class = bin[z].class
+							dr[x.token] = bin[j].class
 							break
 						}
 					}
@@ -333,6 +359,7 @@ func (kb *KnowledgeBase) linkerRule(r *KBRule, bin []*BIN) {
 							if bin[z].attribute != nil {
 								for _, o := range bin[z].attribute.Options {
 									if x.GetToken() == o {
+										bin[j].token = "\"" + bin[j].token + "\""
 										ok = true
 										break
 									}
@@ -458,11 +485,13 @@ func (kb *KnowledgeBase) FindAttribute(c *KBClass, name string) *KBAttribute {
 
 func (kb *KnowledgeBase) FindAttributes(c *KBClass) []*KBAttribute {
 	var ret []*KBAttribute
-	if c.ParentClass != nil {
-		ret = append(ret, kb.FindAttributes(c.ParentClass)...)
-	} else {
-		for i := range c.Attributes {
-			ret = append(ret, &c.Attributes[i])
+	if c != nil {
+		if c.ParentClass != nil {
+			ret = append(ret, kb.FindAttributes(c.ParentClass)...)
+		} else {
+			for i := range c.Attributes {
+				ret = append(ret, &c.Attributes[i])
+			}
 		}
 	}
 	return ret
@@ -497,7 +526,7 @@ func (kb *KnowledgeBase) NewRule(rule string, priority byte, interval int) *KBRu
 func (kb *KnowledgeBase) Init(ebnffile string) {
 	log.Println("Init KB")
 
-	TokenBinStr = map[string]TokenBin{
+	LiteralBinStr = map[string]LiteralBin{
 		"":                b_null,
 		"(":               b_open_par,
 		")":               b_close_par,

@@ -29,7 +29,7 @@ func (r *KBRule) Run() {
 	expression := ""
 oulter:
 	for i := 0; i < len(r.bin); {
-		switch r.bin[i].typebin {
+		switch r.bin[i].literalbin {
 		case b_unconditionally:
 			conditionally = true
 		case b_then:
@@ -38,7 +38,7 @@ oulter:
 			}
 		case b_for:
 			i++
-			if r.bin[i].typebin != b_any {
+			if r.bin[i].literalbin != b_any {
 				log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
 			}
 			i++
@@ -63,18 +63,17 @@ oulter:
 			for {
 
 				i++
-				for ; r.bin[i].typebin == b_open_par; i++ {
+				for ; r.bin[i].literalbin == b_open_par; i++ {
 					expression = expression + r.bin[i].token
 				}
-				if r.bin[i].typebin != b_the {
+				if r.bin[i].literalbin != b_the {
 					log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
 				}
 				i++
 				if r.bin[i].tokentype != ebnf.Attribute {
 					log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
 				}
-				fmt.Println(r.bin[i].class, r.bin[i].token)
-				//FIXME: A classe está vazia e não deveria
+
 				if r.bin[i].class == nil {
 					log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
 				}
@@ -84,14 +83,14 @@ oulter:
 				objs[key] = r.bin[i].objects
 
 				i++
-				if r.bin[i].typebin == b_of {
+				if r.bin[i].literalbin == b_of {
 					i++
 					if r.bin[i].tokentype != ebnf.DynamicReference && r.bin[i].tokentype != ebnf.Object {
 						log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
 					}
 					i++
 				}
-				switch r.bin[i].typebin {
+				switch r.bin[i].literalbin {
 				case b_is:
 					expression = expression + "=="
 				case b_equal:
@@ -101,14 +100,14 @@ oulter:
 				case b_less:
 					expression = expression + "<"
 					i += 2
-					if r.bin[i].typebin == b_or {
+					if r.bin[i].literalbin == b_or {
 						expression = expression + "="
 						i += 2
 					}
 				case b_greater:
 					expression = expression + ">"
 					i += 2
-					if r.bin[i].typebin == b_or {
+					if r.bin[i].literalbin == b_or {
 						expression = expression + "="
 						i += 2
 					}
@@ -118,11 +117,11 @@ oulter:
 					expression = expression + r.bin[i].token
 				}
 				i++
-				for ; r.bin[i].typebin == b_close_par; i++ {
+				for ; r.bin[i].literalbin == b_close_par; i++ {
 					expression = expression + r.bin[i].token
 				}
 
-				switch r.bin[i].typebin {
+				switch r.bin[i].literalbin {
 				case b_then:
 					break inner
 				case b_and:
@@ -133,7 +132,6 @@ oulter:
 					expression = expression + " " + r.bin[i].token + " "
 				}
 			}
-			fmt.Println(expression)
 		default:
 			i++
 		}
@@ -158,19 +156,26 @@ oulter:
 		for {
 			exp := expression
 			obs := []*KBObject{}
-			for ix := range attrs {
-				key := "{{" + ix + "}}"
-				value := fmt.Sprint(values[ix][idx[ix].i])
+			ok := true
+			for key := range attrs {
+				if values[key][idx[key].i] == nil {
+					ok = false
+					break
+				}
+				value := fmt.Sprint(values[key][idx[key].i])
 				exp = strings.Replace(exp, key, value, -1)
-				obs = append(obs, objs[ix][idx[ix].i])
+				obs = append(obs, objs[key][idx[key].i])
 			}
-			exp = "bool(" + exp + ")"
-			expr, err := eval.ParseString(exp, "")
-			lib.LogFatal(err)
-			result, err := expr.EvalToInterface(nil)
-			lib.LogFatal(err)
-			if result == true {
-				r.RunConsequent(obs)
+			if ok {
+				exp = "bool(" + exp + ")"
+				fmt.Println(exp)
+				expr, err := eval.ParseString(exp, "")
+				lib.LogFatal(err)
+				result, err := expr.EvalToInterface(nil)
+				lib.LogFatal(err)
+				if result == true {
+					r.RunConsequent(obs)
+				}
 			}
 		i01:
 			for {
@@ -195,7 +200,7 @@ oulter:
 
 func (r *KBRule) RunConsequent(objs []*KBObject) {
 	for i := r.consequent; i < len(r.bin); {
-		switch r.bin[i].typebin {
+		switch r.bin[i].literalbin {
 		case b_inform:
 			i += 4
 			if r.bin[i].tokentype != ebnf.Text {
