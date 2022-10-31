@@ -1,7 +1,13 @@
 package lib
 
 import (
+	"bufio"
+	"compress/gzip"
+	"fmt"
+	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
@@ -40,4 +46,31 @@ func Log(msg string) {
 
 func IsMainThread() bool {
 	return !fiber.IsChild()
+}
+
+func CompressFile(name_of_file string) string {
+
+	f, _ := os.Open(name_of_file)
+
+	read := bufio.NewReader(f)
+
+	data, _ := ioutil.ReadAll(read)
+
+	name_of_zip := "./tmp/" + filepath.Base(name_of_file) + ".zip"
+	f, _ = os.Create(name_of_zip)
+	fmt.Println(name_of_zip)
+	w := gzip.NewWriter(f)
+
+	w.Write(data)
+	w.Close()
+	return name_of_zip
+}
+
+func CompressBuffer(input *bufio.ReadWriter) *gzip.Writer {
+	f, _ := os.CreateTemp("./tmp/", "tmpfile-")
+	w := gzip.NewWriter(f)
+	data, _ := ioutil.ReadAll(input)
+	w.Write(data)
+	w.Close()
+	return w
 }

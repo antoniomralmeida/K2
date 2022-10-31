@@ -8,7 +8,7 @@ import (
 
 var supported_langs = []string{"en", "pt"}
 
-func Init() {
+func InitLangs() {
 	var langPack1 = map[string]map[interface{}]interface{}{
 		"en": {
 			"title":     "K2 System KnowledgeBase",

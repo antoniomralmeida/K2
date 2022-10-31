@@ -20,7 +20,7 @@ func (e *TTS) SetText(txt string, language string) {
 }
 
 func (e *TTS) Speech() {
-	speech := htgotts.Speech{Folder: "audio", Language: e.language, Handler: &handlers.Native{}}
+	speech := htgotts.Speech{Folder: "tmp", Language: e.language, Handler: &handlers.Native{}}
 	f, err := speech.CreateSpeechFile(e.text, "tmpfile-"+uuid.New().String())
 	if err != nil {
 		fmt.Println("CreateSpeechFile fail %v", err)

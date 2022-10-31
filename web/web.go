@@ -7,6 +7,7 @@ import (
 
 	"github.com/antoniomralmeida/k2/kb"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 )
@@ -25,8 +26,8 @@ var kbbase *kb.KnowledgeBase
 func Run(wg *sync.WaitGroup, kb *kb.KnowledgeBase) {
 	defer wg.Done()
 	kbbase = kb
-
-	Init()
+	InitLangs()
+	InitTemplates()
 
 	app := fiber.New(fiber.Config{AppName: "K2 System v1.0.1",
 		DisableStartupMessage: true,
@@ -42,10 +43,10 @@ func Run(wg *sync.WaitGroup, kb *kb.KnowledgeBase) {
 		TimeFormat: "02/01/2006 15:04:05",
 		Format:     "${time} [${ip}:${port}] ${status} ${latency} ${method} ${path} \n"}))
 	app.Use(requestid.New())
-	app.Static("/css", "./web/assets/css")
-	app.Static("/img", "./web/assets/img")
-	app.Static("/js", "./web/assets/js")
-	app.Static("/vendor", "./web/assets/vendor")
+	// Provide a custom compression level
+	app.Use(compress.New(compress.Config{
+		Level: compress.LevelBestSpeed, // 1
+	}))
 
 	Routes(app)
 
