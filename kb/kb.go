@@ -578,6 +578,7 @@ func (kb *KnowledgeBase) Init(ebnffile string) {
 	kb.Persist()
 	kb.IdxClasses = make(map[bson.ObjectId]*KBClass)
 	kb.IdxObjects = make(map[string]*KBObject)
+	kb.IdxAttributeObjects = make(map[string]*KBAttributeObject)
 
 	ebnf := ebnf.EBNF{}
 	kb.ebnf = &ebnf
@@ -624,6 +625,8 @@ func (kb *KnowledgeBase) Init(ebnffile string) {
 				if kb.Objects[j].Attributes[k].KbAttribute == nil {
 					log.Fatal("Attribute not found ", x.Attribute)
 				}
+				kb.IdxAttributeObjects[o.Name+"."+kb.Objects[j].Attributes[k].KbAttribute.Name] = &kb.Objects[j].Attributes[k]
+
 				//Obter ultimo valor
 				h := KBHistory{}
 				err := h.FindLast(bson.D{{"attribute_id", x.Id}})
@@ -634,6 +637,7 @@ func (kb *KnowledgeBase) Init(ebnffile string) {
 				} else {
 					kb.Objects[j].Attributes[k].KbHistory = &h
 				}
+				kb.Objects[j].Attributes[k].Validity()
 			}
 		} else {
 			log.Fatal("Class of object " + o.Name + " not found!")
@@ -677,11 +681,15 @@ func (kb *KnowledgeBase) GetDataInput() []*DataInput {
 	for i := range kb.Objects {
 		for j := range kb.Objects[i].Attributes {
 			a := &kb.Objects[i].Attributes[j]
-			if a.KbHistory == nil && a.KbAttribute.isSource(User) {
+			if a.KbHistory == nil && a.KbAttribute.isSource(User) && !a.Validity() {
 				di := DataInput{Id: a.Id, Name: a.KbObject.Name + "." + a.KbAttribute.Name, Atype: a.KbAttribute.AType, Options: a.KbAttribute.Options}
 				ret = append(ret, &di)
 			}
 		}
 	}
 	return ret
+}
+
+func (kb *KnowledgeBase) FindAttributeObjectByName(name string) *KBAttributeObject {
+	return kb.IdxAttributeObjects[name]
 }

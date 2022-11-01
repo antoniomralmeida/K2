@@ -87,17 +87,18 @@ const (
 var LiteralBinStr map[string]LiteralBin
 
 type KnowledgeBase struct {
-	Id         bson.ObjectId              `bson:"_id,omitempty"`
-	Name       string                     `bson:"name"`
-	Classes    []KBClass                  `bson:"-"`
-	IdxClasses map[bson.ObjectId]*KBClass `bson:"-"`
-	Rules      []KBRule                   `bson:"-"`
-	Workspaces []KBWorkspace              `bson:"-"`
-	Objects    []KBObject                 `bson:"-"`
-	IdxObjects map[string]*KBObject       `bson:"-"`
-	ebnf       *ebnf.EBNF                 `bson:"-"`
-	stack      []*KBRule                  `bson:"-"`
-	mutex      sync.Mutex                 `bson:"-"`
+	Id                  bson.ObjectId                 `bson:"_id,omitempty"`
+	Name                string                        `bson:"name"`
+	Classes             []KBClass                     `bson:"-"`
+	IdxClasses          map[bson.ObjectId]*KBClass    `bson:"-"`
+	Rules               []KBRule                      `bson:"-"`
+	Workspaces          []KBWorkspace                 `bson:"-"`
+	Objects             []KBObject                    `bson:"-"`
+	IdxObjects          map[string]*KBObject          `bson:"-"`
+	IdxAttributeObjects map[string]*KBAttributeObject `bson:"-"`
+	ebnf                *ebnf.EBNF                    `bson:"-"`
+	stack               []*KBRule                     `bson:"-"`
+	mutex               sync.Mutex                    `bson:"-"`
 }
 
 type KBAttribute struct {

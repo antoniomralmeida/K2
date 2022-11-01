@@ -1,8 +1,9 @@
 package web
 
 import (
-	"fmt"
+	"strings"
 
+	"github.com/antoniomralmeida/k2/kb"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -12,10 +13,16 @@ func GetDataInput(c *fiber.Ctx) error {
 }
 
 func PostDataInput(c *fiber.Ctx) error {
-	fields := c.FormValue("fileds")
-	fmt.Println(fields)
-
-	//TODO: Prsing objects and parsist
-
+	fields := c.FormValue("fields")
+	fs := strings.Split(fields, "|")
+	for i := range fs {
+		if len(fs[i]) > 0 {
+			a := kbbase.FindAttributeObjectByName(fs[i])
+			if a != nil {
+				a.SetValue(kbbase, c.FormValue(fs[i]), kb.User, 100)
+			}
+		}
+	}
+	c.Append("Location", "/")
 	return Home(c)
 }
