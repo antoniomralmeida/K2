@@ -17,22 +17,23 @@ const (
 	KBList   KBAttributeType = "List"
 )
 
-type KBSource string
+type KBSource byte
 
 const (
-	User       KBSource = "User"
-	PLC        KBSource = "PLC"
-	History    KBSource = "History"
-	Simulation KBSource = "Simulation"
+	Empty LiteralBin = iota
+	User
+	IOT
+	Inference
+	Simulation
 )
 
-type KBSimulation string
+type KBSimulation byte
 
 const (
-	Default       KBSimulation = ""
-	MonteCarlo    KBSimulation = "Monte Carlo"
-	MovingAverage KBSimulation = "Moving Average"
-	Interpolation KBSimulation = "interpolation"
+	Default KBSimulation = iota
+	MonteCarlo
+	NormalDistribution
+	Interpolation
 )
 
 type LiteralBin byte
@@ -84,11 +85,56 @@ const (
 	b_whenever
 )
 
-var LiteralBinStr map[string]LiteralBin
+var LiteralBinStr = map[string]LiteralBin{
+	"":                b_null,
+	"(":               b_open_par,
+	")":               b_close_par,
+	"=":               b_equal_sym,
+	"activate":        b_activate,
+	"and":             b_and,
+	"any":             b_any,
+	"change":          b_change,
+	"conclude":        b_conclude,
+	"create":          b_create,
+	"deactivate":      b_deactivate,
+	"delete":          b_delete,
+	"different":       b_different,
+	"equal":           b_equal,
+	"focus":           b_focus,
+	"for":             b_for,
+	"greater":         b_greater,
+	"halt":            b_halt,
+	"hide":            b_hide,
+	"if":              b_if,
+	"inform":          b_inform,
+	"initially":       b_initially,
+	"insert":          b_insert,
+	"invoke":          b_invoke,
+	"is":              b_is,
+	"less":            b_less,
+	"move":            b_move,
+	"of":              b_of,
+	"operator":        b_operator,
+	"or":              b_or,
+	"remove":          b_remove,
+	"rotate":          b_rotate,
+	"set":             b_set,
+	"show":            b_show,
+	"start":           b_start,
+	"than":            b_than,
+	"that":            b_than,
+	"the":             b_the,
+	"then":            b_then,
+	"to":              b_to,
+	"transfer":        b_transfer,
+	"unconditionally": b_unconditionally,
+	"when":            b_when,
+	"whenever":        b_whenever}
 
 type KnowledgeBase struct {
 	Id                  bson.ObjectId                 `bson:"_id,omitempty"`
 	Name                string                        `bson:"name"`
+	IOTApi              string                        `bson:"iotapi"`
 	Classes             []KBClass                     `bson:"-"`
 	IdxClasses          map[bson.ObjectId]*KBClass    `bson:"-"`
 	Rules               []KBRule                      `bson:"-"`
@@ -125,12 +171,11 @@ type KBClass struct {
 }
 
 type BIN struct {
-	tokentype  ebnf.Tokentype
-	literalbin LiteralBin
-	token      string
-	class      *KBClass
-	attribute  *KBAttribute
-
+	tokentype        ebnf.Tokentype
+	literalbin       LiteralBin
+	token            string
+	class            *KBClass
+	attribute        *KBAttribute
 	objects          []*KBObject
 	attributeObjects []*KBAttributeObject
 }
@@ -138,13 +183,12 @@ type BIN struct {
 type KBRule struct {
 	Id                bson.ObjectId `bson:"_id,omitempty"`
 	Rule              string        `bson:"rule"`
-	Priority          byte          `bson:"priority"` //0..
+	Priority          byte          `bson:"priority"` //0..100
 	ExecutionInterval int           `bson:"interval"`
 	bin               []*BIN        `bson:"-"`
 	lastexecution     time.Time     `bson:"-"`
 	bkclasses         []*KBClass    `bson:"-"`
 	consequent        int           `bson:"-"`
-	relink            bool          `bson:"-"`
 }
 
 type KBHistory struct {

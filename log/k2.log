@@ -1,11 +1,12 @@
-2022/11/01 08:55:22 ConnectDB
-2022/11/01 08:55:22 Init KB
-2022/11/01 08:55:22 Parsing ebnf rule  Rule
-2022/11/01 08:55:22 Parsing ebnf rule  Expression
-2022/11/01 08:55:22 Parsing ebnf rule  Consequent
-2022/11/01 08:55:22 Parsing ebnf rule  Set
-2022/11/01 08:55:22 Parsing ebnf rule  Inform
-2022/11/01 08:55:22 Prepare Class  MotorElétrico
-2022/11/01 08:55:22 Parsing Prodution Rule:  for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230
-2022/11/01 08:55:22 , compilation successfully!
-2022/11/01 08:55:22 Linking Prodution Rule:  ObjectIdHex("6359311f8e7ba23760c760f1")
+2022/11/01 16:53:01 ConnectDB
+2022/11/01 16:53:01 Init KB
+2022/11/01 16:53:01 Parsing ebnf rule  Rule
+2022/11/01 16:53:01 Parsing ebnf rule  Expression
+2022/11/01 16:53:01 Parsing ebnf rule  Consequent
+2022/11/01 16:53:01 Parsing ebnf rule  Set
+2022/11/01 16:53:01 Parsing ebnf rule  Inform
+2022/11/01 16:53:01 Prepare Class  MotorElétrico
+2022/11/01 16:53:01 Parsing Prodution Rule:  for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230
+2022/11/01 16:53:01 , compilation successfully!
+2022/11/01 16:53:01 Linking Prodution Rule:  ObjectIdHex("6359311f8e7ba23760c760f1")
+2022/11/01 16:53:01 NormalDistribution...

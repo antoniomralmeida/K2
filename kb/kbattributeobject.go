@@ -7,7 +7,10 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/antoniomralmeida/k2/db"
 	"github.com/antoniomralmeida/k2/lib"
+	"github.com/montanaflynn/stats"
+	"gopkg.in/mgo.v2/bson"
 )
 
 func (ao *KBAttributeObject) Validity() bool {
@@ -41,25 +44,49 @@ func (ao *KBAttributeObject) Value() any {
 	//TODO: a certeza por inferencia deve usar logica fuzzi
 
 }
+func (attr *KBAttributeObject) getFullName() string {
+	return attr.KbObject.Name + "." + attr.KbAttribute.Name
+}
 
-func (attr *KBAttributeObject) SetValue(kb *KnowledgeBase, value any, source KBSource, certainty float32) *KBHistory {
-	if kb != nil {
+func (attr *KBAttributeObject) SetValue(value any, source KBSource, certainty float32) *KBHistory {
 
-		if reflect.TypeOf(value).String() == "string" {
-			str := fmt.Sprintf("%v", value)
-			switch attr.KbAttribute.AType {
-			case KBNumber:
-				value, _ = strconv.ParseFloat(str, 64)
-			case KBDate:
-				value, _ = time.Parse("02/01/2006", str)
-			}
+	if reflect.TypeOf(value).String() == "string" {
+		str := fmt.Sprintf("%v", value)
+		switch attr.KbAttribute.AType {
+		case KBNumber:
+			value, _ = strconv.ParseFloat(str, 64)
+		case KBDate:
+			value, _ = time.Parse("02/01/2006", str)
 		}
-		h := KBHistory{Attribute: attr.Id, When: time.Now(), Value: value, Source: source, Certainty: certainty}
-		lib.LogFatal(h.Persist())
-		attr.KbHistory = &h
-		return &h
-	} else {
-		log.Fatal("Invalid KnowledgeBase!")
-		return nil
 	}
+	h := KBHistory{Attribute: attr.Id, When: time.Now(), Value: value, Source: source, Certainty: certainty}
+	lib.LogFatal(h.Persist())
+	attr.KbHistory = &h
+	return &h
+}
+
+func (attr *KBAttributeObject) NormalDistribution() error {
+	log.Println("NormalDistribution...")
+	fmt.Println("NormalDistribution...")
+	if attr.KbAttribute.AType == KBNumber {
+		c := db.GetDb().C("KBHistory")
+		pipe := c.Pipe([]bson.M{bson.M{"$match": bson.M{"attribute_id": attr.Id}},
+			bson.M{"$group": bson.M{"_id": "$attribute_id",
+				"avg":     bson.M{"$avg": "$value"},
+				"stdDev":  bson.D{{"$stdDevPop", "$value"}},
+				"minWhen": bson.D{{"$min", "$when"}},
+				"count":   bson.D{{"$sum", 1}},
+			}}})
+		resp := []bson.M{}
+		iter := pipe.Iter()
+		err := iter.All(&resp)
+		lib.LogFatal(err)
+		avg, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["avg"]), 64)
+		stdDev, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["stdDev"]), 64)
+
+		r := stats.NormPpfRvs(avg, stdDev, 1)
+		fmt.Println(avg, stdDev, r)
+	}
+
+	return nil
 }

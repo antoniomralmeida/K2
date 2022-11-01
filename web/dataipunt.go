@@ -19,7 +19,7 @@ func PostDataInput(c *fiber.Ctx) error {
 		if len(fs[i]) > 0 {
 			a := kbbase.FindAttributeObjectByName(fs[i])
 			if a != nil {
-				a.SetValue(kbbase, c.FormValue(fs[i]), kb.User, 100)
+				a.SetValue(c.FormValue(fs[i]), kb.KBSource(kb.User), 100)
 			}
 		}
 	}
