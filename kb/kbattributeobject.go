@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/antoniomralmeida/k2/db"
+	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
 	"github.com/montanaflynn/stats"
 	"gopkg.in/mgo.v2/bson"
@@ -69,13 +69,12 @@ func (attr *KBAttributeObject) NormalDistribution() error {
 	log.Println("NormalDistribution...")
 	fmt.Println("NormalDistribution...")
 	if attr.KbAttribute.AType == KBNumber {
-		c := db.GetDb().C("KBHistory")
+		c := initializers.GetDb().C("KBHistory")
 		pipe := c.Pipe([]bson.M{bson.M{"$match": bson.M{"attribute_id": attr.Id}},
 			bson.M{"$group": bson.M{"_id": "$attribute_id",
-				"avg":     bson.M{"$avg": "$value"},
-				"stdDev":  bson.D{{"$stdDevPop", "$value"}},
-				"minWhen": bson.D{{"$min", "$when"}},
-				"count":   bson.D{{"$sum", 1}},
+				"avg":       bson.M{"$avg": "$value"},
+				"stdDev":    bson.D{{"$stdDevPop", "$value"}},
+				"certainty": bson.D{{"$avg", "$certainty"}},
 			}}})
 		resp := []bson.M{}
 		iter := pipe.Iter()
@@ -83,9 +82,10 @@ func (attr *KBAttributeObject) NormalDistribution() error {
 		lib.LogFatal(err)
 		avg, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["avg"]), 64)
 		stdDev, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["stdDev"]), 64)
-
-		r := stats.NormPpfRvs(avg, stdDev, 1)
-		fmt.Println(avg, stdDev, r)
+		certainty, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["certainty"]), 32)
+		r := stats.NormPpfRvs(avg, stdDev, 1)[0]
+		a := stats.NormPpf(r, avg, stdDev) * (certainty / 100.0)
+		attr.SetValue(r, KBSource(Simulation), float32(a*100))
 	}
 
 	return nil

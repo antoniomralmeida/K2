@@ -8,8 +8,8 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/antoniomralmeida/k2/db"
 	"github.com/antoniomralmeida/k2/ebnf"
+	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
 	"github.com/apaxa-go/eval"
 	"gopkg.in/mgo.v2/bson"
@@ -214,7 +214,7 @@ func (r *KBRule) RunConsequent(objs []*KBObject) {
 }
 
 func (r *KBRule) Persist() error {
-	collection := db.GetDb().C("KBRule")
+	collection := initializers.GetDb().C("KBRule")
 	if r.Id == "" {
 		r.Id = bson.NewObjectId()
 		return collection.Insert(r)
@@ -224,7 +224,7 @@ func (r *KBRule) Persist() error {
 }
 
 func FindAllRules(sort string, rs *[]KBRule) error {
-	collection := db.GetDb().C("KBRule")
+	collection := initializers.GetDb().C("KBRule")
 	return collection.Find(bson.M{}).Sort(sort).All(rs)
 }
 

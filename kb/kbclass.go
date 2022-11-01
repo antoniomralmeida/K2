@@ -3,13 +3,13 @@ package kb
 import (
 	"log"
 
-	"github.com/antoniomralmeida/k2/db"
+	"github.com/antoniomralmeida/k2/initializers"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
 func FindAllClasses(sort string, cs *[]KBClass) error {
-	collection := db.GetDb().C("KBClass")
+	collection := initializers.GetDb().C("KBClass")
 	idx, _ := collection.Indexes()
 	if len(idx) == 1 {
 		err := collection.EnsureIndex(mgo.Index{Key: []string{"name"}, Unique: true})
@@ -21,7 +21,7 @@ func FindAllClasses(sort string, cs *[]KBClass) error {
 }
 
 func (class *KBClass) Persist() error {
-	collection := db.GetDb().C("KBClass")
+	collection := initializers.GetDb().C("KBClass")
 	if class.Id == "" {
 		class.Id = bson.NewObjectId()
 		return collection.Insert(class)
@@ -31,7 +31,7 @@ func (class *KBClass) Persist() error {
 }
 
 func (class *KBClass) FindOne(p bson.D) error {
-	collection := db.GetDb().C("KBClass")
+	collection := initializers.GetDb().C("KBClass")
 	return collection.Find(p).One(class)
 }
 

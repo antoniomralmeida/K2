@@ -3,13 +3,13 @@ package kb
 import (
 	"log"
 
-	"github.com/antoniomralmeida/k2/db"
+	"github.com/antoniomralmeida/k2/initializers"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
 func (w *KBWorkspace) Persist() error {
-	collection := db.GetDb().C("KBWorkspace")
+	collection := initializers.GetDb().C("KBWorkspace")
 	if w.Id == "" {
 		w.Id = bson.NewObjectId()
 		return collection.Insert(w)
@@ -19,7 +19,7 @@ func (w *KBWorkspace) Persist() error {
 }
 
 func FindAllWorkspaces(sort string, ws *[]KBWorkspace) error {
-	collection := db.GetDb().C("KBWorkspace")
+	collection := initializers.GetDb().C("KBWorkspace")
 	idx, _ := collection.Indexes()
 	if len(idx) == 1 {
 		err := collection.EnsureIndex(mgo.Index{Key: []string{"workspace"}, Unique: true})

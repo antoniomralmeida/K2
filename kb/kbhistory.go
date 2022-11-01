@@ -1,12 +1,12 @@
 package kb
 
 import (
-	"github.com/antoniomralmeida/k2/db"
+	"github.com/antoniomralmeida/k2/initializers"
 	"gopkg.in/mgo.v2/bson"
 )
 
 func (class *KBHistory) Persist() error {
-	collection := db.GetDb().C("KBHistory")
+	collection := initializers.GetDb().C("KBHistory")
 	if class.Id == "" {
 		class.Id = bson.NewObjectId()
 		return collection.Insert(class)
@@ -16,6 +16,6 @@ func (class *KBHistory) Persist() error {
 }
 
 func (h *KBHistory) FindLast(filter bson.D) error {
-	collection := db.GetDb().C("KBHistory")
+	collection := initializers.GetDb().C("KBHistory")
 	return collection.Find(filter).Sort("-when").One(&h)
 }

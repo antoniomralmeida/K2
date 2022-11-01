@@ -3,13 +3,13 @@ package kb
 import (
 	"log"
 
-	"github.com/antoniomralmeida/k2/db"
+	"github.com/antoniomralmeida/k2/initializers"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
 func (o *KBObject) Persist() error {
-	collection := db.GetDb().C("KBObject")
+	collection := initializers.GetDb().C("KBObject")
 	if o.Id == "" {
 		o.Id = bson.NewObjectId()
 		return collection.Insert(o)
@@ -24,7 +24,7 @@ func (o *KBObject) Delete() error {
 }
 
 func FindAllObjects(filter bson.M, sort string, os *[]KBObject) error {
-	collection := db.GetDb().C("KBObject")
+	collection := initializers.GetDb().C("KBObject")
 	idx, _ := collection.Indexes()
 	if len(idx) == 1 {
 		err := collection.EnsureIndex(mgo.Index{Key: []string{"name"}, Unique: true})

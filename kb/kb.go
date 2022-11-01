@@ -4,8 +4,8 @@ import (
 	"log"
 	"sort"
 
-	"github.com/antoniomralmeida/k2/db"
 	"github.com/antoniomralmeida/k2/ebnf"
+	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -145,7 +145,7 @@ func (kb *KnowledgeBase) UpdateKB(name string, iotapi string) error {
 	return kb.Persist()
 }
 
-func (kb *KnowledgeBase) Init(ebnffile string) {
+func (kb *KnowledgeBase) Init() {
 	log.Println("Init KB")
 
 	kb.FindOne()
@@ -159,7 +159,7 @@ func (kb *KnowledgeBase) Init(ebnffile string) {
 
 	ebnf := ebnf.EBNF{}
 	kb.ebnf = &ebnf
-	kb.ebnf.ReadToken(ebnffile)
+	kb.ebnf.ReadToken("./ebnf/k2.ebnf")
 
 	FindAllClasses("_id", &kb.Classes)
 	for j := range kb.Classes {
@@ -239,7 +239,7 @@ func (kb *KnowledgeBase) PrintEBNF() {
 }
 
 func (kb *KnowledgeBase) Persist() error {
-	collection := db.GetDb().C("KnowledgeBase")
+	collection := initializers.GetDb().C("KnowledgeBase")
 	if kb.Id == "" {
 		kb.Id = bson.NewObjectId()
 		return collection.Insert(kb)
@@ -249,7 +249,7 @@ func (kb *KnowledgeBase) Persist() error {
 }
 
 func (kb *KnowledgeBase) FindOne() error {
-	collection := db.GetDb().C("KnowledgeBase")
+	collection := initializers.GetDb().C("KnowledgeBase")
 	return collection.Find(bson.D{}).One(kb)
 }
 

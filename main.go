@@ -1,25 +1,43 @@
 package main
 
 import (
+	"os"
+	"strconv"
 	"sync"
 
-	"github.com/antoniomralmeida/k2/db"
+	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/kb"
-	"github.com/antoniomralmeida/k2/lib"
+	"github.com/antoniomralmeida/k2/web"
+	"github.com/subosito/gotenv"
 )
 
-var wg sync.WaitGroup = sync.WaitGroup{}
+var kbase = kb.KnowledgeBase{}
+
+func init() {
+	gotenv.Load()
+	initializers.ConnectDB()
+	initializers.LogInit()
+	kbase.Init()
+}
 
 func main() {
-	lib.LogInit()
-	db.ConnectDB("mongodb://localhost:27017", "K2")
-	var kbbase = kb.KnowledgeBase{}
-	kbbase.Init("./ebnf/k2.ebnf")
-	a := kbbase.FindAttributeObjectByName("M01.Potência")
+	//TEST
+	//tests()
 
-	a.NormalDistribution()
-	wg.Add(10)
-	//go kbbase.Run(&wg)
-	//go web.Run(&wg, &kbbase)
+	StartSystem()
+}
+
+func StartSystem() {
+	// CORE
+	var wg sync.WaitGroup = sync.WaitGroup{}
+	tasks, _ := strconv.Atoi(os.Getenv("GOTASKS"))
+	wg.Add(tasks)
+	go kbase.Run(&wg)
+	go web.Run(&wg, &kbase)
 	wg.Wait()
+}
+
+func Tests() {
+	a := kbase.FindAttributeObjectByName("M01.Potência")
+	a.NormalDistribution()
 }

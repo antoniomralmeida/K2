@@ -50,6 +50,6 @@ func Run(wg *sync.WaitGroup, kb *kb.KnowledgeBase) {
 
 	Routes(app)
 
-	app.Listen(":3000")
+	app.Listen(os.Getenv("PORT"))
 	wg.Done()
 }
