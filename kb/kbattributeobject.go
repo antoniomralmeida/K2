@@ -10,13 +10,14 @@ import (
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
 	"github.com/montanaflynn/stats"
+	"gonum.org/v1/gonum/stat"
 	"gopkg.in/mgo.v2/bson"
 )
 
 func (ao *KBAttributeObject) Validity() bool {
 	if ao.KbHistory != nil {
 		if ao.KbAttribute.Deadline != 0 {
-			diff := time.Now().Sub(ao.KbHistory.When)
+			diff := time.Now().Sub(time.Unix(0, ao.KbHistory.When))
 			if diff.Milliseconds() > ao.KbAttribute.Deadline {
 				ao.KbHistory = nil
 				return false
@@ -29,6 +30,10 @@ func (ao *KBAttributeObject) Validity() bool {
 
 func (ao *KBAttributeObject) Value() any {
 	if ao.Validity() {
+		if KBDate == ao.KbAttribute.AType {
+			i, _ := strconv.ParseInt(fmt.Sprintf("%v", ao.KbHistory.Value), 10, 64)
+			return time.Unix(0, i)
+		}
 		return ao.KbHistory.Value
 	} else {
 		return nil
@@ -56,13 +61,49 @@ func (attr *KBAttributeObject) SetValue(value any, source KBSource, certainty fl
 		case KBNumber:
 			value, _ = strconv.ParseFloat(str, 64)
 		case KBDate:
-			value, _ = time.Parse("02/01/2006", str)
+			t, err := time.Parse("02/01/2006", str)
+			if err == nil {
+				value = t.UnixNano()
+			} else {
+				log.Println()
+				return nil
+			}
 		}
 	}
-	h := KBHistory{Attribute: attr.Id, When: time.Now(), Value: value, Source: source, Certainty: certainty}
+	h := KBHistory{Attribute: attr.Id, When: time.Now().UnixNano(), Value: value, Source: source, Trust: certainty}
 	lib.LogFatal(h.Persist())
 	attr.KbHistory = &h
 	return &h
+}
+
+func (attr *KBAttributeObject) LinearRegression() error {
+	log.Println("LinearRegression...")
+	if attr.KbAttribute.AType == KBNumber {
+		c := initializers.GetDb().C("KBHistory")
+		pipe := c.Pipe([]bson.M{bson.M{"$match": bson.M{"attribute_id": attr.Id}}, bson.M{"$project": bson.M{"_id": 0, "value": 1, "when": 1}}})
+		resp := []bson.M{}
+		iter := pipe.Iter()
+		err := iter.All(&resp)
+		lib.LogFatal(err)
+		if len(resp) <= 2 {
+			log.Println("cannot do linear regression with | C|<=2")
+			return nil
+		}
+		X := make([]float64, len(resp))
+		Y := make([]float64, len(resp))
+		for i := range resp {
+			y, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[i]["value"]), 64)
+			x, _ := strconv.ParseInt(fmt.Sprintf("%v", resp[i]["when"]), 10, 64)
+			X[i] = float64(x)
+			Y[i] = y
+		}
+		alpha, beta := stat.LinearRegression(X, Y, nil, false)
+		r2 := stat.RSquared(X, Y, nil, alpha, beta)
+		xn := float64(time.Now().UnixNano())
+		fx := alpha + xn*beta
+		attr.SetValue(fx, KBSource(Simulation), float32(r2*100.0))
+	}
+	return nil
 }
 
 func (attr *KBAttributeObject) NormalDistribution() error {
@@ -72,9 +113,9 @@ func (attr *KBAttributeObject) NormalDistribution() error {
 		c := initializers.GetDb().C("KBHistory")
 		pipe := c.Pipe([]bson.M{bson.M{"$match": bson.M{"attribute_id": attr.Id}},
 			bson.M{"$group": bson.M{"_id": "$attribute_id",
-				"avg":       bson.M{"$avg": "$value"},
-				"stdDev":    bson.D{{"$stdDevPop", "$value"}},
-				"certainty": bson.D{{"$avg", "$certainty"}},
+				"avg":    bson.M{"$avg": "$value"},
+				"stdDev": bson.D{{"$stdDevPop", "$value"}},
+				"trust":  bson.D{{"$avg", "$trust"}},
 			}}})
 		resp := []bson.M{}
 		iter := pipe.Iter()
@@ -82,9 +123,9 @@ func (attr *KBAttributeObject) NormalDistribution() error {
 		lib.LogFatal(err)
 		avg, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["avg"]), 64)
 		stdDev, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["stdDev"]), 64)
-		certainty, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["certainty"]), 32)
+		trust, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["trust"]), 32)
 		r := stats.NormPpfRvs(avg, stdDev, 1)[0]
-		a := stats.NormPpf(r, avg, stdDev) * (certainty / 100.0)
+		a := stats.NormPpf(r, avg, stdDev) * (trust / 100.0)
 		attr.SetValue(r, KBSource(Simulation), float32(a*100))
 	}
 

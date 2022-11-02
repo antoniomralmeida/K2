@@ -21,7 +21,7 @@ func (r *KBRule) Run() {
 		i   int
 		max int
 	}
-	log.Println("run...", r.Id)
+	log.Println("run...", r.Id.Hex())
 
 	attrs := make(map[string][]*KBAttributeObject)
 	objs := make(map[string][]*KBObject)

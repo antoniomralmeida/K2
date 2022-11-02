@@ -10,6 +10,95 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+func (kb *KnowledgeBased) Init() {
+	log.Println("Init KB")
+
+	kb.FindOne()
+	if kb.Name == "" {
+		kb.Name = "K2 System KB"
+	}
+	kb.Persist()
+	kb.IdxClasses = make(map[bson.ObjectId]*KBClass)
+	kb.IdxObjects = make(map[string]*KBObject)
+	kb.IdxAttributeObjects = make(map[string]*KBAttributeObject)
+
+	ebnf := ebnf.EBNF{}
+	kb.ebnf = &ebnf
+	kb.ebnf.ReadToken("./ebnf/k2.ebnf")
+
+	FindAllClasses("_id", &kb.Classes)
+	for j := range kb.Classes {
+		kb.IdxClasses[kb.Classes[j].Id] = &kb.Classes[j]
+	}
+
+	for j, c := range kb.Classes {
+		log.Println("Prepare Class ", c.Name)
+		if c.Parent != "" {
+			pc := kb.IdxClasses[c.Parent]
+			if pc != nil {
+				kb.Classes[j].ParentClass = pc
+			} else {
+				log.Fatal("Parent of Class " + c.Name + " not found!")
+			}
+		}
+	}
+
+	FindAllObjects(bson.M{}, "name", &kb.Objects)
+	for j, o := range kb.Objects {
+		kb.IdxObjects[o.Name] = &kb.Objects[j]
+		c := kb.IdxClasses[o.Class]
+		if c != nil {
+			kb.Objects[j].Bkclass = c
+			attrs := kb.FindAttributes(c)
+			sort.Slice(attrs, func(i, j int) bool {
+				return attrs[i].Id < attrs[j].Id
+			})
+			for k, x := range o.Attributes {
+				kb.Objects[j].Attributes[k].KbObject = &kb.Objects[j]
+				for l, y := range attrs {
+					if y.Id == x.Attribute {
+						kb.Objects[j].Attributes[k].KbAttribute = attrs[l]
+						break
+					}
+					if y.Id > x.Attribute {
+						break
+					}
+				}
+				if kb.Objects[j].Attributes[k].KbAttribute == nil {
+					log.Fatal("Attribute not found ", x.Attribute)
+				}
+				kb.IdxAttributeObjects[o.Name+"."+kb.Objects[j].Attributes[k].KbAttribute.Name] = &kb.Objects[j].Attributes[k]
+
+				//Obter ultimo valor
+				h := KBHistory{}
+				err := h.FindLast(bson.D{{"attribute_id", x.Id}})
+				if err != nil {
+					if err.Error() != "not found" {
+						log.Println(err)
+					}
+				} else {
+					kb.Objects[j].Attributes[k].KbHistory = &h
+				}
+				kb.Objects[j].Attributes[k].Validity()
+			}
+		} else {
+			log.Fatal("Class of object " + o.Name + " not found!")
+		}
+	}
+
+	FindAllWorkspaces("name", &kb.Workspaces)
+
+	FindAllRules("_id", &kb.Rules)
+
+	for i := range kb.Rules {
+		_, bin, err := kb.ParsingCommand(kb.Rules[i].Rule)
+		if err != nil {
+			log.Fatal(err)
+		}
+		kb.linkerRule(&kb.Rules[i], bin)
+	}
+}
+
 func (kb *KnowledgeBased) AddAttribute(c *KBClass, attrs ...*KBAttribute) {
 	for i := range attrs {
 		attrs[i].Id = bson.NewObjectId()
@@ -143,95 +232,6 @@ func (kb *KnowledgeBased) UpdateKB(name string, iotapi string) error {
 	kb.Name = name
 	kb.IOTApi = iotapi
 	return kb.Persist()
-}
-
-func (kb *KnowledgeBased) Init() {
-	log.Println("Init KB")
-
-	kb.FindOne()
-	if kb.Name == "" {
-		kb.Name = "K2 System KB"
-	}
-	kb.Persist()
-	kb.IdxClasses = make(map[bson.ObjectId]*KBClass)
-	kb.IdxObjects = make(map[string]*KBObject)
-	kb.IdxAttributeObjects = make(map[string]*KBAttributeObject)
-
-	ebnf := ebnf.EBNF{}
-	kb.ebnf = &ebnf
-	kb.ebnf.ReadToken("./ebnf/k2.ebnf")
-
-	FindAllClasses("_id", &kb.Classes)
-	for j := range kb.Classes {
-		kb.IdxClasses[kb.Classes[j].Id] = &kb.Classes[j]
-	}
-
-	for j, c := range kb.Classes {
-		log.Println("Prepare Class ", c.Name)
-		if c.Parent != "" {
-			pc := kb.IdxClasses[c.Parent]
-			if pc != nil {
-				kb.Classes[j].ParentClass = pc
-			} else {
-				log.Fatal("Parent of Class " + c.Name + " not found!")
-			}
-		}
-	}
-
-	FindAllObjects(bson.M{}, "name", &kb.Objects)
-	for j, o := range kb.Objects {
-		kb.IdxObjects[o.Name] = &kb.Objects[j]
-		c := kb.IdxClasses[o.Class]
-		if c != nil {
-			kb.Objects[j].Bkclass = c
-			attrs := kb.FindAttributes(c)
-			sort.Slice(attrs, func(i, j int) bool {
-				return attrs[i].Id < attrs[j].Id
-			})
-			for k, x := range o.Attributes {
-				kb.Objects[j].Attributes[k].KbObject = &kb.Objects[j]
-				for l, y := range attrs {
-					if y.Id == x.Attribute {
-						kb.Objects[j].Attributes[k].KbAttribute = attrs[l]
-						break
-					}
-					if y.Id > x.Attribute {
-						break
-					}
-				}
-				if kb.Objects[j].Attributes[k].KbAttribute == nil {
-					log.Fatal("Attribute not found ", x.Attribute)
-				}
-				kb.IdxAttributeObjects[o.Name+"."+kb.Objects[j].Attributes[k].KbAttribute.Name] = &kb.Objects[j].Attributes[k]
-
-				//Obter ultimo valor
-				h := KBHistory{}
-				err := h.FindLast(bson.D{{"attribute_id", x.Id}})
-				if err != nil {
-					if err.Error() != "not found" {
-						log.Println(err)
-					}
-				} else {
-					kb.Objects[j].Attributes[k].KbHistory = &h
-				}
-				kb.Objects[j].Attributes[k].Validity()
-			}
-		} else {
-			log.Fatal("Class of object " + o.Name + " not found!")
-		}
-	}
-
-	FindAllWorkspaces("name", &kb.Workspaces)
-
-	FindAllRules("_id", &kb.Rules)
-
-	for i := range kb.Rules {
-		_, bin, err := kb.ParsingCommand(kb.Rules[i].Rule)
-		if err != nil {
-			log.Fatal(err)
-		}
-		kb.linkerRule(&kb.Rules[i], bin)
-	}
 }
 
 func (kb *KnowledgeBased) PrintEBNF() {

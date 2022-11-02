@@ -33,7 +33,7 @@ const (
 	Default KBSimulation = iota
 	MonteCarlo
 	NormalDistribution
-	Interpolation
+	LinearRegression
 )
 
 type LiteralBin byte
@@ -194,9 +194,9 @@ type KBRule struct {
 type KBHistory struct {
 	Id        bson.ObjectId `bson:"_id,omitempty"`
 	Attribute bson.ObjectId `bson:"attribute_id"`
-	When      time.Time     `bson:"when"`
+	When      int64         `bson:"when"`
 	Value     any           `bson:"value"`
-	Certainty float32       `bson:"certainty,omitempty"`
+	Trust     float32       `bson:"trust,omitempty"`
 	Source    KBSource      `bson:"source"`
 }
 

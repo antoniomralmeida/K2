@@ -11,7 +11,10 @@ require (
 	github.com/itmisx/i18n v0.0.2
 	github.com/leemcloughlin/logfile v0.0.0-20201123203928-cff1c8a30a10
 	github.com/madflojo/tasks v1.0.4
+	github.com/montanaflynn/stats v0.6.6
+	github.com/subosito/gotenv v1.4.1
 	github.com/tdewolff/minify v2.3.6+incompatible
+	gonum.org/v1/gonum v0.12.0
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 )
 
@@ -24,10 +27,8 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
-	github.com/montanaflynn/stats v0.6.6 // indirect
 	github.com/rivo/uniseg v0.4.2 // indirect
 	github.com/rs/xid v1.4.0 // indirect
-	github.com/subosito/gotenv v1.4.1 // indirect
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/tdewolff/test v1.0.7 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

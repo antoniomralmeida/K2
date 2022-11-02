@@ -21,16 +21,16 @@ type Context struct {
 }
 
 var ctxweb = Context{}
-var kbbase *kb.KnowledgeBase
+var kbbase *kb.KnowledgeBased
 
-func Run(wg *sync.WaitGroup, kb *kb.KnowledgeBase) {
+func Run(wg *sync.WaitGroup, kb *kb.KnowledgeBased) {
 	defer wg.Done()
 	kbbase = kb
 	InitLangs()
 	InitTemplates()
 
 	app := fiber.New(fiber.Config{AppName: "K2 System v1.0.1",
-		DisableStartupMessage: true,
+		DisableStartupMessage: false,
 		Prefork:               true})
 
 	file, err := os.OpenFile("./log/web.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
