@@ -10,7 +10,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func (kb *KnowledgeBase) AddAttribute(c *KBClass, attrs ...*KBAttribute) {
+func (kb *KnowledgeBased) AddAttribute(c *KBClass, attrs ...*KBAttribute) {
 	for i := range attrs {
 		attrs[i].Id = bson.NewObjectId()
 		c.Attributes = append(c.Attributes, *attrs[i])
@@ -18,7 +18,7 @@ func (kb *KnowledgeBase) AddAttribute(c *KBClass, attrs ...*KBAttribute) {
 	lib.LogFatal(c.Persist())
 }
 
-func (kb *KnowledgeBase) NewClass(c *KBClass) {
+func (kb *KnowledgeBased) NewClass(c *KBClass) {
 	for i := range c.Attributes {
 		c.Attributes[i].Id = bson.NewObjectId()
 	}
@@ -30,7 +30,7 @@ func (kb *KnowledgeBase) NewClass(c *KBClass) {
 	kb.IdxClasses[c.Id] = c
 }
 
-func (kb *KnowledgeBase) UpdateClass(c *KBClass) {
+func (kb *KnowledgeBased) UpdateClass(c *KBClass) {
 	for i := range c.Attributes {
 		if c.Attributes[i].Id == "" {
 			c.Attributes[i].Id = bson.NewObjectId()
@@ -39,18 +39,18 @@ func (kb *KnowledgeBase) UpdateClass(c *KBClass) {
 	lib.LogFatal(c.Persist())
 }
 
-func (kb *KnowledgeBase) NewWorkspace(name string, icone string) *KBWorkspace {
+func (kb *KnowledgeBased) NewWorkspace(name string, icone string) *KBWorkspace {
 	w := KBWorkspace{Workspace: name, BackgroundImage: icone}
 	log.Fatal(w.Persist())
 	kb.Workspaces = append(kb.Workspaces, w)
 	return &w
 }
 
-func (kb *KnowledgeBase) UpdateWorkspace(w *KBWorkspace) {
+func (kb *KnowledgeBased) UpdateWorkspace(w *KBWorkspace) {
 	lib.LogFatal(w.Persist())
 }
 
-func (kb *KnowledgeBase) FindWorkspaceByName(name string) *KBWorkspace {
+func (kb *KnowledgeBased) FindWorkspaceByName(name string) *KBWorkspace {
 	for i := range kb.Workspaces {
 		if kb.Workspaces[i].Workspace == name {
 			return &kb.Workspaces[i]
@@ -60,7 +60,7 @@ func (kb *KnowledgeBase) FindWorkspaceByName(name string) *KBWorkspace {
 	return nil
 }
 
-func (kb *KnowledgeBase) NewObject(c *KBClass, name string) *KBObject {
+func (kb *KnowledgeBased) NewObject(c *KBClass, name string) *KBObject {
 
 	o := KBObject{Name: name, Class: c.Id, Bkclass: c}
 	for _, x := range kb.FindAttributes(c) {
@@ -71,17 +71,17 @@ func (kb *KnowledgeBase) NewObject(c *KBClass, name string) *KBObject {
 	return &o
 }
 
-func (kb *KnowledgeBase) LinkObjects(ws *KBWorkspace, obj *KBObject, left int, top int) {
+func (kb *KnowledgeBased) LinkObjects(ws *KBWorkspace, obj *KBObject, left int, top int) {
 	ows := KBObjectWS{Object: obj.Id, Left: left, Top: top, KBObject: obj}
 	ws.Objects = append(ws.Objects, ows)
 	kb.UpdateWorkspace(ws)
 }
 
-func (kb *KnowledgeBase) FindObjectByName(name string) *KBObject {
+func (kb *KnowledgeBased) FindObjectByName(name string) *KBObject {
 	return kb.IdxObjects[name]
 }
 
-func (kb *KnowledgeBase) FindClassByName(nm string, mandatory bool) *KBClass {
+func (kb *KnowledgeBased) FindClassByName(nm string, mandatory bool) *KBClass {
 	var ret KBClass
 	err := ret.FindOne(bson.D{{"name", nm}})
 	if err != nil && mandatory {
@@ -90,7 +90,7 @@ func (kb *KnowledgeBase) FindClassByName(nm string, mandatory bool) *KBClass {
 	return kb.IdxClasses[ret.Id]
 }
 
-func (kb *KnowledgeBase) FindAttribute(c *KBClass, name string) *KBAttribute {
+func (kb *KnowledgeBased) FindAttribute(c *KBClass, name string) *KBAttribute {
 	attrs := kb.FindAttributes(c)
 	for i, x := range attrs {
 		if x.Name == name {
@@ -100,7 +100,7 @@ func (kb *KnowledgeBase) FindAttribute(c *KBClass, name string) *KBAttribute {
 	return nil
 }
 
-func (kb *KnowledgeBase) FindAttributes(c *KBClass) []*KBAttribute {
+func (kb *KnowledgeBased) FindAttributes(c *KBClass) []*KBAttribute {
 	var ret []*KBAttribute
 	if c != nil {
 		if c.ParentClass != nil {
@@ -114,7 +114,7 @@ func (kb *KnowledgeBase) FindAttributes(c *KBClass) []*KBAttribute {
 	return ret
 }
 
-func (kb *KnowledgeBase) FindAttributeObject(obj *KBObject, attr string) *KBAttributeObject {
+func (kb *KnowledgeBased) FindAttributeObject(obj *KBObject, attr string) *KBAttributeObject {
 	for i := range obj.Attributes {
 		if obj.Attributes[i].KbAttribute.Name == attr {
 			return &obj.Attributes[i]
@@ -123,14 +123,14 @@ func (kb *KnowledgeBase) FindAttributeObject(obj *KBObject, attr string) *KBAttr
 	return nil
 }
 
-func (kb *KnowledgeBase) NewAttributeObject(obj *KBObject, attr *KBAttribute) *KBAttributeObject {
+func (kb *KnowledgeBased) NewAttributeObject(obj *KBObject, attr *KBAttribute) *KBAttributeObject {
 	a := KBAttributeObject{Attribute: attr.Id, Id: bson.NewObjectId()}
 	obj.Attributes = append(obj.Attributes, a)
 	log.Fatal(obj.Persist())
 	return &a
 }
 
-func (kb *KnowledgeBase) NewRule(rule string, priority byte, interval int) *KBRule {
+func (kb *KnowledgeBased) NewRule(rule string, priority byte, interval int) *KBRule {
 	_, bin, err := kb.ParsingCommand(rule)
 	lib.LogFatal(err)
 	r := KBRule{Rule: rule, Priority: priority, ExecutionInterval: interval}
@@ -139,13 +139,13 @@ func (kb *KnowledgeBase) NewRule(rule string, priority byte, interval int) *KBRu
 	kb.Rules = append(kb.Rules, r)
 	return &r
 }
-func (kb *KnowledgeBase) UpdateKB(name string, iotapi string) error {
+func (kb *KnowledgeBased) UpdateKB(name string, iotapi string) error {
 	kb.Name = name
 	kb.IOTApi = iotapi
 	return kb.Persist()
 }
 
-func (kb *KnowledgeBase) Init() {
+func (kb *KnowledgeBased) Init() {
 	log.Println("Init KB")
 
 	kb.FindOne()
@@ -234,12 +234,12 @@ func (kb *KnowledgeBase) Init() {
 	}
 }
 
-func (kb *KnowledgeBase) PrintEBNF() {
+func (kb *KnowledgeBased) PrintEBNF() {
 	kb.ebnf.PrintEBNF()
 }
 
-func (kb *KnowledgeBase) Persist() error {
-	collection := initializers.GetDb().C("KnowledgeBase")
+func (kb *KnowledgeBased) Persist() error {
+	collection := initializers.GetDb().C("KnowledgeBased")
 	if kb.Id == "" {
 		kb.Id = bson.NewObjectId()
 		return collection.Insert(kb)
@@ -248,12 +248,12 @@ func (kb *KnowledgeBase) Persist() error {
 	}
 }
 
-func (kb *KnowledgeBase) FindOne() error {
-	collection := initializers.GetDb().C("KnowledgeBase")
+func (kb *KnowledgeBased) FindOne() error {
+	collection := initializers.GetDb().C("KnowledgeBased")
 	return collection.Find(bson.D{}).One(kb)
 }
 
-func (kb *KnowledgeBase) GetDataInput() []*DataInput {
+func (kb *KnowledgeBased) GetDataInput() []*DataInput {
 	ret := []*DataInput{}
 	for i := range kb.Objects {
 		for j := range kb.Objects[i].Attributes {
@@ -267,6 +267,6 @@ func (kb *KnowledgeBase) GetDataInput() []*DataInput {
 	return ret
 }
 
-func (kb *KnowledgeBase) FindAttributeObjectByName(name string) *KBAttributeObject {
+func (kb *KnowledgeBased) FindAttributeObjectByName(name string) *KBAttributeObject {
 	return kb.IdxAttributeObjects[name]
 }

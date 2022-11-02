@@ -131,7 +131,7 @@ var LiteralBinStr = map[string]LiteralBin{
 	"when":            b_when,
 	"whenever":        b_whenever}
 
-type KnowledgeBase struct {
+type KnowledgeBased struct {
 	Id                  bson.ObjectId                 `bson:"_id,omitempty"`
 	Name                string                        `bson:"name"`
 	IOTApi              string                        `bson:"iotapi"`

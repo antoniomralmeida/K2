@@ -14,7 +14,7 @@ import (
 	"github.com/madflojo/tasks"
 )
 
-func (kb *KnowledgeBase) Run(wg *sync.WaitGroup) {
+func (kb *KnowledgeBased) Run(wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	if lib.IsMainThread() {
@@ -78,7 +78,7 @@ func (kb *KnowledgeBase) Run(wg *sync.WaitGroup) {
 
 }
 
-func (kb *KnowledgeBase) Scan() error {
+func (kb *KnowledgeBased) Scan() error {
 	log.Println("Scaning...")
 	if len(kb.stack) > 0 {
 		kb.mutex.Lock()
@@ -108,7 +108,7 @@ func (kb *KnowledgeBase) Scan() error {
 	return nil
 }
 
-func (kb *KnowledgeBase) IOTParsing() error {
+func (kb *KnowledgeBased) IOTParsing() error {
 	log.Println("IOTParsing...")
 	for i := range kb.Objects {
 		for j := range kb.Objects[i].Attributes {
@@ -135,7 +135,7 @@ func (kb *KnowledgeBase) IOTParsing() error {
 	return nil
 }
 
-func (kb *KnowledgeBase) ReLink() error {
+func (kb *KnowledgeBased) ReLink() error {
 	log.Println("ReLink...")
 	for i := range kb.Objects {
 		if !kb.Objects[i].parsed {
