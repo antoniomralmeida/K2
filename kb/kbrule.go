@@ -245,7 +245,7 @@ func (r *KBRule) GetBins() []*BIN {
 	return r.bin
 }
 
-func (kb *KnowledgeBase) ParsingCommand(cmd string) ([]*ebnf.Token, []*BIN, error) {
+func (kb *KnowledgeBased) ParsingCommand(cmd string) ([]*ebnf.Token, []*BIN, error) {
 	cmd = strings.Replace(cmd, "\r\n", "", -1)
 	cmd = strings.Replace(cmd, "\\n", "", -1)
 	cmd = strings.Replace(cmd, "\t", " ", -1)
@@ -351,7 +351,7 @@ func (kb *KnowledgeBase) ParsingCommand(cmd string) ([]*ebnf.Token, []*BIN, erro
 	return opts, nil, errors.New(str)
 }
 
-func (kb *KnowledgeBase) linkerRule(r *KBRule, bin []*BIN) {
+func (kb *KnowledgeBased) linkerRule(r *KBRule, bin []*BIN) {
 	// Find references of objects in KB
 	log.Println("Linking Prodution Rule: ", r.Id)
 
