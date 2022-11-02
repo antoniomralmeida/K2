@@ -17,15 +17,23 @@ const (
 	KBList   KBAttributeType = "List"
 )
 
-type KBSource byte
+type KBSource int8
 
 const (
-	Empty LiteralBin = iota
+	Empty KBSource = iota
 	User
 	IOT
 	Inference
 	Simulation
 )
+
+var KBSourceStr = map[string]KBSource{
+	"":           Empty,
+	"User":       User,
+	"IOT":        IOT,
+	"Inference":  Inference,
+	"Simulation": Simulation,
+}
 
 type KBSimulation byte
 
@@ -152,7 +160,8 @@ type KBAttribute struct {
 	Name             string          `bson:"name"`
 	AType            KBAttributeType `bson:"atype"`
 	Options          []string        `bson:"options,omitempty"`
-	Sources          []KBSource      `bson:"sources"`
+	SourcesID        []KBSource      `bson:"sources"`
+	Sources          []string        `bson:"-" json:"sources"`
 	KeepHistory      int64           `bson:"keephistory"`
 	ValidityInterval int64           `bson:"validityinterval"`
 	Deadline         int64           `bson:"deadline"`
@@ -165,7 +174,8 @@ type KBClass struct {
 	Id          bson.ObjectId `bson:"_id,omitempty"`
 	Name        string        `bson:"name"`
 	Icon        string        `bson:"icon"`
-	Parent      bson.ObjectId `bson:"parent_id,omitempty"`
+	ParentID    bson.ObjectId `bson:"parent_id,omitempty"`
+	Parent      string        `bson:"-" json:"parent"`
 	Attributes  []KBAttribute `bson:"attributes"`
 	ParentClass *KBClass      `bson:"-"`
 }

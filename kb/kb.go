@@ -1,6 +1,7 @@
 package kb
 
 import (
+	"encoding/json"
 	"log"
 	"sort"
 
@@ -33,8 +34,8 @@ func (kb *KnowledgeBased) Init() {
 
 	for j, c := range kb.Classes {
 		log.Println("Prepare Class ", c.Name)
-		if c.Parent != "" {
-			pc := kb.IdxClasses[c.Parent]
+		if c.ParentID != "" {
+			pc := kb.IdxClasses[c.ParentID]
 			if pc != nil {
 				kb.Classes[j].ParentClass = pc
 			} else {
@@ -107,16 +108,35 @@ func (kb *KnowledgeBased) AddAttribute(c *KBClass, attrs ...*KBAttribute) {
 	lib.LogFatal(c.Persist())
 }
 
-func (kb *KnowledgeBased) NewClass(c *KBClass) {
-	for i := range c.Attributes {
-		c.Attributes[i].Id = bson.NewObjectId()
+func (kb *KnowledgeBased) NewClass(newclass_json string) *KBClass {
+	class := KBClass{}
+	err := json.Unmarshal([]byte(newclass_json), &class)
+	if err != nil {
+		log.Println(err)
+		return nil
 	}
-	err := c.Persist()
+	if class.Parent != "" {
+		p := kb.FindClassByName(class.Parent, true)
+		if p == nil {
+			log.Println("Class not found ", class.Parent)
+			return nil
+		}
+		class.ParentID = p.Id
+		class.ParentClass = p
+	}
+	for i := range class.Attributes {
+		class.Attributes[i].Id = bson.NewObjectId()
+		for _, x := range class.Attributes[i].Sources {
+			class.Attributes[i].SourcesID = append(class.Attributes[i].SourcesID, KBSourceStr[x])
+		}
+	}
+	err = class.Persist()
 	if err != nil {
 		log.Fatal(err)
 	}
-	kb.Classes = append(kb.Classes, *c)
-	kb.IdxClasses[c.Id] = c
+	kb.Classes = append(kb.Classes, class)
+	kb.IdxClasses[class.Id] = &class
+	return &class
 }
 
 func (kb *KnowledgeBased) UpdateClass(c *KBClass) {
@@ -149,10 +169,14 @@ func (kb *KnowledgeBased) FindWorkspaceByName(name string) *KBWorkspace {
 	return nil
 }
 
-func (kb *KnowledgeBased) NewObject(c *KBClass, name string) *KBObject {
-
-	o := KBObject{Name: name, Class: c.Id, Bkclass: c}
-	for _, x := range kb.FindAttributes(c) {
+func (kb *KnowledgeBased) NewObject(class string, name string) *KBObject {
+	p := kb.FindClassByName(class, true)
+	if p == nil {
+		log.Println("Class not found ", class)
+		return nil
+	}
+	o := KBObject{Name: name, Class: p.Id, Bkclass: p}
+	for _, x := range kb.FindAttributes(p) {
 		n := KBAttributeObject{Id: bson.NewObjectId(), Attribute: x.Id, KbAttribute: x, KbObject: &o}
 		o.Attributes = append(o.Attributes, n)
 	}
@@ -194,10 +218,9 @@ func (kb *KnowledgeBased) FindAttributes(c *KBClass) []*KBAttribute {
 	if c != nil {
 		if c.ParentClass != nil {
 			ret = append(ret, kb.FindAttributes(c.ParentClass)...)
-		} else {
-			for i := range c.Attributes {
-				ret = append(ret, &c.Attributes[i])
-			}
+		}
+		for i := range c.Attributes {
+			ret = append(ret, &c.Attributes[i])
 		}
 	}
 	return ret

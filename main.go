@@ -23,7 +23,7 @@ func init() {
 func main() {
 	//TEST
 	//tests.Test2(&kbase)
-	tests.Test1(&kbase)
+	tests.Test5(&kbase)
 
 	//StartSystem()
 }

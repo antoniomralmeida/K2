@@ -1,9 +1,11 @@
 package kb
 
 import (
+	"encoding/json"
 	"log"
 
 	"github.com/antoniomralmeida/k2/initializers"
+	"github.com/antoniomralmeida/k2/lib"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -16,6 +18,12 @@ func (o *KBObject) Persist() error {
 	} else {
 		return collection.UpdateId(o.Id, o)
 	}
+}
+
+func (o *KBObject) String() string {
+	j, err := json.Marshal(o)
+	lib.LogFatal(err)
+	return string(j)
 }
 
 func (o *KBObject) Delete() error {
