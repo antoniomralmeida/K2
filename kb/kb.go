@@ -56,6 +56,7 @@ func (kb *KnowledgeBased) Init() {
 			})
 			for k, x := range o.Attributes {
 				kb.Objects[j].Attributes[k].KbObject = &kb.Objects[j]
+				kb.Objects[j].Attributes[k].Kb = kb
 				for l, y := range attrs {
 					if y.Id == x.Attribute {
 						kb.Objects[j].Attributes[k].KbAttribute = attrs[l]
@@ -129,6 +130,7 @@ func (kb *KnowledgeBased) NewClass(newclass_json string) *KBClass {
 		for _, x := range class.Attributes[i].Sources {
 			class.Attributes[i].SourcesID = append(class.Attributes[i].SourcesID, KBSourceStr[x])
 		}
+		class.Attributes[i].SimulationID = KBSimulationStr[class.Attributes[i].Simulation]
 	}
 	err = class.Persist()
 	if err != nil {
@@ -177,7 +179,7 @@ func (kb *KnowledgeBased) NewObject(class string, name string) *KBObject {
 	}
 	o := KBObject{Name: name, Class: p.Id, Bkclass: p}
 	for _, x := range kb.FindAttributes(p) {
-		n := KBAttributeObject{Id: bson.NewObjectId(), Attribute: x.Id, KbAttribute: x, KbObject: &o}
+		n := KBAttributeObject{Id: bson.NewObjectId(), Attribute: x.Id, KbAttribute: x, KbObject: &o, Kb: kb}
 		o.Attributes = append(o.Attributes, n)
 		kb.IdxAttributeObjects[n.getFullName()] = &n
 	}

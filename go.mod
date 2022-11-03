@@ -27,6 +27,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
+	github.com/rafaeljesus/parallel-fn v0.0.0-20180101203446-ef08331b38ac // indirect
 	github.com/rivo/uniseg v0.4.2 // indirect
 	github.com/rs/xid v1.4.0 // indirect
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect

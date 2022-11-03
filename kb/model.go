@@ -35,7 +35,7 @@ var KBSourceStr = map[string]KBSource{
 	"Simulation": Simulation,
 }
 
-type KBSimulation byte
+type KBSimulation int8
 
 const (
 	Default KBSimulation = iota
@@ -43,6 +43,13 @@ const (
 	NormalDistribution
 	LinearRegression
 )
+
+var KBSimulationStr = map[string]KBSimulation{
+	"":                   Default,
+	"MonteCarlo":         MonteCarlo,
+	"NormalDistribution": NormalDistribution,
+	"LinearRegression":   LinearRegression,
+}
 
 type LiteralBin byte
 
@@ -165,7 +172,8 @@ type KBAttribute struct {
 	KeepHistory      int64           `bson:"keephistory"`
 	ValidityInterval int64           `bson:"validityinterval"`
 	Deadline         int64           `bson:"deadline"`
-	Simulation       KBSimulation    `bson:"simulation,omitempty"`
+	SimulationID     KBSimulation    `bson:"simulation,omitempty" json:"-"`
+	Simulation       string          `bson:"-" json:"simulation"`
 	antecedentRules  []*KBRule       `bson:"-"`
 	consequentRules  []*KBRule       `bson:"-"`
 }
@@ -211,12 +219,12 @@ type KBHistory struct {
 }
 
 type KBAttributeObject struct {
-	Id          bson.ObjectId `bson:"id"`
-	Attribute   bson.ObjectId `bson:"attribute_id"  json:"AttributeId"`
-	KbObject    *KBObject     `bson:"-" json:"-"`
-	KbHistory   *KBHistory    `bson:"-" json:"History"`
-	KbAttribute *KBAttribute  `bson:"-"  json:"Attrinute"`
-	//TODO: https://nabto.com/guide-iot-protocols-standards/, definir protocolo para IOT SET and SET
+	Id          bson.ObjectId   `bson:"id"`
+	Attribute   bson.ObjectId   `bson:"attribute_id"  json:"AttributeId"`
+	KbObject    *KBObject       `bson:"-" json:"-"`
+	KbHistory   *KBHistory      `bson:"-" json:"History"`
+	KbAttribute *KBAttribute    `bson:"-"  json:"Attrinute"`
+	Kb          *KnowledgeBased `bson:"-"  json:"-"`
 }
 
 type KBObject struct {

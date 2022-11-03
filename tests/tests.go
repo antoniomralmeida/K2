@@ -65,6 +65,7 @@ func Test3(kbase *kb.KnowledgeBased) {
 			  "IOT",
 			  "Simulation"
 			],
+			"simulation": "NormalDistribution",
 			"keephistory": 0,
 			"validityinterval": 0,
 			"deadline": 0

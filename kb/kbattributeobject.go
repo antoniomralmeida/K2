@@ -11,6 +11,7 @@ import (
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
 	"github.com/montanaflynn/stats"
+	p "github.com/rafaeljesus/parallel-fn"
 	"gonum.org/v1/gonum/stat"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -37,7 +38,36 @@ func (ao *KBAttributeObject) Value() any {
 		}
 		return ao.KbHistory.Value
 	} else {
-		return nil
+		timeout := time.After(1 * time.Second)
+		fn1 := func() error {
+			for _, r := range ao.KbAttribute.consequentRules {
+				r.Run()
+				if ao.KbHistory != nil {
+					return nil
+				}
+			}
+			return nil
+		}
+		fn2 := func() error {
+			if ao.KbAttribute.isSource(Simulation) {
+				switch ao.KbAttribute.SimulationID {
+				case MonteCarlo:
+				}
+			}
+			return nil
+		}
+
+		for {
+			select {
+			case e := <-p.Run(fn1, fn2):
+				log.Println(e)
+				return nil
+			case <-timeout:
+				if ao.KbHistory != nil {
+					return ao.KbHistory.Value
+				}
+			}
+		}
 	}
 
 	//TODO: Acionar regras em backward chaning
