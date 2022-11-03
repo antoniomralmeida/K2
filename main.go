@@ -22,8 +22,10 @@ func init() {
 
 func main() {
 	//TEST
+	//tests.Test3(&kbase)
+	tests.Test1(&kbase)
 	//tests.Test2(&kbase)
-	tests.Test5(&kbase)
+	//tests.Test1(&kbase)
 
 	//StartSystem()
 }

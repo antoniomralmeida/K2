@@ -14,8 +14,9 @@ func Test1(kbase *kb.KnowledgeBased) {
 
 func Test2(kbase *kb.KnowledgeBased) {
 	a := kbase.FindAttributeObjectByName("M01.Potência")
+	fmt.Println(a)
 	for i := 0; i < 100; i++ {
-		a.SetValue(rand.Float64(), kb.KBSource(kb.Simulation), 50.0)
+		a.SetValue(rand.Float64(), kb.IOT, 100.0)
 	}
 }
 
@@ -61,7 +62,8 @@ func Test3(kbase *kb.KnowledgeBased) {
 			"atype": "Number",
 			"sources": [
 			  "User",
-			  "IOT"
+			  "IOT",
+			  "Simulation"
 			],
 			"keephistory": 0,
 			"validityinterval": 0,
@@ -105,4 +107,14 @@ func Test5(kbase *kb.KnowledgeBased) {
 
 func Test6(kbase *kb.KnowledgeBased) {
 	kbase.NewRule("for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230", 100, 0)
+}
+
+func Test7(kbase *kb.KnowledgeBased) {
+	o := kbase.FindObjectByName("M01")
+	fmt.Println(o)
+}
+
+func Test8(kbase *kb.KnowledgeBased) {
+	a := kbase.FindAttributeObjectByName("M01.Status")
+	fmt.Println(a)
 }

@@ -1,9 +1,11 @@
 package kb
 
 import (
+	"encoding/json"
 	"log"
 
 	"github.com/antoniomralmeida/k2/initializers"
+	"github.com/antoniomralmeida/k2/lib"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -38,4 +40,10 @@ func (class *KBClass) FindOne(p bson.D) error {
 func (class *KBClass) Delete() error {
 	//TODO: Restart KB
 	return nil
+}
+
+func (class *KBClass) String() string {
+	j, err := json.MarshalIndent(*class, "", "\t")
+	lib.LogFatal(err)
+	return string(j)
 }

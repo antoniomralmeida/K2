@@ -179,8 +179,10 @@ func (kb *KnowledgeBased) NewObject(class string, name string) *KBObject {
 	for _, x := range kb.FindAttributes(p) {
 		n := KBAttributeObject{Id: bson.NewObjectId(), Attribute: x.Id, KbAttribute: x, KbObject: &o}
 		o.Attributes = append(o.Attributes, n)
+		kb.IdxAttributeObjects[n.getFullName()] = &n
 	}
 	lib.LogFatal(o.Persist())
+	kb.IdxObjects[name] = &o
 	return &o
 }
 

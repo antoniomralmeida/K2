@@ -1,6 +1,7 @@
 package kb
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -14,6 +15,12 @@ import (
 	"github.com/apaxa-go/eval"
 	"gopkg.in/mgo.v2/bson"
 )
+
+func (r *KBRule) String() string {
+	j, err := json.MarshalIndent(*r, "", "\t")
+	lib.LogFatal(err)
+	return string(j)
+}
 
 func (r *KBRule) Run() {
 

@@ -21,7 +21,7 @@ func (o *KBObject) Persist() error {
 }
 
 func (o *KBObject) String() string {
-	j, err := json.Marshal(o)
+	j, err := json.MarshalIndent(*o, "", "\t")
 	lib.LogFatal(err)
 	return string(j)
 }

@@ -125,7 +125,7 @@ func (kb *KnowledgeBased) IOTParsing() error {
 					} else {
 						_, body, errs := api.Bytes()
 						if errs != nil {
-							a.SetValue(string(body), KBSource(IOT), 100.0)
+							a.SetValue(string(body), IOT, 100.0)
 						}
 					}
 				}

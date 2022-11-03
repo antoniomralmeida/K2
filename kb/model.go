@@ -23,8 +23,8 @@ const (
 	Empty KBSource = iota
 	User
 	IOT
-	Inference
 	Simulation
+	Inference
 )
 
 var KBSourceStr = map[string]KBSource{
@@ -212,10 +212,10 @@ type KBHistory struct {
 
 type KBAttributeObject struct {
 	Id          bson.ObjectId `bson:"id"`
-	Attribute   bson.ObjectId `bson:"attribute_id"`
-	KbAttribute *KBAttribute  `bson:"-"`
-	KbHistory   *KBHistory    `bson:"-"`
-	KbObject    *KBObject     `bson:"-"`
+	Attribute   bson.ObjectId `bson:"attribute_id"  json:"AttributeId"`
+	KbObject    *KBObject     `bson:"-" json:"-"`
+	KbHistory   *KBHistory    `bson:"-" json:"History"`
+	KbAttribute *KBAttribute  `bson:"-"  json:"Attrinute"`
 	//TODO: https://nabto.com/guide-iot-protocols-standards/, definir protocolo para IOT SET and SET
 }
 
@@ -224,7 +224,7 @@ type KBObject struct {
 	Name       string              `bson:"name"`
 	Class      bson.ObjectId       `bson:"class_id"`
 	Attributes []KBAttributeObject `bson:"attributes"`
-	Bkclass    *KBClass            `bson:"-"`
+	Bkclass    *KBClass            `bson:"-" json:"Class"`
 	parsed     bool                `bson:"-"`
 }
 
