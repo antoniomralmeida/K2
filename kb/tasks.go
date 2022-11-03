@@ -26,6 +26,7 @@ func (kb *KnowledgeBased) Run(wg *sync.WaitGroup) {
 		// Add tasks
 		_, err := scheduler.Add(&tasks.Task{
 			Interval: time.Duration(2 * time.Second),
+
 			TaskFunc: func() error {
 				go kb.Scan()
 				return nil
@@ -110,6 +111,8 @@ func (kb *KnowledgeBased) Scan() error {
 
 func (kb *KnowledgeBased) IOTParsing() error {
 	log.Println("IOTParsing...")
+	//TODO: https://nabto.com/guide-iot-protocols-standards/, definir protocolo para IOT SET and SET
+
 	for i := range kb.Objects {
 		for j := range kb.Objects[i].Attributes {
 			a := &kb.Objects[i].Attributes[j]
