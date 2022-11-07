@@ -51,7 +51,7 @@ func web(wg *sync.WaitGroup) {
 	case "windows":
 		wd, _ := os.Getwd()
 		web := wd + "\\k2web\\k2web.exe"
-		b, err := exec.Command(web).Output()
+		b, err := exec.Command("cmd.exe", "/c", "start", web).Output()
 		if err != nil {
 			log.Fatal(err)
 		}
