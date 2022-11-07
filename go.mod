@@ -3,7 +3,7 @@ module github.com/antoniomralmeida/k2
 go 1.19
 
 require (
-	github.com/apaxa-go/eval v0.0.0-20171223182326-1d18b251d679
+	
 	github.com/eiannone/keyboard v0.0.0-20220611211555-0d226195f203
 	github.com/gofiber/fiber/v2 v2.39.0
 	github.com/google/uuid v1.3.0
@@ -19,6 +19,7 @@ require (
 )
 
 require (
+	github.com/PaesslerAG/gval v1.2.1 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/apaxa-go/helper v0.0.0-20180607175117-61d31b1c31c3 // indirect
 	github.com/hajimehoshi/go-mp3 v0.3.3 // indirect
@@ -30,6 +31,7 @@ require (
 	github.com/rafaeljesus/parallel-fn v0.0.0-20180101203446-ef08331b38ac // indirect
 	github.com/rivo/uniseg v0.4.2 // indirect
 	github.com/rs/xid v1.4.0 // indirect
+	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/tdewolff/test v1.0.7 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

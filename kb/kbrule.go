@@ -10,9 +10,11 @@ import (
 	"unicode"
 
 	"github.com/antoniomralmeida/k2/ebnf"
+	"github.com/antoniomralmeida/k2/fuzzy"
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
 	"github.com/apaxa-go/eval"
+
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -42,6 +44,7 @@ func (r *KBRule) Run() {
 
 	conditionally := false
 	expression := ""
+	fuzzyexp := ""
 	var trust float32
 oulter:
 	for i := 0; i < len(r.bin); {
@@ -81,6 +84,7 @@ oulter:
 				i++
 				for ; r.bin[i].literalbin == b_open_par; i++ {
 					expression = expression + r.bin[i].token
+					fuzzyexp = fuzzyexp + r.bin[i].token
 				}
 				if r.bin[i].literalbin != b_the {
 					log.Fatal("E004 - Error in KB Rule ", r.Id, " near ", r.bin[i].token)
@@ -95,6 +99,7 @@ oulter:
 				}
 				key := "{{" + r.bin[i].class.Name + "." + r.bin[i].token + "}}"
 				expression = expression + key
+				fuzzyexp = fuzzyexp + key
 				attrs[key] = r.bin[i].attributeObjects
 				objs[key] = r.bin[i].objects
 
@@ -135,6 +140,7 @@ oulter:
 				i++
 				for ; r.bin[i].literalbin == b_close_par; i++ {
 					expression = expression + r.bin[i].token
+					fuzzyexp = fuzzyexp + r.bin[i].token
 				}
 
 				switch r.bin[i].literalbin {
@@ -143,9 +149,10 @@ oulter:
 				case b_and:
 					i++
 					expression = expression + " " + r.bin[i].token + " "
+					fuzzyexp = fuzzyexp + " " + r.bin[i].token + " "
 				case b_or:
 					i++
-					expression = expression + " " + r.bin[i].token + " "
+					fuzzyexp = fuzzyexp + " " + r.bin[i].token + " "
 				}
 			}
 		default:
@@ -171,6 +178,8 @@ oulter:
 	i00:
 		for {
 			exp := expression
+			fuzzy := fuzzy.FuzzyLogicalInference(fuzzyexp)
+			fmt.Println(expression, fuzzy)
 			obs := []*KBObject{}
 			ok := true
 			for key := range attrs {
@@ -187,9 +196,9 @@ oulter:
 				exp = "bool(" + exp + ")"
 				fmt.Println(exp)
 				expr, err := eval.ParseString(exp, "")
-				log.Fatal("E008 - ", err)
+				lib.LogFatal(err)
 				result, err := expr.EvalToInterface(nil)
-				log.Fatal("E009 - ", err)
+				lib.LogFatal(err)
 				if result == true {
 					r.RunConsequent(obs, trust)
 				}
