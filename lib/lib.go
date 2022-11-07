@@ -3,8 +3,6 @@ package lib
 import (
 	"log"
 	"strconv"
-
-	"github.com/gofiber/fiber/v2"
 )
 
 func IsNumber(str string) bool {
@@ -20,8 +18,4 @@ func LogFatal(e error) {
 
 func Log(msg string) {
 	log.Println(msg)
-}
-
-func IsMainThread() bool {
-	return !fiber.IsChild()
 }

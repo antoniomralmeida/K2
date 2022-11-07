@@ -8,8 +8,9 @@ import (
 )
 
 func LogInit() {
+	wd, _ := os.Getwd()
 
-	logFileName := os.Getenv("LOG")
+	logFileName := wd + os.Getenv("K2LOG")
 	logFile, err := logfile.New(
 		&logfile.LogFile{
 			FileName: logFileName,

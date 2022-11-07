@@ -17,52 +17,49 @@ import (
 func (kb *KnowledgeBased) Run(wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	if lib.IsMainThread() {
+	// Start the Scheduler
+	scheduler := tasks.New()
+	defer scheduler.Stop()
 
-		// Start the Scheduler
-		scheduler := tasks.New()
-		defer scheduler.Stop()
+	// Add tasks
+	_, err := scheduler.Add(&tasks.Task{
+		Interval: time.Duration(2 * time.Second),
 
-		// Add tasks
-		_, err := scheduler.Add(&tasks.Task{
-			Interval: time.Duration(2 * time.Second),
+		TaskFunc: func() error {
+			go kb.Scan()
+			return nil
+		},
+	})
+	lib.LogFatal(err)
+	_, err = scheduler.Add(&tasks.Task{
+		Interval: time.Duration(60 * time.Second),
+		TaskFunc: func() error {
+			go kb.ReLink()
+			return nil
+		},
+	})
+	lib.LogFatal(err)
 
-			TaskFunc: func() error {
-				go kb.Scan()
-				return nil
-			},
-		})
-		lib.LogFatal(err)
-		_, err = scheduler.Add(&tasks.Task{
-			Interval: time.Duration(60 * time.Second),
-			TaskFunc: func() error {
-				go kb.ReLink()
-				return nil
-			},
-		})
-		lib.LogFatal(err)
+	log.Println("K2 System started!")
+	keysEvents, err := keyboard.GetKeys(10)
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		_ = keyboard.Close()
+	}()
+	fmt.Println("K2 System started! Press ESC to shutdown")
 
-		log.Println("K2 System started!")
-		keysEvents, err := keyboard.GetKeys(10)
-		if err != nil {
-			panic(err)
+	for {
+		event := <-keysEvents
+		if event.Err != nil {
+			panic(event.Err)
 		}
-		defer func() {
-			_ = keyboard.Close()
-		}()
-		fmt.Println("K2 System started! Press ESC to shutdown")
-
-		for {
-			event := <-keysEvents
-			if event.Err != nil {
-				panic(event.Err)
-			}
-			if event.Key == keyboard.KeyEsc {
-				fmt.Printf("Shutdown...")
-				scheduler.Stop()
-				wg.Done()
-				os.Exit(0)
-			}
+		if event.Key == keyboard.KeyEsc {
+			fmt.Printf("Shutdown...")
+			scheduler.Stop()
+			wg.Done()
+			os.Exit(0)
 		}
 	}
 

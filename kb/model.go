@@ -255,7 +255,6 @@ type KBWorkspace struct {
 }
 
 type DataInput struct {
-	Id      bson.ObjectId   `json:"id"`
 	Name    string          `json:"name"`
 	Atype   KBAttributeType `json:"atype"`
 	Options []string        `json:"options"`

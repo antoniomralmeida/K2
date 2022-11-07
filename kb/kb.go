@@ -286,7 +286,7 @@ func (kb *KnowledgeBased) GetDataInput() []*DataInput {
 		for j := range kb.Objects[i].Attributes {
 			a := &kb.Objects[i].Attributes[j]
 			if a.KbHistory == nil && a.KbAttribute.isSource(KBSource(User)) && !a.Validity() {
-				di := DataInput{Id: a.Id, Name: a.KbObject.Name + "." + a.KbAttribute.Name, Atype: a.KbAttribute.AType, Options: a.KbAttribute.Options}
+				di := DataInput{Name: a.KbObject.Name + "." + a.KbAttribute.Name, Atype: a.KbAttribute.AType, Options: a.KbAttribute.Options}
 				ret = append(ret, &di)
 			}
 		}
