@@ -4,12 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"reflect"
 	"strconv"
 	"time"
 
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
+	"github.com/gofiber/fiber/v2"
 	"github.com/montanaflynn/stats"
 	p "github.com/rafaeljesus/parallel-fn"
 	"gonum.org/v1/gonum/stat"
@@ -18,9 +20,9 @@ import (
 
 func (ao *KBAttributeObject) Validity() bool {
 	if ao.KbHistory != nil {
-		if ao.KbAttribute.Deadline != 0 {
+		if ao.KbAttribute.ValidityInterval != 0 {
 			diff := time.Now().Sub(time.Unix(0, ao.KbHistory.When))
-			if diff.Milliseconds() > ao.KbAttribute.Deadline {
+			if diff.Milliseconds() > ao.KbAttribute.ValidityInterval {
 				ao.KbHistory = nil
 				return false
 			}
@@ -38,11 +40,11 @@ func (ao *KBAttributeObject) Value() any {
 		}
 		return ao.KbHistory.Value
 	} else {
-		timeout := time.After(1 * time.Second)
+		timeout := time.After(1 * time.Second) // real-time search
 		fn1 := func() error {
-			for _, r := range ao.KbAttribute.consequentRules {
+			for _, r := range ao.KbAttribute.consequentRules { //backward chaining
 				r.Run()
-				if ao.KbHistory != nil {
+				if ao.KbHistory != nil { //when find a value (stop)
 					return nil
 				}
 			}
@@ -52,14 +54,26 @@ func (ao *KBAttributeObject) Value() any {
 			if ao.KbAttribute.isSource(Simulation) {
 				switch ao.KbAttribute.SimulationID {
 				case MonteCarlo:
+					ao.MonteCarlo()
+				case LinearRegression:
+					ao.LinearRegression()
+				case NormalDistribution:
+					ao.NormalDistribution()
 				}
 			}
 			return nil
 		}
+		fn3 := func() error {
+			if ao.KbAttribute.isSource(IOT) {
+				ao.IOTParsing()
+			}
+			return nil
+		}
 
+		//TODO: testar a execução paralela
 		for {
 			select {
-			case e := <-p.Run(fn1, fn2):
+			case e := <-p.Run(fn1, fn2, fn3):
 				log.Println(e)
 				return nil
 			case <-timeout:
@@ -69,15 +83,6 @@ func (ao *KBAttributeObject) Value() any {
 			}
 		}
 	}
-
-	//TODO: Acionar regras em backward chaning
-	//TODO: Criar uma tarefa de simulação
-	//TODO: As tarefas de busca de valor devem ter limite de tempo
-	//TODO: Criar formulário web para receber valores de atributos de origem User (assincrono)
-	//TODO: Levar em consideração a certeza na obteção de um valor PLC e User 100%
-	//TODO: Criar regra de envelhecimento da certeza, com base na disperção e na validade do dado
-	//TODO: a certeza de um valor simulado deve analizar os quadrantes da curva normal do historico de valor
-	//TODO: a certeza por inferencia deve usar logica fuzzi
 
 }
 func (attr *KBAttributeObject) getFullName() string {
@@ -90,7 +95,7 @@ func (attr *KBAttributeObject) String() string {
 	return string(j)
 }
 
-func (attr *KBAttributeObject) SetValue(value any, source KBSource, certainty float32) *KBHistory {
+func (attr *KBAttributeObject) SetValue(value any, source KBSource, trust float32) *KBHistory {
 	if attr == nil {
 		log.Println("Invalid attribute!")
 		return nil
@@ -114,9 +119,13 @@ func (attr *KBAttributeObject) SetValue(value any, source KBSource, certainty fl
 			}
 		}
 	}
-	h := KBHistory{Attribute: attr.Id, When: time.Now().UnixNano(), Value: value, Source: source, Trust: certainty}
+	h := KBHistory{Attribute: attr.Id, When: time.Now().UnixNano(), Value: value, Source: source, Trust: trust}
 	lib.LogFatal(h.Persist())
 	attr.KbHistory = &h
+	attr.Kb.stack = append(attr.Kb.stack, attr.KbAttribute.antecedentRules...) //  forward chaining
+	if attr.KbAttribute.KeepHistory != 0 {
+		go h.ClearingHistory(attr.KbAttribute.KeepHistory)
+	}
 	return &h
 }
 
@@ -204,5 +213,28 @@ func (attr *KBAttributeObject) NormalDistribution() error {
 		attr.SetValue(r, KBSource(Simulation), float32(a*100))
 	}
 
+	return nil
+}
+
+func (attr *KBAttributeObject) IOTParsing() error {
+	log.Println("IOTParsing...")
+	if !attr.Validity() {
+		api := os.Getenv("IOTMIDWARE")
+		if attr.KbAttribute.isSource(KBSource(User)) && api != "" {
+			iotapi := api + "?" + attr.getFullName()
+			api := fiber.AcquireAgent()
+			req := api.Request()
+			req.Header.SetMethod("post")
+			req.SetRequestURI(iotapi)
+			if err := api.Parse(); err != nil {
+				log.Println(err)
+			} else {
+				_, body, errs := api.Bytes()
+				if errs != nil {
+					attr.SetValue(string(body), IOT, 100.0)
+				}
+			}
+		}
+	}
 	return nil
 }

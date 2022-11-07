@@ -1,10 +1,9 @@
-2022/11/03 19:20:31 ConnectDB
-2022/11/03 19:20:31 Init KB
-2022/11/03 19:20:31 Parsing ebnf rule  Rule
-2022/11/03 19:20:31 Parsing ebnf rule  Expression
-2022/11/03 19:20:31 Parsing ebnf rule  Consequent
-2022/11/03 19:20:31 Parsing ebnf rule  Set
-2022/11/03 19:20:31 Parsing ebnf rule  Inform
-2022/11/03 19:20:31 Prepare Class  Equipamento
-2022/11/03 19:20:31 Prepare Class  MotorElétrico
-2022/11/03 19:20:31 E11000 duplicate key error collection: K2.KBClass index: name_1 dup key: { name: "Equipamento" }
+2022/11/04 09:29:07 ConnectDB
+2022/11/04 09:29:07 Init KB
+2022/11/04 09:29:07 Parsing ebnf rule  Rule
+2022/11/04 09:29:07 Parsing ebnf rule  Expression
+2022/11/04 09:29:07 Parsing ebnf rule  Consequent
+2022/11/04 09:29:07 Parsing ebnf rule  Set
+2022/11/04 09:29:07 Parsing ebnf rule  Inform
+2022/11/04 09:29:07 Prepare Class  Equipamento
+2022/11/04 09:29:07 Prepare Class  MotorElétrico

@@ -8,14 +8,33 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func (class *KBHistory) Persist() error {
+func (h *KBHistory) Persist() error {
 	collection := initializers.GetDb().C("KBHistory")
-	if class.Id == "" {
-		class.Id = bson.NewObjectId()
-		return collection.Insert(class)
+	if h.Id == "" {
+		h.Id = bson.NewObjectId()
+		return collection.Insert(h)
 	} else {
-		return collection.UpdateId(class.Id, class)
+		return collection.UpdateId(h.Id, h)
 	}
+}
+
+func (h *KBHistory) ClearingHistory(history int) error {
+	collection := initializers.GetDb().C("KBHistory")
+	for {
+		n, err := collection.Count()
+		lib.LogFatal(err)
+		if n <= history {
+			return nil
+		}
+		todel := KBHistory{}
+		collection.Find(bson.D{{"attribute_id", h.Attribute}}).Sort("-when").One(&todel)
+		if todel.Id != "" {
+			collection.RemoveId(todel.Id)
+		} else {
+			return nil
+		}
+	}
+	return nil
 }
 
 func (h *KBHistory) FindLast(filter bson.D) error {

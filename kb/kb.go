@@ -97,6 +97,7 @@ func (kb *KnowledgeBased) Init() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		kb.Rules[i].Kb = kb
 		kb.linkerRule(&kb.Rules[i], bin)
 	}
 }
@@ -249,15 +250,14 @@ func (kb *KnowledgeBased) NewAttributeObject(obj *KBObject, attr *KBAttribute) *
 func (kb *KnowledgeBased) NewRule(rule string, priority byte, interval int) *KBRule {
 	_, bin, err := kb.ParsingCommand(rule)
 	lib.LogFatal(err)
-	r := KBRule{Rule: rule, Priority: priority, ExecutionInterval: interval}
+	r := KBRule{Rule: rule, Priority: priority, ExecutionInterval: interval, Kb: kb}
 	lib.LogFatal(r.Persist())
 	kb.linkerRule(&r, bin)
 	kb.Rules = append(kb.Rules, r)
 	return &r
 }
-func (kb *KnowledgeBased) UpdateKB(name string, iotapi string) error {
+func (kb *KnowledgeBased) UpdateKB(name string) error {
 	kb.Name = name
-	kb.IOTApi = iotapi
 	return kb.Persist()
 }
 

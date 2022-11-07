@@ -149,7 +149,6 @@ var LiteralBinStr = map[string]LiteralBin{
 type KnowledgeBased struct {
 	Id                  bson.ObjectId                 `bson:"_id,omitempty"`
 	Name                string                        `bson:"name"`
-	IOTApi              string                        `bson:"iotapi"`
 	Classes             []KBClass                     `bson:"-"`
 	IdxClasses          map[bson.ObjectId]*KBClass    `bson:"-"`
 	Rules               []KBRule                      `bson:"-"`
@@ -166,14 +165,13 @@ type KBAttribute struct {
 	Id               bson.ObjectId   `bson:"id,omitempty"`
 	Name             string          `bson:"name"`
 	AType            KBAttributeType `bson:"atype"`
-	Options          []string        `bson:"options,omitempty"`
-	SourcesID        []KBSource      `bson:"sources"`
-	Sources          []string        `bson:"-" json:"sources"`
-	KeepHistory      int64           `bson:"keephistory"`
-	ValidityInterval int64           `bson:"validityinterval"`
-	Deadline         int64           `bson:"deadline"`
+	KeepHistory      int             `bson:"keephistory"`      //Numero de historico a manter, 0- sempre
+	ValidityInterval int64           `bson:"validityinterval"` //validade do ultimo valor em microssegudos, 0- sempre
 	SimulationID     KBSimulation    `bson:"simulation,omitempty" json:"-"`
 	Simulation       string          `bson:"-" json:"simulation"`
+	SourcesID        []KBSource      `bson:"sources"`
+	Options          []string        `bson:"options,omitempty"`
+	Sources          []string        `bson:"-" json:"sources"`
 	antecedentRules  []*KBRule       `bson:"-"`
 	consequentRules  []*KBRule       `bson:"-"`
 }
@@ -199,14 +197,16 @@ type BIN struct {
 }
 
 type KBRule struct {
-	Id                bson.ObjectId `bson:"_id,omitempty"`
-	Rule              string        `bson:"rule"`
-	Priority          byte          `bson:"priority"` //0..100
-	ExecutionInterval int           `bson:"interval"`
-	bin               []*BIN        `bson:"-"`
-	lastexecution     time.Time     `bson:"-"`
-	bkclasses         []*KBClass    `bson:"-"`
-	consequent        int           `bson:"-"`
+	Id                bson.ObjectId   `bson:"_id,omitempty"`
+	Rule              string          `bson:"rule"`
+	Priority          byte            `bson:"priority"` //0..100
+	ExecutionInterval int             `bson:"interval"`
+	lastexecution     time.Time       `bson:"-"`
+	consequent        int             `bson:"-"`
+	inRun             bool            `bson:"-"`
+	Kb                *KnowledgeBased `bson:"-"  json:"-"`
+	bkclasses         []*KBClass      `bson:"-"`
+	bin               []*BIN          `bson:"-"`
 }
 
 type KBHistory struct {

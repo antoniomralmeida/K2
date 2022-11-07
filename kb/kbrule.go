@@ -24,6 +24,13 @@ func (r *KBRule) String() string {
 
 func (r *KBRule) Run() {
 
+	r.Kb.mutex.Lock()
+	if r.inRun { //avoid non-parallel execution of the same rule
+		r.Kb.mutex.Unlock()
+		return
+	}
+	r.inRun = true
+	r.Kb.mutex.Unlock()
 	type ctrl struct {
 		i   int
 		max int
@@ -35,6 +42,7 @@ func (r *KBRule) Run() {
 
 	conditionally := false
 	expression := ""
+	var trust float32
 oulter:
 	for i := 0; i < len(r.bin); {
 		switch r.bin[i].literalbin {
@@ -47,18 +55,18 @@ oulter:
 		case b_for:
 			i++
 			if r.bin[i].literalbin != b_any {
-				log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+				log.Fatal("E001 - Error in KB Rule ", r.Id, " near ", r.bin[i].token)
 			}
 			i++
 			if r.bin[i].tokentype != ebnf.Class {
-				log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+				log.Fatal("E002 - Error in KB Rule ", r.Id, " near ", r.bin[i].token)
 			}
 			if r.bin[i].class == nil {
-				log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token, " KB Class not found!")
+				log.Fatal("E003 -Error in KB Rule ", r.Id, " near ", r.bin[i].token, " KB Class not found!")
 			}
 
 			if len(r.bin[i].objects) == 0 {
-				log.Println("Warning in KB Rule ", r.Id, " near ", r.bin[i].token, " no object found!")
+				log.Println("W001 - Warning in KB Rule ", r.Id, " near ", r.bin[i].token, " no object found!")
 				break
 			}
 
@@ -75,15 +83,15 @@ oulter:
 					expression = expression + r.bin[i].token
 				}
 				if r.bin[i].literalbin != b_the {
-					log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+					log.Fatal("E004 - Error in KB Rule ", r.Id, " near ", r.bin[i].token)
 				}
 				i++
 				if r.bin[i].tokentype != ebnf.Attribute {
-					log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+					log.Fatal("E005 - Error in KB Rule ", r.Id, " near ", r.bin[i].token)
 				}
 
 				if r.bin[i].class == nil {
-					log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+					log.Fatal("E006 - Error in KB Rule ", r.Id, " near ", r.bin[i].token)
 				}
 				key := "{{" + r.bin[i].class.Name + "." + r.bin[i].token + "}}"
 				expression = expression + key
@@ -94,7 +102,7 @@ oulter:
 				if r.bin[i].literalbin == b_of {
 					i++
 					if r.bin[i].tokentype != ebnf.DynamicReference && r.bin[i].tokentype != ebnf.Object {
-						log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+						log.Fatal("E007 - Error in KB Rule ", r.Id, " near ", r.bin[i].token)
 					}
 					i++
 				}
@@ -172,17 +180,18 @@ oulter:
 				}
 				value := fmt.Sprint(values[key][idx[key].i])
 				exp = strings.Replace(exp, key, value, -1)
+				//TODO: a certeza por inferencia deve usar logica fuzzi -> "v1 and (v2 or v3)" => min(v1, max(v2,v3))
 				obs = append(obs, objs[key][idx[key].i])
 			}
 			if ok {
 				exp = "bool(" + exp + ")"
 				fmt.Println(exp)
 				expr, err := eval.ParseString(exp, "")
-				lib.LogFatal(err)
+				log.Fatal("E008 - ", err)
 				result, err := expr.EvalToInterface(nil)
-				lib.LogFatal(err)
+				log.Fatal("E009 - ", err)
 				if result == true {
-					r.RunConsequent(obs)
+					r.RunConsequent(obs, trust)
 				}
 			}
 		i01:
@@ -200,23 +209,58 @@ oulter:
 			}
 		}
 	} else {
-		r.RunConsequent([]*KBObject{})
+		r.RunConsequent([]*KBObject{}, 100.0)
 	}
-
 	r.lastexecution = time.Now()
+	r.Kb.mutex.Lock()
+	r.inRun = false
+	r.Kb.mutex.Unlock()
+
 }
 
-func (r *KBRule) RunConsequent(objs []*KBObject) {
+func (r *KBRule) RunConsequent(objs []*KBObject, trust float32) {
 	for i := r.consequent; i < len(r.bin); {
 		switch r.bin[i].literalbin {
 		case b_inform:
 			i += 4
 			if r.bin[i].tokentype != ebnf.Text {
-				log.Fatal("Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+				log.Fatal("E010 -Error in KB Rule ", r.Id, " near ", r.bin[i].token)
 			}
 		case b_set:
-			//TODO: Acionar regras em forward chaining
+			i += 2
+			if r.bin[i].tokentype != ebnf.Attribute {
+				log.Fatal("E011 - Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+			}
+			if r.bin[i].attributeObjects == nil {
+				log.Fatal("E012 - Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+			}
+			attrs := r.bin[i].attributeObjects
+			if r.bin[i+3].tokentype != ebnf.Literal && r.bin[i+4].tokentype != ebnf.Literal {
+				log.Fatal("E013 - Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+			}
+
+			if r.bin[i+4].tokentype != ebnf.Constant && r.bin[i+5].tokentype != ebnf.Constant {
+				log.Fatal("E014 - Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+			}
+			var v string
+			if r.bin[i+4].tokentype == ebnf.Constant {
+				i += 4
+				v = r.bin[i].token
+			} else {
+				i += 5
+				v = r.bin[i].token
+			}
+			for _, a := range attrs {
+				for _, o := range objs {
+					if a.KbObject == o {
+						a.SetValue(v, Inference, trust)
+					}
+				}
+			}
+			i++
+
 		}
+		//TODO: concluir operações
 	}
 }
 
