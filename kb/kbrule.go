@@ -5,15 +5,16 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 	"unicode"
 
+	"github.com/PaesslerAG/gval"
 	"github.com/antoniomralmeida/k2/ebnf"
 	"github.com/antoniomralmeida/k2/fuzzy"
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
-	"github.com/apaxa-go/eval"
 
 	"gopkg.in/mgo.v2/bson"
 )
@@ -26,6 +27,10 @@ func (r *KBRule) String() string {
 
 func (r *KBRule) Run() {
 
+	type Value struct {
+		value any
+		trust float64
+	}
 	r.Kb.mutex.Lock()
 	if r.inRun { //avoid non-parallel execution of the same rule
 		r.Kb.mutex.Unlock()
@@ -45,7 +50,6 @@ func (r *KBRule) Run() {
 	conditionally := false
 	expression := ""
 	fuzzyexp := ""
-	var trust float32
 oulter:
 	for i := 0; i < len(r.bin); {
 		switch r.bin[i].literalbin {
@@ -161,15 +165,16 @@ oulter:
 	}
 
 	if !conditionally {
-		values := make(map[string][]any)
+		values := make(map[string][]Value)
 		idx := make(map[string]ctrl)
 		idx2 := []string{}
 		for ix := range attrs {
-			vls := []any{}
+			vls := []Value{}
+
 			idx[ix] = ctrl{0, len(attrs[ix]) - 1}
 			for iy := range attrs[ix] {
-				value := attrs[ix][iy].Value()
-				vls = append(vls, value)
+				v, t := attrs[ix][iy].Value()
+				vls = append(vls, Value{v, t})
 			}
 			values[ix] = vls
 			idx2 = append(idx2, ix)
@@ -179,28 +184,31 @@ oulter:
 		for {
 			exp := expression
 			fuzzy := fuzzy.FuzzyLogicalInference(fuzzyexp)
-			fmt.Println(expression, fuzzy)
+
 			obs := []*KBObject{}
 			ok := true
 			for key := range attrs {
-				if values[key][idx[key].i] == nil {
+				if values[key][idx[key].i].value == nil {
 					ok = false
 					break
 				}
-				value := fmt.Sprint(values[key][idx[key].i])
+				value := fmt.Sprint(values[key][idx[key].i].value)
 				exp = strings.Replace(exp, key, value, -1)
-				//TODO: a certeza por inferencia deve usar logica fuzzi -> "v1 and (v2 or v3)" => min(v1, max(v2,v3))
+				trust := fmt.Sprint(values[key][idx[key].i].trust)
+				fuzzy = strings.Replace(fuzzy, key, trust, -1)
 				obs = append(obs, objs[key][idx[key].i])
 			}
+			fmt.Println(values)
+			fmt.Println(expression, fuzzy, ok)
 			if ok {
-				exp = "bool(" + exp + ")"
-				fmt.Println(exp)
-				expr, err := eval.ParseString(exp, "")
+				result, err := gval.Evaluate(exp, nil)
 				lib.LogFatal(err)
-				result, err := expr.EvalToInterface(nil)
+				trust, err := gval.Evaluate(fuzzy, nil)
 				lib.LogFatal(err)
+				t, _ := strconv.ParseFloat(fmt.Sprintf("%v", trust), 64)
+				fmt.Println(result, t)
 				if result == true {
-					r.RunConsequent(obs, trust)
+					r.RunConsequent(obs, t)
 				}
 			}
 		i01:
@@ -227,7 +235,7 @@ oulter:
 
 }
 
-func (r *KBRule) RunConsequent(objs []*KBObject, trust float32) {
+func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) {
 	for i := r.consequent; i < len(r.bin); {
 		switch r.bin[i].literalbin {
 		case b_inform:

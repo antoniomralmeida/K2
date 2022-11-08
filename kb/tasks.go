@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/antoniomralmeida/k2/lib"
+	"github.com/antoniomralmeida/k2/web"
 	"github.com/eiannone/keyboard"
 	"github.com/madflojo/tasks"
 	"gopkg.in/mgo.v2/bson"
@@ -23,7 +24,7 @@ func (kb *KnowledgeBased) Run(wg *sync.WaitGroup) {
 
 	// Add tasks
 	_, err := scheduler.Add(&tasks.Task{
-		Interval: time.Duration(2 * time.Second),
+		Interval: time.Duration(200 * time.Second),
 
 		TaskFunc: func() error {
 			go kb.Scan()
@@ -58,6 +59,7 @@ func (kb *KnowledgeBased) Run(wg *sync.WaitGroup) {
 		if event.Key == keyboard.KeyEsc {
 			fmt.Printf("Shutdown...")
 			scheduler.Stop()
+			web.Stop()
 			wg.Done()
 			os.Exit(0)
 		}

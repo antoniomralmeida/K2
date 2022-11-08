@@ -8,19 +8,23 @@ import (
 
 func GetDataInput(c *fiber.Ctx) error {
 
-	if kernelapi != "" {
-		callapi := kernelapi + "/getlistdatainput"
+	if apikernel != "" {
+		callapi := apikernel + "/getlistdatainput"
 		api := fiber.AcquireAgent()
+		defer fiber.ReleaseAgent(api)
+
 		req := api.Request()
-		req.Header.SetMethod("post")
+		req.Header.SetMethod(fiber.MethodGet)
 		req.SetRequestURI(callapi)
+		//FIX: não está chamando a API
 		if err := api.Parse(); err != nil {
 			log.Println(err)
 		} else {
-			_, body, errs := api.Bytes()
-
+			code, body, errs := api.Bytes()
 			if errs != nil {
-				return c.JSON(string(body))
+				return c.Send(body)
+			} else {
+				c.SendStatus(code)
 			}
 		}
 	}
@@ -31,7 +35,7 @@ func PostDataInput(c *fiber.Ctx) error {
 	var data map[string]string
 	c.BodyParser(&data)
 	for key := range data {
-		callapi := kernelapi + "/setattributevalue"
+		callapi := apikernel + "/setattributevalue"
 		api := fiber.AcquireAgent()
 		req := api.Request()
 		req.Header.Add(key, data[key])

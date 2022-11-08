@@ -19,12 +19,13 @@ type Context struct {
 }
 
 var ctxweb = Context{}
-var kernelapi string
+var apikernel string
 
 func Run() {
 	InitLangs()
 	InitTemplates()
 
+	apikernel = os.Getenv("APIKERNEL")
 	app := fiber.New(fiber.Config{AppName: "K2 System v1.0.1",
 		DisableStartupMessage: false,
 		Prefork:               true})

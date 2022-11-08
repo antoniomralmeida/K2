@@ -19,7 +19,7 @@ func Run(wg *sync.WaitGroup, kb *kb.KnowledgeBased) {
 	kbbase = kb
 
 	app := fiber.New(fiber.Config{AppName: "K2 System API-KERNEL v1.0.1",
-		DisableStartupMessage: true,
+		DisableStartupMessage: false,
 		Prefork:               false})
 
 	wd, _ := os.Getwd()

@@ -32,13 +32,13 @@ func (ao *KBAttributeObject) Validity() bool {
 	return false
 }
 
-func (ao *KBAttributeObject) Value() any {
+func (ao *KBAttributeObject) Value() (any, float64) {
 	if ao.Validity() {
 		if KBDate == ao.KbAttribute.AType {
 			i, _ := strconv.ParseInt(fmt.Sprintf("%v", ao.KbHistory.Value), 10, 64)
-			return time.Unix(0, i)
+			return time.Unix(0, i), ao.KbHistory.Trust
 		}
-		return ao.KbHistory.Value
+		return ao.KbHistory.Value, ao.KbHistory.Trust
 	} else {
 		timeout := time.After(1 * time.Second) // real-time search
 		fn1 := func() error {
@@ -75,10 +75,10 @@ func (ao *KBAttributeObject) Value() any {
 			select {
 			case e := <-p.Run(fn1, fn2, fn3):
 				log.Println(e)
-				return nil
+				return nil, 0
 			case <-timeout:
 				if ao.KbHistory != nil {
-					return ao.KbHistory.Value
+					return ao.KbHistory.Value, ao.KbHistory.Trust
 				}
 			}
 		}
@@ -95,7 +95,7 @@ func (attr *KBAttributeObject) String() string {
 	return string(j)
 }
 
-func (attr *KBAttributeObject) SetValue(value any, source KBSource, trust float32) *KBHistory {
+func (attr *KBAttributeObject) SetValue(value any, source KBSource, trust float64) *KBHistory {
 	if attr == nil {
 		log.Println("Invalid attribute!")
 		return nil
@@ -159,7 +159,7 @@ func (attr *KBAttributeObject) LinearRegression() error {
 		r2 := stat.RSquared(X, Y, nil, alpha, beta)
 		xn := float64(time.Now().UnixNano())
 		fx := alpha + xn*beta
-		attr.SetValue(fx, KBSource(Simulation), float32(r2*trust*100.0))
+		attr.SetValue(fx, KBSource(Simulation), r2*trust*100.0)
 	}
 	return nil
 }
@@ -184,7 +184,7 @@ func (attr *KBAttributeObject) MonteCarlo() error {
 		trust, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["trust"]), 32)
 		r := stats.NormPpfRvs(avg, stdDev, 1)[0]
 		a := stats.NormPpf(r, avg, stdDev) * (trust / 100.0)
-		attr.SetValue(r, KBSource(Simulation), float32(a*100))
+		attr.SetValue(r, KBSource(Simulation), a*100)
 	}
 
 	return nil
@@ -210,7 +210,7 @@ func (attr *KBAttributeObject) NormalDistribution() error {
 		trust, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["trust"]), 32)
 		r := stats.NormPpfRvs(avg, stdDev, 1)[0]
 		a := stats.NormPpf(r, avg, stdDev) * (trust / 100.0)
-		attr.SetValue(r, KBSource(Simulation), float32(a*100))
+		attr.SetValue(r, KBSource(Simulation), a*100)
 	}
 
 	return nil

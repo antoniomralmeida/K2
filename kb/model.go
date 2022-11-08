@@ -214,7 +214,7 @@ type KBHistory struct {
 	Attribute bson.ObjectId `bson:"attribute_id"`
 	When      int64         `bson:"when"`
 	Value     any           `bson:"value"`
-	Trust     float32       `bson:"trust,omitempty"`
+	Trust     float64       `bson:"trust,omitempty"`
 	Source    KBSource      `bson:"source"`
 }
 

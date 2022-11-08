@@ -1,5 +1,3 @@
-
-
 var div_id = document.getElementById('form_di_37232723')
 $.ajax({
     url: window.location.href + 'api-datainput',

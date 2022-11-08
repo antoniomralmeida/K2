@@ -1,0 +1,8 @@
+08/11/2022 16:36:52 [127.0.0.1:62743] 200      0s GET /api/getlistdatainput 
+08/11/2022 16:39:04 [127.0.0.1:62796] 405      0s GET /api/getlistdatainput 
+08/11/2022 16:39:08 [127.0.0.1:62796] 200      0s POST /api/getlistdatainput 
+08/11/2022 16:52:12 [127.0.0.1:63070] 200      0s POST /api/getlistdatainput 
+08/11/2022 16:58:08 [127.0.0.1:63184] 200      0s GET /api/getlistdatainput 
+08/11/2022 16:59:20 [127.0.0.1:63243] 200      0s GET /api/getlistdatainput 
+08/11/2022 16:59:20 [127.0.0.1:63243] 404      0s GET /favicon.ico 
+08/11/2022 17:20:35 [127.0.0.1:50879] 200      0s GET /api/getlistdatainput 

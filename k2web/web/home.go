@@ -15,8 +15,11 @@ func Home(c *fiber.Ctx) error {
 	ctxweb.Workspace = Translate("workspace", lang)
 	ctxweb.Alerts = Translate("alerts", lang)
 	//Render
+
 	model := template.Must(template.ParseFiles(T["home"].original))
 	model.Execute(c, ctxweb)
 	c.Response().Header.Add("Content-Type", "text/html")
 	return c.SendStatus(fiber.StatusOK)
+
+	//return c.Render(T["home"].original, ctxweb)
 }
