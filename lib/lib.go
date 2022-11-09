@@ -16,6 +16,8 @@ func LogFatal(e error) {
 	}
 }
 
-func Log(msg string) {
-	log.Println(msg)
+func Log(e error) {
+	if e != nil {
+		log.Println(e)
+	}
 }

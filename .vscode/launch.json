@@ -9,7 +9,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "./k2web/k2web.go"
+            "program": "./k2.go"
         }
     ]
 }

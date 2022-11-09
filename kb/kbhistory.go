@@ -19,15 +19,16 @@ func (h *KBHistory) Persist() error {
 }
 
 func (h *KBHistory) ClearingHistory(history int) error {
+	Id := h.Attribute
 	collection := initializers.GetDb().C("KBHistory")
 	for {
-		n, err := collection.Count()
+		n, err := collection.Find(bson.D{{"attribute_id", Id}}).Count()
 		lib.LogFatal(err)
 		if n <= history {
 			return nil
 		}
 		todel := KBHistory{}
-		collection.Find(bson.D{{"attribute_id", h.Attribute}}).Sort("-when").One(&todel)
+		collection.Find(bson.D{{"attribute_id", Id}}).Sort("-when").One(&todel)
 		if todel.Id != "" {
 			collection.RemoveId(todel.Id)
 		} else {

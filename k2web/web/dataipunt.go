@@ -26,14 +26,16 @@ func GetDataInput(c *fiber.Ctx) error {
 }
 
 func PostDataInput(c *fiber.Ctx) error {
+	callapi := apikernel + "/setattributevalue"
+
 	//application/x-www-form-urlencoded
 	data, err := url.ParseQuery(string(c.Body()))
-	lib.LogFatal(err)
+	lib.Log(err)
+	fmt.Println(data)
 	for key := range data {
-		callapi := apikernel + "/setattributevalue"
+		fmt.Println(key)
 		body, err := json.Marshal(map[string]string{"name": key, "value": data[key][0]})
-		fmt.Println(callapi, body, err)
-		lib.LogFatal(err)
+		lib.Log(err)
 		http.Post(callapi, "application/json", bytes.NewBuffer(body))
 	}
 	c.Append("Location", "/")
