@@ -1,53 +1,40 @@
 package web
 
 import (
-	"log"
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/url"
 
+	"github.com/antoniomralmeida/k2/lib"
 	"github.com/gofiber/fiber/v2"
 )
 
 func GetDataInput(c *fiber.Ctx) error {
-
 	if apikernel != "" {
 		callapi := apikernel + "/getlistdatainput"
-		api := fiber.AcquireAgent()
-		defer fiber.ReleaseAgent(api)
-
-		req := api.Request()
-		req.Header.SetMethod(fiber.MethodGet)
-		req.SetRequestURI(callapi)
-		//FIX: não está chamando a API
-		if err := api.Parse(); err != nil {
-			log.Println(err)
-		} else {
-			code, body, errs := api.Bytes()
-			if errs != nil {
-				return c.Send(body)
-			} else {
-				c.SendStatus(code)
-			}
-		}
+		resp, err := http.Get(callapi)
+		lib.LogFatal(err)
+		defer resp.Body.Close()
+		body, err := ioutil.ReadAll(resp.Body)
+		lib.LogFatal(err)
+		return c.Send(body)
 	}
 	return fiber.ErrBadGateway
 }
 
 func PostDataInput(c *fiber.Ctx) error {
-	var data map[string]string
-	c.BodyParser(&data)
+	//application/x-www-form-urlencoded
+	data, err := url.ParseQuery(string(c.Body()))
+	lib.LogFatal(err)
 	for key := range data {
 		callapi := apikernel + "/setattributevalue"
-		api := fiber.AcquireAgent()
-		req := api.Request()
-		req.Header.Add(key, data[key])
-		req.Header.SetMethod("post")
-		req.SetRequestURI(callapi)
-		if err := api.Parse(); err != nil {
-			log.Println(err)
-		} else {
-			if _, _, errs := api.Bytes(); errs == nil {
-				log.Println(errs)
-			}
-		}
+		body, err := json.Marshal(map[string]string{"name": key, "value": data[key][0]})
+		fmt.Println(callapi, body, err)
+		lib.LogFatal(err)
+		http.Post(callapi, "application/json", bytes.NewBuffer(body))
 	}
 	c.Append("Location", "/")
 	return Home(c)

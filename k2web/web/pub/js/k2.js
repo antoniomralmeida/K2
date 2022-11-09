@@ -3,12 +3,16 @@ $.ajax({
     url: window.location.href + 'api-datainput',
     type: 'GET',
     dataType: 'json',
+    error: function (jqXhr, Status) {
+        div_id.innerHTML = Status;
+    }, 
     success: function (data) {
         htmltext = '';
         for (i = 0; i < data.length; i++) {
             namefield = data[i]["name"];
             atype = data[i]["atype"];
             options = data[i]["options"];
+
             switch (atype) {
                 case 'String':
                     htmltext = htmltext +
@@ -24,8 +28,8 @@ $.ajax({
                     break;
                 case 'List':
                     htmltext = htmltext + '<div class="mb-3"><label for="exampleFormControlSelect1">' + namefield + '</label><select class="form-control form-control-solid" name="' + name + '">';
-                    for (var i = 0; i < options.length; i++) {
-                        htmltext = htmltext + '<option>' + options[i] + '</option>';
+                    for (var j = 0; j < options.length; j++) {
+                        htmltext = htmltext + '<option>' + options[j] + '</option>';
                     }
                     htmltext = htmltext + '</select></div>';
                     break;
