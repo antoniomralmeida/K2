@@ -1,9 +1,11 @@
 var div_id = document.getElementById('form_di_37232723')
 
+var apikernel = ''
+
 
 function LoadDataInput() {
     $.ajax({
-        url: window.location.pathname+ 'api-datainput',
+        url: apikernel + '/getlistdatainput',
         type: 'GET',
         dataType: 'json',
         error: function (jqXhr, Status) {
@@ -40,6 +42,8 @@ function LoadDataInput() {
             }
             if (htmltext != '') {
                 htmltext = htmltext + '<input type="button" onclick="return SubmitDataInput(this.form)" value="Enviar">';
+            } else {
+                htmltext = '<p>vazio</p>'
             }
             div_id.innerHTML = htmltext;
         }
@@ -55,8 +59,11 @@ function SubmitDataInput(form) {
     $(form).find("select[name]").each(function (index, node) {
         formData[node.name] = node.value;
     });
-    $.post("/api-datainput" ,formData).done(function(data){
+
+    $.post(apikernel +'/postdatainput' ,formData).done(function(data){
         LoadDataInput();
+    }).error(function (error) {
+        alert(error);
     });
     
     return true;

@@ -19,6 +19,7 @@ func Home(c *fiber.Ctx) error {
 	model := template.Must(template.ParseFiles(T["home"].original))
 	model.Execute(c, ctxweb)
 	c.Response().Header.Add("Content-Type", "text/html")
+	//c.Response().Header.Add("Access-Control-Allow-Origin", "*")
 	return c.SendStatus(fiber.StatusOK)
 
 	//return c.Render(T["home"].original, ctxweb)

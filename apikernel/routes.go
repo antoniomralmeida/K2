@@ -6,5 +6,5 @@ import (
 
 func Routes(app *fiber.App) {
 	app.Get("/api/getlistdatainput", GetDataInput)
-	app.Post("/api/setattributevalue", SetAttributeValue)
+	app.Post("/api/postdatainput", PostDataInput)
 }

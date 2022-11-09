@@ -16,16 +16,16 @@ type Context struct {
 	DataInput string
 	Workspace string
 	Alerts    string
+	ApiKernel string
 }
 
 var ctxweb = Context{}
-var apikernel string
 
 func Run() {
 	InitLangs()
 	InitTemplates()
 
-	apikernel = os.Getenv("APIKERNEL")
+	ctxweb.ApiKernel = os.Getenv("APIKERNEL")
 	app := fiber.New(fiber.Config{AppName: "K2 System v1.0.1",
 		DisableStartupMessage: false,
 		Prefork:               true})

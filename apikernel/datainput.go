@@ -1,7 +1,7 @@
 package apikernel
 
 import (
-	"encoding/json"
+	"net/url"
 
 	"github.com/antoniomralmeida/k2/kb"
 	"github.com/antoniomralmeida/k2/lib"
@@ -11,23 +11,23 @@ import (
 
 func GetDataInput(c *fiber.Ctx) error {
 	objs := kbbase.GetDataInput()
+	c.Response().Header.Add("Access-Control-Allow-Origin", "*")
 	return c.JSON(objs)
 }
 
-func SetAttributeValue(c *fiber.Ctx) error {
-	type Data struct {
-		Name  string `json:"name"`
-		Value string `json:"value"`
-	}
-	var data Data
-	err := json.Unmarshal(c.Body(), &data)
+func PostDataInput(c *fiber.Ctx) error {
+	//application/x-www-form-urlencoded
+	data, err := url.ParseQuery(string(c.Body()))
 	lib.Log(err)
-	a := kbbase.FindAttributeObjectByName(data.Name)
-	if a != nil {
-		a.SetValue(data.Value, kb.User, 100)
-	} else {
-		lib.Log(errors.New("Object not found! " + data.Name))
-		return c.SendStatus(fiber.StatusNotFound)
+	c.Response().Header.Add("Access-Control-Allow-Origin", "*")
+	for key := range data {
+		a := kbbase.FindAttributeObjectByName(key)
+		if a != nil {
+			a.SetValue(data[key][0], kb.User, 100)
+		} else {
+			lib.Log(errors.New("Object not found! " + key))
+			return c.SendStatus(fiber.StatusNotFound)
+		}
 	}
 	return c.SendStatus(fiber.StatusOK)
 }

@@ -12,6 +12,4 @@ func Routes(app *fiber.App) {
 	app.Static("/scss", GetK2Path()+"/k2web/web/pub/scss")
 
 	app.Get("/", Home)
-	app.Get("/api-datainput/", GetDataInput)
-	app.Post("/api-datainput/", PostDataInput)
 }

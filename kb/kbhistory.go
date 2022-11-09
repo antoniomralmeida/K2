@@ -28,7 +28,7 @@ func (h *KBHistory) ClearingHistory(history int) error {
 			return nil
 		}
 		todel := KBHistory{}
-		collection.Find(bson.D{{"attribute_id", Id}}).Sort("-when").One(&todel)
+		collection.Find(bson.D{{"attribute_id", Id}}).Sort("when").One(&todel)
 		if todel.Id != "" {
 			collection.RemoveId(todel.Id)
 		} else {
