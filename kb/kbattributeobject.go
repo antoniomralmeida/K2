@@ -32,13 +32,13 @@ func (ao *KBAttributeObject) Validity() bool {
 	return false
 }
 
-func (ao *KBAttributeObject) Value() (any, float64) {
+func (ao *KBAttributeObject) Value() (any, float64, KBAttributeType) {
 	if ao.Validity() {
 		if KBDate == ao.KbAttribute.AType {
 			i, _ := strconv.ParseInt(fmt.Sprintf("%v", ao.KbHistory.Value), 10, 64)
-			return time.Unix(0, i), ao.KbHistory.Trust
+			return time.Unix(0, i), ao.KbHistory.Trust, ao.KbAttribute.AType
 		}
-		return ao.KbHistory.Value, ao.KbHistory.Trust
+		return ao.KbHistory.Value, ao.KbHistory.Trust, ao.KbAttribute.AType
 	} else {
 		timeout := time.After(1 * time.Second) // real-time search
 		fn1 := func() error {
@@ -75,10 +75,10 @@ func (ao *KBAttributeObject) Value() (any, float64) {
 			select {
 			case e := <-p.Run(fn1, fn2, fn3):
 				log.Println(e)
-				return nil, 0
+				return nil, 0, NotDefined
 			case <-timeout:
 				if ao.KbHistory != nil {
-					return ao.KbHistory.Value, ao.KbHistory.Trust
+					return ao.KbHistory.Value, ao.KbHistory.Trust, ao.KbAttribute.AType
 				}
 			}
 		}
@@ -122,7 +122,7 @@ func (attr *KBAttributeObject) SetValue(value any, source KBSource, trust float6
 	h := KBHistory{Attribute: attr.Id, When: time.Now().UnixNano(), Value: value, Source: source, Trust: trust}
 	lib.LogFatal(h.Persist())
 	attr.KbHistory = &h
-	attr.Kb.stack = append(attr.Kb.stack, attr.KbAttribute.antecedentRules...) //  forward chaining
+	GKB.stack = append(GKB.stack, attr.KbAttribute.antecedentRules...) //  forward chaining
 	if attr.KbAttribute.KeepHistory != 0 {
 		go h.ClearingHistory(attr.KbAttribute.KeepHistory)
 	}

@@ -15,7 +15,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func (kb *KnowledgeBased) Run(wg *sync.WaitGroup) {
+func Run(wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	// Start the Scheduler
@@ -24,10 +24,10 @@ func (kb *KnowledgeBased) Run(wg *sync.WaitGroup) {
 
 	// Add tasks
 	_, err := scheduler.Add(&tasks.Task{
-		Interval: time.Duration(200 * time.Second),
+		Interval: time.Duration(2 * time.Second),
 
 		TaskFunc: func() error {
-			go kb.Scan()
+			go GKB.RunStackRules()
 			return nil
 		},
 	})
@@ -35,7 +35,7 @@ func (kb *KnowledgeBased) Run(wg *sync.WaitGroup) {
 	_, err = scheduler.Add(&tasks.Task{
 		Interval: time.Duration(60 * time.Second),
 		TaskFunc: func() error {
-			go kb.ReLink()
+			go GKB.RefreshRules()
 			return nil
 		},
 	})
@@ -67,8 +67,8 @@ func (kb *KnowledgeBased) Run(wg *sync.WaitGroup) {
 
 }
 
-func (kb *KnowledgeBased) Scan() error {
-	log.Println("Scaning...")
+func (kb *KnowledgeBased) RunStackRules() error {
+	log.Println("RunStackRules...")
 	if len(kb.stack) > 0 {
 		kb.mutex.Lock()
 		localstack := kb.stack
@@ -99,8 +99,8 @@ func (kb *KnowledgeBased) Scan() error {
 	return nil
 }
 
-func (kb *KnowledgeBased) ReLink() error {
-	log.Println("ReLink...")
+func (kb *KnowledgeBased) RefreshRules() error {
+	log.Println("RefrehRules...")
 	for i := range kb.Objects {
 		if !kb.Objects[i].parsed {
 			for j := range kb.Rules {

@@ -5,18 +5,14 @@ import (
 	"os"
 	"sync"
 
-	"github.com/antoniomralmeida/k2/kb"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 )
 
-var kbbase *kb.KnowledgeBased
-
-func Run(wg *sync.WaitGroup, kb *kb.KnowledgeBased) {
+func Run(wg *sync.WaitGroup) {
 	defer wg.Done()
-	kbbase = kb
 
 	app := fiber.New(fiber.Config{AppName: "K2 System API-KERNEL v1.0.1",
 		DisableStartupMessage: false,

@@ -6,16 +6,15 @@ import (
 	"github.com/antoniomralmeida/k2/apikernel"
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/kb"
-	"github.com/antoniomralmeida/k2/web"
 )
 
-var kbase = kb.KnowledgeBased{}
+//var kbase = kb.KnowledgeBased{}
 
 func init() {
 	initializers.InitEnvVars()
 	initializers.LogInit()
 	initializers.ConnectDB()
-	kbase.Init()
+	kb.Init()
 }
 
 func StartSystem() {
@@ -23,9 +22,9 @@ func StartSystem() {
 	// CORE
 	var wg sync.WaitGroup = sync.WaitGroup{}
 	wg.Add(3)
-	go kbase.Run(&wg)
-	go apikernel.Run(&wg, &kbase)
-	go web.Run(&wg)
+	go kb.Run(&wg)
+	go apikernel.Run(&wg)
+	//go web.Run(&wg)
 	wg.Wait()
 }
 

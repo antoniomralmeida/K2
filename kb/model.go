@@ -11,10 +11,11 @@ import (
 type KBAttributeType string
 
 const (
-	KBString KBAttributeType = "String"
-	KBDate   KBAttributeType = "Date"
-	KBNumber KBAttributeType = "Number"
-	KBList   KBAttributeType = "List"
+	NotDefined KBAttributeType = ""
+	KBString   KBAttributeType = "String"
+	KBDate     KBAttributeType = "Date"
+	KBNumber   KBAttributeType = "Number"
+	KBList     KBAttributeType = "List"
 )
 
 type KBSource int8
@@ -197,16 +198,16 @@ type BIN struct {
 }
 
 type KBRule struct {
-	Id                bson.ObjectId   `bson:"_id,omitempty"`
-	Rule              string          `bson:"rule"`
-	Priority          byte            `bson:"priority"` //0..100
-	ExecutionInterval int             `bson:"interval"`
-	lastexecution     time.Time       `bson:"-"`
-	consequent        int             `bson:"-"`
-	inRun             bool            `bson:"-"`
-	Kb                *KnowledgeBased `bson:"-"  json:"-"`
-	bkclasses         []*KBClass      `bson:"-"`
-	bin               []*BIN          `bson:"-"`
+	Id                bson.ObjectId `bson:"_id,omitempty"`
+	Rule              string        `bson:"rule"`
+	Priority          byte          `bson:"priority"` //0..100
+	ExecutionInterval int           `bson:"interval"`
+	lastexecution     time.Time     `bson:"-"`
+	consequent        int           `bson:"-"`
+	inRun             bool          `bson:"-"`
+	//	Kb                *KnowledgeBased `bson:"-"  json:"-"`
+	bkclasses []*KBClass `bson:"-"`
+	bin       []*BIN     `bson:"-"`
 }
 
 type KBHistory struct {
@@ -219,12 +220,12 @@ type KBHistory struct {
 }
 
 type KBAttributeObject struct {
-	Id          bson.ObjectId   `bson:"id"`
-	Attribute   bson.ObjectId   `bson:"attribute_id"  json:"AttributeId"`
-	KbObject    *KBObject       `bson:"-" json:"-"`
-	KbHistory   *KBHistory      `bson:"-" json:"History"`
-	KbAttribute *KBAttribute    `bson:"-"  json:"Attrinute"`
-	Kb          *KnowledgeBased `bson:"-"  json:"-"`
+	Id          bson.ObjectId `bson:"id"`
+	Attribute   bson.ObjectId `bson:"attribute_id"  json:"AttributeId"`
+	KbObject    *KBObject     `bson:"-" json:"-"`
+	KbHistory   *KBHistory    `bson:"-" json:"History"`
+	KbAttribute *KBAttribute  `bson:"-"  json:"Attrinute"`
+	//Kb          *KnowledgeBased `bson:"-"  json:"-"`
 }
 
 type KBObject struct {

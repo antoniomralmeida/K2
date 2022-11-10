@@ -30,14 +30,15 @@ func (r *KBRule) Run() {
 	type Value struct {
 		value any
 		trust float64
+		atype KBAttributeType
 	}
-	r.Kb.mutex.Lock()
+	GKB.mutex.Lock()
 	if r.inRun { //avoid non-parallel execution of the same rule
-		r.Kb.mutex.Unlock()
+		GKB.mutex.Unlock()
 		return
 	}
 	r.inRun = true
-	r.Kb.mutex.Unlock()
+	GKB.mutex.Unlock()
 	type ctrl struct {
 		i   int
 		max int
@@ -173,8 +174,8 @@ oulter:
 
 			idx[ix] = ctrl{0, len(attrs[ix]) - 1}
 			for iy := range attrs[ix] {
-				v, t := attrs[ix][iy].Value()
-				vls = append(vls, Value{v, t})
+				v, t, at := attrs[ix][iy].Value()
+				vls = append(vls, Value{v, t, at})
 			}
 			values[ix] = vls
 			idx2 = append(idx2, ix)
@@ -193,20 +194,20 @@ oulter:
 					break
 				}
 				value := fmt.Sprint(values[key][idx[key].i].value)
+				if values[key][idx[key].i].atype == KBString || values[key][idx[key].i].atype == KBList {
+					value = "\"" + value + "\""
+				}
 				exp = strings.Replace(exp, key, value, -1)
 				trust := fmt.Sprint(values[key][idx[key].i].trust)
 				fuzzy = strings.Replace(fuzzy, key, trust, -1)
 				obs = append(obs, objs[key][idx[key].i])
 			}
-			fmt.Println(values)
-			fmt.Println(expression, fuzzy, ok)
 			if ok {
 				result, err := gval.Evaluate(exp, nil)
 				lib.LogFatal(err)
 				trust, err := gval.Evaluate(fuzzy, nil)
 				lib.LogFatal(err)
 				t, _ := strconv.ParseFloat(fmt.Sprintf("%v", trust), 64)
-				fmt.Println(result, t)
 				if result == true {
 					r.RunConsequent(obs, t)
 				}
@@ -229,9 +230,9 @@ oulter:
 		r.RunConsequent([]*KBObject{}, 100.0)
 	}
 	r.lastexecution = time.Now()
-	r.Kb.mutex.Lock()
+	GKB.mutex.Lock()
 	r.inRun = false
-	r.Kb.mutex.Unlock()
+	GKB.mutex.Unlock()
 
 }
 
@@ -239,10 +240,19 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) {
 	for i := r.consequent; i < len(r.bin); {
 		switch r.bin[i].literalbin {
 		case b_inform:
-			i += 4
+			i += 5
 			if r.bin[i].tokentype != ebnf.Text {
 				log.Fatal("E010 -Error in KB Rule ", r.Id, " near ", r.bin[i].token)
 			}
+			txt := ""
+			for {
+				txt = txt + r.bin[i].token
+				i++
+				if r.bin[i].literalbin != b_the {
+					break
+				}
+			}
+
 		case b_set:
 			i += 2
 			if r.bin[i].tokentype != ebnf.Attribute {
@@ -291,9 +301,9 @@ func (r *KBRule) Persist() error {
 	}
 }
 
-func FindAllRules(sort string, rs *[]KBRule) error {
+func FindAllRules(sort string) error {
 	collection := initializers.GetDb().C("KBRule")
-	return collection.Find(bson.M{}).Sort(sort).All(rs)
+	return collection.Find(bson.M{}).Sort(sort).All(&GKB.Rules)
 }
 
 func (r *KBRule) addClass(c *KBClass) {

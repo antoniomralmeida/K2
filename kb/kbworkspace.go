@@ -18,7 +18,7 @@ func (w *KBWorkspace) Persist() error {
 	}
 }
 
-func FindAllWorkspaces(sort string, ws *[]KBWorkspace) error {
+func FindAllWorkspaces(sort string) error {
 	collection := initializers.GetDb().C("KBWorkspace")
 	idx, _ := collection.Indexes()
 	if len(idx) == 1 {
@@ -27,5 +27,5 @@ func FindAllWorkspaces(sort string, ws *[]KBWorkspace) error {
 			log.Fatal(err)
 		}
 	}
-	return collection.Find(bson.M{}).Sort(sort).All(ws)
+	return collection.Find(bson.M{}).Sort(sort).All(&GKB.Workspaces)
 }

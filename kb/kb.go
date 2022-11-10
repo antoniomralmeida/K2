@@ -11,65 +11,68 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-func (kb *KnowledgeBased) Init() {
+var GKB *KnowledgeBased
+
+func Init() {
 	log.Println("Init KB")
 
-	kb.FindOne()
-	if kb.Name == "" {
-		kb.Name = "K2 System KB"
+	GKB := KnowledgeBased{}
+	GKB.FindOne()
+	if GKB.Name == "" {
+		GKB.Name = "K2 System KB"
 	}
-	kb.Persist()
-	kb.IdxClasses = make(map[bson.ObjectId]*KBClass)
-	kb.IdxObjects = make(map[string]*KBObject)
-	kb.IdxAttributeObjects = make(map[string]*KBAttributeObject)
+	GKB.Persist()
+	GKB.IdxClasses = make(map[bson.ObjectId]*KBClass)
+	GKB.IdxObjects = make(map[string]*KBObject)
+	GKB.IdxAttributeObjects = make(map[string]*KBAttributeObject)
 
 	ebnf := ebnf.EBNF{}
-	kb.ebnf = &ebnf
-	kb.ebnf.ReadToken("./ebnf/k2.ebnf")
+	GKB.ebnf = &ebnf
+	GKB.ebnf.ReadToken("./ebnf/k2.ebnf")
 
-	FindAllClasses("_id", &kb.Classes)
-	for j := range kb.Classes {
-		kb.IdxClasses[kb.Classes[j].Id] = &kb.Classes[j]
+	FindAllClasses("_id", &GKB.Classes)
+	for j := range GKB.Classes {
+		GKB.IdxClasses[GKB.Classes[j].Id] = &GKB.Classes[j]
 	}
 
-	for j, c := range kb.Classes {
+	for j, c := range GKB.Classes {
 		log.Println("Prepare Class ", c.Name)
 		if c.ParentID != "" {
-			pc := kb.IdxClasses[c.ParentID]
+			pc := GKB.IdxClasses[c.ParentID]
 			if pc != nil {
-				kb.Classes[j].ParentClass = pc
+				GKB.Classes[j].ParentClass = pc
 			} else {
 				log.Fatal("Parent of Class " + c.Name + " not found!")
 			}
 		}
 	}
 
-	FindAllObjects(bson.M{}, "name", &kb.Objects)
-	for j, o := range kb.Objects {
-		kb.IdxObjects[o.Name] = &kb.Objects[j]
-		c := kb.IdxClasses[o.Class]
+	FindAllObjects(bson.M{}, "name", &GKB.Objects)
+	for j, o := range GKB.Objects {
+		GKB.IdxObjects[o.Name] = &GKB.Objects[j]
+		c := GKB.IdxClasses[o.Class]
 		if c != nil {
-			kb.Objects[j].Bkclass = c
-			attrs := kb.FindAttributes(c)
+			GKB.Objects[j].Bkclass = c
+			attrs := GKB.FindAttributes(c)
 			sort.Slice(attrs, func(i, j int) bool {
 				return attrs[i].Id < attrs[j].Id
 			})
 			for k, x := range o.Attributes {
-				kb.Objects[j].Attributes[k].KbObject = &kb.Objects[j]
-				kb.Objects[j].Attributes[k].Kb = kb
+				GKB.Objects[j].Attributes[k].KbObject = &GKB.Objects[j]
+				//kb.Objects[j].Attributes[k].Kb = kb
 				for l, y := range attrs {
 					if y.Id == x.Attribute {
-						kb.Objects[j].Attributes[k].KbAttribute = attrs[l]
+						GKB.Objects[j].Attributes[k].KbAttribute = attrs[l]
 						break
 					}
 					if y.Id > x.Attribute {
 						break
 					}
 				}
-				if kb.Objects[j].Attributes[k].KbAttribute == nil {
+				if GKB.Objects[j].Attributes[k].KbAttribute == nil {
 					log.Fatal("Attribute not found ", x.Attribute)
 				}
-				kb.IdxAttributeObjects[o.Name+"."+kb.Objects[j].Attributes[k].KbAttribute.Name] = &kb.Objects[j].Attributes[k]
+				GKB.IdxAttributeObjects[o.Name+"."+GKB.Objects[j].Attributes[k].KbAttribute.Name] = &GKB.Objects[j].Attributes[k]
 
 				//Obter ultimo valor
 				h := KBHistory{}
@@ -79,26 +82,26 @@ func (kb *KnowledgeBased) Init() {
 						log.Println(err)
 					}
 				} else {
-					kb.Objects[j].Attributes[k].KbHistory = &h
+					GKB.Objects[j].Attributes[k].KbHistory = &h
 				}
-				kb.Objects[j].Attributes[k].Validity()
+				GKB.Objects[j].Attributes[k].Validity()
 			}
 		} else {
 			log.Fatal("Class of object " + o.Name + " not found!")
 		}
 	}
 
-	FindAllWorkspaces("name", &kb.Workspaces)
+	FindAllWorkspaces("name")
 
-	FindAllRules("_id", &kb.Rules)
+	FindAllRules("_id")
 
-	for i := range kb.Rules {
-		_, bin, err := kb.ParsingCommand(kb.Rules[i].Rule)
+	for i := range GKB.Rules {
+		_, bin, err := GKB.ParsingCommand(GKB.Rules[i].Rule)
 		if err != nil {
 			log.Fatal(err)
 		}
-		kb.Rules[i].Kb = kb
-		kb.linkerRule(&kb.Rules[i], bin)
+		//kb.Rules[i].Kb = kb
+		GKB.linkerRule(&GKB.Rules[i], bin)
 	}
 }
 
@@ -180,7 +183,7 @@ func (kb *KnowledgeBased) NewObject(class string, name string) *KBObject {
 	}
 	o := KBObject{Name: name, Class: p.Id, Bkclass: p}
 	for _, x := range kb.FindAttributes(p) {
-		n := KBAttributeObject{Id: bson.NewObjectId(), Attribute: x.Id, KbAttribute: x, KbObject: &o, Kb: kb}
+		n := KBAttributeObject{Id: bson.NewObjectId(), Attribute: x.Id, KbAttribute: x, KbObject: &o}
 		o.Attributes = append(o.Attributes, n)
 		kb.IdxAttributeObjects[n.getFullName()] = &n
 	}
@@ -250,7 +253,7 @@ func (kb *KnowledgeBased) NewAttributeObject(obj *KBObject, attr *KBAttribute) *
 func (kb *KnowledgeBased) NewRule(rule string, priority byte, interval int) *KBRule {
 	_, bin, err := kb.ParsingCommand(rule)
 	lib.LogFatal(err)
-	r := KBRule{Rule: rule, Priority: priority, ExecutionInterval: interval, Kb: kb}
+	r := KBRule{Rule: rule, Priority: priority, ExecutionInterval: interval}
 	lib.LogFatal(r.Persist())
 	kb.linkerRule(&r, bin)
 	kb.Rules = append(kb.Rules, r)

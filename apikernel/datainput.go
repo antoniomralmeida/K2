@@ -10,7 +10,7 @@ import (
 )
 
 func GetDataInput(c *fiber.Ctx) error {
-	objs := kbbase.GetDataInput()
+	objs := kb.GKB.GetDataInput()
 	c.Response().Header.Add("Access-Control-Allow-Origin", "*")
 	return c.JSON(objs)
 }
@@ -21,7 +21,7 @@ func PostDataInput(c *fiber.Ctx) error {
 	lib.Log(err)
 	c.Response().Header.Add("Access-Control-Allow-Origin", "*")
 	for key := range data {
-		a := kbbase.FindAttributeObjectByName(key)
+		a := kb.GKB.FindAttributeObjectByName(key)
 		if a != nil {
 			a.SetValue(data[key][0], kb.User, 100)
 		} else {
