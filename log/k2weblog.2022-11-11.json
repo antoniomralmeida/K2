@@ -28,3 +28,4 @@
 {"level":"info","ts":"2022-11-11T14:29:12.628-0300","caller":"initializers/log.go:47","msg":"Initializing Web Server K2 system version: 0.9.0 build: 1668187752"}
 {"level":"info","ts":"2022-11-11T14:39:02.257-0300","caller":"initializers/log.go:47","msg":"Initializing Web Server K2 system version: 0.9.0 build: 1668188342"}
 {"level":"info","ts":"2022-11-11T14:59:35.212-0300","caller":"initializers/log.go:48","msg":"Initializing Web Server K2 system version: 0.9.0 build: 1668189575"}
+{"level":"info","ts":"2022-11-11T15:14:44.058-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"Initializing Web Server K2 system version: 0.9.0 build: 1668190484"}

@@ -377,3 +377,30 @@
 {"level":"info","ts":"2022-11-11T14:59:42.661-0300","caller":"initializers/log.go:48","msg":"RunStackRules..."}
 {"level":"info","ts":"2022-11-11T14:59:44.670-0300","caller":"initializers/log.go:48","msg":"RunStackRules..."}
 {"level":"info","ts":"2022-11-11T14:59:46.682-0300","caller":"initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T15:14:24.721-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"Initializing K2 system version: 0.9.0 build: 1668190464 PID: 51332"}
+{"level":"info","ts":"2022-11-11T15:14:24.722-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"ConnectDB"}
+{"level":"info","ts":"2022-11-11T15:14:24.745-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"Init KB"}
+{"level":"info","ts":"2022-11-11T15:14:24.749-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"Parsing ebnf rule Rule"}
+{"level":"info","ts":"2022-11-11T15:14:24.749-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"Parsing ebnf rule Expression"}
+{"level":"info","ts":"2022-11-11T15:14:24.749-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"Parsing ebnf rule Consequent"}
+{"level":"info","ts":"2022-11-11T15:14:24.749-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"Parsing ebnf rule Set"}
+{"level":"info","ts":"2022-11-11T15:14:24.750-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"Parsing ebnf rule Inform"}
+{"level":"info","ts":"2022-11-11T15:14:24.752-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"Prepare Class Equipamento"}
+{"level":"info","ts":"2022-11-11T15:14:24.752-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"Prepare Class MotorElétrico"}
+{"level":"info","ts":"2022-11-11T15:14:24.764-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"Parsing Prodution Rule: for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230"}
+{"level":"info","ts":"2022-11-11T15:14:24.765-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":", compilation successfully!"}
+{"level":"info","ts":"2022-11-11T15:14:24.765-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"Linking Prodution Rule: 636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-11T15:14:24.774-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"K2 System started!"}
+{"level":"info","ts":"2022-11-11T15:14:26.779-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T15:14:28.788-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T15:14:28.788-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"run...636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-11T15:14:30.812-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T15:14:32.820-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T15:14:34.832-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T15:14:36.845-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T15:14:38.859-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T15:14:40.859-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T15:14:42.870-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T15:14:44.874-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T15:14:46.883-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T15:14:48.884-0300","caller":"C:/Users/manoe/git/K2/initializers/log.go:48","msg":"RunStackRules..."}
