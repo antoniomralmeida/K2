@@ -1,10 +1,14 @@
 package apikernel
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"sync"
+	"time"
 
+	"github.com/antoniomralmeida/k2/initializers"
+	v "github.com/antoniomralmeida/k2/version"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -14,12 +18,11 @@ import (
 func Run(wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	app := fiber.New(fiber.Config{AppName: "K2 System API-KERNEL v1.0.1",
+	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 System API-KERNEL ", v.Version, "[", v.Build, "]"),
 		DisableStartupMessage: false,
 		Prefork:               false})
-
 	wd, _ := os.Getwd()
-	f := wd + os.Getenv("HTTPAPILOG")
+	f := wd + os.Getenv("LOGPATH") + "k2apihttp." + time.Now().Format(initializers.YYYYMMDD) + ".log"
 	file, err := os.OpenFile(f, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("error opening file: %v %v", err, f)

@@ -3,6 +3,7 @@ package initializers
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -10,12 +11,14 @@ import (
 
 var logger *zap.Logger
 
-func LogInit() {
-	wd, _ := os.Getwd()
+const YYYYMMDD = "2006-01-02"
 
-	logFileName := wd + os.Getenv("K2LOG")
+func LogInit(filebase string) {
+	wd, _ := os.Getwd()
+	logFileName := wd + os.Getenv("LOGPATH") + filebase + "." + time.Now().Format(YYYYMMDD) + ".json"
 	config := zap.NewProductionEncoderConfig()
 	config.EncodeTime = zapcore.ISO8601TimeEncoder
+	config.EncodeCaller = zapcore.ShortCallerEncoder
 	fileEncoder := zapcore.NewJSONEncoder(config)
 	logFile, _ := os.OpenFile(logFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	writer := zapcore.AddSync(logFile)

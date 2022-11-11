@@ -1,0 +1,379 @@
+{"level":"info","ts":"2022-11-11T14:08:47.331-0300","caller":"initializers/log.go:47","msg":"Initializing K2 system version 0.9.0 build 1668186527 ..."}
+{"level":"info","ts":"2022-11-11T14:08:47.331-0300","caller":"initializers/log.go:47","msg":"ConnectDB"}
+{"level":"info","ts":"2022-11-11T14:08:47.349-0300","caller":"initializers/log.go:47","msg":"Init KB"}
+{"level":"info","ts":"2022-11-11T14:08:47.352-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Rule"}
+{"level":"info","ts":"2022-11-11T14:08:47.352-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Expression"}
+{"level":"info","ts":"2022-11-11T14:08:47.353-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Consequent"}
+{"level":"info","ts":"2022-11-11T14:08:47.353-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Set"}
+{"level":"info","ts":"2022-11-11T14:08:47.353-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Inform"}
+{"level":"info","ts":"2022-11-11T14:08:47.355-0300","caller":"initializers/log.go:47","msg":"Prepare Class Equipamento"}
+{"level":"info","ts":"2022-11-11T14:08:47.355-0300","caller":"initializers/log.go:47","msg":"Prepare Class MotorElétrico"}
+{"level":"info","ts":"2022-11-11T14:08:47.364-0300","caller":"initializers/log.go:47","msg":"Parsing Prodution Rule: for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230"}
+{"level":"info","ts":"2022-11-11T14:08:47.365-0300","caller":"initializers/log.go:47","msg":", compilation successfully!"}
+{"level":"info","ts":"2022-11-11T14:08:47.365-0300","caller":"initializers/log.go:47","msg":"Linking Prodution Rule: 636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-11T14:08:47.372-0300","caller":"initializers/log.go:47","msg":"K2 System started!"}
+{"level":"info","ts":"2022-11-11T14:08:49.380-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:08:51.385-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:08:51.385-0300","caller":"initializers/log.go:47","msg":"run...636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-11T14:08:53.389-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:08:55.393-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:08:57.398-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:08:59.410-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:01.416-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:03.420-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:05.426-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:07.433-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:09.438-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:11.448-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:13.450-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:15.460-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:17.463-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:19.477-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:21.488-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:23.489-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:25.499-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:27.503-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:29.513-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:31.520-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:33.525-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:35.535-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:37.537-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:39.544-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:41.559-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:43.568-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:45.583-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:47.381-0300","caller":"initializers/log.go:47","msg":"RefrehRules..."}
+{"level":"info","ts":"2022-11-11T14:09:47.598-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:49.608-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:51.616-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:53.623-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:55.628-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:57.637-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:09:59.648-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:01.648-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:03.657-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:05.664-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:07.673-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:09.683-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:11.692-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:13.697-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:15.703-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:17.710-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:19.720-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:21.731-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:23.736-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:25.741-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:27.755-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:29.762-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:31.773-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:33.780-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:35.787-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:37.797-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:39.808-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:41.816-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:43.819-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:45.832-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:47.391-0300","caller":"initializers/log.go:47","msg":"RefrehRules..."}
+{"level":"info","ts":"2022-11-11T14:10:47.841-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:49.855-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:51.866-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:53.872-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:55.878-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:57.889-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:10:59.902-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:01.903-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:03.905-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:05.910-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:07.917-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:09.926-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:11.929-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:13.939-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:15.949-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:17.954-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:19.966-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:21.980-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:23.994-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:26.008-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:28.008-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:30.015-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:32.021-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:34.029-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:36.029-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:38.038-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:40.042-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:42.047-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:44.059-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:46.061-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:47.401-0300","caller":"initializers/log.go:47","msg":"RefrehRules..."}
+{"level":"info","ts":"2022-11-11T14:11:48.067-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:50.082-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:52.093-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:54.103-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:56.106-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:11:58.111-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:00.118-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:02.125-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:04.137-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:06.139-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:08.147-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:10.158-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:12.165-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:14.176-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:16.191-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:18.196-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:20.431-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:22.435-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:24.505-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:26.515-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:28.526-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:30.535-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:32.539-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:34.543-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:36.552-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:38.561-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:40.576-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:42.579-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:44.584-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:12:46.599-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:13.542-0300","caller":"initializers/log.go:47","msg":"Initializing K2 system version: 0.9.0 build: 1668187033 PID: 47028"}
+{"level":"info","ts":"2022-11-11T14:17:13.542-0300","caller":"initializers/log.go:47","msg":"ConnectDB"}
+{"level":"info","ts":"2022-11-11T14:17:13.563-0300","caller":"initializers/log.go:47","msg":"Init KB"}
+{"level":"info","ts":"2022-11-11T14:17:13.568-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Rule"}
+{"level":"info","ts":"2022-11-11T14:17:13.568-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Expression"}
+{"level":"info","ts":"2022-11-11T14:17:13.568-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Consequent"}
+{"level":"info","ts":"2022-11-11T14:17:13.569-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Set"}
+{"level":"info","ts":"2022-11-11T14:17:13.569-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Inform"}
+{"level":"info","ts":"2022-11-11T14:17:13.571-0300","caller":"initializers/log.go:47","msg":"Prepare Class Equipamento"}
+{"level":"info","ts":"2022-11-11T14:17:13.571-0300","caller":"initializers/log.go:47","msg":"Prepare Class MotorElétrico"}
+{"level":"info","ts":"2022-11-11T14:17:13.581-0300","caller":"initializers/log.go:47","msg":"Parsing Prodution Rule: for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230"}
+{"level":"info","ts":"2022-11-11T14:17:13.583-0300","caller":"initializers/log.go:47","msg":", compilation successfully!"}
+{"level":"info","ts":"2022-11-11T14:17:13.583-0300","caller":"initializers/log.go:47","msg":"Linking Prodution Rule: 636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-11T14:17:13.595-0300","caller":"initializers/log.go:47","msg":"K2 System started!"}
+{"level":"info","ts":"2022-11-11T14:17:15.610-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:17.616-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:17.616-0300","caller":"initializers/log.go:47","msg":"run...636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-11T14:17:19.628-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:21.639-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:23.643-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:25.656-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:27.668-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:29.681-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:31.686-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:33.692-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:35.698-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:37.706-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:39.718-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:41.727-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:43.733-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:45.745-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:47.745-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:49.756-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:51.770-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:53.771-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:55.782-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:57.788-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:17:59.802-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:18:01.813-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:18:03.827-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:18:05.833-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:18:07.841-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:18:09.844-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:18:11.852-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:18:13.598-0300","caller":"initializers/log.go:47","msg":"RefrehRules..."}
+{"level":"info","ts":"2022-11-11T14:18:13.862-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:18:15.863-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:18:17.874-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:18:19.886-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:18:21.893-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:18:23.903-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:18:25.913-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:18:27.919-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:25:40.314-0300","caller":"initializers/log.go:47","msg":"Initializing K2 system version: 0.9.0 build: 1668187540 PID: 42468"}
+{"level":"info","ts":"2022-11-11T14:25:40.314-0300","caller":"initializers/log.go:47","msg":"ConnectDB"}
+{"level":"info","ts":"2022-11-11T14:25:40.328-0300","caller":"initializers/log.go:47","msg":"Init KB"}
+{"level":"info","ts":"2022-11-11T14:25:40.330-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Rule"}
+{"level":"info","ts":"2022-11-11T14:25:40.330-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Expression"}
+{"level":"info","ts":"2022-11-11T14:25:40.330-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Consequent"}
+{"level":"info","ts":"2022-11-11T14:25:40.330-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Set"}
+{"level":"info","ts":"2022-11-11T14:25:40.330-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Inform"}
+{"level":"info","ts":"2022-11-11T14:25:40.333-0300","caller":"initializers/log.go:47","msg":"Prepare Class Equipamento"}
+{"level":"info","ts":"2022-11-11T14:25:40.333-0300","caller":"initializers/log.go:47","msg":"Prepare Class MotorElétrico"}
+{"level":"info","ts":"2022-11-11T14:25:40.341-0300","caller":"initializers/log.go:47","msg":"Parsing Prodution Rule: for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230"}
+{"level":"info","ts":"2022-11-11T14:25:40.341-0300","caller":"initializers/log.go:47","msg":", compilation successfully!"}
+{"level":"info","ts":"2022-11-11T14:25:40.341-0300","caller":"initializers/log.go:47","msg":"Linking Prodution Rule: 636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-11T14:25:40.348-0300","caller":"initializers/log.go:47","msg":"K2 System started!"}
+{"level":"info","ts":"2022-11-11T14:25:42.356-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:25:44.361-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:25:44.361-0300","caller":"initializers/log.go:47","msg":"run...636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-11T14:25:46.363-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:25:48.376-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:25:50.383-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:25:52.391-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:25:54.404-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:25:56.415-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:25:58.428-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:00.436-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:02.448-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:04.448-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:06.457-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:08.462-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:10.471-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:12.479-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:14.490-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:16.505-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:18.512-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:20.527-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:22.542-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:24.547-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:26.556-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:28.571-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:30.578-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:32.587-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:34.595-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:36.602-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:38.612-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:40.350-0300","caller":"initializers/log.go:47","msg":"RefrehRules..."}
+{"level":"info","ts":"2022-11-11T14:26:40.615-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:42.630-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:44.636-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:46.639-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:48.649-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:50.657-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:52.664-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:26:54.676-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:28:51.886-0300","caller":"initializers/log.go:47","msg":"Initializing K2 system version: 0.9.0 build: 1668187731 PID: 48092"}
+{"level":"info","ts":"2022-11-11T14:28:51.887-0300","caller":"initializers/log.go:47","msg":"ConnectDB"}
+{"level":"info","ts":"2022-11-11T14:28:51.911-0300","caller":"initializers/log.go:47","msg":"Init KB"}
+{"level":"info","ts":"2022-11-11T14:28:51.917-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Rule"}
+{"level":"info","ts":"2022-11-11T14:28:51.917-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Expression"}
+{"level":"info","ts":"2022-11-11T14:28:51.917-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Consequent"}
+{"level":"info","ts":"2022-11-11T14:28:51.917-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Set"}
+{"level":"info","ts":"2022-11-11T14:28:51.917-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Inform"}
+{"level":"info","ts":"2022-11-11T14:28:51.921-0300","caller":"initializers/log.go:47","msg":"Prepare Class Equipamento"}
+{"level":"info","ts":"2022-11-11T14:28:51.922-0300","caller":"initializers/log.go:47","msg":"Prepare Class MotorElétrico"}
+{"level":"info","ts":"2022-11-11T14:28:51.934-0300","caller":"initializers/log.go:47","msg":"Parsing Prodution Rule: for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230"}
+{"level":"info","ts":"2022-11-11T14:28:51.935-0300","caller":"initializers/log.go:47","msg":", compilation successfully!"}
+{"level":"info","ts":"2022-11-11T14:28:51.935-0300","caller":"initializers/log.go:47","msg":"Linking Prodution Rule: 636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-11T14:28:51.945-0300","caller":"initializers/log.go:47","msg":"K2 System started!"}
+{"level":"info","ts":"2022-11-11T14:28:53.946-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:28:55.950-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:28:55.950-0300","caller":"initializers/log.go:47","msg":"run...636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-11T14:28:57.956-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:28:59.959-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:01.970-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:03.978-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:05.983-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:07.993-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:09.999-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:12.002-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:14.007-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:16.020-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:18.028-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:20.031-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:22.042-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:24.047-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:26.053-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:28.065-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:30.073-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:32.083-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:34.097-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:36.107-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:38.118-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:40.132-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:42.134-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:44.137-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:46.147-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:48.154-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:50.157-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:51.957-0300","caller":"initializers/log.go:47","msg":"RefrehRules..."}
+{"level":"info","ts":"2022-11-11T14:29:52.160-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:54.162-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:56.165-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:29:58.177-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:30:00.181-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:30:02.192-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:30:04.200-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:30:06.212-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:30:08.220-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:30:10.229-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:30:12.237-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:30:14.247-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:30:16.260-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:30:18.272-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:30:20.272-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:30:22.283-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:30:24.290-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:30:26.296-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:30:28.306-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:30:30.312-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:38:58.327-0300","caller":"initializers/log.go:47","msg":"Initializing K2 system version: 0.9.0 build: 1668188338 PID: 49952"}
+{"level":"info","ts":"2022-11-11T14:38:58.327-0300","caller":"initializers/log.go:47","msg":"ConnectDB"}
+{"level":"info","ts":"2022-11-11T14:38:58.351-0300","caller":"initializers/log.go:47","msg":"Init KB"}
+{"level":"info","ts":"2022-11-11T14:38:58.354-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Rule"}
+{"level":"info","ts":"2022-11-11T14:38:58.354-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Expression"}
+{"level":"info","ts":"2022-11-11T14:38:58.354-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Consequent"}
+{"level":"info","ts":"2022-11-11T14:38:58.354-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Set"}
+{"level":"info","ts":"2022-11-11T14:38:58.355-0300","caller":"initializers/log.go:47","msg":"Parsing ebnf rule Inform"}
+{"level":"info","ts":"2022-11-11T14:38:58.360-0300","caller":"initializers/log.go:47","msg":"Prepare Class Equipamento"}
+{"level":"info","ts":"2022-11-11T14:38:58.360-0300","caller":"initializers/log.go:47","msg":"Prepare Class MotorElétrico"}
+{"level":"info","ts":"2022-11-11T14:38:58.371-0300","caller":"initializers/log.go:47","msg":"Parsing Prodution Rule: for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230"}
+{"level":"info","ts":"2022-11-11T14:38:58.372-0300","caller":"initializers/log.go:47","msg":", compilation successfully!"}
+{"level":"info","ts":"2022-11-11T14:38:58.372-0300","caller":"initializers/log.go:47","msg":"Linking Prodution Rule: 636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-11T14:38:58.385-0300","caller":"initializers/log.go:47","msg":"K2 System started!"}
+{"level":"info","ts":"2022-11-11T14:39:00.390-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:02.398-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:02.398-0300","caller":"initializers/log.go:47","msg":"run...636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-11T14:39:04.401-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:06.403-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:08.414-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:10.422-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:12.437-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:14.442-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:16.448-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:18.462-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:20.463-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:22.470-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:24.476-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:26.477-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:28.480-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:30.486-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:32.494-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:34.498-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:36.510-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:38.522-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:40.530-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:42.530-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:44.534-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:46.545-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:48.554-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:39:50.563-0300","caller":"initializers/log.go:47","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:59:16.490-0300","caller":"initializers/log.go:48","msg":"Initializing K2 system version: 0.9.0 build: 1668189556 PID: 51304"}
+{"level":"info","ts":"2022-11-11T14:59:16.490-0300","caller":"initializers/log.go:48","msg":"ConnectDB"}
+{"level":"info","ts":"2022-11-11T14:59:16.515-0300","caller":"initializers/log.go:48","msg":"Init KB"}
+{"level":"info","ts":"2022-11-11T14:59:16.519-0300","caller":"initializers/log.go:48","msg":"Parsing ebnf rule Rule"}
+{"level":"info","ts":"2022-11-11T14:59:16.520-0300","caller":"initializers/log.go:48","msg":"Parsing ebnf rule Expression"}
+{"level":"info","ts":"2022-11-11T14:59:16.520-0300","caller":"initializers/log.go:48","msg":"Parsing ebnf rule Consequent"}
+{"level":"info","ts":"2022-11-11T14:59:16.520-0300","caller":"initializers/log.go:48","msg":"Parsing ebnf rule Set"}
+{"level":"info","ts":"2022-11-11T14:59:16.520-0300","caller":"initializers/log.go:48","msg":"Parsing ebnf rule Inform"}
+{"level":"info","ts":"2022-11-11T14:59:16.524-0300","caller":"initializers/log.go:48","msg":"Prepare Class Equipamento"}
+{"level":"info","ts":"2022-11-11T14:59:16.525-0300","caller":"initializers/log.go:48","msg":"Prepare Class MotorElétrico"}
+{"level":"info","ts":"2022-11-11T14:59:16.535-0300","caller":"initializers/log.go:48","msg":"Parsing Prodution Rule: for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230"}
+{"level":"info","ts":"2022-11-11T14:59:16.537-0300","caller":"initializers/log.go:48","msg":", compilation successfully!"}
+{"level":"info","ts":"2022-11-11T14:59:16.537-0300","caller":"initializers/log.go:48","msg":"Linking Prodution Rule: 636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-11T14:59:16.547-0300","caller":"initializers/log.go:48","msg":"K2 System started!"}
+{"level":"info","ts":"2022-11-11T14:59:18.550-0300","caller":"initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:59:20.564-0300","caller":"initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:59:20.564-0300","caller":"initializers/log.go:48","msg":"run...636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-11T14:59:22.574-0300","caller":"initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:59:24.584-0300","caller":"initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:59:26.591-0300","caller":"initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:59:28.595-0300","caller":"initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:59:30.607-0300","caller":"initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:59:32.619-0300","caller":"initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:59:34.633-0300","caller":"initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:59:36.637-0300","caller":"initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:59:38.643-0300","caller":"initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:59:40.652-0300","caller":"initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:59:42.661-0300","caller":"initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:59:44.670-0300","caller":"initializers/log.go:48","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-11T14:59:46.682-0300","caller":"initializers/log.go:48","msg":"RunStackRules..."}

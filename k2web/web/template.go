@@ -31,14 +31,10 @@ func Minify(mediatype string, from string) Template {
 	defer file.Close()
 
 	o, _ := os.Open(from)
-
 	read := io.Reader(o)
-
 	f, _ := os.CreateTemp("", "tmpfile-")
 	write := io.Writer(f)
-
 	to := f.Name()
-
 	m := minify.New()
 	//m.AddFunc("text/css", css.Minify)
 	m.AddFunc("text/html", h.Minify)
@@ -56,7 +52,7 @@ func Minify(mediatype string, from string) Template {
 	nto := to + filepath.Ext(from)
 	e := os.Rename(to, nto)
 	if e != nil {
-		log.Fatal(e)
+		initializers.Log(e, initializers.Error)
 	}
 	return Template{from, nto}
 }

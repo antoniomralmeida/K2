@@ -2,24 +2,21 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"sync"
 
 	"github.com/antoniomralmeida/k2/apikernel"
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/kb"
+	"github.com/antoniomralmeida/k2/version"
 	"github.com/antoniomralmeida/k2/web"
 )
 
-var (
-	version string
-	build   string
-)
-
 func init() {
-	msg := fmt.Sprintf("Initializing K2 system version %v build %v ...", version, build)
+	msg := fmt.Sprintf("Initializing K2 system version: %v build: %v PID: %v", version.Version, version.Build, os.Getppid())
 	fmt.Println(msg)
 	initializers.InitEnvVars()
-	initializers.LogInit()
+	initializers.LogInit("k2log")
 	initializers.Log(msg, initializers.Info)
 	initializers.ConnectDB()
 	kb.Init()
