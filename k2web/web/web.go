@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/antoniomralmeida/k2/initializers"
+	"github.com/antoniomralmeida/k2/lib"
 	"github.com/antoniomralmeida/k2/version"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
@@ -34,7 +34,7 @@ func Run() {
 		DisableStartupMessage: false,
 		Prefork:               true})
 	wd, _ := os.Getwd()
-	f := wd + os.Getenv("LOGPATH") + "k2webhttp." + time.Now().Format(initializers.YYYYMMDD) + ".log"
+	f := wd + os.Getenv("LOGPATH") + "k2webhttp." + time.Now().Format(lib.YYYYMMDD) + ".log"
 	file, err := os.OpenFile(f, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("error opening file: %v %v", err, f)

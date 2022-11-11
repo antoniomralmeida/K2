@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/antoniomralmeida/k2/initializers"
+	"github.com/antoniomralmeida/k2/lib"
 	"github.com/gofiber/fiber/v2"
 	"github.com/montanaflynn/stats"
 	p "github.com/rafaeljesus/parallel-fn"
@@ -108,7 +109,7 @@ func (attr *KBAttributeObject) SetValue(value any, source KBSource, trust float6
 		case KBNumber:
 			value, _ = strconv.ParseFloat(str, 64)
 		case KBDate:
-			t, err := time.Parse("02/01/2006", str)
+			t, err := time.Parse(lib.DDMMYYYY, str)
 			if err == nil {
 				value = t.UnixNano()
 			} else {
