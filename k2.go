@@ -13,7 +13,7 @@ import (
 )
 
 func init() {
-	msg := fmt.Sprintf("Initializing K2 system version: %v build: %v PID: %v", version.Version, version.Build, os.Getppid())
+	msg := fmt.Sprintf("Initializing K2 System version: %v build: %v PID: %v", version.Version, version.Build, os.Getppid())
 	fmt.Println(msg)
 	initializers.InitEnvVars()
 	initializers.LogInit("k2log")
@@ -35,10 +35,6 @@ func StartSystem() {
 
 func main() {
 	//TEST
-	//tests.Test1(&kbase)
-	//tests.Test2(&kbase)
-	//tests.Test6(&kbase)
-	//tests.Test1(&kbase)
 
 	//CORE
 	StartSystem()
