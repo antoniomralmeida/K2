@@ -5,23 +5,23 @@ import (
 	"os"
 	"time"
 
+	"github.com/antoniomralmeida/k2/lib"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
 var logger *zap.Logger
 
-const YYYYMMDD = "2006-01-02"
-
 func LogInit(filebase string) {
 	wd, _ := os.Getwd()
-	logFileName := wd + os.Getenv("LOGPATH") + filebase + "." + time.Now().Format(YYYYMMDD) + ".json"
+	logFileName := wd + os.Getenv("LOGPATH") + filebase + "." + time.Now().Format(lib.YYYYMMDD) + ".json"
 	config := zap.NewProductionEncoderConfig()
 	config.EncodeTime = zapcore.ISO8601TimeEncoder
 	config.EncodeCaller = zapcore.ShortCallerEncoder
 	fileEncoder := zapcore.NewJSONEncoder(config)
 	logFile, _ := os.OpenFile(logFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	writer := zapcore.AddSync(logFile)
+
 	defaultLogLevel := zapcore.DebugLevel
 	core := zapcore.NewTee(
 		zapcore.NewCore(fileEncoder, writer, defaultLogLevel),

@@ -6,6 +6,11 @@ import (
 	"strconv"
 )
 
+const (
+	YYYYMMDD = "2006-01-02"
+	DDMMYYYY = "02/01/2006"
+)
+
 func IsNumber(str string) bool {
 	_, err := strconv.ParseFloat(str, 32)
 	return err == nil
