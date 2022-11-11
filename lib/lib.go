@@ -9,6 +9,7 @@ import (
 const (
 	YYYYMMDD = "2006-01-02"
 	DDMMYYYY = "02/01/2006"
+	MMDDYYYY = "01/02/2006"
 )
 
 func IsNumber(str string) bool {
