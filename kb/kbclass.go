@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"github.com/antoniomralmeida/k2/initializers"
-	"github.com/antoniomralmeida/k2/lib"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -44,6 +43,6 @@ func (class *KBClass) Delete() error {
 
 func (class *KBClass) String() string {
 	j, err := json.MarshalIndent(*class, "", "\t")
-	lib.LogFatal(err)
+	initializers.Log(err, initializers.Error)
 	return string(j)
 }

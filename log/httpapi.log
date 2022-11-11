@@ -167,3 +167,13 @@
 09/11/2022 17:54:07 [127.0.0.1:60898] 200     1ms POST /api/postdatainput 
 09/11/2022 17:54:07 [127.0.0.1:60898] 200     1ms GET /api/getlistdatainput 
 09/11/2022 17:54:10 [127.0.0.1:60914] 200     1ms GET /api/getlistdatainput 
+10/11/2022 15:53:21 [127.0.0.1:49859] 200     1ms GET /api/getlistdatainput 
+10/11/2022 15:53:29 [127.0.0.1:49863] 200      0s POST /api/postdatainput 
+10/11/2022 15:53:29 [127.0.0.1:49863] 200      0s GET /api/getlistdatainput 
+10/11/2022 15:56:53 [127.0.0.1:64613] 200     1ms GET /api/getlistdatainput 
+10/11/2022 15:56:56 [127.0.0.1:64613] 200     1ms POST /api/postdatainput 
+10/11/2022 15:56:56 [127.0.0.1:64613] 200      0s GET /api/getlistdatainput 
+10/11/2022 15:57:51 [127.0.0.1:64652] 200     1ms GET /api/getlistdatainput 
+10/11/2022 15:57:54 [127.0.0.1:64652] 200    12ms POST /api/postdatainput 
+10/11/2022 15:57:54 [127.0.0.1:64652] 200      0s GET /api/getlistdatainput 
+10/11/2022 15:58:14 [127.0.0.1:64665] 200      0s GET /api/getlistdatainput 

@@ -2,13 +2,12 @@ package kb
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"sort"
 	"sync"
 	"time"
 
-	"github.com/antoniomralmeida/k2/lib"
+	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/web"
 	"github.com/eiannone/keyboard"
 	"github.com/madflojo/tasks"
@@ -31,7 +30,7 @@ func Run(wg *sync.WaitGroup) {
 			return nil
 		},
 	})
-	lib.LogFatal(err)
+	initializers.Log(err, initializers.Fatal)
 	_, err = scheduler.Add(&tasks.Task{
 		Interval: time.Duration(60 * time.Second),
 		TaskFunc: func() error {
@@ -39,9 +38,9 @@ func Run(wg *sync.WaitGroup) {
 			return nil
 		},
 	})
-	lib.LogFatal(err)
+	initializers.Log(err, initializers.Fatal)
 
-	log.Println("K2 System started!")
+	initializers.Log("K2 System started!", initializers.Info)
 	keysEvents, err := keyboard.GetKeys(10)
 	if err != nil {
 		panic(err)
@@ -68,7 +67,7 @@ func Run(wg *sync.WaitGroup) {
 }
 
 func (kb *KnowledgeBased) RunStackRules() error {
-	log.Println("RunStackRules...")
+	initializers.Log("RunStackRules...", initializers.Info)
 	if len(kb.stack) > 0 {
 		kb.mutex.Lock()
 		localstack := kb.stack
@@ -100,15 +99,16 @@ func (kb *KnowledgeBased) RunStackRules() error {
 }
 
 func (kb *KnowledgeBased) RefreshRules() error {
-	log.Println("RefrehRules...")
+	initializers.Log("RefrehRules...", initializers.Info)
 	for i := range kb.Objects {
 		if !kb.Objects[i].parsed {
 			for j := range kb.Rules {
 				for k := range kb.Rules[j].bkclasses {
 					if kb.Rules[j].bkclasses[k] == kb.Objects[i].Bkclass {
 						_, bin, err := kb.ParsingCommand(kb.Rules[j].Rule)
-						lib.LogFatal(err)
-						kb.linkerRule(&kb.Rules[j], bin)
+						if initializers.Log(err, initializers.Error) != nil {
+							kb.linkerRule(&kb.Rules[j], bin)
+						}
 					}
 				}
 			}

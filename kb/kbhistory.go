@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 
 	"github.com/antoniomralmeida/k2/initializers"
-	"github.com/antoniomralmeida/k2/lib"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -23,7 +22,7 @@ func (h *KBHistory) ClearingHistory(history int) error {
 	collection := initializers.GetDb().C("KBHistory")
 	for {
 		n, err := collection.Find(bson.D{{"attribute_id", Id}}).Count()
-		lib.LogFatal(err)
+		return initializers.Log(err, initializers.Error)
 		if n <= history {
 			return nil
 		}
@@ -45,6 +44,6 @@ func (h *KBHistory) FindLast(filter bson.D) error {
 
 func (h *KBHistory) String() string {
 	j, err := json.MarshalIndent(*h, "", "\t")
-	lib.LogFatal(err)
+	initializers.Log(err, initializers.Error)
 	return string(j)
 }

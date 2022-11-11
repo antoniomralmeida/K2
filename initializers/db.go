@@ -1,7 +1,6 @@
 package initializers
 
 import (
-	"log"
 	"os"
 
 	"gopkg.in/mgo.v2"
@@ -14,14 +13,14 @@ func GetDb() *mgo.Database {
 }
 
 func ConnectDB() {
-	log.Println("ConnectDB")
+	Log("ConnectDB", Info)
 
 	dsn := os.Getenv("DSN")
 	dbName := os.Getenv("db")
 
 	session, err := mgo.Dial(dsn)
 	if err != nil {
-		log.Fatal(err)
+		Log(err, Fatal)
 	}
 	db = session.DB(dbName)
 }

@@ -5,7 +5,6 @@ import (
 	"log"
 
 	"github.com/antoniomralmeida/k2/initializers"
-	"github.com/antoniomralmeida/k2/lib"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -22,7 +21,7 @@ func (o *KBObject) Persist() error {
 
 func (o *KBObject) String() string {
 	j, err := json.MarshalIndent(*o, "", "\t")
-	lib.LogFatal(err)
+	initializers.Log(err, initializers.Error)
 	return string(j)
 }
 

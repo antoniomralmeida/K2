@@ -3,14 +3,12 @@ package kb
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"reflect"
 	"strconv"
 	"time"
 
 	"github.com/antoniomralmeida/k2/initializers"
-	"github.com/antoniomralmeida/k2/lib"
 	"github.com/gofiber/fiber/v2"
 	"github.com/montanaflynn/stats"
 	p "github.com/rafaeljesus/parallel-fn"
@@ -74,7 +72,7 @@ func (ao *KBAttributeObject) Value() (any, float64, KBAttributeType) {
 		for {
 			select {
 			case e := <-p.Run(fn1, fn2, fn3):
-				log.Println(e)
+				initializers.Log(e, initializers.Error)
 				return nil, 0, NotDefined
 			case <-timeout:
 				if ao.KbHistory != nil {
@@ -91,17 +89,17 @@ func (attr *KBAttributeObject) getFullName() string {
 
 func (attr *KBAttributeObject) String() string {
 	j, err := json.MarshalIndent(*attr, "", "\t")
-	lib.LogFatal(err)
+	initializers.Log(err, initializers.Error)
 	return string(j)
 }
 
 func (attr *KBAttributeObject) SetValue(value any, source KBSource, trust float64) *KBHistory {
 	if attr == nil {
-		log.Println("Invalid attribute!")
+		initializers.Log("Invalid attribute!", initializers.Error)
 		return nil
 	}
 	if !attr.KbAttribute.isSource(source) && source != Inference {
-		log.Println("Invalid attribute source!")
+		initializers.Log("Invalid attribute source!", initializers.Error)
 		return nil
 	}
 	if reflect.TypeOf(value).String() == "string" {
@@ -114,13 +112,13 @@ func (attr *KBAttributeObject) SetValue(value any, source KBSource, trust float6
 			if err == nil {
 				value = t.UnixNano()
 			} else {
-				log.Println()
+				initializers.Log(err, initializers.Error)
 				return nil
 			}
 		}
 	}
 	h := KBHistory{Attribute: attr.Id, When: time.Now().UnixNano(), Value: value, Source: source, Trust: trust}
-	lib.LogFatal(h.Persist())
+	initializers.Log(h.Persist(), initializers.Fatal)
 	attr.KbHistory = &h
 	GKB.stack = append(GKB.stack, attr.KbAttribute.antecedentRules...) //  forward chaining
 	if attr.KbAttribute.KeepHistory != 0 {
@@ -130,16 +128,16 @@ func (attr *KBAttributeObject) SetValue(value any, source KBSource, trust float6
 }
 
 func (attr *KBAttributeObject) LinearRegression() error {
-	log.Println("LinearRegression...")
+	initializers.Log("LinearRegression...", initializers.Info)
 	if attr.KbAttribute.AType == KBNumber {
 		c := initializers.GetDb().C("KBHistory")
 		pipe := c.Pipe([]bson.M{bson.M{"$match": bson.M{"attribute_id": attr.Id}}, bson.M{"$project": bson.M{"_id": 0, "value": 1, "when": 1, "trust": 1}}})
 		resp := []bson.M{}
 		iter := pipe.Iter()
 		err := iter.All(&resp)
-		lib.LogFatal(err)
+		initializers.Log(err, initializers.Error)
 		if len(resp) <= 2 {
-			log.Println("cannot do linear regression with | C|<=2")
+			initializers.Log("cannot do linear regression with | C|<=2", initializers.Info)
 			return nil
 		}
 		X := make([]float64, len(resp))
@@ -165,8 +163,7 @@ func (attr *KBAttributeObject) LinearRegression() error {
 }
 
 func (attr *KBAttributeObject) MonteCarlo() error {
-	log.Println("MonteCarlo...")
-	fmt.Println("MonteCarlo...")
+	initializers.Log("MonteCarlo...", initializers.Info)
 	if attr.KbAttribute.AType == KBNumber {
 		c := initializers.GetDb().C("KBHistory")
 		pipe := c.Pipe([]bson.M{bson.M{"$match": bson.M{"attribute_id": attr.Id}},
@@ -178,7 +175,7 @@ func (attr *KBAttributeObject) MonteCarlo() error {
 		resp := []bson.M{}
 		iter := pipe.Iter()
 		err := iter.All(&resp)
-		lib.LogFatal(err)
+		initializers.Log(err, initializers.Error)
 		avg, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["avg"]), 64)
 		stdDev, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["stdDev"]), 64)
 		trust, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["trust"]), 32)
@@ -191,8 +188,7 @@ func (attr *KBAttributeObject) MonteCarlo() error {
 }
 
 func (attr *KBAttributeObject) NormalDistribution() error {
-	log.Println("NormalDistribution...")
-	fmt.Println("NormalDistribution...")
+	initializers.Log("NormalDistribution...", initializers.Info)
 	if attr.KbAttribute.AType == KBNumber {
 		c := initializers.GetDb().C("KBHistory")
 		pipe := c.Pipe([]bson.M{bson.M{"$match": bson.M{"attribute_id": attr.Id}},
@@ -204,7 +200,7 @@ func (attr *KBAttributeObject) NormalDistribution() error {
 		resp := []bson.M{}
 		iter := pipe.Iter()
 		err := iter.All(&resp)
-		lib.LogFatal(err)
+		initializers.Log(err, initializers.Error)
 		avg, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["avg"]), 64)
 		stdDev, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["stdDev"]), 64)
 		trust, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["trust"]), 32)
@@ -217,7 +213,7 @@ func (attr *KBAttributeObject) NormalDistribution() error {
 }
 
 func (attr *KBAttributeObject) IOTParsing() error {
-	log.Println("IOTParsing...")
+	initializers.Log("IOTParsing...", initializers.Info)
 	if !attr.Validity() {
 		api := os.Getenv("IOTMIDWARE")
 		if attr.KbAttribute.isSource(KBSource(User)) && api != "" {
@@ -227,7 +223,7 @@ func (attr *KBAttributeObject) IOTParsing() error {
 			req.Header.SetMethod("post")
 			req.SetRequestURI(iotapi)
 			if err := api.Parse(); err != nil {
-				log.Println(err)
+				initializers.Log(err, initializers.Error)
 			} else {
 				_, body, errs := api.Bytes()
 				if errs != nil {

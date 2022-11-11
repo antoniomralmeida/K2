@@ -1,11 +1,13 @@
 package web
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"os"
 	"path/filepath"
 
+	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/tdewolff/minify"
 	h "github.com/tdewolff/minify/html"
 )
@@ -24,7 +26,7 @@ func InitTemplates() {
 func Minify(mediatype string, from string) Template {
 	file, err := os.Open(from)
 	if err != nil {
-		log.Printf("Error opening file!!! %v", from)
+		initializers.Log(fmt.Sprintf("Error opening file!!! %v", from), initializers.Error)
 	}
 	defer file.Close()
 

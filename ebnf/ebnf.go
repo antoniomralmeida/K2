@@ -7,6 +7,8 @@ import (
 
 	"strings"
 	"unicode"
+
+	"github.com/antoniomralmeida/k2/initializers"
 )
 
 func (e *EBNF) GetBase() *Token {
@@ -85,7 +87,7 @@ func (e *EBNF) ReadToken(Tokenfile string) int {
 
 	file, err := ioutil.ReadFile(Tokenfile)
 	if err != nil {
-		log.Println("Could not read the file due to this %s error \n", err)
+		initializers.Log("Could not read the file due to this %s error \n"+err.Error(), initializers.Fatal)
 	}
 	ebnf_txt := string(file)
 	ebnf_txt = strings.Replace(ebnf_txt, "\r\n", "", -1)
@@ -197,14 +199,15 @@ func (e *EBNF) findClose(rule *Statement, symb int, Token string, i int, level i
 
 func (e *EBNF) parsingStatement(rule *Statement) {
 	var pairs []PAIR
-	log.Println("Parsing ebnf rule ", rule.name)
+	initializers.Log("Parsing ebnf rule "+rule.name, initializers.Info)
 	for i := 0; i < len(rule.tokens); i++ {
 		if rule.tokens[i].GetTokentype() == Control {
 			s := e.FindSymbols(rule.tokens[i].token, false)
 			if s != -1 {
 				c := e.findClose(rule, s, rule.tokens[i].token, i, 0)
 				if c == -1 {
-					log.Println("Parssing erro in Token ", rule.tokens[i].token, " #", rule.tokens[i].id, s, i)
+					msg := fmt.Sprint("Parssing erro in Token ", rule.tokens[i].token, " #", rule.tokens[i].id, s, i)
+					initializers.Log(msg, initializers.Fatal)
 					return
 				}
 				pairs = append(pairs, PAIR{i, c})

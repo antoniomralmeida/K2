@@ -1,8 +1,7 @@
 package web
 
 import (
-	"log"
-
+	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/itmisx/i18n"
 )
 
@@ -50,7 +49,7 @@ func Translate(term string, AcceptLanguage string) string {
 		}
 	}
 	if !ok {
-		log.Println("Accept-Language ", AcceptLanguage, " not supported!")
+		initializers.Log("Accept-Language "+AcceptLanguage+" not supported!", initializers.Info)
 		lang = "en"
 	}
 	return i18n.T(lang, term)

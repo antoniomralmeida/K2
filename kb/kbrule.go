@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -21,11 +20,11 @@ import (
 
 func (r *KBRule) String() string {
 	j, err := json.MarshalIndent(*r, "", "\t")
-	lib.LogFatal(err)
+	initializers.Log(err, initializers.Error)
 	return string(j)
 }
 
-func (r *KBRule) Run() {
+func (r *KBRule) Run() (e error) {
 
 	type Value struct {
 		value any
@@ -43,7 +42,7 @@ func (r *KBRule) Run() {
 		i   int
 		max int
 	}
-	log.Println("run...", r.Id.Hex())
+	initializers.Log("run..."+r.Id.Hex(), initializers.Info)
 
 	attrs := make(map[string][]*KBAttributeObject)
 	objs := make(map[string][]*KBObject)
@@ -63,19 +62,18 @@ oulter:
 		case b_for:
 			i++
 			if r.bin[i].literalbin != b_any {
-				log.Fatal("E001 - Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+				return initializers.Log("Error in KB Rule "+r.Id.Hex()+" near "+r.bin[i].token, initializers.Error)
 			}
 			i++
 			if r.bin[i].tokentype != ebnf.Class {
-				log.Fatal("E002 - Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+				return initializers.Log("Error in KB Rule "+r.Id.Hex()+" near "+r.bin[i].token, initializers.Error)
 			}
 			if r.bin[i].class == nil {
-				log.Fatal("E003 -Error in KB Rule ", r.Id, " near ", r.bin[i].token, " KB Class not found!")
+				return initializers.Log("Error in KB Rule "+r.Id.Hex()+" near "+r.bin[i].token+" KB Class not found!", initializers.Error)
 			}
 
 			if len(r.bin[i].objects) == 0 {
-				log.Println("W001 - Warning in KB Rule ", r.Id, " near ", r.bin[i].token, " no object found!")
-				break
+				return initializers.Log("Warning in KB Rule "+r.Id.Hex()+" near "+r.bin[i].token+" no object found!", initializers.Info)
 			}
 
 			if r.bin[i+1].tokentype == ebnf.DynamicReference {
@@ -92,15 +90,15 @@ oulter:
 					fuzzyexp = fuzzyexp + r.bin[i].token
 				}
 				if r.bin[i].literalbin != b_the {
-					log.Fatal("E004 - Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+					return initializers.Log("Error in KB Rule "+r.Id.Hex()+" near "+r.bin[i].token, initializers.Error)
 				}
 				i++
 				if r.bin[i].tokentype != ebnf.Attribute {
-					log.Fatal("E005 - Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+					return initializers.Log("Error in KB Rule "+r.Id.Hex()+" near "+r.bin[i].token, initializers.Error)
 				}
 
 				if r.bin[i].class == nil {
-					log.Fatal("E006 - Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+					return initializers.Log("Error in KB Rule "+r.Id.Hex()+" near "+r.bin[i].token, initializers.Error)
 				}
 				key := "{{" + r.bin[i].class.Name + "." + r.bin[i].token + "}}"
 				expression = expression + key
@@ -112,7 +110,7 @@ oulter:
 				if r.bin[i].literalbin == b_of {
 					i++
 					if r.bin[i].tokentype != ebnf.DynamicReference && r.bin[i].tokentype != ebnf.Object {
-						log.Fatal("E007 - Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+						return initializers.Log("Error in KB Rule "+r.Id.Hex()+" near "+r.bin[i].token, initializers.Error)
 					}
 					i++
 				}
@@ -204,9 +202,9 @@ oulter:
 			}
 			if ok {
 				result, err := gval.Evaluate(exp, nil)
-				lib.LogFatal(err)
+				return initializers.Log(err, initializers.Error)
 				trust, err := gval.Evaluate(fuzzy, nil)
-				lib.LogFatal(err)
+				return initializers.Log(err, initializers.Error)
 				t, _ := strconv.ParseFloat(fmt.Sprintf("%v", trust), 64)
 				if result == true {
 					r.RunConsequent(obs, t)
@@ -233,16 +231,18 @@ oulter:
 	GKB.mutex.Lock()
 	r.inRun = false
 	GKB.mutex.Unlock()
-
+	return nil
 }
 
-func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) {
+func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 	for i := r.consequent; i < len(r.bin); {
 		switch r.bin[i].literalbin {
 		case b_inform:
+			attrs := make(map[string][]*KBAttributeObject)
+
 			i += 5
 			if r.bin[i].tokentype != ebnf.Text {
-				log.Fatal("E010 -Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+				return initializers.Log("Error in KB Rule "+r.Id.Hex()+" near "+r.bin[i].token, initializers.Error)
 			}
 			txt := ""
 			for {
@@ -251,23 +251,38 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) {
 				if r.bin[i].literalbin != b_the {
 					break
 				}
+				if r.bin[i].tokentype != ebnf.Attribute {
+					return initializers.Log("Error in KB Rule "+r.Id.Hex()+" near "+r.bin[i].token, initializers.Error)
+				}
+				if r.bin[i].class == nil {
+					return initializers.Log("Error in KB Rule "+r.Id.Hex()+" near "+r.bin[i].token, initializers.Error)
+				}
+				key := "{{" + r.bin[i].class.Name + "." + r.bin[i].token + "}}"
+				txt = txt + " " + key + " "
+				attrs[key] = r.bin[i].attributeObjects
+				i += 2
+				if r.bin[i].literalbin == b_the {
+					i += 2
+				} else if r.bin[i].tokentype != ebnf.DynamicReference {
+					return initializers.Log("Error in KB Rule "+r.Id.Hex()+" near "+r.bin[i].token, initializers.Error)
+				}
+
 			}
 
 		case b_set:
 			i += 2
 			if r.bin[i].tokentype != ebnf.Attribute {
-				log.Fatal("E011 - Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+				return initializers.Log("Error in KB Rule "+r.Id.Hex()+" near "+r.bin[i].token, initializers.Error)
 			}
 			if r.bin[i].attributeObjects == nil {
-				log.Fatal("E012 - Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+				return initializers.Log("Error in KB Rule "+r.Id.Hex()+" near "+r.bin[i].token, initializers.Error)
 			}
 			attrs := r.bin[i].attributeObjects
 			if r.bin[i+3].tokentype != ebnf.Literal && r.bin[i+4].tokentype != ebnf.Literal {
-				log.Fatal("E013 - Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+				return initializers.Log("Error in KB Rule "+r.Id.Hex()+" near "+r.bin[i].token, initializers.Error)
 			}
-
 			if r.bin[i+4].tokentype != ebnf.Constant && r.bin[i+5].tokentype != ebnf.Constant {
-				log.Fatal("E014 - Error in KB Rule ", r.Id, " near ", r.bin[i].token)
+				return initializers.Log("Error in KB Rule "+r.Id.Hex()+" near "+r.bin[i].token, initializers.Error)
 			}
 			var v string
 			if r.bin[i+4].tokentype == ebnf.Constant {
@@ -289,6 +304,7 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) {
 		}
 		//TODO: concluir operações
 	}
+	return nil
 }
 
 func (r *KBRule) Persist() error {
@@ -330,7 +346,7 @@ func (kb *KnowledgeBased) ParsingCommand(cmd string) ([]*ebnf.Token, []*BIN, err
 	for strings.Contains(cmd, "  ") {
 		cmd = strings.Replace(cmd, "  ", " ", -1)
 	}
-	log.Println("Parsing Prodution Rule: ", cmd)
+	initializers.Log("Parsing Prodution Rule: "+cmd, initializers.Info)
 	var inWord = false
 	var inString = false
 	var inNumber = false
@@ -417,7 +433,7 @@ func (kb *KnowledgeBased) ParsingCommand(cmd string) ([]*ebnf.Token, []*BIN, err
 	}
 	for _, y := range pt.GetNexts() {
 		if y.GetToken() == "." && y.GetTokentype() == ebnf.Control {
-			log.Println(", compilation successfully!")
+			initializers.Log(", compilation successfully!", initializers.Info)
 			return nil, bin, nil
 		}
 	}
@@ -429,9 +445,9 @@ func (kb *KnowledgeBased) ParsingCommand(cmd string) ([]*ebnf.Token, []*BIN, err
 	return opts, nil, errors.New(str)
 }
 
-func (kb *KnowledgeBased) linkerRule(r *KBRule, bin []*BIN) {
+func (kb *KnowledgeBased) linkerRule(r *KBRule, bin []*BIN) error {
 	// Find references of objects in KB
-	log.Println("Linking Prodution Rule: ", r.Id)
+	initializers.Log("Linking Prodution Rule: "+r.Id.Hex(), initializers.Info)
 
 	dr := make(map[string]*KBClass)
 	consequent := -1
@@ -456,7 +472,7 @@ func (kb *KnowledgeBased) linkerRule(r *KBRule, bin []*BIN) {
 				c := kb.FindClassByName(x.GetToken(), true)
 				bin[j].class = c
 				objs := []KBObject{}
-				lib.LogFatal(FindAllObjects(bson.M{"class_id": c.Id}, "_id", &objs))
+				initializers.Log(FindAllObjects(bson.M{"class_id": c.Id}, "_id", &objs), initializers.Error)
 				for _, y := range objs {
 					bin[j].objects = append(bin[j].objects, kb.IdxObjects[y.Name])
 				}
@@ -495,7 +511,7 @@ func (kb *KnowledgeBased) linkerRule(r *KBRule, bin []*BIN) {
 					bin[j].class = c
 					bin[j].attribute = kb.FindAttribute(c, x.GetToken())
 					objs := []KBObject{}
-					lib.LogFatal(FindAllObjects(bson.M{"class_id": c.Id}, "_id", &objs))
+					initializers.Log(FindAllObjects(bson.M{"class_id": c.Id}, "_id", &objs), initializers.Fatal)
 					for _, y := range objs {
 						obj := kb.IdxObjects[y.Name]
 						bin[j].objects = append(bin[j].objects, obj)
@@ -510,11 +526,11 @@ func (kb *KnowledgeBased) linkerRule(r *KBRule, bin []*BIN) {
 						bin[ref].class = c
 					}
 					if c == nil {
-						log.Fatal("Attribute class not found in KB! ", x.GetToken())
+						return initializers.Log("Attribute class not found in KB! "+x.GetToken(), initializers.Error)
 					}
 					bin[j].attribute = kb.FindAttribute(c, x.GetToken())
 					objs := []KBObject{}
-					lib.LogFatal(FindAllObjects(bson.M{"class_id": c.Id}, "_id", &objs))
+					initializers.Log(FindAllObjects(bson.M{"class_id": c.Id}, "_id", &objs), initializers.Fatal)
 					for _, y := range objs {
 						obj := kb.IdxObjects[y.Name]
 						bin[j].objects = append(bin[j].objects, obj)
@@ -526,7 +542,7 @@ func (kb *KnowledgeBased) linkerRule(r *KBRule, bin []*BIN) {
 
 				}
 			} else {
-				log.Fatal("Attribute not found in KB! ", x.GetToken())
+				return initializers.Log("Attribute not found in KB! "+x.GetToken(), initializers.Error)
 			}
 		case ebnf.DynamicReference:
 			{
@@ -569,7 +585,7 @@ func (kb *KnowledgeBased) linkerRule(r *KBRule, bin []*BIN) {
 						}
 					}
 					if !ok {
-						log.Fatal("Constant not found in KB! ", x.GetToken())
+						return initializers.Log("List option not found in KB! "+x.GetToken(), initializers.Error)
 					}
 				}
 			}
@@ -593,4 +609,5 @@ func (kb *KnowledgeBased) linkerRule(r *KBRule, bin []*BIN) {
 	kb.mutex.Lock()
 	r.bin = bin
 	kb.mutex.Unlock()
+	return nil
 }

@@ -3,9 +3,15 @@ package tests
 import (
 	"fmt"
 	"math/rand"
+	"testing"
 
 	"github.com/antoniomralmeida/k2/kb"
 )
+
+func TestConvert(t *testing.T) {
+	Test2()
+	t.Fail()
+}
 
 func Test1(kbase *kb.KnowledgeBased) {
 
@@ -83,8 +89,8 @@ func Test1(kbase *kb.KnowledgeBased) {
 
 }
 
-func Test2(kbase *kb.KnowledgeBased) {
-	o := kbase.NewObject("MotorElétrico", "M01")
+func Test2() {
+	o := kb.GKB.NewObject("MotorElétrico", "M01")
 	fmt.Println(o)
 }
 

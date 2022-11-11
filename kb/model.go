@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/antoniomralmeida/k2/ebnf"
+	"github.com/antoniomralmeida/k2/lib"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -205,9 +206,8 @@ type KBRule struct {
 	lastexecution     time.Time     `bson:"-"`
 	consequent        int           `bson:"-"`
 	inRun             bool          `bson:"-"`
-	//	Kb                *KnowledgeBased `bson:"-"  json:"-"`
-	bkclasses []*KBClass `bson:"-"`
-	bin       []*BIN     `bson:"-"`
+	bkclasses         []*KBClass    `bson:"-"`
+	bin               []*BIN        `bson:"-"`
 }
 
 type KBHistory struct {
@@ -225,7 +225,6 @@ type KBAttributeObject struct {
 	KbObject    *KBObject     `bson:"-" json:"-"`
 	KbHistory   *KBHistory    `bson:"-" json:"History"`
 	KbAttribute *KBAttribute  `bson:"-"  json:"Attrinute"`
-	//Kb          *KnowledgeBased `bson:"-"  json:"-"`
 }
 
 type KBObject struct {
@@ -253,6 +252,7 @@ type KBWorkspace struct {
 	Height          int           `bson:"height"`
 	BackgroundImage string        `bson:"backgroundimage,omitempty"`
 	Objects         []KBObjectWS  `bson:"objects"`
+	Posts           lib.Queue     `bson:"-"`
 }
 
 type DataInput struct {

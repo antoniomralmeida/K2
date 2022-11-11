@@ -7,16 +7,15 @@ import (
 
 	"github.com/antoniomralmeida/k2/ebnf"
 	"github.com/antoniomralmeida/k2/initializers"
-	"github.com/antoniomralmeida/k2/lib"
 	"gopkg.in/mgo.v2/bson"
 )
 
 var GKB *KnowledgeBased
 
 func Init() {
-	log.Println("Init KB")
-
-	GKB := KnowledgeBased{}
+	initializers.Log("Init KB", initializers.Info)
+	k := KnowledgeBased{}
+	GKB = &k
 	GKB.FindOne()
 	if GKB.Name == "" {
 		GKB.Name = "K2 System KB"
@@ -36,7 +35,7 @@ func Init() {
 	}
 
 	for j, c := range GKB.Classes {
-		log.Println("Prepare Class ", c.Name)
+		initializers.Log("Prepare Class "+c.Name, initializers.Info)
 		if c.ParentID != "" {
 			pc := GKB.IdxClasses[c.ParentID]
 			if pc != nil {
@@ -79,7 +78,7 @@ func Init() {
 				err := h.FindLast(bson.D{{"attribute_id", x.Id}})
 				if err != nil {
 					if err.Error() != "not found" {
-						log.Println(err)
+						initializers.Log(err, initializers.Fatal)
 					}
 				} else {
 					GKB.Objects[j].Attributes[k].KbHistory = &h
@@ -110,20 +109,20 @@ func (kb *KnowledgeBased) AddAttribute(c *KBClass, attrs ...*KBAttribute) {
 		attrs[i].Id = bson.NewObjectId()
 		c.Attributes = append(c.Attributes, *attrs[i])
 	}
-	lib.LogFatal(c.Persist())
+	initializers.Log(c.Persist(), initializers.Fatal)
 }
 
 func (kb *KnowledgeBased) NewClass(newclass_json string) *KBClass {
 	class := KBClass{}
 	err := json.Unmarshal([]byte(newclass_json), &class)
 	if err != nil {
-		log.Println(err)
+		initializers.Log(err, initializers.Info)
 		return nil
 	}
 	if class.Parent != "" {
 		p := kb.FindClassByName(class.Parent, true)
 		if p == nil {
-			log.Println("Class not found ", class.Parent)
+			initializers.Log("Class not found "+class.Parent, initializers.Info)
 			return nil
 		}
 		class.ParentID = p.Id
@@ -151,7 +150,7 @@ func (kb *KnowledgeBased) UpdateClass(c *KBClass) {
 			c.Attributes[i].Id = bson.NewObjectId()
 		}
 	}
-	lib.LogFatal(c.Persist())
+	initializers.Log(c.Persist(), initializers.Fatal)
 }
 
 func (kb *KnowledgeBased) NewWorkspace(name string, icone string) *KBWorkspace {
@@ -162,7 +161,7 @@ func (kb *KnowledgeBased) NewWorkspace(name string, icone string) *KBWorkspace {
 }
 
 func (kb *KnowledgeBased) UpdateWorkspace(w *KBWorkspace) {
-	lib.LogFatal(w.Persist())
+	initializers.Log(w.Persist(), initializers.Fatal)
 }
 
 func (kb *KnowledgeBased) FindWorkspaceByName(name string) *KBWorkspace {
@@ -178,7 +177,7 @@ func (kb *KnowledgeBased) FindWorkspaceByName(name string) *KBWorkspace {
 func (kb *KnowledgeBased) NewObject(class string, name string) *KBObject {
 	p := kb.FindClassByName(class, true)
 	if p == nil {
-		log.Println("Class not found ", class)
+		initializers.Log("Class not found "+class, initializers.Error)
 		return nil
 	}
 	o := KBObject{Name: name, Class: p.Id, Bkclass: p}
@@ -187,7 +186,7 @@ func (kb *KnowledgeBased) NewObject(class string, name string) *KBObject {
 		o.Attributes = append(o.Attributes, n)
 		kb.IdxAttributeObjects[n.getFullName()] = &n
 	}
-	lib.LogFatal(o.Persist())
+	initializers.Log(o.Persist(), initializers.Fatal)
 	kb.IdxObjects[name] = &o
 	return &o
 }
@@ -252,9 +251,11 @@ func (kb *KnowledgeBased) NewAttributeObject(obj *KBObject, attr *KBAttribute) *
 
 func (kb *KnowledgeBased) NewRule(rule string, priority byte, interval int) *KBRule {
 	_, bin, err := kb.ParsingCommand(rule)
-	lib.LogFatal(err)
+	if initializers.Log(err, initializers.Info) != nil {
+		return nil
+	}
 	r := KBRule{Rule: rule, Priority: priority, ExecutionInterval: interval}
-	lib.LogFatal(r.Persist())
+	initializers.Log(r.Persist(), initializers.Fatal)
 	kb.linkerRule(&r, bin)
 	kb.Rules = append(kb.Rules, r)
 	return &r
