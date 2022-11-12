@@ -109,7 +109,7 @@ func (attr *KBAttributeObject) SetValue(value any, source KBSource, trust float6
 		case KBNumber:
 			value, _ = strconv.ParseFloat(str, 64)
 		case KBDate:
-			t, err := time.Parse(lib.DDMMYYYY, str)
+			t, err := time.Parse(lib.YYYYMMDD, str)
 			if err == nil {
 				value = t.UnixNano()
 			} else {

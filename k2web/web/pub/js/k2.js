@@ -29,7 +29,7 @@ function LoadDataInput() {
                         break;
                     case 'Date':
                         htmltext = htmltext + '<div class="mb-3"><label for="exampleFormControlInput1">' + namefield + '</label>' +
-                            '<input class="form-control ps-0" id="datepicker" type="text" name="' + namefield + '" /></div>';
+                            '<input class="form-control ps-0" id="datepicker" type="date" name="' + namefield + '" /></div>';
                         break;
                     case 'List':
                         htmltext = htmltext + '<div class="mb-3"><label for="exampleFormControlSelect1">' + namefield + '</label><select class="form-control form-control-solid" name="' + namefield + '">';
@@ -56,6 +56,7 @@ function SubmitDataInput(form) {
     $(form).find("input[name]").each(function (index, node) {
         formData[node.name] = node.value;
     });
+    
     $(form).find("select[name]").each(function (index, node) {
         formData[node.name] = node.value;
     });
@@ -69,10 +70,9 @@ function SubmitDataInput(form) {
     return true;
 }
 
-
 $(function () {
     LoadDataInput();
-    $("#datepicker").datepicker({
+/*    $("#datepicker").datepicker({
         dateFormat: "dd/mm/yy"
-    });
+    });*/
 });

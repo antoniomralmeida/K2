@@ -8,6 +8,7 @@ import (
 	"github.com/antoniomralmeida/k2/apikernel"
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/kb"
+	"github.com/antoniomralmeida/k2/lib"
 	"github.com/antoniomralmeida/k2/version"
 	"github.com/antoniomralmeida/k2/web"
 )
@@ -30,6 +31,7 @@ func StartSystem() {
 	go kb.Run(&wg)
 	go apikernel.Run(&wg)
 	go web.Run(&wg)
+	go lib.Openbrowser("http://localhost" + os.Getenv("HTTPPORT"))
 	wg.Wait()
 }
 
