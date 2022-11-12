@@ -13,7 +13,7 @@ func Run(wg *sync.WaitGroup) {
 	switch runtime.GOOS {
 	case "windows":
 		wd, _ := os.Getwd()
-		web := wd + "\\k2web\\k2web.exe"
+		web := wd + "\\k2web.exe"
 		_, err := exec.Command("cmd.exe", "/c", "start", web).Output()
 		if err != nil {
 			log.Fatal(err)

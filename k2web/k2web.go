@@ -13,7 +13,8 @@ import (
 
 func init() {
 	msg := fmt.Sprintf("Initializing Web Server K2 system version: %v build: %v", version.Version, version.Build)
-	if err := gotenv.Load(web.GetK2Path() + "/.env"); err != nil {
+
+	if err := gotenv.Load("./.env"); err != nil {
 		log.Fatal(err)
 	}
 	initializers.LogInit("k2weblog")

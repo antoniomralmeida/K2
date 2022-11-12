@@ -14,6 +14,7 @@ var logger *zap.Logger
 
 func LogInit(filebase string) {
 	wd, _ := os.Getwd()
+
 	logFileName := wd + os.Getenv("LOGPATH") + filebase + "." + time.Now().Format(lib.YYYYMMDD) + ".json"
 	config := zap.NewProductionEncoderConfig()
 	config.EncodeTime = zapcore.ISO8601TimeEncoder
