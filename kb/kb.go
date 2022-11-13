@@ -27,7 +27,7 @@ func Init() {
 
 	ebnf := ebnf.EBNF{}
 	GKB.ebnf = &ebnf
-	GKB.ebnf.ReadToken("../k2web/web/pub/ebnf/k2.ebnf")
+	GKB.ebnf.ReadToken("../k2web/pub/ebnf/k2.ebnf")
 
 	FindAllClasses("_id", &GKB.Classes)
 	for j := range GKB.Classes {

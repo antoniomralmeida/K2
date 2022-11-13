@@ -41,3 +41,14 @@ func FindAllObjects(filter bson.M, sort string, os *[]KBObject) error {
 	}
 	return collection.Find(filter).Sort(sort).All(os)
 }
+
+func (o *KBObject) GetWorkspaces() (ret []*KBWorkspace) {
+	for i := range GKB.Workspaces {
+		for j := range GKB.Workspaces[i].Objects {
+			if GKB.Workspaces[i].Objects[j].KBObject == o {
+				ret = append(ret, &GKB.Workspaces[i])
+			}
+		}
+	}
+	return
+}

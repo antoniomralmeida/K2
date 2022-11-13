@@ -1,8 +1,8 @@
 @echo off
 set GOARCH=amd64
 set GOOS=windows
-cd k2web
-go build  -o ../bin/k2web.exe k2web.go
-cd ../bin
-go run  ../k2.go
+cd bin
+go build  -o k2web.exe ../k2web/k2web.go
+go build  -o k2.exe ../k2.go
+k2.exe
 cd ..

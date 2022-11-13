@@ -1,0 +1,43 @@
+{"level":"info","ts":"2022-11-13T06:20:34.711-0300","caller":"initializers/log.go:49","msg":"Initializing K2 System version: 0.9.0 build: 1668331234 PID: 5304"}
+{"level":"info","ts":"2022-11-13T06:20:34.711-0300","caller":"initializers/log.go:49","msg":"ConnectDB"}
+{"level":"fatal","ts":"2022-11-13T06:20:50.449-0300","caller":"initializers/log.go:44","msg":"no reachable servers","stacktrace":"initializers.Log\n\tlog.go:44\ninitializers.ConnectDB\n\tdb.go:23\nmain.init.0\n\tk2.go:22\nruntime.doInit\n\tproc.go:6329\nruntime.main\n\tproc.go:233"}
+{"level":"info","ts":"2022-11-13T06:26:44.545-0300","caller":"initializers/log.go:49","msg":"Initializing K2 System version: 0.9.0 build: 1668331604 PID: 8576"}
+{"level":"info","ts":"2022-11-13T06:26:44.546-0300","caller":"initializers/log.go:49","msg":"ConnectDB"}
+{"level":"info","ts":"2022-11-13T06:26:44.554-0300","caller":"initializers/log.go:49","msg":"Init KB"}
+{"level":"info","ts":"2022-11-13T06:26:44.559-0300","caller":"initializers/log.go:49","msg":"Parsing ebnf rule Rule"}
+{"level":"info","ts":"2022-11-13T06:26:44.559-0300","caller":"initializers/log.go:49","msg":"Parsing ebnf rule Expression"}
+{"level":"info","ts":"2022-11-13T06:26:44.559-0300","caller":"initializers/log.go:49","msg":"Parsing ebnf rule Consequent"}
+{"level":"info","ts":"2022-11-13T06:26:44.559-0300","caller":"initializers/log.go:49","msg":"Parsing ebnf rule Set"}
+{"level":"info","ts":"2022-11-13T06:26:44.559-0300","caller":"initializers/log.go:49","msg":"Parsing ebnf rule Inform"}
+{"level":"info","ts":"2022-11-13T06:26:44.563-0300","caller":"initializers/log.go:49","msg":"Prepare Class Equipamento"}
+{"level":"info","ts":"2022-11-13T06:26:44.563-0300","caller":"initializers/log.go:49","msg":"Prepare Class MotorElétrico"}
+{"level":"info","ts":"2022-11-13T06:26:44.576-0300","caller":"initializers/log.go:49","msg":"Parsing Prodution Rule: for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230"}
+{"level":"info","ts":"2022-11-13T06:26:44.578-0300","caller":"initializers/log.go:49","msg":", compilation successfully!"}
+{"level":"info","ts":"2022-11-13T06:26:44.578-0300","caller":"initializers/log.go:49","msg":"Linking Prodution Rule: 636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-13T06:26:44.584-0300","caller":"initializers/log.go:49","msg":"K2 System started!"}
+{"level":"info","ts":"2022-11-13T06:26:46.590-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:26:48.598-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:26:48.598-0300","caller":"initializers/log.go:49","msg":"run...636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-13T06:26:50.611-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:26:52.619-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:26:54.630-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:26:56.630-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:26:58.641-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:27:00.654-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:27:02.664-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:27:04.676-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:27:06.683-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:27:08.694-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:27:10.703-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:27:12.715-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:27:14.724-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:27:16.731-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:27:18.732-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:27:20.742-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:27:22.754-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:27:24.766-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:27:26.779-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:27:28.782-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:27:30.791-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:27:32.794-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-13T06:27:34.808-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}

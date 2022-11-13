@@ -20,7 +20,8 @@ type Template struct {
 var T = make(map[string]Template)
 
 func InitTemplates() {
-	T["home"] = Minify("text/html", "./../k2web/web/pub/view/template.html")
+	wd, _ := os.Getwd()
+	T["home"] = Minify("text/html", wd+"/../k2web/pub/view/template.html")
 }
 
 func Minify(mediatype string, from string) Template {

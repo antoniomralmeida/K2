@@ -235,3 +235,12 @@ func (attr *KBAttributeObject) IOTParsing() error {
 	}
 	return nil
 }
+
+func (a *KBAttributeObject) InObjects(objs []*KBObject) bool {
+	for i := range objs {
+		if objs[i] == a.KbObject {
+			return true
+		}
+	}
+	return false
+}

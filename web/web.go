@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -10,11 +11,19 @@ import (
 
 func Run(wg *sync.WaitGroup) {
 	//WEB SERVER
+	fmt.Println(runtime.GOOS)
 	switch runtime.GOOS {
 	case "windows":
 		wd, _ := os.Getwd()
 		web := wd + "\\k2web.exe"
 		_, err := exec.Command("cmd.exe", "/c", "start", web).Output()
+		if err != nil {
+			log.Fatal(err)
+		}
+	case "linux":
+		wd, _ := os.Getwd()
+		web := wd + "/k2web.bin"
+		_, err := exec.Command(web).Output()
 		if err != nil {
 			log.Fatal(err)
 		}

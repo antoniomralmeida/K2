@@ -217,3 +217,99 @@
 {"level":"info","ts":"2022-11-12T14:07:00.077-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
 {"level":"info","ts":"2022-11-12T14:07:02.079-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
 {"level":"info","ts":"2022-11-12T14:07:04.085-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:47:28.600-0300","caller":"initializers/log.go:49","msg":"Initializing K2 System version: 0.9.0 build: 1668278848 PID: 32208"}
+{"level":"info","ts":"2022-11-12T15:47:28.600-0300","caller":"initializers/log.go:49","msg":"ConnectDB"}
+{"level":"info","ts":"2022-11-12T15:47:28.618-0300","caller":"initializers/log.go:49","msg":"Init KB"}
+{"level":"info","ts":"2022-11-12T15:47:28.621-0300","caller":"initializers/log.go:49","msg":"Parsing ebnf rule Rule"}
+{"level":"info","ts":"2022-11-12T15:47:28.621-0300","caller":"initializers/log.go:49","msg":"Parsing ebnf rule Expression"}
+{"level":"info","ts":"2022-11-12T15:47:28.621-0300","caller":"initializers/log.go:49","msg":"Parsing ebnf rule Consequent"}
+{"level":"info","ts":"2022-11-12T15:47:28.621-0300","caller":"initializers/log.go:49","msg":"Parsing ebnf rule Set"}
+{"level":"info","ts":"2022-11-12T15:47:28.621-0300","caller":"initializers/log.go:49","msg":"Parsing ebnf rule Inform"}
+{"level":"info","ts":"2022-11-12T15:47:28.623-0300","caller":"initializers/log.go:49","msg":"Prepare Class Equipamento"}
+{"level":"info","ts":"2022-11-12T15:47:28.623-0300","caller":"initializers/log.go:49","msg":"Prepare Class MotorElétrico"}
+{"level":"info","ts":"2022-11-12T15:47:28.633-0300","caller":"initializers/log.go:49","msg":"Parsing Prodution Rule: for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230"}
+{"level":"info","ts":"2022-11-12T15:47:28.635-0300","caller":"initializers/log.go:49","msg":", compilation successfully!"}
+{"level":"info","ts":"2022-11-12T15:47:28.635-0300","caller":"initializers/log.go:49","msg":"Linking Prodution Rule: 636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-12T15:47:28.642-0300","caller":"initializers/log.go:49","msg":"K2 System started!"}
+{"level":"info","ts":"2022-11-12T15:47:30.648-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:47:32.661-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:47:32.661-0300","caller":"initializers/log.go:49","msg":"run...636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-12T15:47:34.662-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:47:36.665-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:47:38.666-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:47:40.680-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:47:42.691-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:47:44.692-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:47:46.704-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:47:48.718-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:47:50.734-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:47:52.742-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:47:54.756-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:47:56.769-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:49:15.948-0300","caller":"initializers/log.go:49","msg":"Initializing K2 System version: 0.9.0 build: 1668278955 PID: 31500"}
+{"level":"info","ts":"2022-11-12T15:49:15.948-0300","caller":"initializers/log.go:49","msg":"ConnectDB"}
+{"level":"info","ts":"2022-11-12T15:49:15.963-0300","caller":"initializers/log.go:49","msg":"Init KB"}
+{"level":"info","ts":"2022-11-12T15:49:15.965-0300","caller":"initializers/log.go:49","msg":"Parsing ebnf rule Rule"}
+{"level":"info","ts":"2022-11-12T15:49:15.965-0300","caller":"initializers/log.go:49","msg":"Parsing ebnf rule Expression"}
+{"level":"info","ts":"2022-11-12T15:49:15.965-0300","caller":"initializers/log.go:49","msg":"Parsing ebnf rule Consequent"}
+{"level":"info","ts":"2022-11-12T15:49:15.965-0300","caller":"initializers/log.go:49","msg":"Parsing ebnf rule Set"}
+{"level":"info","ts":"2022-11-12T15:49:15.965-0300","caller":"initializers/log.go:49","msg":"Parsing ebnf rule Inform"}
+{"level":"info","ts":"2022-11-12T15:49:15.967-0300","caller":"initializers/log.go:49","msg":"Prepare Class Equipamento"}
+{"level":"info","ts":"2022-11-12T15:49:15.967-0300","caller":"initializers/log.go:49","msg":"Prepare Class MotorElétrico"}
+{"level":"info","ts":"2022-11-12T15:49:15.972-0300","caller":"initializers/log.go:49","msg":"Parsing Prodution Rule: for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230"}
+{"level":"info","ts":"2022-11-12T15:49:15.972-0300","caller":"initializers/log.go:49","msg":", compilation successfully!"}
+{"level":"info","ts":"2022-11-12T15:49:15.972-0300","caller":"initializers/log.go:49","msg":"Linking Prodution Rule: 636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-12T15:49:15.977-0300","caller":"initializers/log.go:49","msg":"K2 System started!"}
+{"level":"info","ts":"2022-11-12T15:49:17.982-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:49:19.983-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:49:19.984-0300","caller":"initializers/log.go:49","msg":"run...636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-12T15:49:21.987-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:49:23.990-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:49:26.000-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:49:28.012-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:49:30.026-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:49:32.029-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:49:34.043-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:49:36.057-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:49:38.058-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:49:40.066-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:49:42.069-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:49:44.083-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:49:46.093-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:49:48.096-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:49:50.107-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:49:52.109-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:49:54.123-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:49:56.133-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:49:58.146-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:50:00.157-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:50:02.168-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:50:04.180-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:50:06.186-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:50:08.199-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:50:10.207-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:50:12.208-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:50:14.213-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:50:22.207-0300","caller":"initializers/log.go:49","msg":"Initializing K2 System version: 0.9.0 build: 1668279022 PID: 29704"}
+{"level":"info","ts":"2022-11-12T15:50:22.207-0300","caller":"initializers/log.go:49","msg":"ConnectDB"}
+{"level":"info","ts":"2022-11-12T15:50:22.216-0300","caller":"initializers/log.go:49","msg":"Init KB"}
+{"level":"info","ts":"2022-11-12T15:50:22.219-0300","caller":"initializers/log.go:49","msg":"Parsing ebnf rule Rule"}
+{"level":"info","ts":"2022-11-12T15:50:22.219-0300","caller":"initializers/log.go:49","msg":"Parsing ebnf rule Expression"}
+{"level":"info","ts":"2022-11-12T15:50:22.219-0300","caller":"initializers/log.go:49","msg":"Parsing ebnf rule Consequent"}
+{"level":"info","ts":"2022-11-12T15:50:22.219-0300","caller":"initializers/log.go:49","msg":"Parsing ebnf rule Set"}
+{"level":"info","ts":"2022-11-12T15:50:22.219-0300","caller":"initializers/log.go:49","msg":"Parsing ebnf rule Inform"}
+{"level":"info","ts":"2022-11-12T15:50:22.221-0300","caller":"initializers/log.go:49","msg":"Prepare Class Equipamento"}
+{"level":"info","ts":"2022-11-12T15:50:22.221-0300","caller":"initializers/log.go:49","msg":"Prepare Class MotorElétrico"}
+{"level":"info","ts":"2022-11-12T15:50:22.225-0300","caller":"initializers/log.go:49","msg":"Parsing Prodution Rule: for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230"}
+{"level":"info","ts":"2022-11-12T15:50:22.226-0300","caller":"initializers/log.go:49","msg":", compilation successfully!"}
+{"level":"info","ts":"2022-11-12T15:50:22.226-0300","caller":"initializers/log.go:49","msg":"Linking Prodution Rule: 636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-12T15:50:22.231-0300","caller":"initializers/log.go:49","msg":"K2 System started!"}
+{"level":"info","ts":"2022-11-12T15:50:24.238-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:50:26.243-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:50:26.243-0300","caller":"initializers/log.go:49","msg":"run...636a9bf08e7ba26ef0bca4b5"}
+{"level":"info","ts":"2022-11-12T15:50:28.247-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:50:30.248-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:50:32.262-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:50:34.274-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:50:36.281-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
+{"level":"info","ts":"2022-11-12T15:50:38.293-0300","caller":"initializers/log.go:49","msg":"RunStackRules..."}
