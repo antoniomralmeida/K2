@@ -31,6 +31,14 @@ func (ao *KBAttributeObject) Validity() bool {
 	return false
 }
 
+func (ao *KBAttributeObject) ValueString() (string, float64, KBAttributeType) {
+	v, t, tp := ao.Value()
+	value := fmt.Sprint(v)
+	if tp == KBString || tp == KBList {
+		value = "\"" + value + "\""
+	}
+	return value, t, tp
+}
 func (ao *KBAttributeObject) Value() (any, float64, KBAttributeType) {
 	if ao.Validity() {
 		if KBDate == ao.KbAttribute.AType {

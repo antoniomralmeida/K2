@@ -17,8 +17,7 @@ Expression =  { "("  } the Attribute [of ( DynamicReference | Object ) ]  \n
 
 Consequent =   ( Set  
 		| Inform
-		| start 
-		| create 
+		| Create 
 		| transfer 
 		| delete 
 		| insert 
@@ -33,9 +32,13 @@ Consequent =   ( Set
 		| focus 
 		| invoke 
 		| halt 
-		| conclude  )
+		| Conclude  )
 		{ and Consequent }.
 
 Set = set the Attribute of ( DynamicReference | the ( Class | Object ) ) ("=" | to) Constant.
 
 Inform = inform to the operator that Text \n [ {the Attribute of ( the Object | DynamicReference ) [Text]} ].
+
+Conclude = conclude that the Attribute of Object is (ListType |Constant | Text).
+
+Create = create ( a Class [by cloning Class]| an instance of the Class named by Text).

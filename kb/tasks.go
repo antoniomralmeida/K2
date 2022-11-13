@@ -55,7 +55,7 @@ func Run(wg *sync.WaitGroup) {
 		if event.Err != nil {
 			panic(event.Err)
 		}
-		if event.Key == keyboard.KeyEsc {
+		if event.Key == keyboard.KeyEsc || GKB.halt {
 			fmt.Printf("Shutdown...")
 			scheduler.Stop()
 			web.Stop()

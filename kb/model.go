@@ -161,6 +161,7 @@ type KnowledgeBased struct {
 	ebnf                *ebnf.EBNF                    `bson:"-"`
 	stack               []*KBRule                     `bson:"-"`
 	mutex               sync.Mutex                    `bson:"-"`
+	halt                bool                          `bson:"-"`
 }
 
 type KBAttribute struct {
