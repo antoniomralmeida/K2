@@ -332,7 +332,7 @@ func (kb *KnowledgeBased) linkerRule(r *KBRule, bin []*BIN) error {
 func (r *KBRule) Run() (e error) {
 
 	type Value struct {
-		value any
+		value string
 		trust float64
 		atype KBAttributeType
 	}
@@ -343,10 +343,6 @@ func (r *KBRule) Run() (e error) {
 	}
 	r.inRun = true
 	GKB.mutex.Unlock()
-	type ctrl struct {
-		i   int
-		max int
-	}
 	initializers.Log("run..."+r.Id.Hex(), initializers.Info)
 
 	attrs := make(map[string][]*KBAttributeObject)
@@ -469,41 +465,35 @@ oulter:
 	}
 
 	if !conditionally {
+		cart := lib.Cartesian{}
 		values := make(map[string][]Value)
-		idx := make(map[string]ctrl)
 		idx2 := []string{}
 		for ix := range attrs {
 			vls := []Value{}
-
-			idx[ix] = ctrl{0, len(attrs[ix]) - 1}
+			cart.AddItem(ix, len(attrs[ix])-1)
 			for iy := range attrs[ix] {
-				v, t, at := attrs[ix][iy].Value()
+				v, t, at := attrs[ix][iy].ValueString()
 				vls = append(vls, Value{v, t, at})
 			}
 			values[ix] = vls
 			idx2 = append(idx2, ix)
 		}
-		iz := 0
-	i00:
+
 		for {
 			exp := expression
 			fuzzy := fuzzy.FuzzyLogicalInference(fuzzyexp)
-
+			found, idxs := cart.GetCombination()
 			obs := []*KBObject{}
 			ok := true
 			for key := range attrs {
-				if values[key][idx[key].i].value == nil {
+				if values[key][idxs[key]].value != "" {
 					ok = false
 					break
 				}
-				value := fmt.Sprint(values[key][idx[key].i].value)
-				if values[key][idx[key].i].atype == KBString || values[key][idx[key].i].atype == KBList {
-					value = "\"" + value + "\""
-				}
-				exp = strings.Replace(exp, key, value, -1)
-				trust := fmt.Sprint(values[key][idx[key].i].trust)
+				exp = strings.Replace(exp, key, string(values[key][idxs[key]].value), -1)
+				trust := fmt.Sprint(values[key][idxs[key]].trust)
 				fuzzy = strings.Replace(fuzzy, key, trust, -1)
-				obs = append(obs, objs[key][idx[key].i])
+				obs = append(obs, objs[key][idxs[key]])
 			}
 			if ok {
 				result, err := gval.Evaluate(exp, nil)
@@ -515,18 +505,8 @@ oulter:
 					r.RunConsequent(obs, t)
 				}
 			}
-		i01:
-			for {
-				ix := idx2[iz]
-				if idx[ix].i < idx[ix].max {
-					idx[ix] = ctrl{idx[ix].i + 1, idx[ix].max}
-					break i01
-				} else {
-					if iz >= len(idx2)-1 {
-						break i00
-					}
-					iz++
-				}
+			if !found {
+				break
 			}
 		}
 	} else {
@@ -544,6 +524,7 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 		switch r.bin[i].literalbin {
 		case b_inform:
 			attrs := make(map[string][]*KBAttributeObject)
+			cart := lib.Cartesian{}
 			i += 5
 			if r.bin[i].tokentype != ebnf.Text {
 				return initializers.Log("Error in KB Rule "+r.Id.Hex()+" near "+r.bin[i].token, initializers.Error)
@@ -565,6 +546,8 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 				key := "{{" + r.bin[i].class.Name + "." + r.bin[i].token + "}}"
 				txt = txt + " " + key + " "
 				attrs[key] = r.bin[i].attributeObjects
+				cart.AddItem(key, len(attrs[key])-1)
+
 				i += 2
 				if r.bin[i].literalbin == b_the {
 					i += 2
@@ -582,16 +565,23 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 				}
 			}
 			if ok {
-				//TODO: varrer todos objetcos de todos atributos (produto carteziano)
+				txtout := txt
+				found, idxs := cart.GetCombination()
+				wks := make(map[bson.ObjectId]*KBWorkspace)
 				for key := range attrs {
-					for i := range attrs[key] {
-						ws := attrs[key][i].KbObject.GetWorkspaces()
-						for w := range ws {
-							ws[w].Posts.Enqueue(txt)
-
-						}
-
+					ao := attrs[key][idxs[key]]
+					value, _, _ := ao.ValueString()
+					txtout = strings.Replace(txtout, key, value, -1)
+					ws := ao.KbObject.GetWorkspaces()
+					for w := range ws {
+						wks[ws[w].Id] = ws[w]
 					}
+				}
+				for k := range wks {
+					wks[k].Posts.Enqueue(txtout)
+				}
+				if !found {
+					break
 				}
 			}
 
@@ -626,9 +616,26 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 				}
 			}
 			i++
+		case b_halt:
+			GKB.halt = true
 
 		}
-		//TODO: concluir operações
+		//TODO: create
+		//TODO: transfer
+		//TODO: delete
+		//TODO: insert
+		//TODO: remove
+		//TODO: change
+		//TODO: move
+		//TODO: rotate
+		//TODO: show
+		//TODO: hide
+		//TODO: activate
+		//TODO: deactivate
+		//TODO: focus
+		//TODO: invoke
+		//TODO: conclude
+
 	}
 	return nil
 }
