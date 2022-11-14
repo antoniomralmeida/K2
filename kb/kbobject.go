@@ -2,20 +2,23 @@ package kb
 
 import (
 	"encoding/json"
-	"log"
 
 	"github.com/antoniomralmeida/k2/initializers"
-	mgo "gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func (o *KBObject) Persist() error {
-	collection := initializers.GetDb().C("KBObject")
-	if o.Id == "" {
-		o.Id = bson.NewObjectId()
-		return collection.Insert(o)
+	ctx, collection := initializers.GetCollection("KBObject")
+	if o.Id.IsZero() {
+		o.Id = primitive.NewObjectID()
+		_, err := collection.InsertOne(ctx, o)
+		return err
 	} else {
-		return collection.UpdateId(o.Id, o)
+		_, err := collection.UpdateOne(ctx, bson.D{{Key: "_id", Value: o.Id}}, o)
+		return err
 	}
 }
 
@@ -31,15 +34,21 @@ func (o *KBObject) Delete() error {
 }
 
 func FindAllObjects(filter bson.M, sort string, os *[]KBObject) error {
-	collection := initializers.GetDb().C("KBObject")
-	idx, _ := collection.Indexes()
-	if len(idx) == 1 {
-		err := collection.EnsureIndex(mgo.Index{Key: []string{"name"}, Unique: true})
-		if err != nil {
-			log.Fatal(err)
-		}
+	ctx, collection := initializers.GetCollection("KBObject")
+	idx := collection.Indexes()
+	ret, err := idx.List(ctx)
+	initializers.Log(err, initializers.Fatal)
+	var results []interface{}
+	err = ret.All(ctx, &results)
+	initializers.Log(err, initializers.Fatal)
+	if len(results) == 1 {
+		_, err = idx.CreateOne(ctx, mongo.IndexModel{Keys: bson.M{"name": 1}, Options: options.Index().SetUnique(true)})
+		initializers.Log(err, initializers.Fatal)
 	}
-	return collection.Find(filter).Sort(sort).All(os)
+	cursor, err := collection.Find(ctx, bson.M{}, options.Find().SetSort(bson.D{{Key: sort, Value: 1}}))
+	initializers.Log(err, initializers.Fatal)
+	err = cursor.All(ctx, os)
+	return err
 }
 
 func (o *KBObject) GetWorkspaces() (ret []*KBWorkspace) {

@@ -1,7 +1,9 @@
 package initializers
 
-import "github.com/subosito/gotenv"
+import (
+	"github.com/subosito/gotenv"
+)
 
 func InitEnvVars() {
-	gotenv.Load()
+	gotenv.Load("./bin/.env")
 }

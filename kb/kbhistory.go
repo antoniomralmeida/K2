@@ -4,42 +4,61 @@ import (
 	"encoding/json"
 
 	"github.com/antoniomralmeida/k2/initializers"
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func (h *KBHistory) Persist() error {
-	collection := initializers.GetDb().C("KBHistory")
-	if h.Id == "" {
-		h.Id = bson.NewObjectId()
-		return collection.Insert(h)
+	ctx, collection := initializers.GetCollection("KBHistory")
+	if h.Id.IsZero() {
+		h.Id = primitive.NewObjectID()
+		_, err := collection.InsertOne(ctx, h)
+		return err
 	} else {
-		return collection.UpdateId(h.Id, h)
+		_, err := collection.UpdateOne(ctx, bson.D{{Key: "_id", Value: h.Id}}, h)
+		return err
 	}
 }
 
 func (h *KBHistory) ClearingHistory(history int) error {
+
+	type PipeCount struct {
+		Id    primitive.ObjectID `json:"_id"`
+		Count int                `json:"count"`
+	}
+
 	Id := h.Attribute
-	collection := initializers.GetDb().C("KBHistory")
+	ctx, collection := initializers.GetCollection("KBHistory")
 	for {
-		n, err := collection.Find(bson.D{{"attribute_id", Id}}).Count()
-		return initializers.Log(err, initializers.Error)
-		if n <= history {
+		matchStage := bson.D{{Key: "attribute_id", Value: Id}}
+		groupStage := bson.D{{Key: "$group", Value: bson.D{{Key: "_id", Value: "$attribute_id"}, {Key: "count", Value: bson.D{{Key: "$sum", Value: 1}}}}}}
+		ret, err := collection.Aggregate(ctx, mongo.Pipeline{matchStage, groupStage}) // Aggregate(ctx,
+		initializers.Log(err, initializers.Error)
+		var results []PipeCount
+		err = ret.All(ctx, &results)
+		initializers.Log(err, initializers.Error)
+		if results[0].Count <= history {
 			return nil
 		}
 		todel := KBHistory{}
-		collection.Find(bson.D{{"attribute_id", Id}}).Sort("when").One(&todel)
-		if todel.Id != "" {
-			collection.RemoveId(todel.Id)
+		collection.FindOne(ctx, bson.D{{Key: "attribute_id", Value: Id}}, options.FindOne().SetSort(bson.D{{Key: "when", Value: 1}})).Decode(&todel)
+		if !todel.Id.IsZero() {
+			collection.DeleteOne(ctx, bson.D{{Key: "_id", Value: todel.Id}})
 		} else {
 			return nil
 		}
 	}
-	return nil
 }
 
 func (h *KBHistory) FindLast(filter bson.D) error {
-	collection := initializers.GetDb().C("KBHistory")
-	return collection.Find(filter).Sort("-when").One(&h)
+	ctx, collection := initializers.GetCollection("KBHistory")
+	ret := collection.FindOne(ctx, filter, options.FindOne().SetSort(bson.D{{Key: "when", Value: -1}}))
+	if ret != nil {
+		ret.Decode(h)
+	}
+	return nil
 }
 
 func (h *KBHistory) String() string {

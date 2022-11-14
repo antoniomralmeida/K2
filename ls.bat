@@ -1,0 +1,1 @@
+docker run -a stdin -a stdout -i -t k2-server /bin/bash

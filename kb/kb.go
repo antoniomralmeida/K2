@@ -7,7 +7,8 @@ import (
 
 	"github.com/antoniomralmeida/k2/ebnf"
 	"github.com/antoniomralmeida/k2/initializers"
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var GKB *KnowledgeBased
@@ -21,13 +22,13 @@ func Init() {
 		GKB.Name = "K2 System KB"
 	}
 	GKB.Persist()
-	GKB.IdxClasses = make(map[bson.ObjectId]*KBClass)
+	GKB.IdxClasses = make(map[primitive.ObjectID]*KBClass)
 	GKB.IdxObjects = make(map[string]*KBObject)
 	GKB.IdxAttributeObjects = make(map[string]*KBAttributeObject)
 
 	ebnf := ebnf.EBNF{}
 	GKB.ebnf = &ebnf
-	GKB.ebnf.ReadToken("../k2web/pub/ebnf/k2.ebnf")
+	GKB.ebnf.ReadToken("/k2web/pub/ebnf/k2.ebnf")
 
 	FindAllClasses("_id", &GKB.Classes)
 	for j := range GKB.Classes {
@@ -36,7 +37,7 @@ func Init() {
 
 	for j, c := range GKB.Classes {
 		initializers.Log("Prepare Class "+c.Name, initializers.Info)
-		if c.ParentID != "" {
+		if c.ParentID.IsZero() {
 			pc := GKB.IdxClasses[c.ParentID]
 			if pc != nil {
 				GKB.Classes[j].ParentClass = pc
@@ -54,7 +55,7 @@ func Init() {
 			GKB.Objects[j].Bkclass = c
 			attrs := GKB.FindAttributes(c)
 			sort.Slice(attrs, func(i, j int) bool {
-				return attrs[i].Id < attrs[j].Id
+				return attrs[i].Id.Hex() < attrs[j].Id.Hex()
 			})
 			for k, x := range o.Attributes {
 				GKB.Objects[j].Attributes[k].KbObject = &GKB.Objects[j]
@@ -64,7 +65,7 @@ func Init() {
 						GKB.Objects[j].Attributes[k].KbAttribute = attrs[l]
 						break
 					}
-					if y.Id > x.Attribute {
+					if y.Id.Hex() > x.Attribute.Hex() {
 						break
 					}
 				}
@@ -75,7 +76,7 @@ func Init() {
 
 				//Obter ultimo valor
 				h := KBHistory{}
-				err := h.FindLast(bson.D{{"attribute_id", x.Id}})
+				err := h.FindLast(bson.D{{Key: "attribute_id", Value: x.Id}})
 				if err != nil {
 					if err.Error() != "not found" {
 						initializers.Log(err, initializers.Fatal)
@@ -106,7 +107,7 @@ func Init() {
 
 func (kb *KnowledgeBased) AddAttribute(c *KBClass, attrs ...*KBAttribute) {
 	for i := range attrs {
-		attrs[i].Id = bson.NewObjectId()
+		attrs[i].Id = primitive.NewObjectID()
 		c.Attributes = append(c.Attributes, *attrs[i])
 	}
 	initializers.Log(c.Persist(), initializers.Fatal)
@@ -129,7 +130,7 @@ func (kb *KnowledgeBased) NewClass(newclass_json string) *KBClass {
 		class.ParentClass = p
 	}
 	for i := range class.Attributes {
-		class.Attributes[i].Id = bson.NewObjectId()
+		class.Attributes[i].Id = primitive.NewObjectID()
 		for _, x := range class.Attributes[i].Sources {
 			class.Attributes[i].SourcesID = append(class.Attributes[i].SourcesID, KBSourceStr[x])
 		}
@@ -146,8 +147,8 @@ func (kb *KnowledgeBased) NewClass(newclass_json string) *KBClass {
 
 func (kb *KnowledgeBased) UpdateClass(c *KBClass) {
 	for i := range c.Attributes {
-		if c.Attributes[i].Id == "" {
-			c.Attributes[i].Id = bson.NewObjectId()
+		if c.Attributes[i].Id.IsZero() {
+			c.Attributes[i].Id = primitive.NewObjectID()
 		}
 	}
 	initializers.Log(c.Persist(), initializers.Fatal)
@@ -182,7 +183,7 @@ func (kb *KnowledgeBased) NewObject(class string, name string) *KBObject {
 	}
 	o := KBObject{Name: name, Class: p.Id, Bkclass: p}
 	for _, x := range kb.FindAttributes(p) {
-		n := KBAttributeObject{Id: bson.NewObjectId(), Attribute: x.Id, KbAttribute: x, KbObject: &o}
+		n := KBAttributeObject{Id: primitive.NewObjectID(), Attribute: x.Id, KbAttribute: x, KbObject: &o}
 		o.Attributes = append(o.Attributes, n)
 		kb.IdxAttributeObjects[n.getFullName()] = &n
 	}
@@ -203,7 +204,7 @@ func (kb *KnowledgeBased) FindObjectByName(name string) *KBObject {
 
 func (kb *KnowledgeBased) FindClassByName(nm string, mandatory bool) *KBClass {
 	var ret KBClass
-	err := ret.FindOne(bson.D{{"name", nm}})
+	err := ret.FindOne(bson.D{{Key: "name", Value: nm}})
 	if err != nil && mandatory {
 		log.Fatal(err)
 	}
@@ -243,7 +244,7 @@ func (kb *KnowledgeBased) FindAttributeObject(obj *KBObject, attr string) *KBAtt
 }
 
 func (kb *KnowledgeBased) NewAttributeObject(obj *KBObject, attr *KBAttribute) *KBAttributeObject {
-	a := KBAttributeObject{Attribute: attr.Id, Id: bson.NewObjectId()}
+	a := KBAttributeObject{Attribute: attr.Id, Id: primitive.NewObjectID()}
 	obj.Attributes = append(obj.Attributes, a)
 	log.Fatal(obj.Persist())
 	return &a
@@ -270,18 +271,22 @@ func (kb *KnowledgeBased) PrintEBNF() {
 }
 
 func (kb *KnowledgeBased) Persist() error {
-	collection := initializers.GetDb().C("KnowledgeBased")
-	if kb.Id == "" {
-		kb.Id = bson.NewObjectId()
-		return collection.Insert(kb)
+	ctx, collection := initializers.GetCollection("KnowledgeBased")
+	if kb.Id.IsZero() {
+		kb.Id = primitive.NewObjectID()
+		_, err := collection.InsertOne(ctx, kb)
+		return err
 	} else {
-		return collection.UpdateId(kb.Id, kb)
+
+		_, err := collection.UpdateOne(ctx, bson.D{{Key: "_id", Value: kb.Id}}, kb)
+		return err
 	}
 }
 
 func (kb *KnowledgeBased) FindOne() error {
-	collection := initializers.GetDb().C("KnowledgeBased")
-	return collection.Find(bson.D{}).One(kb)
+	ctx, collection := initializers.GetCollection("KnowledgeBased")
+	collection.FindOne(ctx, bson.D{}).Decode(kb)
+	return nil
 }
 
 func (kb *KnowledgeBased) GetDataInput() []*DataInput {

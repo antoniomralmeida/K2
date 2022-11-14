@@ -14,8 +14,9 @@ import (
 	"github.com/antoniomralmeida/k2/fuzzy"
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
-
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func (r *KBRule) String() string {
@@ -25,18 +26,23 @@ func (r *KBRule) String() string {
 }
 
 func (r *KBRule) Persist() error {
-	collection := initializers.GetDb().C("KBRule")
-	if r.Id == "" {
-		r.Id = bson.NewObjectId()
-		return collection.Insert(r)
+	ctx, collection := initializers.GetCollection("KBRule")
+	if r.Id.IsZero() {
+		r.Id = primitive.NewObjectID()
+		_, err := collection.InsertOne(ctx, r)
+		return err
 	} else {
-		return collection.UpdateId(r.Id, r)
+		_, err := collection.UpdateOne(ctx, bson.D{{Key: "_id", Value: r.Id}}, r)
+		return err
 	}
 }
 
 func FindAllRules(sort string) error {
-	collection := initializers.GetDb().C("KBRule")
-	return collection.Find(bson.M{}).Sort(sort).All(&GKB.Rules)
+	ctx, collection := initializers.GetCollection("KBRule")
+	cursor, err := collection.Find(ctx, bson.M{}, options.Find().SetSort(bson.D{{Key: sort, Value: 1}}))
+	initializers.Log(err, initializers.Fatal)
+	err = cursor.All(ctx, &GKB.Rules)
+	return err
 }
 
 func (r *KBRule) addClass(c *KBClass) {
@@ -255,8 +261,6 @@ func (kb *KnowledgeBased) linkerRule(r *KBRule, bin []*BIN) error {
 						bin[j].attributeObjects = append(bin[j].attributeObjects, atro)
 					}
 					break
-				} else {
-
 				}
 			} else {
 				return initializers.Log("Attribute not found in KB! "+x.GetToken(), initializers.Error)
@@ -497,9 +501,9 @@ oulter:
 			}
 			if ok {
 				result, err := gval.Evaluate(exp, nil)
-				return initializers.Log(err, initializers.Error)
+				initializers.Log(err, initializers.Error)
 				trust, err := gval.Evaluate(fuzzy, nil)
-				return initializers.Log(err, initializers.Error)
+				initializers.Log(err, initializers.Error)
 				t, _ := strconv.ParseFloat(fmt.Sprintf("%v", trust), 64)
 				if result == true {
 					r.RunConsequent(obs, t)
@@ -567,7 +571,7 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 			if ok {
 				txtout := txt
 				found, idxs := cart.GetCombination()
-				wks := make(map[bson.ObjectId]*KBWorkspace)
+				wks := make(map[primitive.ObjectID]*KBWorkspace)
 				for key := range attrs {
 					ao := attrs[key][idxs[key]]
 					value, _, _ := ao.ValueString()

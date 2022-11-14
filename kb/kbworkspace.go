@@ -1,31 +1,36 @@
 package kb
 
 import (
-	"log"
-
 	"github.com/antoniomralmeida/k2/initializers"
-	mgo "gopkg.in/mgo.v2"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"gopkg.in/mgo.v2/bson"
 )
 
 func (w *KBWorkspace) Persist() error {
-	collection := initializers.GetDb().C("KBWorkspace")
-	if w.Id == "" {
-		w.Id = bson.NewObjectId()
-		return collection.Insert(w)
+	ctx, collection := initializers.GetCollection("KBWorkspace")
+	if w.Id.IsZero() {
+		w.Id = primitive.NewObjectID()
+		_, err := collection.InsertOne(ctx, w)
+		return err
 	} else {
-		return collection.UpdateId(w.Id, w)
+		_, err := collection.UpdateOne(ctx, bson.D{{Name: "_id", Value: w.Id}}, w)
+		return err
 	}
 }
 
 func FindAllWorkspaces(sort string) error {
-	collection := initializers.GetDb().C("KBWorkspace")
-	idx, _ := collection.Indexes()
-	if len(idx) == 1 {
-		err := collection.EnsureIndex(mgo.Index{Key: []string{"workspace"}, Unique: true})
-		if err != nil {
-			log.Fatal(err)
-		}
+	ctx, collection := initializers.GetCollection("KBWorkspace")
+	idx := collection.Indexes()
+	ret, err := idx.List(ctx)
+	initializers.Log(err, initializers.Fatal)
+	var results []interface{}
+	err = ret.All(ctx, &results)
+	initializers.Log(err, initializers.Fatal)
+	if len(results) == 1 {
+		_, err = idx.CreateOne(ctx, mongo.IndexModel{Keys: bson.M{"workspace": 1}, Options: options.Index().SetUnique(true)})
+		initializers.Log(err, initializers.Fatal)
 	}
-	return collection.Find(bson.M{}).Sort(sort).All(&GKB.Workspaces)
+	return nil
 }

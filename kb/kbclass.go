@@ -2,38 +2,54 @@ package kb
 
 import (
 	"encoding/json"
-	"log"
+	"errors"
 
 	"github.com/antoniomralmeida/k2/initializers"
-	mgo "gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func FindAllClasses(sort string, cs *[]KBClass) error {
-	collection := initializers.GetDb().C("KBClass")
-	idx, _ := collection.Indexes()
-	if len(idx) == 1 {
-		err := collection.EnsureIndex(mgo.Index{Key: []string{"name"}, Unique: true})
-		if err != nil {
-			log.Fatal(err)
-		}
+	ctx, collection := initializers.GetCollection("KBClass")
+	idx := collection.Indexes()
+	ret, err := idx.List(ctx)
+	initializers.Log(err, initializers.Fatal)
+	var results []interface{}
+	err = ret.All(ctx, &results)
+	initializers.Log(err, initializers.Fatal)
+	if len(results) == 1 {
+		_, err = idx.CreateOne(ctx, mongo.IndexModel{Keys: bson.M{"name": 1}, Options: options.Index().SetUnique(true)})
+		initializers.Log(err, initializers.Fatal)
 	}
-	return collection.Find(bson.M{}).Sort(sort).All(cs)
+	cursor, err := collection.Find(ctx, bson.M{}, options.Find().SetSort(bson.D{{Key: sort, Value: 1}}))
+	initializers.Log(err, initializers.Fatal)
+	err = cursor.All(ctx, cs)
+	return err
 }
 
 func (class *KBClass) Persist() error {
-	collection := initializers.GetDb().C("KBClass")
-	if class.Id == "" {
-		class.Id = bson.NewObjectId()
-		return collection.Insert(class)
+	ctx, collection := initializers.GetCollection("KBClass")
+	if class.Id.IsZero() {
+		class.Id = primitive.NewObjectID()
+		_, err := collection.InsertOne(ctx, class)
+		return err
 	} else {
-		return collection.UpdateId(class.Id, class)
+		_, err := collection.UpdateOne(ctx, bson.D{{Key: "_id", Value: class.Id}}, class)
+		return err
 	}
 }
 
 func (class *KBClass) FindOne(p bson.D) error {
-	collection := initializers.GetDb().C("KBClass")
-	return collection.Find(p).One(class)
+	ctx, collection := initializers.GetCollection("KBClass")
+	x := collection.FindOne(ctx, p)
+	if x != nil {
+		x.Decode(class)
+		return nil
+	} else {
+		return errors.New("Not found Class!")
+	}
 }
 
 func (class *KBClass) Delete() error {
