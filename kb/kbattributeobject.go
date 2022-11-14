@@ -13,9 +13,18 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/montanaflynn/stats"
 	p "github.com/rafaeljesus/parallel-fn"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gonum.org/v1/gonum/stat"
-	"gopkg.in/mgo.v2/bson"
 )
+
+type Pipe struct {
+	id     primitive.ObjectID `json:"_id"`
+	avg    float64            `json:"avg"`
+	stdDev float64            `json:"stdDev"`
+	trust  float64            `json:"trust"`
+}
 
 func (ao *KBAttributeObject) Validity() bool {
 	if ao.KbHistory != nil {
@@ -137,13 +146,20 @@ func (attr *KBAttributeObject) SetValue(value any, source KBSource, trust float6
 }
 
 func (attr *KBAttributeObject) LinearRegression() error {
+	type PipeValue struct {
+		value float64
+		when  int64
+		trust float64
+	}
 	initializers.Log("LinearRegression...", initializers.Info)
+	ctx, collection := initializers.GetCollection("KBHistory")
 	if attr.KbAttribute.AType == KBNumber {
-		c := initializers.GetDb().C("KBHistory")
-		pipe := c.Pipe([]bson.M{bson.M{"$match": bson.M{"attribute_id": attr.Id}}, bson.M{"$project": bson.M{"_id": 0, "value": 1, "when": 1, "trust": 1}}})
-		resp := []bson.M{}
-		iter := pipe.Iter()
-		err := iter.All(&resp)
+		matchStage := bson.D{{Key: "attribute_id", Value: attr.Id}}
+		groupStage := bson.D{{Key: "$project", Value: bson.D{{Key: "_id", Value: 0}, {Key: "value", Value: 1}, {Key: "when", Value: 1}, {Key: "trust", Value: 1}}}}
+		ret, err := collection.Aggregate(ctx, mongo.Pipeline{matchStage, groupStage}) // Aggregate(ctx,
+		initializers.Log(err, initializers.Error)
+		var resp []PipeValue
+		err = ret.All(ctx, &resp)
 		initializers.Log(err, initializers.Error)
 		if len(resp) <= 2 {
 			initializers.Log("cannot do linear regression with | C|<=2", initializers.Info)
@@ -153,13 +169,9 @@ func (attr *KBAttributeObject) LinearRegression() error {
 		Y := make([]float64, len(resp))
 		T := make([]float64, len(resp))
 		for i := range resp {
-			y, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[i]["value"]), 64)
-			x, _ := strconv.ParseInt(fmt.Sprintf("%v", resp[i]["when"]), 10, 64)
-			t, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[i]["trust"]), 32)
-
-			X[i] = float64(x)
-			Y[i] = y
-			T[i] = t
+			X[i] = float64(resp[i].when)
+			Y[i] = resp[i].value
+			T[i] = resp[i].trust
 		}
 		trust := stat.Mean(T, nil) / 100.0
 		alpha, beta := stat.LinearRegression(X, Y, nil, false)
@@ -174,20 +186,26 @@ func (attr *KBAttributeObject) LinearRegression() error {
 func (attr *KBAttributeObject) MonteCarlo() error {
 	initializers.Log("MonteCarlo...", initializers.Info)
 	if attr.KbAttribute.AType == KBNumber {
-		c := initializers.GetDb().C("KBHistory")
-		pipe := c.Pipe([]bson.M{bson.M{"$match": bson.M{"attribute_id": attr.Id}},
-			bson.M{"$group": bson.M{"_id": "$attribute_id",
-				"avg":    bson.M{"$avg": "$value"},
-				"stdDev": bson.D{{"$stdDevPop", "$value"}},
-				"trust":  bson.D{{"$avg", "$trust"}},
-			}}})
-		resp := []bson.M{}
-		iter := pipe.Iter()
-		err := iter.All(&resp)
+		ctx, collection := initializers.GetCollection("KBHistory")
+		matchStage := bson.D{{Key: "attribute_id", Value: attr.Id}}
+		groupStage := bson.D{{Key: "$group", Value: bson.D{{Key: "_id", Value: "$attribute_id"},
+			{Key: "avg", Value: bson.D{{Key: "$avg", Value: "$value"}}},
+			{Key: "stdDev", Value: bson.D{{Key: "$stdDevPop", Value: "$value"}}},
+			{Key: "trust", Value: bson.D{{Key: "$avg", Value: "$trust"}}},
+		}}}
+		ret, err := collection.Aggregate(ctx, mongo.Pipeline{matchStage, groupStage}) // Aggregate(ctx,
 		initializers.Log(err, initializers.Error)
-		avg, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["avg"]), 64)
-		stdDev, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["stdDev"]), 64)
-		trust, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["trust"]), 32)
+		var results []Pipe
+		err = ret.All(ctx, &results)
+		initializers.Log(err, initializers.Error)
+
+		resp := []Pipe{}
+		err = ret.All(ctx, &resp)
+		initializers.Log(err, initializers.Error)
+
+		avg := resp[0].avg
+		stdDev := resp[0].stdDev
+		trust := resp[0].trust
 		r := stats.NormPpfRvs(avg, stdDev, 1)[0]
 		a := stats.NormPpf(r, avg, stdDev) * (trust / 100.0)
 		attr.SetValue(r, KBSource(Simulation), a*100)
@@ -197,27 +215,33 @@ func (attr *KBAttributeObject) MonteCarlo() error {
 }
 
 func (attr *KBAttributeObject) NormalDistribution() error {
+
 	initializers.Log("NormalDistribution...", initializers.Info)
 	if attr.KbAttribute.AType == KBNumber {
-		c := initializers.GetDb().C("KBHistory")
-		pipe := c.Pipe([]bson.M{bson.M{"$match": bson.M{"attribute_id": attr.Id}},
-			bson.M{"$group": bson.M{"_id": "$attribute_id",
-				"avg":    bson.M{"$avg": "$value"},
-				"stdDev": bson.D{{"$stdDevPop", "$value"}},
-				"trust":  bson.D{{"$avg", "$trust"}},
-			}}})
-		resp := []bson.M{}
-		iter := pipe.Iter()
-		err := iter.All(&resp)
+		ctx, collection := initializers.GetCollection("KBHistory")
+
+		matchStage := bson.D{{Key: "attribute_id", Value: attr.Id}}
+		groupStage := bson.D{{Key: "$group", Value: bson.D{{Key: "_id", Value: "$attribute_id"},
+			{Key: "avg", Value: bson.D{{Key: "$avg", Value: "$value"}}},
+			{Key: "stdDev", Value: bson.D{{Key: "$stdDevPop", Value: "$value"}}},
+			{Key: "trust", Value: bson.D{{Key: "$avg", Value: "$trust"}}},
+		}}}
+		ret, err := collection.Aggregate(ctx, mongo.Pipeline{matchStage, groupStage}) // Aggregate(ctx,
 		initializers.Log(err, initializers.Error)
-		avg, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["avg"]), 64)
-		stdDev, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["stdDev"]), 64)
-		trust, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0]["trust"]), 32)
+		var results []Pipe
+		err = ret.All(ctx, &results)
+		initializers.Log(err, initializers.Error)
+
+		resp := []Pipe{}
+		err = ret.All(ctx, &resp)
+		initializers.Log(err, initializers.Error)
+		avg, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0].avg), 64)
+		stdDev, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0].stdDev), 64)
+		trust, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0].trust), 32)
 		r := stats.NormPpfRvs(avg, stdDev, 1)[0]
 		a := stats.NormPpf(r, avg, stdDev) * (trust / 100.0)
 		attr.SetValue(r, KBSource(Simulation), a*100)
 	}
-
 	return nil
 }
 
