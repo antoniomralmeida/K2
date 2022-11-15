@@ -3,7 +3,6 @@ package web
 import (
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -21,13 +20,14 @@ var T = make(map[string]Template)
 
 func InitTemplates() {
 	wd, _ := os.Getwd()
-	T["home"] = Minify("text/html", wd+"/../k2web/pub/view/template.html")
+	T["home"] = Minify("text/html", wd+"/k2web/pub/view/template.html")
 }
 
 func Minify(mediatype string, from string) Template {
 	file, err := os.Open(from)
 	if err != nil {
 		initializers.Log(fmt.Sprintf("Error opening file!!! %v", from), initializers.Error)
+		return Template{from, from}
 	}
 	defer file.Close()
 
@@ -45,9 +45,9 @@ func Minify(mediatype string, from string) Template {
 	//m.AddFuncRegexp(regexp.MustCompile("[/+]xml$"), xml.Minify)
 	err = m.Minify(mediatype, write, read)
 	if err != nil {
-		log.Fatal(err)
+		initializers.Log(err, initializers.Error)
+		return Template{from, from}
 	}
-
 	o.Close()
 	f.Close()
 	nto := to + filepath.Ext(from)

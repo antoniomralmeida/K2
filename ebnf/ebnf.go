@@ -3,7 +3,6 @@ package ebnf
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 
 	"strings"
 	"unicode"
@@ -170,7 +169,7 @@ func (e *EBNF) ReadToken(Tokenfile string) int {
 						}
 					}
 					if t.GetTokentype() == Reference {
-						log.Fatal("Reference not found! ", t.token)
+						initializers.Log("Reference not found! "+t.token, initializers.Fatal)
 					}
 				}
 

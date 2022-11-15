@@ -2,10 +2,10 @@ package web
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"time"
 
+	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
 	"github.com/antoniomralmeida/k2/version"
 	"github.com/gofiber/fiber/v2"
@@ -37,7 +37,7 @@ func Run() {
 	f := wd + os.Getenv("LOGPATH") + "k2webhttp." + time.Now().Format(lib.YYYYMMDD) + ".log"
 	file, err := os.OpenFile(f, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
-		log.Fatalf("error opening file: %v %v", err, f)
+		initializers.Log(fmt.Sprintf("error opening file: %v %v", err, f), initializers.Fatal)
 	}
 	defer file.Close()
 

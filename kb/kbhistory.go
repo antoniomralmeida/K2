@@ -34,11 +34,17 @@ func (h *KBHistory) ClearingHistory(history int) error {
 	for {
 		matchStage := bson.D{{Key: "attribute_id", Value: Id}}
 		groupStage := bson.D{{Key: "$group", Value: bson.D{{Key: "_id", Value: "$attribute_id"}, {Key: "count", Value: bson.D{{Key: "$sum", Value: 1}}}}}}
-		ret, err := collection.Aggregate(ctx, mongo.Pipeline{matchStage, groupStage}) // Aggregate(ctx,
+		ret, err := collection.Aggregate(ctx, mongo.Pipeline{matchStage, groupStage})
 		initializers.Log(err, initializers.Error)
-		var results []PipeCount
+		if err != nil {
+			return nil
+		}
+		results := []PipeCount{}
 		err = ret.All(ctx, &results)
 		initializers.Log(err, initializers.Error)
+		if err != nil {
+			return nil
+		}
 		if results[0].Count <= history {
 			return nil
 		}

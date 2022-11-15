@@ -1,9 +1,8 @@
 package kb
 
 import (
-	"log"
-
 	"github.com/antoniomralmeida/k2/ebnf"
+	"github.com/antoniomralmeida/k2/initializers"
 )
 
 func (b *BIN) GetToken() string {
@@ -18,7 +17,7 @@ func (b *BIN) setTokenBin() {
 	if b.GetTokentype() == ebnf.Literal {
 		b.literalbin = LiteralBinStr[b.token]
 		if b.literalbin == b_null {
-			log.Fatal("Literal unknown!", b.GetToken())
+			initializers.Log("Literal unknown!"+b.GetToken(), initializers.Fatal)
 		}
 	}
 }

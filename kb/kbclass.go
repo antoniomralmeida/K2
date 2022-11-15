@@ -1,6 +1,7 @@
 package kb
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 
@@ -14,7 +15,7 @@ import (
 func FindAllClasses(sort string, cs *[]KBClass) error {
 	ctx, collection := initializers.GetCollection("KBClass")
 	idx := collection.Indexes()
-	ret, err := idx.List(ctx)
+	ret, err := idx.List(context.TODO())
 	initializers.Log(err, initializers.Fatal)
 	var results []interface{}
 	err = ret.All(ctx, &results)

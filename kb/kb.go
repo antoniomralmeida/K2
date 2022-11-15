@@ -2,7 +2,6 @@ package kb
 
 import (
 	"encoding/json"
-	"log"
 	"sort"
 
 	"github.com/antoniomralmeida/k2/ebnf"
@@ -28,7 +27,7 @@ func Init() {
 
 	ebnf := ebnf.EBNF{}
 	GKB.ebnf = &ebnf
-	GKB.ebnf.ReadToken("/k2web/pub/ebnf/k2.ebnf")
+	GKB.ebnf.ReadToken("./k2web/pub/ebnf/k2.ebnf")
 
 	FindAllClasses("_id", &GKB.Classes)
 	for j := range GKB.Classes {
@@ -37,12 +36,12 @@ func Init() {
 
 	for j, c := range GKB.Classes {
 		initializers.Log("Prepare Class "+c.Name, initializers.Info)
-		if c.ParentID.IsZero() {
+		if !c.ParentID.IsZero() {
 			pc := GKB.IdxClasses[c.ParentID]
 			if pc != nil {
 				GKB.Classes[j].ParentClass = pc
 			} else {
-				log.Fatal("Parent of Class " + c.Name + " not found!")
+				initializers.Log("Parent of Class "+c.Name+" not found!", initializers.Fatal)
 			}
 		}
 	}
@@ -70,7 +69,7 @@ func Init() {
 					}
 				}
 				if GKB.Objects[j].Attributes[k].KbAttribute == nil {
-					log.Fatal("Attribute not found ", x.Attribute)
+					initializers.Log("Attribute not found "+x.Attribute.Hex(), initializers.Fatal)
 				}
 				GKB.IdxAttributeObjects[o.Name+"."+GKB.Objects[j].Attributes[k].KbAttribute.Name] = &GKB.Objects[j].Attributes[k]
 
@@ -87,7 +86,7 @@ func Init() {
 				GKB.Objects[j].Attributes[k].Validity()
 			}
 		} else {
-			log.Fatal("Class of object " + o.Name + " not found!")
+			initializers.Log("Class of object "+o.Name+" not found!", initializers.Fatal)
 		}
 	}
 
@@ -97,10 +96,7 @@ func Init() {
 
 	for i := range GKB.Rules {
 		_, bin, err := GKB.ParsingCommand(GKB.Rules[i].Rule)
-		if err != nil {
-			log.Fatal(err)
-		}
-		//kb.Rules[i].Kb = kb
+		initializers.Log(err, initializers.Fatal)
 		GKB.linkerRule(&GKB.Rules[i], bin)
 	}
 }
@@ -137,12 +133,14 @@ func (kb *KnowledgeBased) NewClass(newclass_json string) *KBClass {
 		class.Attributes[i].SimulationID = KBSimulationStr[class.Attributes[i].Simulation]
 	}
 	err = class.Persist()
-	if err != nil {
-		log.Fatal(err)
+	if err == nil {
+		kb.Classes = append(kb.Classes, class)
+		kb.IdxClasses[class.Id] = &class
+		return &class
+	} else {
+		initializers.Log(err, initializers.Error)
+		return nil
 	}
-	kb.Classes = append(kb.Classes, class)
-	kb.IdxClasses[class.Id] = &class
-	return &class
 }
 
 func (kb *KnowledgeBased) UpdateClass(c *KBClass) {
@@ -156,9 +154,14 @@ func (kb *KnowledgeBased) UpdateClass(c *KBClass) {
 
 func (kb *KnowledgeBased) NewWorkspace(name string, icone string) *KBWorkspace {
 	w := KBWorkspace{Workspace: name, BackgroundImage: icone}
-	log.Fatal(w.Persist())
-	kb.Workspaces = append(kb.Workspaces, w)
-	return &w
+	err := w.Persist()
+	if err == nil {
+		kb.Workspaces = append(kb.Workspaces, w)
+		return &w
+	} else {
+		initializers.Log(err, initializers.Error)
+		return nil
+	}
 }
 
 func (kb *KnowledgeBased) UpdateWorkspace(w *KBWorkspace) {
@@ -171,7 +174,7 @@ func (kb *KnowledgeBased) FindWorkspaceByName(name string) *KBWorkspace {
 			return &kb.Workspaces[i]
 		}
 	}
-	log.Fatal("Workspace not found!")
+	initializers.Log("Workspace not found!", initializers.Error)
 	return nil
 }
 
@@ -206,7 +209,8 @@ func (kb *KnowledgeBased) FindClassByName(nm string, mandatory bool) *KBClass {
 	var ret KBClass
 	err := ret.FindOne(bson.D{{Key: "name", Value: nm}})
 	if err != nil && mandatory {
-		log.Fatal(err)
+		initializers.Log(err, initializers.Error)
+		return nil
 	}
 	return kb.IdxClasses[ret.Id]
 }
@@ -246,8 +250,13 @@ func (kb *KnowledgeBased) FindAttributeObject(obj *KBObject, attr string) *KBAtt
 func (kb *KnowledgeBased) NewAttributeObject(obj *KBObject, attr *KBAttribute) *KBAttributeObject {
 	a := KBAttributeObject{Attribute: attr.Id, Id: primitive.NewObjectID()}
 	obj.Attributes = append(obj.Attributes, a)
-	log.Fatal(obj.Persist())
-	return &a
+	err := obj.Persist()
+	if err == nil {
+		return &a
+	} else {
+		initializers.Log(err, initializers.Error)
+		return nil
+	}
 }
 
 func (kb *KnowledgeBased) NewRule(rule string, priority byte, interval int) *KBRule {
@@ -285,7 +294,8 @@ func (kb *KnowledgeBased) Persist() error {
 
 func (kb *KnowledgeBased) FindOne() error {
 	ctx, collection := initializers.GetCollection("KnowledgeBased")
-	collection.FindOne(ctx, bson.D{}).Decode(kb)
+	ret := collection.FindOne(ctx, bson.D{})
+	ret.Decode(kb)
 	return nil
 }
 

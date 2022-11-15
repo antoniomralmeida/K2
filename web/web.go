@@ -2,11 +2,12 @@ package web
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"runtime"
 	"sync"
+
+	"github.com/antoniomralmeida/k2/initializers"
 )
 
 func Run(wg *sync.WaitGroup) {
@@ -15,20 +16,16 @@ func Run(wg *sync.WaitGroup) {
 	switch runtime.GOOS {
 	case "windows":
 		wd, _ := os.Getwd()
-		web := wd + "\\k2web.exe"
+		web := wd + "/bin/k2web.exe"
 		_, err := exec.Command("cmd.exe", "/c", "start", web).Output()
-		if err != nil {
-			log.Fatal(err)
-		}
+		initializers.Log(err, initializers.Error)
 	case "linux":
 		wd, _ := os.Getwd()
-		web := wd + "/k2web.bin"
+		web := wd + "/bin/k2web.bin"
 		_, err := exec.Command(web).Output()
-		if err != nil {
-			log.Fatal(err)
-		}
+		initializers.Log(err, initializers.Error)
 	default:
-		log.Fatal("OS not supported!" + runtime.GOOS)
+		initializers.Log("OS not supported!"+runtime.GOOS, initializers.Error)
 	}
 	wg.Done()
 }
@@ -38,10 +35,8 @@ func Stop() {
 	case "windows":
 		cmd := "taskkill /F /IM k2web.exe"
 		_, err := exec.Command("cmd.exe", "/c", cmd).Output()
-		if err != nil {
-			log.Fatal(err)
-		}
+		initializers.Log(err, initializers.Error)
 	default:
-		log.Fatal("OS not supported!" + runtime.GOOS)
+		initializers.Log("OS not supported!"+runtime.GOOS, initializers.Error)
 	}
 }
