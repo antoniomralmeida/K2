@@ -6,6 +6,8 @@ import (
 	"os/exec"
 	"runtime"
 	"strconv"
+
+	"github.com/mattn/go-tty"
 )
 
 const (
@@ -89,4 +91,20 @@ func (c *Cartesian) GetCombination() (end bool, idxs map[string]int) {
 	}
 	end = c.next(c.current)
 	return
+}
+
+func KeyPress() byte {
+	tty, err := tty.Open()
+	if err != nil {
+		return 0
+	}
+	defer tty.Close()
+
+	r, err := tty.ReadRune()
+
+	if err != nil {
+		return 0
+	} else {
+		return byte(r)
+	}
 }

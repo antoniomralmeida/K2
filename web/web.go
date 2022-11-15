@@ -1,7 +1,6 @@
 package web
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"runtime"
@@ -12,7 +11,6 @@ import (
 
 func Run(wg *sync.WaitGroup) {
 	//WEB SERVER
-	fmt.Println(runtime.GOOS)
 	switch runtime.GOOS {
 	case "windows":
 		wd, _ := os.Getwd()

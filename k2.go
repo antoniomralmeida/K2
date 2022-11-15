@@ -37,6 +37,7 @@ func StartSystem() {
 
 func main() {
 	//TEST
+	//tests.Test7()
 
 	//CORE
 	StartSystem()

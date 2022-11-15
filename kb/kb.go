@@ -2,6 +2,7 @@ package kb
 
 import (
 	"encoding/json"
+	"fmt"
 	"sort"
 
 	"github.com/antoniomralmeida/k2/ebnf"
@@ -276,7 +277,7 @@ func (kb *KnowledgeBased) UpdateKB(name string) error {
 }
 
 func (kb *KnowledgeBased) PrintEBNF() {
-	kb.ebnf.PrintEBNF()
+	fmt.Println(kb.ebnf.String())
 }
 
 func (kb *KnowledgeBased) Persist() error {

@@ -13,7 +13,7 @@ func TestConvert(t *testing.T) {
 	t.Fail()
 }
 
-func Test1(kbase *kb.KnowledgeBased) {
+func Test1() {
 
 	json := `{
         "name": "Equipamento",  
@@ -29,7 +29,7 @@ func Test1(kbase *kb.KnowledgeBased) {
 			  ]
 			}]
     }`
-	c := kbase.NewClass(json)
+	c := kb.GKB.NewClass(json)
 	if c != nil {
 		fmt.Println(c)
 	}
@@ -84,7 +84,7 @@ func Test1(kbase *kb.KnowledgeBased) {
 		  }
 		]
 	  }`
-	c = kbase.NewClass(json)
+	c = kb.GKB.NewClass(json)
 	fmt.Println(c)
 
 }
@@ -94,24 +94,28 @@ func Test2() {
 	fmt.Println(o)
 }
 
-func Test3(kbase *kb.KnowledgeBased) {
-	a := kbase.FindAttributeObjectByName("M01.Potência")
+func Test3() {
+	a := kb.GKB.FindAttributeObjectByName("M01.Potência")
 	fmt.Println(a)
 	for i := 0; i < 100; i++ {
 		a.SetValue(rand.Float64(), kb.IOT, 100.0)
 	}
 }
 
-func Test4(kbase *kb.KnowledgeBased) {
-	o := kbase.FindObjectByName("M01")
+func Test4() {
+	o := kb.GKB.FindObjectByName("M01")
 	fmt.Println(o)
 }
 
-func Test5(kbase *kb.KnowledgeBased) {
-	a := kbase.FindAttributeObjectByName("M01.Potência")
+func Test5() {
+	a := kb.GKB.FindAttributeObjectByName("M01.Potência")
 	a.LinearRegression()
 }
 
-func Test6(kbase *kb.KnowledgeBased) {
-	kbase.NewRule("for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230", 100, 0)
+func Test6() {
+	kb.GKB.NewRule("for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230", 100, 0)
+}
+
+func Test7() {
+	kb.GKB.PrintEBNF()
 }

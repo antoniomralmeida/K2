@@ -4,12 +4,12 @@ go 1.19
 
 require (
 	github.com/PaesslerAG/gval v1.2.1
-	github.com/eiannone/keyboard v0.0.0-20220611211555-0d226195f203
 	github.com/gofiber/fiber/v2 v2.39.0
 	github.com/google/uuid v1.3.0
 	github.com/hegedustibor/htgo-tts v0.0.0-20220821045517-04f3cda7a12f
 	github.com/itmisx/i18n v0.0.2
 	github.com/madflojo/tasks v1.0.4
+	github.com/mattn/go-tty v0.0.4
 	github.com/montanaflynn/stats v0.6.6
 	github.com/rafaeljesus/parallel-fn v0.0.0-20180101203446-ef08331b38ac
 	github.com/subosito/gotenv v1.4.1

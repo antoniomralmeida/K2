@@ -18,23 +18,23 @@ const (
 )
 
 type Token struct {
-	id        int
-	tokentype Tokentype
-	rule_id   int
-	rule_jump int
-	token     string
-	next      []*Token
+	Id        int       `json:"id"`
+	Tokentype Tokentype `json:"tokentype"`
+	Rule_id   int       `json:"rule_id"`
+	Rule_jump int       `json:"rule_jump"`
+	Token     string    `json:"token"`
+	Nexts     []*Token  `json:"-"`
 }
 
 type Statement struct {
-	id     int
-	name   string
-	tokens []*Token
+	Id     int      `json:"id"`
+	Name   string   `json:"name"`
+	Tokens []*Token `json:"tokens"`
 }
 
 type EBNF struct {
-	rules []*Statement
-	base  *Token
+	Rules []*Statement `json:"rules"`
+	Base  *Token       `json:"-"`
 }
 
 type SYMBOL struct {
@@ -47,6 +47,6 @@ type PAIR struct {
 	end   int
 }
 
-var symbols = []SYMBOL{SYMBOL{"=", "."}, SYMBOL{"{", "}"}, SYMBOL{"[", "]"}, SYMBOL{"(", ")"}, SYMBOL{"\"", "\""}, SYMBOL{"'", "'"}}
+var symbols = []SYMBOL{{"=", "."}, {"{", "}"}, {"[", "]"}, {"(", ")"}, {"\"", "\""}, {"'", "'"}}
 
 var TokentypeStr = []string{"", "Reference", "Literal", "Text", "Control", "Jump", "Object", "DynamicReference", "Attribute", "Constant", "Class", "ListType"}

@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/antoniomralmeida/k2/initializers"
+	"github.com/antoniomralmeida/k2/lib"
 	"github.com/antoniomralmeida/k2/web"
-	"github.com/eiannone/keyboard"
 	"github.com/madflojo/tasks"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -41,21 +41,10 @@ func Run(wg *sync.WaitGroup) {
 	initializers.Log(err, initializers.Fatal)
 
 	initializers.Log("K2 System started!", initializers.Info)
-	keysEvents, err := keyboard.GetKeys(10)
-	if err != nil {
-		panic(err)
-	}
-	defer func() {
-		_ = keyboard.Close()
-	}()
 	fmt.Println("K2 System started! Press ESC to shutdown")
 
 	for {
-		event := <-keysEvents
-		if event.Err != nil {
-			panic(event.Err)
-		}
-		if event.Key == keyboard.KeyEsc || GKB.halt {
+		if lib.KeyPress() == 27 || GKB.halt {
 			fmt.Printf("Shutdown...")
 			scheduler.Stop()
 			web.Stop()
