@@ -19,7 +19,11 @@ func LogInit(filebase string) {
 	config.EncodeTime = zapcore.ISO8601TimeEncoder
 	config.EncodeCaller = zapcore.ShortCallerEncoder
 	fileEncoder := zapcore.NewJSONEncoder(config)
-	logFile, _ := os.OpenFile(logFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	logFile, err := os.OpenFile(logFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		fmt.Println(logFileName + err.Error())
+		os.Exit(2)
+	}
 	writer := zapcore.AddSync(logFile)
 
 	defaultLogLevel := zapcore.DebugLevel
@@ -38,14 +42,18 @@ const (
 func Log(e any, level zapcore.Level) (er error) {
 	er = fmt.Errorf("%v", e)
 	if e != nil {
-		switch level {
-		case zapcore.FatalLevel:
-			logger.Fatal(er.Error())
-			fmt.Println("Catastrophic error, see log!")
-		case zapcore.ErrorLevel:
-			logger.Error(er.Error())
-		default:
-			logger.Info(er.Error())
+		if logger == nil {
+			fmt.Println(e)
+		} else {
+			switch level {
+			case zapcore.FatalLevel:
+				logger.Fatal(er.Error())
+				fmt.Println("Catastrophic error, see log!")
+			case zapcore.ErrorLevel:
+				logger.Error(er.Error())
+			default:
+				logger.Info(er.Error())
+			}
 		}
 		return er
 	} else {

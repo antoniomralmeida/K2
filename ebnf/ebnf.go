@@ -3,7 +3,9 @@ package ebnf
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"os"
 
 	"strings"
 	"unicode"
@@ -178,6 +180,12 @@ func (e *EBNF) ReadToken(Tokenfile string) int {
 		}
 	}
 	e.Base = e.Rules[0].Tokens[0]
+	data, err := os.Create(Tokenfile + ".json")
+	if err != nil {
+		initializers.Log(err, initializers.Error)
+	} else {
+		io.Copy(data, strings.NewReader(e.String()))
+	}
 	return 1
 }
 

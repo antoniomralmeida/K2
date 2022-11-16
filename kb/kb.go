@@ -2,7 +2,6 @@ package kb
 
 import (
 	"encoding/json"
-	"fmt"
 	"sort"
 
 	"github.com/antoniomralmeida/k2/ebnf"
@@ -28,7 +27,7 @@ func Init() {
 
 	ebnf := ebnf.EBNF{}
 	GKB.ebnf = &ebnf
-	GKB.ebnf.ReadToken("./k2web/pub/ebnf/k2.ebnf")
+	GKB.ebnf.ReadToken("./config/k2.ebnf")
 
 	FindAllClasses("_id", &GKB.Classes)
 	for j := range GKB.Classes {
@@ -274,10 +273,6 @@ func (kb *KnowledgeBased) NewRule(rule string, priority byte, interval int) *KBR
 func (kb *KnowledgeBased) UpdateKB(name string) error {
 	kb.Name = name
 	return kb.Persist()
-}
-
-func (kb *KnowledgeBased) PrintEBNF() {
-	fmt.Println(kb.ebnf.String())
 }
 
 func (kb *KnowledgeBased) Persist() error {

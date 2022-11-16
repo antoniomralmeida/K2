@@ -28,8 +28,8 @@ func StartSystem() {
 	// CORE
 	var wg sync.WaitGroup = sync.WaitGroup{}
 	wg.Add(3)
-	go kb.Run(&wg)
 	go apikernel.Run(&wg)
+	go kb.Run(&wg)
 	go web.Run(&wg)
 	go lib.Openbrowser("http://localhost" + os.Getenv("HTTPPORT"))
 	wg.Wait()
@@ -37,7 +37,6 @@ func StartSystem() {
 
 func main() {
 	//TEST
-	//tests.Test7()
 
 	//CORE
 	StartSystem()

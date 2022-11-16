@@ -37,6 +37,7 @@ func Run() {
 	f := wd + os.Getenv("LOGPATH") + "k2webhttp." + time.Now().Format(lib.YYYYMMDD) + ".log"
 	file, err := os.OpenFile(f, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
+		fmt.Println(err, f)
 		initializers.Log(fmt.Sprintf("error opening file: %v %v", err, f), initializers.Fatal)
 	}
 	defer file.Close()

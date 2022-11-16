@@ -5,5 +5,7 @@ cd bin
 go build  -o k2web.bin ../k2web/k2web.go
 go build  -o k2.bin ../k2.go
 cd ..
-docker build . -t k2-app-back  --no-cache
+rem docker build . -f k2-back -t k2-back  --no-cache
+rem docker build . -f k2-web -t k2-web  --no-cache
+docker-compose build --no-cache
 docker-compose up

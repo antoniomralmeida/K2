@@ -17,11 +17,6 @@ func Run(wg *sync.WaitGroup) {
 		web := wd + "/bin/k2web.exe"
 		_, err := exec.Command("cmd.exe", "/c", "start", web).Output()
 		initializers.Log(err, initializers.Error)
-	case "linux":
-		wd, _ := os.Getwd()
-		web := wd + "/bin/k2web.bin"
-		_, err := exec.Command(web).Output()
-		initializers.Log(err, initializers.Error)
 	default:
 		initializers.Log("OS not supported!"+runtime.GOOS, initializers.Error)
 	}

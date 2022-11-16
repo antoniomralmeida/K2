@@ -1,0 +1,44 @@
+Rule =  [  unconditionally then Consequent
+		|  for any Class [ DynamicReference ]] if Expression then Consequent 
+		|  when Expression then Consequent
+		|  whenever Expression then Consequent
+		|  initially Rule.
+
+
+Expression =  { "("  } the Attribute [of ( DynamicReference | Object ) ]  \n
+		(is 
+		| equal 
+		| less than [or equal] 
+		| greater than [ or equal] 
+		| different) 
+		(ListType |Constant | Text) { ")" }  
+		{[( and | or ) Expression ]}.
+
+
+Consequent =   ( Set  
+		| Inform
+		| Create 
+		| transfer 
+		| delete 
+		| insert 
+		| remove 
+		| change 
+		| move 
+		| rotate 
+		| show 
+		| hide 
+		| activate 
+		| deactivate 
+		| focus 
+		| invoke 
+		| halt 
+		| Conclude  )
+		{ and Consequent }.
+
+Set = set the Attribute of ( DynamicReference | the ( Class | Object ) ) ("=" | to) Constant.
+
+Inform = inform to the operator that Text \n [ {the Attribute of ( the Object | DynamicReference ) [Text]} ].
+
+Conclude = conclude that the Attribute of Object is (ListType |Constant | Text).
+
+Create = create ( a Class [by cloning Class]| an instance of the Class named by Text).

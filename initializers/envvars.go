@@ -5,5 +5,5 @@ import (
 )
 
 func InitEnvVars() {
-	gotenv.Load("./bin/.env")
+	gotenv.Load("./config/.env")
 }
