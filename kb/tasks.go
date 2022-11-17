@@ -9,7 +9,8 @@ import (
 
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
-	"github.com/antoniomralmeida/k2/web"
+	"github.com/antoniomralmeida/k2/services"
+
 	"github.com/madflojo/tasks"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -47,7 +48,7 @@ func Run(wg *sync.WaitGroup) {
 		if lib.KeyPress() == 27 || GKB.halt {
 			fmt.Printf("Shutdown...")
 			scheduler.Stop()
-			web.Stop()
+			services.Stop()
 			wg.Done()
 			os.Exit(0)
 		}

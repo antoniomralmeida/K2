@@ -9,8 +9,9 @@ import (
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/kb"
 	"github.com/antoniomralmeida/k2/lib"
+	"github.com/antoniomralmeida/k2/services"
+	"github.com/antoniomralmeida/k2/telemetry"
 	"github.com/antoniomralmeida/k2/version"
-	"github.com/antoniomralmeida/k2/web"
 )
 
 func init() {
@@ -20,17 +21,20 @@ func init() {
 	initializers.LogInit("k2log")
 	initializers.Log(msg, initializers.Info)
 	initializers.ConnectDB()
+	telemetry.Init()
+	span := telemetry.Begin("k2-server", "init-kb")
 	kb.Init()
+	span.End()
 }
 
 func StartSystem() {
 
 	// CORE
 	var wg sync.WaitGroup = sync.WaitGroup{}
-	wg.Add(3)
+	wg.Add(5)
 	go apikernel.Run(&wg)
 	go kb.Run(&wg)
-	go web.Run(&wg)
+	go services.Run(&wg)
 	go lib.Openbrowser("http://localhost" + os.Getenv("HTTPPORT"))
 	wg.Wait()
 }
