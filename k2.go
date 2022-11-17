@@ -22,7 +22,7 @@ func init() {
 	initializers.Log(msg, initializers.Info)
 	initializers.ConnectDB()
 	telemetry.Init()
-	span := telemetry.Begin("k2-server", "init-kb")
+	span := telemetry.Begin("init-kb")
 	kb.Init()
 	span.End()
 }

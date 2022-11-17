@@ -15,8 +15,9 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-var logger = log.New(os.Stderr, "k2-zipkin", log.Ldate|log.Ltime|log.Llongfile)
+var logger = log.New(os.Stderr, "zipkin-example", log.Ldate|log.Ltime|log.Llongfile)
 var ctx context.Context
+var tr trace.Tracer
 var cancel context.CancelFunc
 
 // initTracer creates a new trace provider instance and registers it as global trace provider.
@@ -35,16 +36,14 @@ func initTracer(url string) (func(context.Context) error, error) {
 	}
 
 	batcher := sdktrace.NewBatchSpanProcessor(exporter)
-
 	tp := sdktrace.NewTracerProvider(
 		sdktrace.WithSpanProcessor(batcher),
 		sdktrace.WithResource(resource.NewWithAttributes(
 			semconv.SchemaURL,
-			semconv.ServiceNameKey.String("k2-telemetry"),
+			semconv.ServiceNameKey.String("zipkin-test"),
 		)),
 	)
 	otel.SetTracerProvider(tp)
-
 	return tp.Shutdown, nil
 }
 
@@ -64,10 +63,11 @@ func Init() {
 			log.Fatal("failed to shutdown TracerProvider: " + err.Error())
 		}
 	}()
+	tr = otel.GetTracerProvider().Tracer("component-main")
+
 }
 
-func Begin(component string, spanName string) trace.Span {
-	tr := otel.GetTracerProvider().Tracer(component)
-	_, span := tr.Start(ctx, spanName)
+func Begin(spanName string) trace.Span {
+	_, span := tr.Start(ctx, spanName, trace.WithSpanKind(trace.SpanKindServer))
 	return span
 }
