@@ -1,8 +1,9 @@
 package kb
 
 import (
+	"encoding/json"
+
 	"github.com/antoniomralmeida/k2/initializers"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"gopkg.in/mgo.v2/bson"
@@ -10,8 +11,8 @@ import (
 
 func (w *KBWorkspace) Persist() error {
 	ctx, collection := initializers.GetCollection("KBWorkspace")
-	if w.Id.IsZero() {
-		w.Id = primitive.NewObjectID()
+	if w.Id.IsNull() {
+		w.Id = initializers.GetOIDNew()
 		_, err := collection.InsertOne(ctx, w)
 		return err
 	} else {
@@ -33,4 +34,10 @@ func FindAllWorkspaces(sort string) error {
 		initializers.Log(err, initializers.Fatal)
 	}
 	return nil
+}
+
+func (w *KBWorkspace) String() string {
+	j, err := json.MarshalIndent(*w, "", "\t")
+	initializers.Log(err, initializers.Error)
+	return string(j)
 }

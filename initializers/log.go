@@ -33,6 +33,10 @@ func LogInit(filebase string) {
 	logger = zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
 }
 
+func GetLogger() *zap.Logger {
+	return logger
+}
+
 const (
 	Info  = zapcore.InfoLevel
 	Error = zapcore.ErrorLevel

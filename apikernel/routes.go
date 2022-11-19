@@ -7,4 +7,5 @@ import (
 func Routes(app *fiber.App) {
 	app.Get("/api/getlistdatainput", GetDataInput)
 	app.Post("/api/postdatainput", PostDataInput)
+	app.Get("/api/getlistworkspaces", GetWorkspaces)
 }

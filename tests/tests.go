@@ -115,3 +115,8 @@ func Test5() {
 func Test6() {
 	kb.GKB.NewRule("for any MotorElétrico M if the Status is PowerOff then inform to the operator that 'O Motor' the Name of M 'parou!' and set the CurrentPower of M = 0.3230", 100, 0)
 }
+
+func Test7() {
+	w := kb.GKB.NewWorkspace("Painel Elétrico", "C:\\Users\\manoe\\OneDrive\\Imagens\\painel.jpg")
+	fmt.Println(w)
+}

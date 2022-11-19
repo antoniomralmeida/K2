@@ -12,8 +12,8 @@ import (
 
 func (h *KBHistory) Persist() error {
 	ctx, collection := initializers.GetCollection("KBHistory")
-	if h.Id.IsZero() {
-		h.Id = primitive.NewObjectID()
+	if h.Id.IsNull() {
+		h.Id = initializers.GetOIDNew()
 		_, err := collection.InsertOne(ctx, h)
 		return err
 	} else {
@@ -50,7 +50,7 @@ func (h *KBHistory) ClearingHistory(history int) error {
 		}
 		todel := KBHistory{}
 		collection.FindOne(ctx, bson.D{{Key: "attribute_id", Value: Id}}, options.FindOne().SetSort(bson.D{{Key: "when", Value: 1}})).Decode(&todel)
-		if !todel.Id.IsZero() {
+		if !todel.Id.IsNull() {
 			collection.DeleteOne(ctx, bson.D{{Key: "_id", Value: todel.Id}})
 		} else {
 			return nil

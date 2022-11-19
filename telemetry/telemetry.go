@@ -3,10 +3,11 @@ package telemetry
 import (
 	"context"
 	"flag"
-	"log"
 	"os"
 	"os/signal"
+	"time"
 
+	"github.com/antoniomralmeida/k2/initializers"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/zipkin"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -15,13 +16,17 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-var logger = log.New(os.Stderr, "zipkin-example", log.Ldate|log.Ltime|log.Llongfile)
-var ctx context.Context
-var tr trace.Tracer
-var cancel context.CancelFunc
+// var logger = log.New(os.Stderr, "zipkin-example", log.Ldate|log.Ltime|log.Llongfile)
+
+type Telemetry struct {
+	ctx    context.Context
+	cancel context.CancelFunc
+}
+
+var t Telemetry
 
 // initTracer creates a new trace provider instance and registers it as global trace provider.
-func initTracer(url string) (func(context.Context) error, error) {
+func (t *Telemetry) initTracer(url string) (func(context.Context) error, error) {
 	// Create Zipkin Exporter and install it as a global tracer.
 	//
 	// For demoing purposes, always sample. In a production application, you should
@@ -29,7 +34,6 @@ func initTracer(url string) (func(context.Context) error, error) {
 	// ratio.
 	exporter, err := zipkin.New(
 		url,
-		zipkin.WithLogger(logger),
 	)
 	if err != nil {
 		return nil, err
@@ -40,7 +44,7 @@ func initTracer(url string) (func(context.Context) error, error) {
 		sdktrace.WithSpanProcessor(batcher),
 		sdktrace.WithResource(resource.NewWithAttributes(
 			semconv.SchemaURL,
-			semconv.ServiceNameKey.String("zipkin-test"),
+			semconv.ServiceNameKey.String("k2-telemetry"),
 		)),
 	)
 	otel.SetTracerProvider(tp)
@@ -48,26 +52,51 @@ func initTracer(url string) (func(context.Context) error, error) {
 }
 
 func Init() {
+	t = Telemetry{}
 	url := flag.String("zipkin", "http://localhost:9411/api/v2/spans", "zipkin url")
 	flag.Parse()
 
-	ctx, cancel = signal.NotifyContext(context.Background(), os.Interrupt)
-	defer cancel()
+	t.ctx, t.cancel = signal.NotifyContext(context.Background(), os.Interrupt)
+	defer t.cancel()
 
-	shutdown, err := initTracer(*url)
+	shutdown, err := t.initTracer(*url)
 	if err != nil {
-		log.Fatal(err)
+		initializers.Log(err, initializers.Fatal)
 	}
 	defer func() {
-		if err := shutdown(ctx); err != nil {
-			log.Fatal("failed to shutdown TracerProvider: " + err.Error())
+		if err := shutdown(t.ctx); err != nil {
+			initializers.Log("failed to shutdown TracerProvider: "+err.Error(), initializers.Fatal)
 		}
 	}()
-	tr = otel.GetTracerProvider().Tracer("component-main")
-
 }
 
-func Begin(spanName string) trace.Span {
-	_, span := tr.Start(ctx, spanName, trace.WithSpanKind(trace.SpanKindServer))
-	return span
+func Begin(ct context.Context, spanName string) (context.Context, trace.Span) {
+	if ct == context.TODO() {
+		ct = t.ctx
+	}
+	tr := otel.GetTracerProvider().Tracer("component-" + spanName)
+	return tr.Start(ct, spanName)
 }
+
+func End(span trace.Span) {
+	time.Sleep(1 * time.Millisecond)
+	span.End()
+}
+
+// clear server
+/*
+	tr := otel.GetTracerProvider().Tracer("component-main")
+	ctx, span := tr.Start(ctx, "foo", trace.WithSpanKind(trace.SpanKindServer))
+	<-time.After(6 * time.Millisecond)
+	bar(ctx)
+	<-time.After(6 * time.Millisecond)
+	span.End()
+}
+
+func bar(ctx context.Context) {
+	tr := otel.GetTracerProvider().Tracer("component-bar")
+	_, span := tr.Start(ctx, "bar")
+	<-time.After(6 * time.Millisecond)
+	span.End()
+}
+*/

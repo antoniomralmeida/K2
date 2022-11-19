@@ -15,7 +15,6 @@ import (
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -27,8 +26,8 @@ func (r *KBRule) String() string {
 
 func (r *KBRule) Persist() error {
 	ctx, collection := initializers.GetCollection("KBRule")
-	if r.Id.IsZero() {
-		r.Id = primitive.NewObjectID()
+	if r.Id.IsNull() {
+		r.Id = initializers.GetOIDNew()
 		_, err := collection.InsertOne(ctx, r)
 		return err
 	} else {
@@ -571,7 +570,7 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 			if ok {
 				txtout := txt
 				found, idxs := cart.GetCombination()
-				wks := make(map[primitive.ObjectID]*KBWorkspace)
+				wks := make(map[initializers.OID]*KBWorkspace)
 				for key := range attrs {
 					ao := attrs[key][idxs[key]]
 					value, _, _ := ao.ValueString()

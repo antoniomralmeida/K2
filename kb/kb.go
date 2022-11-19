@@ -6,8 +6,8 @@ import (
 
 	"github.com/antoniomralmeida/k2/ebnf"
 	"github.com/antoniomralmeida/k2/initializers"
+	"github.com/antoniomralmeida/k2/lib"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var GKB *KnowledgeBased
@@ -21,7 +21,7 @@ func Init() {
 		GKB.Name = "K2 System KB"
 	}
 	GKB.Persist()
-	GKB.IdxClasses = make(map[primitive.ObjectID]*KBClass)
+	GKB.IdxClasses = make(map[initializers.OID]*KBClass)
 	GKB.IdxObjects = make(map[string]*KBObject)
 	GKB.IdxAttributeObjects = make(map[string]*KBAttributeObject)
 
@@ -36,7 +36,7 @@ func Init() {
 
 	for j, c := range GKB.Classes {
 		initializers.Log("Prepare Class "+c.Name, initializers.Info)
-		if !c.ParentID.IsZero() {
+		if !c.ParentID.IsNull() {
 			pc := GKB.IdxClasses[c.ParentID]
 			if pc != nil {
 				GKB.Classes[j].ParentClass = pc
@@ -103,7 +103,7 @@ func Init() {
 
 func (kb *KnowledgeBased) AddAttribute(c *KBClass, attrs ...*KBAttribute) {
 	for i := range attrs {
-		attrs[i].Id = primitive.NewObjectID()
+		attrs[i].Id = initializers.GetOIDNew()
 		c.Attributes = append(c.Attributes, *attrs[i])
 	}
 	initializers.Log(c.Persist(), initializers.Fatal)
@@ -126,7 +126,7 @@ func (kb *KnowledgeBased) NewClass(newclass_json string) *KBClass {
 		class.ParentClass = p
 	}
 	for i := range class.Attributes {
-		class.Attributes[i].Id = primitive.NewObjectID()
+		class.Attributes[i].Id = initializers.GetOIDNew()
 		for _, x := range class.Attributes[i].Sources {
 			class.Attributes[i].SourcesID = append(class.Attributes[i].SourcesID, KBSourceStr[x])
 		}
@@ -145,16 +145,21 @@ func (kb *KnowledgeBased) NewClass(newclass_json string) *KBClass {
 
 func (kb *KnowledgeBased) UpdateClass(c *KBClass) {
 	for i := range c.Attributes {
-		if c.Attributes[i].Id.IsZero() {
-			c.Attributes[i].Id = primitive.NewObjectID()
+		if c.Attributes[i].Id.IsNull() {
+			c.Attributes[i].Id = initializers.GetOIDNew()
 		}
 	}
 	initializers.Log(c.Persist(), initializers.Fatal)
 }
 
-func (kb *KnowledgeBased) NewWorkspace(name string, icone string) *KBWorkspace {
-	w := KBWorkspace{Workspace: name, BackgroundImage: icone}
-	err := w.Persist()
+func (kb *KnowledgeBased) NewWorkspace(name string, image string) *KBWorkspace {
+	copy, err := lib.LoadImage(image)
+	if err != nil {
+		initializers.Log(err, initializers.Error)
+		return nil
+	}
+	w := KBWorkspace{Workspace: name, BackgroundImage: copy}
+	err = w.Persist()
 	if err == nil {
 		kb.Workspaces = append(kb.Workspaces, w)
 		return &w
@@ -186,7 +191,7 @@ func (kb *KnowledgeBased) NewObject(class string, name string) *KBObject {
 	}
 	o := KBObject{Name: name, Class: p.Id, Bkclass: p}
 	for _, x := range kb.FindAttributes(p) {
-		n := KBAttributeObject{Id: primitive.NewObjectID(), Attribute: x.Id, KbAttribute: x, KbObject: &o}
+		n := KBAttributeObject{Id: initializers.GetOIDNew(), Attribute: x.Id, KbAttribute: x, KbObject: &o}
 		o.Attributes = append(o.Attributes, n)
 		kb.IdxAttributeObjects[n.getFullName()] = &n
 	}
@@ -248,7 +253,7 @@ func (kb *KnowledgeBased) FindAttributeObject(obj *KBObject, attr string) *KBAtt
 }
 
 func (kb *KnowledgeBased) NewAttributeObject(obj *KBObject, attr *KBAttribute) *KBAttributeObject {
-	a := KBAttributeObject{Attribute: attr.Id, Id: primitive.NewObjectID()}
+	a := KBAttributeObject{Attribute: attr.Id, Id: initializers.GetOIDNew()}
 	obj.Attributes = append(obj.Attributes, a)
 	err := obj.Persist()
 	if err == nil {
@@ -277,8 +282,8 @@ func (kb *KnowledgeBased) UpdateKB(name string) error {
 
 func (kb *KnowledgeBased) Persist() error {
 	ctx, collection := initializers.GetCollection("KnowledgeBased")
-	if kb.Id.IsZero() {
-		kb.Id = primitive.NewObjectID()
+	if kb.Id.IsNull() {
+		kb.Id = initializers.GetOIDNew()
 		_, err := collection.InsertOne(ctx, kb)
 		return err
 	} else {
@@ -311,4 +316,11 @@ func (kb *KnowledgeBased) GetDataInput() []*DataInput {
 
 func (kb *KnowledgeBased) FindAttributeObjectByName(name string) *KBAttributeObject {
 	return kb.IdxAttributeObjects[name]
+}
+
+func (kb *KnowledgeBased) GetWorkspaces() (ret []string) {
+	for _, w := range kb.Workspaces {
+		ret = append(ret, w.Workspace)
+	}
+	return
 }

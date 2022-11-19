@@ -19,6 +19,7 @@ func ConnectDB() {
 	dbName := os.Getenv("DB")
 
 	ctx, _ = context.WithTimeout(context.Background(), 60*time.Second)
+
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(dsn))
 	if err != nil {
 		Log(err, Fatal)

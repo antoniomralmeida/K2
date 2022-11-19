@@ -7,7 +7,6 @@ import (
 
 	"github.com/antoniomralmeida/k2/initializers"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -32,8 +31,9 @@ func FindAllClasses(sort string, cs *[]KBClass) error {
 
 func (class *KBClass) Persist() error {
 	ctx, collection := initializers.GetCollection("KBClass")
-	if class.Id.IsZero() {
-		class.Id = primitive.NewObjectID()
+	if class.Id.IsNull() {
+		class.Id = initializers.GetOIDNew()
+		initializers.GetOIDNew()
 		_, err := collection.InsertOne(ctx, class)
 		return err
 	} else {

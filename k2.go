@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"sync"
@@ -11,6 +12,7 @@ import (
 	"github.com/antoniomralmeida/k2/lib"
 	"github.com/antoniomralmeida/k2/services"
 	"github.com/antoniomralmeida/k2/telemetry"
+	"github.com/antoniomralmeida/k2/tests"
 	"github.com/antoniomralmeida/k2/version"
 )
 
@@ -20,11 +22,15 @@ func init() {
 	initializers.InitEnvVars()
 	initializers.LogInit("k2log")
 	initializers.Log(msg, initializers.Info)
-	initializers.ConnectDB()
 	telemetry.Init()
-	span := telemetry.Begin("init-kb")
+	ctx, spanbase := telemetry.Begin(context.TODO(), "main-init")
+	_, span := telemetry.Begin(ctx, "ConnectDB")
+	initializers.ConnectDB()
+	span.End()
+	_, span = telemetry.Begin(ctx, "kb.Init")
 	kb.Init()
 	span.End()
+	spanbase.End()
 }
 
 func StartSystem() {
@@ -42,6 +48,8 @@ func StartSystem() {
 func main() {
 	//TEST
 
+	tests.Test7()
+
 	//CORE
-	StartSystem()
+	//StartSystem()
 }

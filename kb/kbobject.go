@@ -5,15 +5,14 @@ import (
 
 	"github.com/antoniomralmeida/k2/initializers"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func (o *KBObject) Persist() error {
 	ctx, collection := initializers.GetCollection("KBObject")
-	if o.Id.IsZero() {
-		o.Id = primitive.NewObjectID()
+	if o.Id.IsNull() {
+		o.Id = initializers.GetOIDNew()
 		_, err := collection.InsertOne(ctx, o)
 		return err
 	} else {

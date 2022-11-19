@@ -15,12 +15,13 @@ import (
 )
 
 type Context struct {
-	User      string
-	Title     string
-	DataInput string
-	Workspace string
-	Alerts    string
-	ApiKernel string
+	User       string
+	Title      string
+	DataInput  string
+	Workspace  string
+	Alerts     string
+	ApiKernel  string
+	Dashboards []string
 }
 
 var ctxweb = Context{}
