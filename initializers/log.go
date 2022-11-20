@@ -31,6 +31,7 @@ func LogInit(filebase string) {
 		zapcore.NewCore(fileEncoder, writer, defaultLogLevel),
 	)
 	logger = zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
+	zap.RedirectStdLog(logger)
 }
 
 func GetLogger() *zap.Logger {

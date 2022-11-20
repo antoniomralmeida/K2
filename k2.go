@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"sync"
@@ -22,11 +21,11 @@ func init() {
 	initializers.LogInit("k2log")
 	initializers.Log(msg, initializers.Info)
 	telemetry.Init()
-	ctx, spanbase := telemetry.Begin(context.TODO(), "main-init")
-	_, span := telemetry.Begin(ctx, "ConnectDB")
+	ctx, spanbase := telemetry.Begin("main-init", nil)
+	_, span := telemetry.Begin("ConnectDB", ctx)
 	initializers.ConnectDB()
 	span.End()
-	_, span = telemetry.Begin(ctx, "kb.Init")
+	_, span = telemetry.Begin("kb.Init", ctx)
 	kb.Init()
 	span.End()
 	spanbase.End()

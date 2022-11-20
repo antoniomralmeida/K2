@@ -70,9 +70,18 @@ function SubmitDataInput(form) {
     return true;
 }
 
+function LoadWorkspace(name) {
+    var ctx = document.getElementById("worktitle");
+    ctx.innerHTML = 'Workspace - ' + name;
+    var ctx = document.getElementById("workspace");
+    var background = new Image(ctx);
+    background.src = "./k2web/pub/img/f3c35b21-c792-4853-9072-184913fc909b.jpg";
+}
+
 $(function () {
     LoadDataInput();
 /*    $("#datepicker").datepicker({
         dateFormat: "dd/mm/yy"
     });*/
 });
+

@@ -462,7 +462,7 @@
                                 <!-- Card Header - Dropdown -->
                                 <div
                                     class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Dashboard</h6>
+                                    <h6 class="m-0 font-weight-bold text-primary" id="worktitle">Workspace</h6>
 
                                     <div class="dropdown no-arrow">
                                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
@@ -471,9 +471,9 @@
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                                             aria-labelledby="dropdownMenuLink">
-                                            <div class="dropdown-header">Dashboard:</div>
+                                            <div class="dropdown-header">Workspaces:</div>
                                             {{ range .Dashboards }} 
-                                                <a class="dropdown-item" href="#">{{.}}</a>
+                                                <a class="dropdown-item" onclick="LoadWorkspace('{{.}}');">{{.}}</a>
                                             {{ end }}
                                             <div class="dropdown-divider"></div>
                                             <a class="dropdown-item" href="#">Something else here</a>
@@ -483,7 +483,7 @@
                                 <!-- Card Body -->
                                 <div class="card-body">
                                     <div class="chart-area">
-                                        <canvas id="myAreaChart"></canvas>
+                                        <canvas id="workspace"></canvas>
                                     </div>
                                 </div>
                             </div>
@@ -741,8 +741,6 @@
     <script src="vendor/chart.js/Chart.min.js"></script>
 
     <!-- Page level custom scripts -->
-    <script src="js/demo/chart-area-demo.js"></script>
-    <script src="js/demo/chart-pie-demo.js"></script>
     <script src="js/k2.js"></script>
     <script>
         apikernel = '{{.ApiKernel}}'

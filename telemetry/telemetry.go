@@ -3,11 +3,10 @@ package telemetry
 import (
 	"context"
 	"flag"
+	"log"
 	"os"
 	"os/signal"
-	"time"
 
-	"github.com/antoniomralmeida/k2/initializers"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/zipkin"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -21,6 +20,7 @@ import (
 type Telemetry struct {
 	ctx    context.Context
 	cancel context.CancelFunc
+	trace  trace.Tracer
 }
 
 var t Telemetry
@@ -34,6 +34,7 @@ func (t *Telemetry) initTracer(url string) (func(context.Context) error, error) 
 	// ratio.
 	exporter, err := zipkin.New(
 		url,
+		zipkin.WithLogger(log.Default()),
 	)
 	if err != nil {
 		return nil, err
@@ -56,46 +57,18 @@ func Init() {
 	url := flag.String("zipkin", "http://localhost:9411/api/v2/spans", "zipkin url")
 	flag.Parse()
 
-	t.ctx, _ = signal.NotifyContext(context.Background(), os.Interrupt)
-
-	shutdown, err := t.initTracer(*url)
+	t.ctx, t.cancel = signal.NotifyContext(context.Background(), os.Interrupt)
+	defer t.cancel()
+	_, err := t.initTracer(*url)
 	if err != nil {
-		initializers.Log(err, initializers.Fatal)
+		log.Default().Fatal(err)
 	}
-	defer func() {
-		if err := shutdown(t.ctx); err != nil {
-			initializers.Log("failed to shutdown TracerProvider: "+err.Error(), initializers.Fatal)
-		}
-	}()
 }
 
-func Begin(ct context.Context, spanName string) (context.Context, trace.Span) {
-	if ct == context.TODO() {
-		ct = t.ctx
+func Begin(spanName string, ctx context.Context) (context.Context, trace.Span) {
+	if ctx == nil {
+		ctx = t.ctx
+		t.trace = otel.GetTracerProvider().Tracer("component-" + spanName)
 	}
-	tr := otel.GetTracerProvider().Tracer("component-" + spanName)
-	return tr.Start(ct, spanName)
+	return t.trace.Start(ctx, spanName)
 }
-
-func End(span trace.Span) {
-	time.Sleep(1 * time.Millisecond)
-	span.End()
-}
-
-// clear server
-/*
-	tr := otel.GetTracerProvider().Tracer("component-main")
-	ctx, span := tr.Start(ctx, "foo", trace.WithSpanKind(trace.SpanKindServer))
-	<-time.After(6 * time.Millisecond)
-	bar(ctx)
-	<-time.After(6 * time.Millisecond)
-	span.End()
-}
-
-func bar(ctx context.Context) {
-	tr := otel.GetTracerProvider().Tracer("component-bar")
-	_, span := tr.Start(ctx, "bar")
-	<-time.After(6 * time.Millisecond)
-	span.End()
-}
-*/
