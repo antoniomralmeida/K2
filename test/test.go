@@ -1,4 +1,4 @@
-package tests
+package test
 
 import (
 	"fmt"
@@ -118,5 +118,10 @@ func Test6() {
 
 func Test7() {
 	w := kb.GKB.NewWorkspace("Painel Elétrico", "C:\\Users\\manoe\\OneDrive\\Imagens\\painel.jpg")
-	fmt.Println(w)
+	fmt.Println(*w)
+}
+
+func Test8() {
+	objs := kb.GKB.GetWorkspaces()
+	fmt.Println(objs)
 }

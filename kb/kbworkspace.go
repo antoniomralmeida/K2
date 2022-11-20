@@ -4,19 +4,20 @@ import (
 	"encoding/json"
 
 	"github.com/antoniomralmeida/k2/initializers"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"gopkg.in/mgo.v2/bson"
 )
 
 func (w *KBWorkspace) Persist() error {
 	ctx, collection := initializers.GetCollection("KBWorkspace")
-	if w.Id.IsNull() {
-		w.Id = initializers.GetOIDNew()
+	if w.Id.IsZero() {
+		w.Id = primitive.NewObjectID()
 		_, err := collection.InsertOne(ctx, w)
 		return err
 	} else {
-		_, err := collection.UpdateOne(ctx, bson.D{{Name: "_id", Value: w.Id}}, w)
+		_, err := collection.UpdateOne(ctx, bson.D{{Key: "_id", Value: w.Id}}, w)
 		return err
 	}
 }
@@ -33,7 +34,10 @@ func FindAllWorkspaces(sort string) error {
 		_, err = idx.CreateOne(ctx, mongo.IndexModel{Keys: bson.M{"workspace": 1}, Options: options.Index().SetUnique(true)})
 		initializers.Log(err, initializers.Fatal)
 	}
-	return nil
+	cursor, err := collection.Find(ctx, bson.D{}, options.Find().SetSort(bson.D{{Key: sort, Value: 1}}))
+	initializers.Log(err, initializers.Fatal)
+	err = cursor.All(ctx, &GKB.Workspaces)
+	return err
 }
 
 func (w *KBWorkspace) String() string {

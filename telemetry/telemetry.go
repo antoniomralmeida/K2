@@ -56,8 +56,7 @@ func Init() {
 	url := flag.String("zipkin", "http://localhost:9411/api/v2/spans", "zipkin url")
 	flag.Parse()
 
-	t.ctx, t.cancel = signal.NotifyContext(context.Background(), os.Interrupt)
-	defer t.cancel()
+	t.ctx, _ = signal.NotifyContext(context.Background(), os.Interrupt)
 
 	shutdown, err := t.initTracer(*url)
 	if err != nil {

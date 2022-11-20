@@ -12,7 +12,6 @@ import (
 	"github.com/antoniomralmeida/k2/lib"
 	"github.com/antoniomralmeida/k2/services"
 	"github.com/antoniomralmeida/k2/telemetry"
-	"github.com/antoniomralmeida/k2/tests"
 	"github.com/antoniomralmeida/k2/version"
 )
 
@@ -48,8 +47,8 @@ func StartSystem() {
 func main() {
 	//TEST
 
-	tests.Test7()
+	//test.Test8()
 
 	//CORE
-	//StartSystem()
+	StartSystem()
 }

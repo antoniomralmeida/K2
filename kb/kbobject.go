@@ -5,14 +5,15 @@ import (
 
 	"github.com/antoniomralmeida/k2/initializers"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func (o *KBObject) Persist() error {
 	ctx, collection := initializers.GetCollection("KBObject")
-	if o.Id.IsNull() {
-		o.Id = initializers.GetOIDNew()
+	if o.Id.IsZero() {
+		o.Id = primitive.NewObjectID()
 		_, err := collection.InsertOne(ctx, o)
 		return err
 	} else {
@@ -44,7 +45,7 @@ func FindAllObjects(filter bson.M, sort string, os *[]KBObject) error {
 		_, err = idx.CreateOne(ctx, mongo.IndexModel{Keys: bson.M{"name": 1}, Options: options.Index().SetUnique(true)})
 		initializers.Log(err, initializers.Fatal)
 	}
-	cursor, err := collection.Find(ctx, bson.M{}, options.Find().SetSort(bson.D{{Key: sort, Value: 1}}))
+	cursor, err := collection.Find(ctx, filter, options.Find().SetSort(bson.D{{Key: sort, Value: 1}}))
 	initializers.Log(err, initializers.Fatal)
 	err = cursor.All(ctx, os)
 	return err

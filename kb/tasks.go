@@ -10,6 +10,7 @@ import (
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
 	"github.com/antoniomralmeida/k2/services"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/madflojo/tasks"
 )
@@ -66,7 +67,7 @@ func (kb *KnowledgeBased) RunStackRules() error {
 			return (localstack[i].Priority > localstack[j].Priority) || (localstack[i].Priority == localstack[j].Priority && localstack[j].lastexecution.Unix() > localstack[i].lastexecution.Unix())
 		})
 
-		runtaks := make(map[initializers.OID]*KBRule) //run the rule once
+		runtaks := make(map[primitive.ObjectID]*KBRule) //run the rule once
 		for _, r := range localstack {
 			if runtaks[r.Id] == nil {
 				r.Run()
