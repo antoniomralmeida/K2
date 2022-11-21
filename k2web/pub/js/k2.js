@@ -73,9 +73,14 @@ function SubmitDataInput(form) {
 function LoadWorkspace(name) {
     var ctx = document.getElementById("worktitle");
     ctx.innerHTML = 'Workspace - ' + name;
-    var ctx = document.getElementById("workspace");
-    var background = new Image(ctx);
-    background.src = "./k2web/pub/img/f3c35b21-c792-4853-9072-184913fc909b.jpg";
+    var canvas = document.getElementById("workspace");
+    var background = new Image();
+    background.onload = function() {
+        canvas.getContext('2d').drawImage(background, 0,0);
+    }
+    background.width = '100%';
+    background.height = '100%';
+    background.src = './img/f3c35b21-c792-4853-9072-184913fc909b.jpg';
 }
 
 $(function () {

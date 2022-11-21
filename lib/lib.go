@@ -116,6 +116,7 @@ func KeyPress() byte {
 func LoadImage(src string) (dst string, err error) {
 	dst = "./k2web/pub/img/" + uuid.New().String() + filepath.Ext(src)
 	_, err = copy(src, dst)
+	dst = "./img/" + filepath.Base(dst)
 	return
 }
 

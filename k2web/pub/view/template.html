@@ -21,7 +21,7 @@
     <!-- Custom styles for this template-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
     <link rel="stylesheet" href="vendor/jquery/jquery-ui.css">
-    
+
     <!-- Custom Javascropt for this template-->
     <script src="vendor/jquery/jquery-3.6.0.min.js"></script>
     <script src="vendor/jquery/jquery-ui.min.js"></script>
@@ -472,8 +472,8 @@
                                         <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                                             aria-labelledby="dropdownMenuLink">
                                             <div class="dropdown-header">Workspaces:</div>
-                                            {{ range .Dashboards }} 
-                                                <a class="dropdown-item" onclick="LoadWorkspace('{{.}}');">{{.}}</a>
+                                            {{ range .Dashboards }}
+                                            <a class="dropdown-item" onclick="LoadWorkspace('{{.}}');">{{.}}</a>
                                             {{ end }}
                                             <div class="dropdown-divider"></div>
                                             <a class="dropdown-item" href="#">Something else here</a>
@@ -482,9 +482,10 @@
                                 </div>
                                 <!-- Card Body -->
                                 <div class="card-body">
-                                    <div class="chart-area">
-                                        <canvas id="workspace"></canvas>
+                                    <div class="chart-area" style="overflow: scroll;">
+                                        <canvas id="workspace"   height="512px" width="512px" display: block;></canvas>
                                     </div>
+                                    
                                 </div>
                             </div>
                         </div>
@@ -655,7 +656,7 @@
                                         {{ .DataInput}} </h6>
                                 </div>
                                 <div class="card-body">
-                                    <form >
+                                    <form>
                                         <div id="form_di_37232723">
                                         </div>
                                     </form>
