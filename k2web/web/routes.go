@@ -12,4 +12,10 @@ func Routes(app *fiber.App) {
 	app.Static("/scss", "/k2web/pub/scss")
 
 	app.Get("/", Home)
+
+	// 404 Handler
+	app.Use(func(c *fiber.Ctx) error {
+		c.Render(T["404"].original, nil)
+		return c.SendStatus(fiber.StatusNotFound)
+	})
 }

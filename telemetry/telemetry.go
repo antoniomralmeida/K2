@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/antoniomralmeida/k2/initializers"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/zipkin"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -61,7 +62,7 @@ func Init() {
 	defer t.cancel()
 	_, err := t.initTracer(*url)
 	if err != nil {
-		log.Default().Fatal(err)
+		initializers.Log(err, initializers.Fatal)
 	}
 }
 

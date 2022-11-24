@@ -14,6 +14,11 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 )
 
+type Workspace struct {
+	Workspace       string `bson:"workspace"`
+	BackgroundImage string `bson:"backgroundimage"`
+}
+
 type Context struct {
 	User       string
 	Title      string
@@ -21,7 +26,7 @@ type Context struct {
 	Workspace  string
 	Alerts     string
 	ApiKernel  string
-	Dashboards []string
+	Workspaces []Workspace
 }
 
 var ctxweb = Context{}

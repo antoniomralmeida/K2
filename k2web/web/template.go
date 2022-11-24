@@ -21,6 +21,7 @@ var T = make(map[string]Template)
 func InitTemplates() {
 	wd, _ := os.Getwd()
 	T["home"] = Minify("text/html", wd+"/k2web/pub/view/template.html")
+	T["404"] = Minify("text/html", wd+"/k2web/pub/view/404.html")
 }
 
 func Minify(mediatype string, from string) Template {

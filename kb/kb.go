@@ -319,9 +319,10 @@ func (kb *KnowledgeBased) FindAttributeObjectByName(name string) *KBAttributeObj
 	return kb.IdxAttributeObjects[name]
 }
 
-func (kb *KnowledgeBased) GetWorkspaces() (ret []string) {
+func (kb *KnowledgeBased) GetWorkspaces() (ret map[string]string) {
+	ret = make(map[string]string)
 	for _, w := range kb.Workspaces {
-		ret = append(ret, w.Workspace)
+		ret[w.Workspace] = w.BackgroundImage
 	}
 	return
 }
