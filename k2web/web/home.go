@@ -24,7 +24,7 @@ func Home(c *fiber.Ctx) error {
 	initializers.Log(err, initializers.Error)
 	body, err := ioutil.ReadAll(resp.Body)
 	initializers.Log(err, initializers.Error)
-	err = json.Unmarshal(body, &ctxweb.Dashboards)
+	err = json.Unmarshal(body, &ctxweb.Workspaces)
 	initializers.Log(err, initializers.Error)
 
 	//Render
