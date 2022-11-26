@@ -3,14 +3,12 @@ package kb
 import (
 	"fmt"
 	"os"
-	"sort"
 	"sync"
 	"time"
 
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
 	"github.com/antoniomralmeida/k2/services"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/madflojo/tasks"
 )
@@ -54,56 +52,4 @@ func Run(wg *sync.WaitGroup) {
 		}
 	}
 
-}
-
-func (kb *KnowledgeBased) RunStackRules() error {
-	initializers.Log("RunStackRules...", initializers.Info)
-	if len(kb.stack) > 0 {
-		kb.mutex.Lock()
-		localstack := kb.stack
-		kb.mutex.Unlock()
-		mark := len(localstack) - 1
-		sort.Slice(localstack, func(i, j int) bool {
-			return (localstack[i].Priority > localstack[j].Priority) || (localstack[i].Priority == localstack[j].Priority && localstack[j].lastexecution.Unix() > localstack[i].lastexecution.Unix())
-		})
-
-		runtaks := make(map[primitive.ObjectID]*KBRule) //run the rule once
-		for _, r := range localstack {
-			if runtaks[r.Id] == nil {
-				r.Run()
-				runtaks[r.Id] = r
-			}
-		}
-		kb.mutex.Lock()
-		kb.stack = kb.stack[mark:]
-		kb.mutex.Unlock()
-	}
-	for i := range kb.Rules {
-		if kb.Rules[i].ExecutionInterval != 0 && time.Now().After(kb.Rules[i].lastexecution.Add(time.Duration(kb.Rules[i].ExecutionInterval)*time.Millisecond)) {
-			kb.mutex.Lock()
-			kb.stack = append(kb.stack, &kb.Rules[i])
-			kb.mutex.Unlock()
-		}
-	}
-	return nil
-}
-
-func (kb *KnowledgeBased) RefreshRules() error {
-	initializers.Log("RefrehRules...", initializers.Info)
-	for i := range kb.Objects {
-		if !kb.Objects[i].parsed {
-			for j := range kb.Rules {
-				for k := range kb.Rules[j].bkclasses {
-					if kb.Rules[j].bkclasses[k] == kb.Objects[i].Bkclass {
-						_, bin, err := kb.ParsingCommand(kb.Rules[j].Rule)
-						if initializers.Log(err, initializers.Error) != nil {
-							kb.linkerRule(&kb.Rules[j], bin)
-						}
-					}
-				}
-			}
-			kb.Objects[i].parsed = true
-		}
-	}
-	return nil
 }
