@@ -14,17 +14,9 @@ import (
 	"github.com/montanaflynn/stats"
 	p "github.com/rafaeljesus/parallel-fn"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gonum.org/v1/gonum/stat"
 )
-
-type Pipe struct {
-	id     primitive.ObjectID `json:"_id"`
-	avg    float64            `json:"avg"`
-	stdDev float64            `json:"stdDev"`
-	trust  float64            `json:"trust"`
-}
 
 func (ao *KBAttributeObject) Validity() bool {
 	if ao.KbHistory != nil {

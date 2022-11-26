@@ -1,14 +1,15 @@
 package kb
 
 import (
-	"encoding/json"
+	"context"
 	"sort"
 
 	"github.com/antoniomralmeida/k2/ebnf"
 	"github.com/antoniomralmeida/k2/initializers"
-	"github.com/antoniomralmeida/k2/lib"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var GKB *KnowledgeBased
@@ -102,227 +103,64 @@ func Init() {
 	}
 }
 
-func (kb *KnowledgeBased) AddAttribute(c *KBClass, attrs ...*KBAttribute) {
-	for i := range attrs {
-		attrs[i].Id = primitive.NewObjectID()
-		c.Attributes = append(c.Attributes, *attrs[i])
+func FindAllWorkspaces(sort string) error {
+	ctx, collection := initializers.GetCollection("KBWorkspace")
+	idx := collection.Indexes()
+	ret, err := idx.List(ctx)
+	initializers.Log(err, initializers.Fatal)
+	var results []interface{}
+	err = ret.All(ctx, &results)
+	initializers.Log(err, initializers.Fatal)
+	if len(results) == 1 {
+		_, err = idx.CreateOne(ctx, mongo.IndexModel{Keys: bson.M{"workspace": 1}, Options: options.Index().SetUnique(true)})
+		initializers.Log(err, initializers.Fatal)
 	}
-	initializers.Log(c.Persist(), initializers.Fatal)
+	cursor, err := collection.Find(ctx, bson.D{}, options.Find().SetSort(bson.D{{Key: sort, Value: 1}}))
+	initializers.Log(err, initializers.Fatal)
+	err = cursor.All(ctx, &GKB.Workspaces)
+	return err
 }
 
-func (kb *KnowledgeBased) NewClass(newclass_json string) *KBClass {
-	class := KBClass{}
-	err := json.Unmarshal([]byte(newclass_json), &class)
-	if err != nil {
-		initializers.Log(err, initializers.Info)
-		return nil
+func FindAllClasses(sort string, cs *[]KBClass) error {
+	ctx, collection := initializers.GetCollection("KBClass")
+	idx := collection.Indexes()
+	ret, err := idx.List(context.TODO())
+	initializers.Log(err, initializers.Fatal)
+	var results []interface{}
+	err = ret.All(ctx, &results)
+	initializers.Log(err, initializers.Fatal)
+	if len(results) == 1 {
+		_, err = idx.CreateOne(ctx, mongo.IndexModel{Keys: bson.M{"name": 1}, Options: options.Index().SetUnique(true)})
+		initializers.Log(err, initializers.Fatal)
 	}
-	if class.Parent != "" {
-		p := kb.FindClassByName(class.Parent, true)
-		if p == nil {
-			initializers.Log("Class not found "+class.Parent, initializers.Info)
-			return nil
-		}
-		class.ParentID = p.Id
-		class.ParentClass = p
-	}
-	for i := range class.Attributes {
-		class.Attributes[i].Id = primitive.NewObjectID()
-		for _, x := range class.Attributes[i].Sources {
-			class.Attributes[i].SourcesID = append(class.Attributes[i].SourcesID, KBSourceStr[x])
-		}
-		class.Attributes[i].SimulationID = KBSimulationStr[class.Attributes[i].Simulation]
-	}
-	err = class.Persist()
-	if err == nil {
-		kb.Classes = append(kb.Classes, class)
-		kb.IdxClasses[class.Id] = &class
-		return &class
-	} else {
-		initializers.Log(err, initializers.Error)
-		return nil
-	}
+	cursor, err := collection.Find(ctx, bson.M{}, options.Find().SetSort(bson.D{{Key: sort, Value: 1}}))
+	initializers.Log(err, initializers.Fatal)
+	err = cursor.All(ctx, cs)
+	return err
 }
 
-func (kb *KnowledgeBased) UpdateClass(c *KBClass) {
-	for i := range c.Attributes {
-		if c.Attributes[i].Id.IsZero() {
-			c.Attributes[i].Id = primitive.NewObjectID()
-		}
+func FindAllObjects(filter bson.M, sort string, os *[]KBObject) error {
+	ctx, collection := initializers.GetCollection("KBObject")
+	idx := collection.Indexes()
+	ret, err := idx.List(ctx)
+	initializers.Log(err, initializers.Fatal)
+	var results []interface{}
+	err = ret.All(ctx, &results)
+	initializers.Log(err, initializers.Fatal)
+	if len(results) == 1 {
+		_, err = idx.CreateOne(ctx, mongo.IndexModel{Keys: bson.M{"name": 1}, Options: options.Index().SetUnique(true)})
+		initializers.Log(err, initializers.Fatal)
 	}
-	initializers.Log(c.Persist(), initializers.Fatal)
+	cursor, err := collection.Find(ctx, filter, options.Find().SetSort(bson.D{{Key: sort, Value: 1}}))
+	initializers.Log(err, initializers.Fatal)
+	err = cursor.All(ctx, os)
+	return err
 }
 
-func (kb *KnowledgeBased) NewWorkspace(name string, image string) *KBWorkspace {
-	copy, err := lib.LoadImage(image)
-	if err != nil {
-		initializers.Log(err, initializers.Error)
-		return nil
-	}
-	w := KBWorkspace{Workspace: name, BackgroundImage: copy}
-	err = w.Persist()
-	if err == nil {
-		kb.Workspaces = append(kb.Workspaces, w)
-		return &w
-	} else {
-		initializers.Log(err, initializers.Error)
-		return nil
-	}
-}
-
-func (kb *KnowledgeBased) UpdateWorkspace(w *KBWorkspace) {
-	initializers.Log(w.Persist(), initializers.Fatal)
-}
-
-func (kb *KnowledgeBased) FindWorkspaceByName(name string) *KBWorkspace {
-	for i := range kb.Workspaces {
-		if kb.Workspaces[i].Workspace == name {
-			return &kb.Workspaces[i]
-		}
-	}
-	initializers.Log("Workspace not found!", initializers.Error)
-	return nil
-}
-
-func (kb *KnowledgeBased) NewObject(class string, name string) *KBObject {
-	p := kb.FindClassByName(class, true)
-	if p == nil {
-		initializers.Log("Class not found "+class, initializers.Error)
-		return nil
-	}
-	o := KBObject{Name: name, Class: p.Id, Bkclass: p}
-	for _, x := range kb.FindAttributes(p) {
-		n := KBAttributeObject{Id: primitive.NewObjectID(), Attribute: x.Id, KbAttribute: x, KbObject: &o}
-		o.Attributes = append(o.Attributes, n)
-		kb.IdxAttributeObjects[n.getFullName()] = &n
-	}
-	initializers.Log(o.Persist(), initializers.Fatal)
-	kb.IdxObjects[name] = &o
-	return &o
-}
-
-func (kb *KnowledgeBased) LinkObjects(ws *KBWorkspace, obj *KBObject, left int, top int) {
-	ows := KBObjectWS{Object: obj.Id, Left: left, Top: top, KBObject: obj}
-	ws.Objects = append(ws.Objects, ows)
-	kb.UpdateWorkspace(ws)
-}
-
-func (kb *KnowledgeBased) FindObjectByName(name string) *KBObject {
-	return kb.IdxObjects[name]
-}
-
-func (kb *KnowledgeBased) FindClassByName(nm string, mandatory bool) *KBClass {
-	var ret KBClass
-	err := ret.FindOne(bson.D{{Key: "name", Value: nm}})
-	if err != nil && mandatory {
-		initializers.Log(err, initializers.Error)
-		return nil
-	}
-	return kb.IdxClasses[ret.Id]
-}
-
-func (kb *KnowledgeBased) FindAttribute(c *KBClass, name string) *KBAttribute {
-	attrs := kb.FindAttributes(c)
-	for i, x := range attrs {
-		if x.Name == name {
-			return attrs[i]
-		}
-	}
-	return nil
-}
-
-func (kb *KnowledgeBased) FindAttributes(c *KBClass) []*KBAttribute {
-	var ret []*KBAttribute
-	if c != nil {
-		if c.ParentClass != nil {
-			ret = append(ret, kb.FindAttributes(c.ParentClass)...)
-		}
-		for i := range c.Attributes {
-			ret = append(ret, &c.Attributes[i])
-		}
-	}
-	return ret
-}
-
-func (kb *KnowledgeBased) FindAttributeObject(obj *KBObject, attr string) *KBAttributeObject {
-	for i := range obj.Attributes {
-		if obj.Attributes[i].KbAttribute.Name == attr {
-			return &obj.Attributes[i]
-		}
-	}
-	return nil
-}
-
-func (kb *KnowledgeBased) NewAttributeObject(obj *KBObject, attr *KBAttribute) *KBAttributeObject {
-	a := KBAttributeObject{Attribute: attr.Id, Id: primitive.NewObjectID()}
-	obj.Attributes = append(obj.Attributes, a)
-	err := obj.Persist()
-	if err == nil {
-		return &a
-	} else {
-		initializers.Log(err, initializers.Error)
-		return nil
-	}
-}
-
-func (kb *KnowledgeBased) NewRule(rule string, priority byte, interval int) *KBRule {
-	_, bin, err := kb.ParsingCommand(rule)
-	if initializers.Log(err, initializers.Info) != nil {
-		return nil
-	}
-	r := KBRule{Rule: rule, Priority: priority, ExecutionInterval: interval}
-	initializers.Log(r.Persist(), initializers.Fatal)
-	kb.linkerRule(&r, bin)
-	kb.Rules = append(kb.Rules, r)
-	return &r
-}
-func (kb *KnowledgeBased) UpdateKB(name string) error {
-	kb.Name = name
-	return kb.Persist()
-}
-
-func (kb *KnowledgeBased) Persist() error {
-	ctx, collection := initializers.GetCollection("KnowledgeBased")
-	if kb.Id.IsZero() {
-		kb.Id = primitive.NewObjectID()
-		_, err := collection.InsertOne(ctx, kb)
-		return err
-	} else {
-
-		_, err := collection.UpdateOne(ctx, bson.D{{Key: "_id", Value: kb.Id}}, kb)
-		return err
-	}
-}
-
-func (kb *KnowledgeBased) FindOne() error {
-	ctx, collection := initializers.GetCollection("KnowledgeBased")
-	ret := collection.FindOne(ctx, bson.D{})
-	ret.Decode(kb)
-	return nil
-}
-
-func (kb *KnowledgeBased) GetDataInput() []*DataInput {
-	ret := []*DataInput{}
-	for i := range kb.Objects {
-		for j := range kb.Objects[i].Attributes {
-			a := &kb.Objects[i].Attributes[j]
-			if a.KbAttribute.isSource(User) && !a.Validity() {
-				di := DataInput{Name: a.KbObject.Name + "." + a.KbAttribute.Name, Atype: a.KbAttribute.AType, Options: a.KbAttribute.Options}
-				ret = append(ret, &di)
-			}
-		}
-	}
-	return ret
-}
-
-func (kb *KnowledgeBased) FindAttributeObjectByName(name string) *KBAttributeObject {
-	return kb.IdxAttributeObjects[name]
-}
-
-func (kb *KnowledgeBased) GetWorkspaces() (ret map[string]string) {
-	ret = make(map[string]string)
-	for _, w := range kb.Workspaces {
-		ret[w.Workspace] = w.BackgroundImage
-	}
-	return
+func FindAllRules(sort string) error {
+	ctx, collection := initializers.GetCollection("KBRule")
+	cursor, err := collection.Find(ctx, bson.M{}, options.Find().SetSort(bson.D{{Key: sort, Value: 1}}))
+	initializers.Log(err, initializers.Fatal)
+	err = cursor.All(ctx, &GKB.Rules)
+	return err
 }

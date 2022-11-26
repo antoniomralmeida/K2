@@ -1,0 +1,16 @@
+package models
+
+type Workspace struct {
+	Workspace       string `json:"workspace"`
+	BackgroundImage string `json:"backgroundimage"`
+}
+
+type Context struct {
+	User       string
+	Title      string
+	DataInput  string
+	Workspace  string
+	Alerts     string
+	ApiKernel  string
+	Workspaces []Workspace
+}
