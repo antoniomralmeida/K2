@@ -11,7 +11,7 @@ import (
 	"github.com/antoniomralmeida/k2/ebnf"
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
-	"github.com/antoniomralmeida/k2/models"
+
 	"go.mongodb.org/mongo-driver/bson"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
