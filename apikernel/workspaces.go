@@ -8,5 +8,6 @@ import (
 func GetWorkspaces(c *fiber.Ctx) error {
 	objs := kb.GKB.GetWorkspaces()
 	c.Response().Header.Add("Access-Control-Allow-Origin", "*")
-	return c.JSON(objs)
+	c.Response().Header.SetContentType("application/json")
+	return c.Send([]byte(objs))
 }

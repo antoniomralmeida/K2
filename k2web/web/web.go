@@ -7,6 +7,7 @@ import (
 
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
+	"github.com/antoniomralmeida/k2/models"
 	"github.com/antoniomralmeida/k2/version"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
@@ -14,22 +15,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 )
 
-type Workspace struct {
-	Workspace       string `bson:"workspace"`
-	BackgroundImage string `bson:"backgroundimage"`
-}
-
-type Context struct {
-	User       string
-	Title      string
-	DataInput  string
-	Workspace  string
-	Alerts     string
-	ApiKernel  string
-	Workspaces []Workspace
-}
-
-var ctxweb = Context{}
+var ctxweb = models.Context{}
 
 func Run() {
 	InitLangs()

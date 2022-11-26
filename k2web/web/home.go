@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -19,11 +20,12 @@ func Home(c *fiber.Ctx) error {
 	ctxweb.Workspace = Translate("workspace", lang)
 	ctxweb.Alerts = Translate("alerts", lang)
 
-	call := ctxweb.ApiKernel + "/getlistworkspaces"
+	call := ctxweb.ApiKernel + "/workspaces"
 	resp, err := http.Get(call)
 	initializers.Log(err, initializers.Error)
 	body, err := ioutil.ReadAll(resp.Body)
 	initializers.Log(err, initializers.Error)
+	fmt.Println(string(body))
 	err = json.Unmarshal(body, &ctxweb.Workspaces)
 	initializers.Log(err, initializers.Error)
 

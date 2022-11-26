@@ -9,6 +9,8 @@ import (
 	"unicode"
 
 	"github.com/antoniomralmeida/k2/ebnf"
+	"github.com/antoniomralmeida/k2/models"
+
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
 
@@ -239,7 +241,7 @@ func (kb *KnowledgeBased) GetWorkspaces() string {
 	for _, w := range kb.Workspaces {
 		ret = append(ret, models.Workspace{Workspace: w.Workspace, BackgroundImage: w.BackgroundImage})
 	}
-	json, err := json.MarshalIndent(ret, "", "\t")
+	json, err := json.Marshal(ret)
 	initializers.Log(err, initializers.Error)
 	return string(json)
 }

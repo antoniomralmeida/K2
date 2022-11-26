@@ -1,8 +1,8 @@
 package models
 
 type Workspace struct {
-	Workspace       string `json:"workspace"`
-	BackgroundImage string `json:"backgroundimage"`
+	Workspace       string `json:"Workspace"`
+	BackgroundImage string `json:"BackgroundImage"`
 }
 
 type Context struct {

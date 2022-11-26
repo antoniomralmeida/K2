@@ -472,8 +472,8 @@
                                         <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                                             aria-labelledby="dropdownMenuLink">
                                             <div class="dropdown-header">Workspaces:</div>
-                                            {{ range .Dashboards }}
-                                            <a class="dropdown-item" onclick="LoadWorkspace('{{.}}');">{{.}}</a>
+                                            {{ range .Workspaces }}
+                                            <a class="dropdown-item" onclick="LoadWorkspace('{{.Workspace}}', '{{.BackgroundImage}}');">{{.Workspace}}</a>
                                             {{ end }}
                                             <div class="dropdown-divider"></div>
                                             <a class="dropdown-item" href="#">Something else here</a>

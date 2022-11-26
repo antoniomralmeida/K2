@@ -70,7 +70,7 @@ function SubmitDataInput(form) {
     return true;
 }
 
-function LoadWorkspace(name) {
+function LoadWorkspace(name, img) {
     var ctx = document.getElementById("worktitle");
     ctx.innerHTML = 'Workspace - ' + name;
     var canvas = document.getElementById("workspace");
@@ -80,7 +80,7 @@ function LoadWorkspace(name) {
     }
     background.width = '100%';
     background.height = '100%';
-    background.src = './img/f3c35b21-c792-4853-9072-184913fc909b.jpg';
+    background.src = img;
 }
 
 $(function () {
