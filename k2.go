@@ -28,6 +28,9 @@ func init() {
 	_, span = telemetry.Begin("kb.Init", ctx)
 	kb.Init()
 	span.End()
+	_, span = telemetry.Begin("AIML", ctx)
+	initializers.InitAiml("")
+	span.End()
 	spanbase.End()
 }
 

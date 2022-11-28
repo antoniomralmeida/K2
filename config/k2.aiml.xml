@@ -1,0 +1,41 @@
+<aiml version="1.0.1" encoding="UTF-8">
+   <category>
+      <pattern>(OLÁ|OI) *</pattern>
+      <template>
+         <random>
+            <li>Olá! Meu nome é <bot name="name"/>.</li> 
+         <li>Oi! Meu nome é <bot name="name"/>.</li> 
+         </random>
+      </template>
+   </category>
+   <category>
+      <pattern>DO YOU HAVE ANY IDEA</pattern>
+      <template>
+         Me desculpe, o que você está dizendo?
+      </template>
+   </category>
+   <category>
+      <pattern>EU SOU *</pattern>
+      <template>
+         Seja bem vindo ao K2 <set name="user"><star/></set>!
+      </template>
+   </category>
+   <category>
+      <pattern>* WHATSUP *</pattern>
+      <template>
+         My friends call me <bot name="name"/>
+      </template>
+   </category>
+   <category>
+      <pattern>(SEU)? * NOME *</pattern>
+      <template>
+         Me chamo  <bot name="name"/>
+      </template>
+   </category>
+   <category>
+      <pattern>*</pattern>
+      <template>
+         <srai>DO YOU HAVE ANY IDEA</srai>
+      </template>
+   </category>
+</aiml>

@@ -8,13 +8,13 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func GetDataInput(c *fiber.Ctx) error {
+func GetAttributes(c *fiber.Ctx) error {
 	objs := kb.GKB.GetDataInput()
 	c.Response().Header.Add("Access-Control-Allow-Origin", "*")
 	return c.JSON(objs)
 }
 
-func PostDataInput(c *fiber.Ctx) error {
+func PostAttributes(c *fiber.Ctx) error {
 	//application/x-www-form-urlencoded
 	c.Response().Header.Add("Access-Control-Allow-Origin", "*")
 	data, err := url.ParseQuery(string(c.Body()))

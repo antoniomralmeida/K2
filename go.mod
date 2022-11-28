@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/PaesslerAG/gval v1.2.1
+	github.com/eduardonunesp/goaiml v0.0.0-20160506021742-5f56cb3eea10
 	github.com/gofiber/fiber/v2 v2.40.1
 	github.com/google/uuid v1.3.0
 	github.com/hegedustibor/htgo-tts v0.0.0-20220821045517-04f3cda7a12f

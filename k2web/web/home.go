@@ -2,7 +2,6 @@ package web
 
 import (
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -25,12 +24,11 @@ func Home(c *fiber.Ctx) error {
 	initializers.Log(err, initializers.Error)
 	body, err := ioutil.ReadAll(resp.Body)
 	initializers.Log(err, initializers.Error)
-	fmt.Println(string(body))
 	err = json.Unmarshal(body, &ctxweb.Workspaces)
 	initializers.Log(err, initializers.Error)
 
 	//Render
-	model := template.Must(template.ParseFiles(T["home"].original))
+	model := template.Must(template.ParseFiles(T["home"].minify))
 	model.Execute(c, ctxweb)
 	c.Response().Header.Add("Content-Type", "text/html")
 	return c.SendStatus(fiber.StatusOK)
