@@ -10,7 +10,7 @@ import (
 	"github.com/antoniomralmeida/k2/kb"
 	"github.com/antoniomralmeida/k2/lib"
 	"github.com/antoniomralmeida/k2/services"
-	"github.com/antoniomralmeida/k2/telemetry"
+
 	"github.com/antoniomralmeida/k2/version"
 )
 
@@ -20,15 +20,15 @@ func init() {
 	initializers.InitEnvVars()
 	initializers.LogInit("k2log")
 	initializers.Log(msg, initializers.Info)
-	telemetry.Init()
-	ctx, spanbase := telemetry.Begin("main-init", nil)
-	_, span := telemetry.Begin("ConnectDB", ctx)
+	initializers.InitTelemetry()
+	ctx, spanbase := initializers.Begin("main-init", nil)
+	_, span := initializers.Begin("ConnectDB", ctx)
 	initializers.ConnectDB()
 	span.End()
-	_, span = telemetry.Begin("kb.Init", ctx)
+	_, span = initializers.Begin("kb.Init", ctx)
 	kb.Init()
 	span.End()
-	_, span = telemetry.Begin("AIML", ctx)
+	_, span = initializers.Begin("AIML", ctx)
 	initializers.InitAiml("")
 	span.End()
 	spanbase.End()

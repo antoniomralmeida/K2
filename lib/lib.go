@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"net"
+	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -143,4 +145,13 @@ func copy(src, dst string) (int64, error) {
 	defer destination.Close()
 	nBytes, err := io.Copy(destination, source)
 	return nBytes, err
+}
+
+func Ping(uri string) error {
+	u, err := url.Parse(uri)
+	if err != nil {
+		return err
+	}
+	_, err = net.Dial("tcp", u.Host)
+	return err
 }

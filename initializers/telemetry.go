@@ -1,4 +1,4 @@
-package telemetry
+package initializers
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/antoniomralmeida/k2/initializers"
+	"github.com/antoniomralmeida/k2/lib"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/zipkin"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -53,17 +53,19 @@ func (t *Telemetry) initTracer(url string) (func(context.Context) error, error) 
 	return tp.Shutdown, nil
 }
 
-func Init() {
+func InitTelemetry() {
+	zipkin := os.Getenv("TELEMETRY")
+	Log(lib.Ping(zipkin), Fatal)
+
 	t = Telemetry{}
-	url := flag.String("zipkin", "http://localhost:9411/api/v2/spans", "zipkin url")
+	url := flag.String("zipkin", zipkin, "zipkin url")
 	flag.Parse()
 
 	t.ctx, t.cancel = signal.NotifyContext(context.Background(), os.Interrupt)
 	defer t.cancel()
 	_, err := t.initTracer(*url)
-	if err != nil {
-		initializers.Log(err, initializers.Fatal)
-	}
+	Log(err, Fatal)
+
 }
 
 func Begin(spanName string, ctx context.Context) (context.Context, trace.Span) {

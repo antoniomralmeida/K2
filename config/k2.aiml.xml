@@ -9,23 +9,18 @@
       </template>
    </category>
    <category>
-      <pattern>DO YOU HAVE ANY IDEA</pattern>
+      <pattern>VOCÊ TEM ALGUMA IDEIA</pattern>
       <template>
          Me desculpe, o que você está dizendo?
       </template>
    </category>
    <category>
-      <pattern>EU SOU *</pattern>
+      <pattern>(EU SOU|MEU NOME É) *</pattern>
       <template>
          Seja bem vindo ao K2 <set name="user"><star/></set>!
       </template>
    </category>
-   <category>
-      <pattern>* WHATSUP *</pattern>
-      <template>
-         My friends call me <bot name="name"/>
-      </template>
-   </category>
+
    <category>
       <pattern>(SEU)? * NOME *</pattern>
       <template>
@@ -35,7 +30,7 @@
    <category>
       <pattern>*</pattern>
       <template>
-         <srai>DO YOU HAVE ANY IDEA</srai>
+         <srai>VOCÊ TEM ALGUMA IDEIA</srai>
       </template>
    </category>
 </aiml>

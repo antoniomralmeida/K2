@@ -3,6 +3,7 @@ package initializers
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/antoniomralmeida/k2/lib"
@@ -11,6 +12,8 @@ import (
 )
 
 var logger *zap.Logger
+
+var debug_level int
 
 func LogInit(filebase string) {
 	wd, _ := os.Getwd()
@@ -32,6 +35,10 @@ func LogInit(filebase string) {
 	)
 	logger = zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
 	zap.RedirectStdLog(logger)
+	dl, err := strconv.Atoi(os.Getenv("DEBUG_LEVEL"))
+	if err != nil {
+		debug_level = dl
+	}
 }
 
 func GetLogger() *zap.Logger {
@@ -55,9 +62,13 @@ func Log(e any, level zapcore.Level) (er error) {
 				fmt.Println("Catastrophic error, see log!")
 				logger.Fatal(er.Error())
 			case zapcore.ErrorLevel:
-				logger.Error(er.Error())
+				if debug_level > 0 {
+					logger.Error(er.Error())
+				}
 			default:
-				logger.Info(er.Error())
+				if debug_level > 1 {
+					logger.Info(er.Error())
+				}
 			}
 		}
 		return er
