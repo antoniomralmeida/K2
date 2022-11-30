@@ -1,4 +1,4 @@
-rem @echo off
+@echo off
 go mod tidy
 set GOARCH=amd64
 set GOOS=windows
