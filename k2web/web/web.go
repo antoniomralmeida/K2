@@ -22,6 +22,7 @@ func Run() {
 	InitTemplates()
 
 	ctxweb.ApiKernel = os.Getenv("APIKERNEL")
+	ctxweb.Avatar = os.Getenv("AVATAR")
 	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 System ", version.Version, "[", version.Build, "]"),
 		DisableStartupMessage: false,
 		Prefork:               true})

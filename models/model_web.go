@@ -12,5 +12,6 @@ type Context struct {
 	Workspace  string
 	Alerts     string
 	ApiKernel  string
+	Avatar     string
 	Workspaces []Workspace
 }

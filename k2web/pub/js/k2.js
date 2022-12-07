@@ -1,11 +1,8 @@
 var div_id = document.getElementById('form_di_37232723')
 
-var apikernel = ''
-
-
 function LoadDataInput() {
     $.ajax({
-        url: apikernel + '/getlistdatainput',
+        url: apikernel + '/attributes',
         type: 'GET',
         dataType: 'json',
         error: function (jqXhr, Status) {
@@ -61,7 +58,7 @@ function SubmitDataInput(form) {
         formData[node.name] = node.value;
     });
 
-    $.post(apikernel +'/postdatainput' ,formData).done(function(data){
+    $.post(apikernel +'/attributes' ,formData).done(function(data){
         LoadDataInput();
     }).error(function (error) {
         alert(error);
@@ -85,8 +82,5 @@ function LoadWorkspace(name, img) {
 
 $(function () {
     LoadDataInput();
-/*    $("#datepicker").datepicker({
-        dateFormat: "dd/mm/yy"
-    });*/
 });
 

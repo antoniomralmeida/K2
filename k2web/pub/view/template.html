@@ -496,7 +496,7 @@
                                 <!-- Card Header - Dropdown -->
                                 <div
                                     class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6>
+                                    <h6 class="m-0 font-weight-bold text-primary">Avatar</h6>
                                     <div class="dropdown no-arrow">
                                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -515,18 +515,7 @@
                                 <!-- Card Body -->
                                 <div class="card-body">
                                     <div class="chart-pie pt-4 pb-2">
-                                        <canvas id="myPieChart"></canvas>
-                                    </div>
-                                    <div class="mt-4 text-center small">
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-primary"></i> Direct
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-success"></i> Social
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-info"></i> Referral
-                                        </span>
+                                        <div id="face"></div>
                                     </div>
                                 </div>
                             </div>
@@ -728,6 +717,7 @@
         </div>
     </div>
 
+
     <!-- Bootstrap core JavaScript-->
 
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -742,10 +732,9 @@
     <script src="vendor/chart.js/Chart.min.js"></script>
 
     <!-- Page level custom scripts -->
+    <script>var apikernel = '{{.ApiKernel}}'</script>
+    <script src="js/bundle.js"></script>
+    <script src="js/faces.js"></script>
     <script src="js/k2.js"></script>
-    <script>
-        apikernel = '{{.ApiKernel}}'
-    </script>
 </body>
-
 </html>

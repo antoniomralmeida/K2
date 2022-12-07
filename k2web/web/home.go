@@ -11,6 +11,9 @@ import (
 )
 
 func Home(c *fiber.Ctx) error {
+	if len(c.Query("avatar")) == 0 && len(ctxweb.Avatar) > 0 {
+		return c.Redirect(c.BaseURL() + "?avatar=" + ctxweb.Avatar)
+	}
 	//Context
 	lang := c.GetReqHeaders()["Accept-Language"]
 	ctxweb.Title = Translate("title", lang)
@@ -28,8 +31,9 @@ func Home(c *fiber.Ctx) error {
 	initializers.Log(err, initializers.Error)
 
 	//Render
-	model := template.Must(template.ParseFiles(T["home"].minify))
+	model := template.Must(template.ParseFiles(T["home"].original))
 	model.Execute(c, ctxweb)
 	c.Response().Header.Add("Content-Type", "text/html")
+
 	return c.SendStatus(fiber.StatusOK)
 }

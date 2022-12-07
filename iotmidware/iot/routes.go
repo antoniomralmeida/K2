@@ -7,5 +7,4 @@ func Routes(app *fiber.App) {
 	app.Post("/api/v1/gates/:id", WriteGate)
 	app.Post("/api/v1/gates", NewGate)
 	app.Get("/api/v1/gates", ListGate)
-
 }
