@@ -495,7 +495,7 @@ var faces = (function (exports) {
     }
   };
 
-  const display = (container, face, overrides) => {
+  const display = async (container, face, overrides) => {
     override(face, overrides);
     const containerElement = typeof container === "string" ? document.getElementById(container) : container;
 

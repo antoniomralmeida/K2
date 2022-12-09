@@ -2,7 +2,7 @@ FROM smartentry/ubuntu  as k2-web
 
 WORKDIR /var/www/k2
 
-COPY ./bin/k2web.bin ./bin/
+COPY ./bin/k2web.so ./bin/
 COPY ["./config/", "./config/"] 
 COPY ./log/*.md ./log/
 COPY ./k2web/pub/ ./k2web/pub/
@@ -10,4 +10,6 @@ COPY ./k2web/pub/ ./k2web/pub/
 RUN chmod -R 777 .
 EXPOSE 8080
 
-CMD ["sh", "-c", "./bin/k2web.bin"]
+CMD ["sh", "-c", "./bin/k2web.so"]
+
+ENTRYPOINT ["/bin/sh"]

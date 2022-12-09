@@ -5,6 +5,14 @@ let face;
 const params = new URL(location.href).searchParams;
 const avatar = params.get('avatar');
 
+const wait = (ms) =>{
+  var dt = new Date();
+  var end = dt.getTime() + ms; 
+  while (dt.getTime() < end) {
+    dt = new Date();
+  }
+}
+
 if (avatar.length <= 1) {
   face = faces.generate();
 } else {
@@ -33,107 +41,51 @@ const randomizeFace = (oldFace, newFace) => {
   return newFace;
 };
 
-const updateDisplay = () => {
-  console.log(face);
-  faces.display(faceWrapper, face);
-  history.replaceState(
-    undefined,
-    undefined,
-    `?avatar=${btoa(JSON.stringify(face))}`
-  );
-  //jsonElement.value = JSON.stringify(face);
+const updateDisplay = () => {  
+  var dt = new Date()
+  console.log(dt.getTime())
+  window.setTimeout(faces.display(faceWrapper, face), 500);
+  //wait(500);
 };
 
-
-
-const isValue = (obj) =>
-  typeof obj === "boolean" ||
-  typeof obj === "number" ||
-  typeof obj === "string";
-
-
-const getValue = (oldValue, event) => {
-  if (typeof oldValue === "number") {
-    return parseFloat(event.target.value);
+const SS = () => {
+  for (i=0;i<15;i++) {
+    speaking();
   }
-  if (typeof oldValue === "boolean") {
-    return event.target.checked;
+}
+
+const speaking = () => {
+  if (face["mouth"].id == "smile") {
+    P1();
+  } else {
+    P2();
   }
-  return event.target.value;
-};
-const listenForChanges = () => {
-  const textInputs = document.querySelectorAll("input.form-control");
-  const checkboxInputs = document.querySelectorAll(
-    "input.form-check-input"
-  );
-  const selects = document.querySelectorAll("select.form-control");
+}
 
-  for (const input of [...textInputs, ...checkboxInputs, ...selects]) {
-    if (input.id.startsWith("randomize")) continue;
-    input.addEventListener("change", (event) => {
-      const parts = event.target.id.split("-");
+const P1 = () => {
+  face["mouth"].id = "mouth7";
+  updateDisplay();
+}
 
-      if (parts.length === 1) {
-        face[parts[0]] = getValue(face[parts[0]], event);
-      } else if (parts.length === 2) {
-        face[parts[0]][parts[1]] = getValue(
-          face[parts[0]][parts[1]],
-          event
-        );
-      } else {
-        throw new Error(`Invalid ID ${event.target.id}`);
-      }
-
-      updateDisplay();
-    });
-  }
+const P2 = () => {
+  face["mouth"].id = "smile";
+  updateDisplay();
+}
 
 
-  const checkboxes = [].concat(
-    Array.from(document.getElementsByClassName("random-group")),
-    Array.from(document.getElementsByClassName("random-attribute"))
-  );
-
-
-
-  Array.from(document.getElementsByClassName("random-group")).forEach(
-    (elem) => {
-      elem.addEventListener("click", () => {
-        Array.from(
-          document.getElementsByClassName(elem.id.replace("-group", ""))
-        ).forEach((elem2) => (elem2.checked = elem.checked));
-      });
+const Speak = (text) => {
+  interval = text.length * 500
+  var d = new Date();
+  var begin = d.getTime()
+  while (true) {
+    speaking();
+    var d = new Date();
+    if (d.getTime() > begin + interval) {
+      break
     }
-  );
-
-  Array.from(document.getElementsByClassName("random-attribute")).forEach(
-    (elem) => {
-      elem.addEventListener("click", () => {
-        Array.from(elem.className.split(" ")).forEach((className) => {
-          if (className.startsWith("randomize-")) {
-            if (elem.checked) {
-              // See if all are checked, and if so check the group
-              const others = Array.from(
-                document.getElementsByClassName(className)
-              ).filter(
-                (other) => !other.classList.contains("random-group")
-              );
-              if (others.every((other) => other.checked)) {
-                document.getElementById(
-                  className + "-group"
-                ).checked = true;
-              }
-            } else {
-              document.getElementById(className + "-group").checked = false;
-            }
-          }
-        });
-      });
-    }
-  );
-};
-
+  }
+}
 
 updateDisplay();
-listenForChanges();
+
 

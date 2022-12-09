@@ -59,7 +59,7 @@ func Log(e any, level zapcore.Level) (er error) {
 		} else {
 			switch level {
 			case zapcore.FatalLevel:
-				fmt.Println("Catastrophic error, see log!")
+				fmt.Println("Catastrophic error, see log! [" + er.Error() + "]")
 				logger.Fatal(er.Error())
 			case zapcore.ErrorLevel:
 				if debug_level > 0 {

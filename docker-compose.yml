@@ -35,6 +35,7 @@ services:
 
   telemetry:
     image: openzipkin/zipkin
+    hostname: k2host
     restart: always
     ports:
       - 9411:9411
