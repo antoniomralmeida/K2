@@ -1,9 +1,30 @@
 var div_id = document.getElementById('form_di_37232723')
+var div_face_id = document.getElementById('face')
+var resquestid = ''
+
+
+function Hello(text) {
+    $.ajax({
+        url: apikernel + '/chats',
+        data: { 'X-Request-ID': requestid, msg: text},
+        type: 'GET',
+        dataType: 'text',
+        error: function (jqXhr, Status) {
+            div_face_id.innerHTML = Status;
+        },
+        success: function (data) {
+            alert(data);
+            Speak(data);
+        }
+    });    
+}
+
 
 function LoadDataInput() {
     $.ajax({
         url: apikernel + '/attributes',
         type: 'GET',
+        data: { "X-Request-ID": requestid},
         dataType: 'json',
         error: function (jqXhr, Status) {
             div_id.innerHTML = Status;
@@ -81,6 +102,14 @@ function LoadWorkspace(name, img) {
 }
 
 $(function () {
+    var req = new XMLHttpRequest();
+    req.open('GET', document.location, false);
+    req.send(null);
+    var headers = req.getAllResponseHeaders().toLowerCase();
+    requestid = headers['X-Request-ID'];
+
     LoadDataInput();
+
+    Hello("Olá!");
 });
 

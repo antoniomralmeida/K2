@@ -10,9 +10,7 @@ import (
 	"github.com/antoniomralmeida/k2/lib"
 	v "github.com/antoniomralmeida/k2/version"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/gofiber/fiber/v2/middleware/requestid"
 )
 
 func Run(wg *sync.WaitGroup) {
@@ -28,15 +26,9 @@ func Run(wg *sync.WaitGroup) {
 		initializers.Log(fmt.Sprintf("error opening file: %v %v", err, f), initializers.Fatal)
 	}
 	defer file.Close()
-
 	app.Use(logger.New(logger.Config{Output: file,
 		TimeFormat: "02/01/2006 15:04:05",
 		Format:     "${time} [${ip}:${port}] ${status} ${latency} ${method} ${path} \n"}))
-	app.Use(requestid.New())
-	// Provide a custom compression level
-	app.Use(compress.New(compress.Config{
-		Level: compress.LevelBestSpeed, // 1
-	}))
 
 	Routes(app)
 

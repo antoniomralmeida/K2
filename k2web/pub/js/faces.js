@@ -29,28 +29,18 @@ const updateDisplay  = () => {
 
 const speaking = () => {
   if (face["mouth"].id == "smile") {
-    P1();
+    face["mouth"].id = "mouth7";
   } else {
-    P2();
+    face["mouth"].id = "smile";
   }
-}
-
-const P1 = () => {
-  face["mouth"].id = "mouth7";
-  updateDisplay();
-}
-
-const P2 = () => {
-  face["mouth"].id = "smile";
   updateDisplay();
 }
 
 const TTS = async(text) => {
   let msg = new SpeechSynthesisUtterance();
-  msg.voice = speechSynthesis.getVoices()[1];
+  msg.voice = speechSynthesis.getVoices()[0];
   msg.text = text;
-  speechSynthesis.speak(msg);
-  
+  speechSynthesis.speak(msg);  
 }
 
 const Speak = async (text) => {
@@ -71,5 +61,4 @@ const Speak = async (text) => {
 }
 
 updateDisplay();
-
 
