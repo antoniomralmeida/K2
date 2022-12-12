@@ -5,13 +5,6 @@ let face;
 const params = new URL(location.href).searchParams;
 const avatar = params.get('avatar');
 
-const wait = (ms) =>{
-  var dt = new Date();
-  var end = dt.getTime() + ms; 
-  while (dt.getTime() < end) {
-    dt = new Date();
-  }
-}
 
 if (avatar.length <= 1) {
   face = faces.generate();
@@ -24,35 +17,15 @@ if (avatar.length <= 1) {
   }
 }
 
-const randomizeFace = (oldFace, newFace) => {
-  Array.from(document.getElementsByClassName("random-attribute")).forEach(
-    (elem) => {
-      if (!elem.checked) {
-        const parts = elem.id.split("-").slice(1);
-        if (parts.length === 1) newFace[parts[0]] = oldFace[parts[0]];
-        else if (!isNaN(parseInt(parts[1]))) {
-          const idx = parseInt(parts[1]);
-          newFace[parts[0]][idx] = oldFace[parts[0]][idx];
-        } else if (parts.length === 2)
-          newFace[parts[0]][parts[1]] = oldFace[parts[0]][parts[1]];
-      }
-    }
-  );
-  return newFace;
+
+function sleep(milliseconds) {  
+  return new Promise(resolve => setTimeout(resolve, milliseconds));  
+} 
+
+const updateDisplay  = () => {  
+  faces.display(faceWrapper, face);
 };
 
-const updateDisplay = () => {  
-  var dt = new Date()
-  console.log(dt.getTime())
-  window.setTimeout(faces.display(faceWrapper, face), 500);
-  //wait(500);
-};
-
-const SS = () => {
-  for (i=0;i<15;i++) {
-    speaking();
-  }
-}
 
 const speaking = () => {
   if (face["mouth"].id == "smile") {
@@ -72,9 +45,18 @@ const P2 = () => {
   updateDisplay();
 }
 
+const TTS = async(text) => {
+  let msg = new SpeechSynthesisUtterance();
+  msg.voice = speechSynthesis.getVoices()[1];
+  msg.text = text;
+  speechSynthesis.speak(msg);
+  
+}
 
-const Speak = (text) => {
-  interval = text.length * 500
+const Speak = async (text) => {
+  document.body.style.cursor = 'wait';
+  interval = text.length * 100;
+  TTS(text);
   var d = new Date();
   var begin = d.getTime()
   while (true) {
@@ -83,7 +65,9 @@ const Speak = (text) => {
     if (d.getTime() > begin + interval) {
       break
     }
+    await sleep(100);
   }
+  document.body.style.cursor = 'default';
 }
 
 updateDisplay();
