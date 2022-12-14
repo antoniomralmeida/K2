@@ -2,7 +2,6 @@ package web
 
 import (
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -13,10 +12,9 @@ import (
 )
 
 func Home(c *fiber.Ctx) error {
-	fmt.Println(c.Cookies("jwt"))
-	fmt.Println(lib.ValidateToken(c.Cookies("jwt")))
 	if lib.ValidateToken(c.Cookies("jwt")) != nil {
-		return c.SendStatus(fiber.StatusForbidden)
+		c.SendStatus(fiber.StatusForbidden)
+		return c.Redirect("/login")
 	}
 	if len(c.Query("avatar")) == 0 && len(ctxweb.Avatar) > 0 {
 		return c.Redirect(c.BaseURL() + "?avatar=" + ctxweb.Avatar)
@@ -25,7 +23,6 @@ func Home(c *fiber.Ctx) error {
 	lang := c.GetReqHeaders()["Accept-Language"]
 	ctxweb.Title = Translate("title", lang)
 	ctxweb.DataInput = Translate("datainput", lang)
-	ctxweb.User = "Manoel Ribeiro"
 	ctxweb.Workspace = Translate("workspace", lang)
 	ctxweb.Alerts = Translate("alerts", lang)
 
