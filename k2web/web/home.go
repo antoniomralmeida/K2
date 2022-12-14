@@ -2,15 +2,22 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/antoniomralmeida/k2/initializers"
+	"github.com/antoniomralmeida/k2/lib"
 	"github.com/gofiber/fiber/v2"
 )
 
 func Home(c *fiber.Ctx) error {
+	fmt.Println(c.Cookies("jwt"))
+	fmt.Println(lib.ValidateToken(c.Cookies("jwt")))
+	if lib.ValidateToken(c.Cookies("jwt")) != nil {
+		return c.SendStatus(fiber.StatusForbidden)
+	}
 	if len(c.Query("avatar")) == 0 && len(ctxweb.Avatar) > 0 {
 		return c.Redirect(c.BaseURL() + "?avatar=" + ctxweb.Avatar)
 	}

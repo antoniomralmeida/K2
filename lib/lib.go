@@ -2,8 +2,10 @@ package lib
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
+	"math/rand"
 	"net"
 	"net/url"
 	"os"
@@ -11,9 +13,13 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
+	"strings"
+	"time"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 	"github.com/mattn/go-tty"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 const (
@@ -154,4 +160,79 @@ func Ping(uri string) error {
 	}
 	_, err = net.Dial("tcp", u.Host)
 	return err
+}
+
+func GeneratePassword(passwordLength, minSpecialChar, minNum, minUpperCase int) string {
+	var password strings.Builder
+	var (
+		lowerCharSet   = "abcdedfghijklmnopqrst"
+		upperCharSet   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		specialCharSet = "!@#$%&*"
+		numberSet      = "0123456789"
+		allCharSet     = lowerCharSet + upperCharSet + specialCharSet + numberSet
+	)
+
+	//Set special character
+	for i := 0; i < minSpecialChar; i++ {
+		random := rand.Intn(len(specialCharSet))
+		password.WriteString(string(specialCharSet[random]))
+	}
+
+	//Set numeric
+	for i := 0; i < minNum; i++ {
+		random := rand.Intn(len(numberSet))
+		password.WriteString(string(numberSet[random]))
+	}
+
+	//Set uppercase
+	for i := 0; i < minUpperCase; i++ {
+		random := rand.Intn(len(upperCharSet))
+		password.WriteString(string(upperCharSet[random]))
+	}
+
+	remainingLength := passwordLength - minSpecialChar - minNum - minUpperCase
+	for i := 0; i < remainingLength; i++ {
+		random := rand.Intn(len(allCharSet))
+		password.WriteString(string(allCharSet[random]))
+	}
+	inRune := []rune(password.String())
+	rand.Shuffle(len(inRune), func(i, j int) {
+		inRune[i], inRune[j] = inRune[j], inRune[i]
+	})
+	return string(inRune)
+}
+
+const SignedKey = "uzUWld6Y0Ad6yUF8GU2gJGg8Q4wZaNNv"
+
+func CreateJWTToken(Id primitive.ObjectID) (string, int64, error) {
+	exp := time.Now().Add(time.Minute * 30).Unix()
+	token := jwt.New(jwt.SigningMethodHS256)
+	claims := token.Claims.(jwt.MapClaims)
+	claims["user_id"] = Id.Hex()
+	claims["exp"] = exp
+	t, err := token.SignedString([]byte(SignedKey))
+	if err != nil {
+		return "", 0, err
+	}
+	return t, exp, nil
+}
+
+func ValidateToken(jwtcookie string) (err error) {
+
+	if jwtcookie == "" {
+		return errors.New("Invalid Cookie")
+	}
+
+	token, err := jwt.Parse(jwtcookie, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("There was an error in parsing")
+		}
+		return SignedKey, nil
+	})
+
+	if token == nil {
+		return errors.New("Invalid Token")
+	}
+
+	return nil
 }

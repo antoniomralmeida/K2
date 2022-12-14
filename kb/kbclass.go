@@ -13,7 +13,6 @@ func (class *KBClass) Persist() error {
 	ctx, collection := initializers.GetCollection("KBClass")
 	if class.Id.IsZero() {
 		class.Id = primitive.NewObjectID()
-		primitive.NewObjectID()
 		_, err := collection.InsertOne(ctx, class)
 		return err
 	} else {

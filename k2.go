@@ -9,6 +9,7 @@ import (
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/kb"
 	"github.com/antoniomralmeida/k2/lib"
+	"github.com/antoniomralmeida/k2/models"
 	"github.com/antoniomralmeida/k2/services"
 
 	"github.com/antoniomralmeida/k2/version"
@@ -30,6 +31,9 @@ func init() {
 	span.End()
 	_, span = initializers.Begin("AIML", ctx)
 	initializers.InitAiml("")
+	span.End()
+	_, span = initializers.Begin("InitSecurity", ctx)
+	models.InitSecurity()
 	span.End()
 	spanbase.End()
 }

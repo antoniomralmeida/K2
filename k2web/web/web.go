@@ -11,7 +11,6 @@ import (
 	"github.com/antoniomralmeida/k2/version"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/gofiber/fiber/v2/middleware/requestid"
 )
 
 var ctxweb = models.Context{}
@@ -19,6 +18,7 @@ var ctxweb = models.Context{}
 func Run() {
 	InitLangs()
 	InitTemplates()
+	initializers.ConnectDB()
 
 	ctxweb.ApiKernel = os.Getenv("APIKERNEL")
 	ctxweb.Avatar = os.Getenv("AVATAR")
@@ -33,7 +33,6 @@ func Run() {
 		initializers.Log(fmt.Sprintf("error opening file: %v %v", err, f), initializers.Fatal)
 	}
 	defer file.Close()
-	app.Use(requestid.New())
 	app.Use(logger.New(logger.Config{Output: file,
 		TimeFormat: "02/01/2006 15:04:05",
 		Format:     "${time} [${ip}:${port}] ${status} ${latency} ${method} ${path} \n"}))
