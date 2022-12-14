@@ -3,7 +3,6 @@ package initializers
 import (
 	"context"
 	"os"
-	"time"
 
 	"github.com/antoniomralmeida/k2/lib"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -20,7 +19,7 @@ func ConnectDB() {
 	dbName := os.Getenv("DB")
 	Log(lib.Ping(dsn), Fatal)
 
-	ctx, _ = context.WithTimeout(context.Background(), 60*time.Second)
+	ctx := context.Background()
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(dsn))
 	if err != nil {

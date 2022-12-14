@@ -2,8 +2,10 @@ package web
 
 import (
 	"fmt"
+	"html/template"
 	"time"
 
+	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
 	"github.com/antoniomralmeida/k2/models"
 	"github.com/gofiber/fiber/v2"
@@ -13,23 +15,34 @@ import (
 )
 
 func LoginForm(c *fiber.Ctx) error {
-	return nil
+
+	//Context
+	lang := c.GetReqHeaders()["Accept-Language"]
+	ctxweb.Title = Translate("title", lang)
+
+	model := template.Must(template.ParseFiles(T["login"].original))
+	model.Execute(c, ctxweb)
+	c.Response().Header.Add("Content-Type", "text/html")
+
+	return c.SendStatus(fiber.StatusOK)
 }
 
 func PostLogin(c *fiber.Ctx) error {
-	req := new(models.LoginRequest)
-	if err := c.BodyParser(req); err != nil {
-		fmt.Println(err)
-		return fiber.NewError(fiber.StatusBadRequest, "invalid login credentials")
+	req := models.LoginRequest{}
+	if err := c.BodyParser(&req); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "invalid body parser "+err.Error())
 	}
-
+	fmt.Println(req)
 	if req.Email == "" || req.Password == "" {
-		return fiber.NewError(fiber.StatusBadRequest, "invalid login credentials")
+		return fiber.NewError(fiber.StatusBadRequest, "empty credentials")
 	}
 
 	user := models.KBUser{}
 	err := user.FindOne(bson.D{{Key: "email", Value: req.Email}})
-	if err == mongo.ErrNoDocuments {
+	if err != mongo.ErrNoDocuments {
+		initializers.Log(err, initializers.Error)
+	}
+	if user.Email == "" {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid login credentials")
 	}
 
@@ -41,7 +54,7 @@ func PostLogin(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "error create token")
 	}
-
+	ctxweb.User = user.Name
 	// Create cookie
 	cookie := fiber.Cookie{
 		Name:     "jwt",
@@ -52,10 +65,8 @@ func PostLogin(c *fiber.Ctx) error {
 
 	c.Cookie(&cookie)
 
-	// return c.JSON(token)
-	return c.JSON(fiber.Map{
-		"message": "login success",
-	})
+	c.SendStatus(fiber.StatusAccepted)
+	return c.Redirect("/")
 }
 
 func Logout(c *fiber.Ctx) error {
@@ -67,10 +78,8 @@ func Logout(c *fiber.Ctx) error {
 		Expires:  time.Now().Add(-time.Hour),
 		HTTPOnly: true,
 	}
-
+	ctxweb.User = ""
 	c.Cookie(&cookie)
-
-	return c.JSON(fiber.Map{
-		"message": "logout success",
-	})
+	c.SendStatus(fiber.StatusAccepted)
+	return c.Redirect("/login")
 }
