@@ -12,6 +12,9 @@ func GetChats(c *fiber.Ctx) error {
 	c.Response().Header.Add("Access-Control-Allow-Origin", "*")
 	msg := c.Query("msg")
 	uid := c.Query(fiber.HeaderXRequestID)
+	//TODO: usar jwt como identificador de contexto
+	//TODO: expandir aiml.xml
+
 	if uid == "" || msg == "" {
 		return c.SendStatus(fiber.ErrBadRequest.Code)
 	}

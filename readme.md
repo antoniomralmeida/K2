@@ -17,25 +17,38 @@ Build an open source KBS, to be real-time expert system development platform for
 8. In risk management of any nature, including environmental
 
 ### TODO List
-
-└─ K2<br>
-   ├─ kb<br>
-   │ ├─ kbattributeobject.go<br>
-   │ │ ├─ line 37: TODO : Trigger rules in backward chaning<br>
-   │ │ ├─ line 38: TODO : Create a simulation task<br>
-   │ │ ├─ line 39: TODO : Value fetching tasks must have a time limit<br>
-   │ │ ├─ line 40: TODO : Create web form to receive User (asynchronous) source attribute values<br>
-   │ │ ├─ line 41: TODO : Take into account certainty in obtaining a PLC and User 100% value<br>
-   │ │ ├─ line 42: TODO : Create certainty aging rule, based on data dispersion and validity<br>
-   │ │ ├─ line 43: TODO : the certainty of a simulated value must analyze the quadrants of the normal curve of the historical value<br>
-   │ │ └─ line 44: TODO : certainty by inference must use fuzzi logic<br>
-   │ ├─ kbclass.go<br>
-   │ │ └─ line 39: TODO : Restart KB<br>
-   │ ├─ kbobject.go<br>
-   │ │ └─ line 22: TODO : Reset KB<br>
-   │ ├─ kbrule.go<br>
-   │ │ └─ line 211: TODO : Trigger rules in forward chaining<br>
-   │ ├─ model.go<br>
-   │ │ └─ line 209: TODO : https://nabto.com/guide-iot-protocols-standards/, set protocol for IOT SET and SET<br>
-   │ └─ tasks.go<br>
-   │ └─ line 53: TODO : Create Clean History Task<br>
+└─ K2
+   ├─ apikernel
+   │  └─ aiml.go
+   │     ├─ line 15: TODO : usar jwt como identificador de contexto
+   │     └─ line 16: TODO : expandir aiml.xml
+   ├─ k2web
+   │  └─ web
+   │     └─ login.go
+   │        ├─ line 22: TODO : Ajustar tela de login, colocar avatar
+   │        └─ line 23: TODO : Incluir reconhecimento facil no login
+   ├─ kb
+   │  ├─ kbattributeobject.go
+   │  │  └─ line 81: TODO : testar a execução paralela
+   │  ├─ kbclass.go
+   │  │  └─ line 36: TODO : Restart KB
+   │  ├─ kbobject.go
+   │  │  └─ line 30: TODO : Reiniciar KB
+   │  └─ kbrule.go
+   │     ├─ line 345: TODO : create
+   │     ├─ line 346: TODO : transfer
+   │     ├─ line 347: TODO : delete
+   │     ├─ line 348: TODO : insert
+   │     ├─ line 349: TODO : remove
+   │     ├─ line 350: TODO : change
+   │     ├─ line 351: TODO : move
+   │     ├─ line 352: TODO : rotate
+   │     ├─ line 353: TODO : show
+   │     ├─ line 354: TODO : hide
+   │     ├─ line 355: TODO : activate
+   │     ├─ line 356: TODO : deactivate
+   │     ├─ line 357: TODO : focus
+   │     ├─ line 358: TODO : invoke
+   │     └─ line 359: TODO : conclude
+   └─ readme.md
+      └─ line 19: TODO List

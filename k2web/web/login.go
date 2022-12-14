@@ -19,6 +19,8 @@ func LoginForm(c *fiber.Ctx) error {
 	//Context
 	lang := c.GetReqHeaders()["Accept-Language"]
 	ctxweb.Title = Translate("title", lang)
+	//TODO: Ajustar tela de login, colocar avatar
+	//TODO: Incluir reconhecimento facil no login
 
 	model := template.Must(template.ParseFiles(T["login"].original))
 	model.Execute(c, ctxweb)
