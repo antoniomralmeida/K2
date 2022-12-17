@@ -1,5 +1,4 @@
 const faceWrapper = document.getElementById("face");
-const jsonElement = document.getElementById("json");
 
 let face;
 const params = new URL(location.href).searchParams;

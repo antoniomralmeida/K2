@@ -20,6 +20,7 @@ import (
 )
 
 var GKB *KnowledgeBased
+var scheduler *tasks.Scheduler
 
 func Init() {
 	initializers.Log("Init KB", initializers.Info)
@@ -176,7 +177,7 @@ func Run(wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	// Start the Scheduler
-	scheduler := tasks.New()
+	scheduler = tasks.New()
 	defer scheduler.Stop()
 
 	// Add tasks
@@ -211,4 +212,8 @@ func Run(wg *sync.WaitGroup) {
 		}
 	}
 
+}
+
+func Stop() {
+	scheduler.Stop()
 }

@@ -15,15 +15,18 @@ import (
 )
 
 func LoginForm(c *fiber.Ctx) error {
-
+	if len(c.Query("avatar")) == 0 && len(ctxweb.Avatar) > 0 {
+		return c.Redirect(c.OriginalURL() + "?avatar=" + ctxweb.Avatar)
+	}
 	//Context
 	lang := c.GetReqHeaders()["Accept-Language"]
 	ctxweb.Title = Translate("title", lang)
+	ctxweb.Wellcome = Translate("wellcome", lang)
 	//TODO: Ajustar tela de login, colocar avatar
 	//TODO: Incluir reconhecimento facil no login
 
 	model := template.Must(template.ParseFiles(T["login"].original))
-	model.Execute(c, ctxweb)
+	initializers.Log(model.Execute(c, ctxweb), initializers.Error)
 	c.Response().Header.Add("Content-Type", "text/html")
 
 	return c.SendStatus(fiber.StatusOK)

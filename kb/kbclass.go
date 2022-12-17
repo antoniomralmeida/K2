@@ -32,8 +32,16 @@ func (class *KBClass) FindOne(p bson.D) error {
 	}
 }
 
-func (class *KBClass) Delete() error {
-	//TODO: Restart KB
+func (class *KBClass) Delete(force bool) error {
+	//TODO: Verificar se há classes filhas, se houver não exclui
+	//TODO: Verificar se há objetos, se houver não exclui
+	//TODO: com force, excluir todas as dependências antes
+	ctx, collection := initializers.GetCollection("KBClass")
+	collection.DeleteOne(ctx, bson.D{{Key: "_id", Value: class.Id}})
+
+	// Restart KB
+	Stop()
+	Init()
 	return nil
 }
 

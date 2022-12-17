@@ -1,19 +1,18 @@
 var div_id = document.getElementById('form_di_37232723')
 var div_face_id = document.getElementById('face')
-var resquestid = ''
+var jwt = ''
 
 
-function Hello(text) {
+function SendMessage(text) {
     $.ajax({
         url: apikernel + '/chats',
-        data: { 'X-Request-ID': requestid, msg: text},
+        data: { 'jwt': jwt, msg: text},
         type: 'GET',
         dataType: 'text',
         error: function (jqXhr, Status) {
             div_face_id.innerHTML = Status;
         },
         success: function (data) {
-            alert(data);
             Speak(data);
         }
     });    
@@ -24,7 +23,7 @@ function LoadDataInput() {
     $.ajax({
         url: apikernel + '/attributes',
         type: 'GET',
-        data: { "X-Request-ID": requestid},
+        data: { "jwt": jwt},
         dataType: 'json',
         error: function (jqXhr, Status) {
             div_id.innerHTML = Status;
@@ -101,15 +100,22 @@ function LoadWorkspace(name, img) {
     background.src = img;
 }
 
+function getCookie(cookieName) {
+    let cookie = {};
+    document.cookie.split(';').forEach(function(el) {
+      let [key,value] = el.split('=');
+      cookie[key.trim()] = value;
+    })
+    return cookie[cookieName];
+  }
+
 $(function () {
     var req = new XMLHttpRequest();
     req.open('GET', document.location, false);
     req.send(null);
     var headers = req.getAllResponseHeaders().toLowerCase();
-    requestid = headers['X-Request-ID'];
+    jwt = getCookie('jwt');
 
     LoadDataInput();
-
-    Hello("Olá!");
 });
 
