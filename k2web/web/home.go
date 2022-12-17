@@ -25,6 +25,7 @@ func Home(c *fiber.Ctx) error {
 	ctxweb.DataInput = Translate("datainput", lang)
 	ctxweb.Workspace = Translate("workspace", lang)
 	ctxweb.Alerts = Translate("alerts", lang)
+	ctxweb.Wellcome2 = Translate("wellcome2", lang)
 
 	call := ctxweb.ApiKernel + "/workspaces"
 	resp, err := http.Get(call)

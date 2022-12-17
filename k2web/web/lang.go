@@ -16,6 +16,7 @@ func InitLangs() {
 			"workspace": "Workspace",
 			"alerts":    "Alerts",
 			"wellcome":  "Welcome Back!",
+			"wellcome2": "What are we going to do today?!",
 		},
 		"pt": {
 			"title":     "K2 System KnowledgeBase",
@@ -24,6 +25,7 @@ func InitLangs() {
 			"workspace": "Área de trabalho",
 			"alerts":    "Alertas",
 			"wellcome":  "Bem Vindo de volta!",
+			"wellcome2": "O que vamos fazer hoje?",
 		},
 	}
 

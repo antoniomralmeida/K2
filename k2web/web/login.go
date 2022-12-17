@@ -1,7 +1,6 @@
 package web
 
 import (
-	"fmt"
 	"html/template"
 	"time"
 
@@ -22,7 +21,6 @@ func LoginForm(c *fiber.Ctx) error {
 	lang := c.GetReqHeaders()["Accept-Language"]
 	ctxweb.Title = Translate("title", lang)
 	ctxweb.Wellcome = Translate("wellcome", lang)
-	//TODO: Ajustar tela de login, colocar avatar
 	//TODO: Incluir reconhecimento facil no login
 
 	model := template.Must(template.ParseFiles(T["login"].original))
@@ -37,7 +35,6 @@ func PostLogin(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid body parser "+err.Error())
 	}
-	fmt.Println(req)
 	if req.Email == "" || req.Password == "" {
 		return fiber.NewError(fiber.StatusBadRequest, "empty credentials")
 	}

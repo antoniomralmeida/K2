@@ -37,6 +37,7 @@ type Context struct {
 	Workspace  string
 	Alerts     string
 	Wellcome   string
+	Wellcome2  string
 	ApiKernel  string
 	Avatar     string
 	Workspaces []Workspace
