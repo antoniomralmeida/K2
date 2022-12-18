@@ -53,15 +53,17 @@ const (
 
 func Log(e any, level zapcore.Level) (er error) {
 	er = fmt.Errorf("%v", e)
+	debug_level, _ := strconv.Atoi(os.Getenv("DEBUG_LEVEL"))
 	if e != nil {
 		if logger == nil {
 			fmt.Println(e)
 		} else {
 			switch level {
-			case zapcore.FatalLevel:
+			case Fatal:
 				fmt.Println("Catastrophic error, see log! [" + er.Error() + "]")
 				logger.Fatal(er.Error())
-			case zapcore.ErrorLevel:
+				os.Exit(1)
+			case Error:
 				if debug_level > 0 {
 					logger.Error(er.Error())
 				}

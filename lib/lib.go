@@ -154,6 +154,9 @@ func copy(src, dst string) (int64, error) {
 }
 
 func Ping(uri string) error {
+	if runtime.GOOS == "linux" {
+		return nil
+	}
 	u, err := url.Parse(uri)
 	if err != nil {
 		return err

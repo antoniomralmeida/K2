@@ -10,6 +10,6 @@ COPY ./k2web/pub/ ./k2web/pub/
 RUN chmod -R 777 .
 EXPOSE 8080
 
-CMD ["sh", "-c", "./bin/k2web.so"]
+ENTRYPOINT ["sh", "-c", "./bin/k2web.so"]
 
-ENTRYPOINT ["/bin/sh"]
+

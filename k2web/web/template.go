@@ -23,13 +23,14 @@ func InitTemplates() {
 	T["login"] = Minify("text/html", wd+"/k2web/pub/view/login.html")
 	T["home"] = Minify("text/html", wd+"/k2web/pub/view/template.html")
 	T["404"] = Minify("text/html", wd+"/k2web/pub/view/404.html")
+	T["face"] = Minify("text/html", wd+"/k2web/pub/view/face.html")
 
 }
 
 func Minify(mediatype string, from string) Template {
 	file, err := os.Open(from)
 	if err != nil {
-		initializers.Log(fmt.Sprintf("Error opening file!!! %v", from), initializers.Error)
+		initializers.Log(fmt.Sprintf("Error opening file!!! %v", from), initializers.Fatal)
 		return Template{from, from}
 	}
 	defer file.Close()

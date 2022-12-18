@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/k2web/web"
@@ -14,7 +15,9 @@ func init() {
 	msg := fmt.Sprintf("Initializing Web Server K2 system version: %v build: %v", version.Version, version.Build)
 
 	if err := gotenv.Load("./config/.env"); err != nil {
-		initializers.Log(err, initializers.Fatal)
+		if err := gotenv.Load("../config/.env"); err != nil {
+			log.Fatal(err)
+		}
 	}
 	initializers.LogInit("k2weblog")
 	if !fiber.IsChild() {

@@ -2,11 +2,13 @@ package initializers
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/antoniomralmeida/k2/lib"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 var db *mongo.Database
@@ -20,11 +22,12 @@ func ConnectDB() {
 	Log(lib.Ping(dsn), Fatal)
 
 	ctx := context.Background()
-
+	fmt.Println(dsn)
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(dsn))
-	if err != nil {
-		Log(err, Fatal)
-	}
+	Log(err, Fatal)
+	//ping db
+	err = client.Ping(ctx, readpref.Primary())
+	Log(err, Fatal)
 	db = client.Database(dbName)
 }
 
