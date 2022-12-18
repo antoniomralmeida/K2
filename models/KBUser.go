@@ -52,6 +52,7 @@ func CheckIndexs() {
 	err = ret.All(ctx, &results)
 	initializers.Log(err, initializers.Fatal)
 	if len(results) == 1 {
+		//TODO: Create index dont work in linux docker
 		_, err = idx.CreateOne(ctx, mongo.IndexModel{Keys: bson.M{"email": 1}, Options: options.Index().SetUnique(true)})
 		initializers.Log(err, initializers.Fatal)
 	}
