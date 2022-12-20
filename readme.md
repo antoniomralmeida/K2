@@ -16,6 +16,12 @@ Build an open source KBS, to be real-time expert system development platform for
 7. Military use in the control of launching rockets and missiles, guided
 8. In risk management of any nature, including environmental
 
+### Site Demo
+http://ec2-15-228-21-212.sa-east-1.compute.amazonaws.com/
+
+
+
+
 ### TODO List
 └─ K2
 		<br/>

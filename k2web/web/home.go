@@ -20,12 +20,12 @@ func Home(c *fiber.Ctx) error {
 		return c.Redirect(c.BaseURL() + "?avatar=" + ctxweb.Avatar)
 	}
 	//Context
-	lang := c.GetReqHeaders()["Accept-Language"]
-	ctxweb.Title = Translate("title", lang)
-	ctxweb.DataInput = Translate("datainput", lang)
-	ctxweb.Workspace = Translate("workspace", lang)
-	ctxweb.Alerts = Translate("alerts", lang)
-	ctxweb.Wellcome2 = Translate("wellcome2", lang)
+
+	ctxweb.Title = Translate(i18n_title, c)
+	ctxweb.DataInput = Translate(i18n_dateinput, c)
+	ctxweb.Workspace = Translate(i18n_workspace, c)
+	ctxweb.Alerts = Translate(i18n_alert, c)
+	ctxweb.Wellcome2 = Translate(i18n_wellcome2, c)
 
 	call := ctxweb.ApiKernel + "/workspaces"
 	resp, err := http.Get(call)

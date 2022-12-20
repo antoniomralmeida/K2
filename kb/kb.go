@@ -15,7 +15,6 @@ import (
 	"github.com/madflojo/tasks"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -120,8 +119,7 @@ func FindAllWorkspaces(sort string) error {
 	err = ret.All(ctx, &results)
 	initializers.Log(err, initializers.Fatal)
 	if len(results) == 1 {
-		_, err = idx.CreateOne(ctx, mongo.IndexModel{Keys: bson.M{"workspace": 1}, Options: options.Index().SetUnique(true)})
-		initializers.Log(err, initializers.Fatal)
+		initializers.CreateUniqueIndex("KBWorkspace", "workspace")
 	}
 	cursor, err := collection.Find(ctx, bson.D{}, options.Find().SetSort(bson.D{{Key: sort, Value: 1}}))
 	initializers.Log(err, initializers.Fatal)
@@ -138,8 +136,7 @@ func FindAllClasses(sort string, cs *[]KBClass) error {
 	err = ret.All(ctx, &results)
 	initializers.Log(err, initializers.Fatal)
 	if len(results) == 1 {
-		_, err = idx.CreateOne(ctx, mongo.IndexModel{Keys: bson.M{"name": 1}, Options: options.Index().SetUnique(true)})
-		initializers.Log(err, initializers.Fatal)
+		initializers.CreateUniqueIndex("KBClass", "name")
 	}
 	cursor, err := collection.Find(ctx, bson.M{}, options.Find().SetSort(bson.D{{Key: sort, Value: 1}}))
 	initializers.Log(err, initializers.Fatal)
@@ -156,8 +153,7 @@ func FindAllObjects(filter bson.M, sort string, os *[]KBObject) error {
 	err = ret.All(ctx, &results)
 	initializers.Log(err, initializers.Fatal)
 	if len(results) == 1 {
-		_, err = idx.CreateOne(ctx, mongo.IndexModel{Keys: bson.M{"name": 1}, Options: options.Index().SetUnique(true)})
-		initializers.Log(err, initializers.Fatal)
+		initializers.CreateUniqueIndex("KBObject", "name")
 	}
 	cursor, err := collection.Find(ctx, filter, options.Find().SetSort(bson.D{{Key: sort, Value: 1}}))
 	initializers.Log(err, initializers.Fatal)

@@ -115,7 +115,5 @@ $(function () {
     req.send(null);
     var headers = req.getAllResponseHeaders().toLowerCase();
     jwt = getCookie('jwt');
-
-    LoadDataInput();
 });
 

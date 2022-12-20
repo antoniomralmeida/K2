@@ -17,7 +17,7 @@ func Run(wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 System API-KERNEL ", v.Version, "[", v.Build, "]"),
-		DisableStartupMessage: false,
+		DisableStartupMessage: true,
 		Prefork:               false})
 	wd, _ := os.Getwd()
 	f := wd + os.Getenv("LOGPATH") + "k2apihttp." + time.Now().Format(lib.YYYYMMDD) + ".log"

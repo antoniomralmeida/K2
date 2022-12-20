@@ -3,26 +3,28 @@ module github.com/antoniomralmeida/k2
 go 1.19
 
 require (
+	github.com/BurntSushi/toml v1.2.1
 	github.com/PaesslerAG/gval v1.2.1
 	github.com/eduardonunesp/goaiml v0.0.0-20160506021742-5f56cb3eea10
 	github.com/gofiber/fiber/v2 v2.40.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.0
 	github.com/hegedustibor/htgo-tts v0.0.0-20220821045517-04f3cda7a12f
-	github.com/itmisx/i18n v0.0.2
 	github.com/madflojo/tasks v1.0.4
 	github.com/mattn/go-tty v0.0.4
 	github.com/montanaflynn/stats v0.6.6
+	github.com/nicksnyder/go-i18n/v2 v2.2.1
 	github.com/rafaeljesus/parallel-fn v0.0.0-20180101203446-ef08331b38ac
 	github.com/subosito/gotenv v1.4.1
 	github.com/tdewolff/minify v2.3.6+incompatible
-	go.mongodb.org/mongo-driver v1.11.0
-	go.opentelemetry.io/otel v1.11.1
-	go.opentelemetry.io/otel/exporters/zipkin v1.11.1
-	go.opentelemetry.io/otel/sdk v1.11.1
-	go.opentelemetry.io/otel/trace v1.11.1
-	go.uber.org/zap v1.23.0
-	golang.org/x/crypto v0.0.0-20221010152910-d6f0a8c073c2
+	go.mongodb.org/mongo-driver v1.11.1
+	go.opentelemetry.io/otel v1.11.2
+	go.opentelemetry.io/otel/exporters/zipkin v1.11.2
+	go.opentelemetry.io/otel/sdk v1.11.2
+	go.opentelemetry.io/otel/trace v1.11.2
+	go.uber.org/zap v1.24.0
+	golang.org/x/crypto v0.4.0
+	golang.org/x/text v0.5.0
 	gonum.org/v1/gonum v0.12.0
 )
 
@@ -53,7 +55,6 @@ require (
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	golang.org/x/sys v0.0.0-20221010170243-090e33056c14 // indirect
-	golang.org/x/text v0.3.8 // indirect
+	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4 // indirect
+	golang.org/x/sys v0.3.0 // indirect
 )

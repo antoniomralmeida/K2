@@ -12,6 +12,13 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
+type SigupRequest struct {
+	Name      string `json:"name"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	FaceImage string `json:"faceimage"`
+}
+
 type KBProfile byte
 
 const (
@@ -28,6 +35,7 @@ type KBUser struct {
 	Hash       []byte               `bson:"hash" json:"-"`
 	Profile    KBProfile            `bson:"profile"`
 	Workspaces []primitive.ObjectID `bson:"workspaces"`
+	FaceImage  string               `bson:"faceimage,omitempty"`
 }
 
 type Context struct {

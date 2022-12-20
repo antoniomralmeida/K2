@@ -27,7 +27,13 @@ func (o *KBObject) String() string {
 }
 
 func (o *KBObject) Delete() error {
-	//TODO: Reiniciar KB
+
+	ctx, collection := initializers.GetCollection("KBObject")
+	collection.DeleteOne(ctx, bson.D{{Key: "_id", Value: o.Id}})
+
+	// Restart KB
+	Stop()
+	Init()
 	return nil
 }
 

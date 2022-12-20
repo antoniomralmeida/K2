@@ -1,60 +1,36 @@
 package web
 
 import (
+	"github.com/BurntSushi/toml"
 	"github.com/antoniomralmeida/k2/initializers"
-	"github.com/itmisx/i18n"
+	"github.com/gofiber/fiber/v2"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"golang.org/x/text/language"
 )
 
-var supported_langs = []string{"en", "pt"}
+var bundle *i18n.Bundle
+
+const (
+	i18n_title     = "title"
+	i18n_wellcome  = "wellcome"
+	i18n_wellcome2 = "wellcome2"
+	i18n_dateinput = "datainput"
+	i18n_workspace = "workspace"
+	i18n_alert     = "alert"
+)
 
 func InitLangs() {
-	var langPack1 = map[string]map[interface{}]interface{}{
-		"en": {
-			"title":     "K2 System KnowledgeBase",
-			"datainput": "Data Input",
-			"user":      "User",
-			"workspace": "Workspace",
-			"alerts":    "Alerts",
-			"wellcome":  "Welcome Back!",
-			"wellcome2": "What are we going to do today?!",
-		},
-		"pt": {
-			"title":     "K2 System KnowledgeBase",
-			"datainput": "Entrada de Dados",
-			"user":      "Usuário",
-			"workspace": "Área de trabalho",
-			"alerts":    "Alertas",
-			"wellcome":  "Bem Vindo de volta!",
-			"wellcome2": "O que vamos fazer hoje?",
-		},
-	}
-
-	i18n.LoadLangPack(langPack1)
+	bundle = i18n.NewBundle(language.English)
+	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+	bundle.MustLoadMessageFile("config/en.toml")
+	bundle.MustLoadMessageFile("config/pt.toml")
 }
 
-func Translate(term string, AcceptLanguage string) string {
-	start := 0
-	end := 0
-	for i := 0; i < len(AcceptLanguage); i++ {
-		if AcceptLanguage[i] == ',' {
-			start = i + 1
-		}
-		if AcceptLanguage[i] == ';' {
-			end = i
-			break
-		}
-	}
-	lang := AcceptLanguage[start:end]
-	ok := false
-	for _, l := range supported_langs {
-		if lang == l {
-			ok = true
-			break
-		}
-	}
-	if !ok {
-		initializers.Log("Accept-Language "+AcceptLanguage+" not supported!", initializers.Info)
-		lang = "en"
-	}
-	return i18n.T(lang, term)
+func Translate(id string, c *fiber.Ctx) string {
+	lang := c.Query("lang")
+	accept := c.GetReqHeaders()["Accept-Language"]
+	localizer := i18n.NewLocalizer(bundle, lang, accept)
+	msg, err := localizer.LocalizeMessage(&i18n.Message{ID: id})
+	initializers.Log(err, initializers.Error)
+	return msg
 }

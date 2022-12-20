@@ -18,9 +18,9 @@ func LoginForm(c *fiber.Ctx) error {
 		return c.Redirect(c.OriginalURL() + "?avatar=" + ctxweb.Avatar)
 	}
 	//Context
-	lang := c.GetReqHeaders()["Accept-Language"]
-	ctxweb.Title = Translate("title", lang)
-	ctxweb.Wellcome = Translate("wellcome", lang)
+
+	ctxweb.Title = Translate(i18n_title, c)
+	ctxweb.Wellcome = Translate(i18n_wellcome, c)
 	//TODO: Incluir reconhecimento facil no login
 
 	model := template.Must(template.ParseFiles(T["login"].original))
@@ -50,6 +50,10 @@ func PostLogin(c *fiber.Ctx) error {
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Hash), []byte(req.Password)); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid login credentials")
+	}
+
+	if user.Profile == models.Empty {
+		return fiber.NewError(fiber.StatusBadRequest, "non-validated user")
 	}
 
 	token, _, err := lib.CreateJWTToken(user.Id)
@@ -82,6 +86,50 @@ func Logout(c *fiber.Ctx) error {
 	}
 	ctxweb.User = ""
 	c.Cookie(&cookie)
+	c.SendStatus(fiber.StatusAccepted)
+	return c.Redirect("/login")
+}
+
+func SigupForm(c *fiber.Ctx) error {
+	if len(c.Query("avatar")) == 0 && len(ctxweb.Avatar) > 0 {
+		return c.Redirect(c.OriginalURL() + "?avatar=" + ctxweb.Avatar)
+	}
+	//Context
+	ctxweb.Title = Translate(i18n_title, c)
+	ctxweb.Wellcome = Translate(i18n_wellcome, c)
+
+	model := template.Must(template.ParseFiles(T["sigup"].original))
+	initializers.Log(model.Execute(c, ctxweb), initializers.Error)
+	c.Response().Header.Add("Content-Type", "text/html")
+
+	return c.SendStatus(fiber.StatusOK)
+}
+
+func PostSigup(c *fiber.Ctx) error {
+	req := models.SigupRequest{}
+	if err := c.BodyParser(&req); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "invalid body parser "+err.Error())
+	}
+	if req.Email == "" || req.Password == "" {
+		return fiber.NewError(fiber.StatusBadRequest, "empty credentials")
+	}
+
+	user := models.KBUser{}
+	err := user.FindOne(bson.D{{Key: "email", Value: req.Email}})
+	if err != mongo.ErrNoDocuments {
+		initializers.Log(err, initializers.Error)
+		return fiber.NewError(fiber.StatusInternalServerError, "internal erro "+err.Error())
+	}
+	if user.Email != "" {
+		return fiber.NewError(fiber.StatusBadRequest, "already registered user")
+	}
+
+	err = models.NewUser(req.Name, req.Email, req.Password, req.FaceImage)
+	if err != nil {
+		initializers.Log(err, initializers.Error)
+		return fiber.NewError(fiber.StatusInternalServerError, "internal erro "+err.Error())
+	}
+
 	c.SendStatus(fiber.StatusAccepted)
 	return c.Redirect("/login")
 }

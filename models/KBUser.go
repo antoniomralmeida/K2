@@ -7,8 +7,6 @@ import (
 	"github.com/antoniomralmeida/k2/lib"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -27,6 +25,20 @@ func (user *KBUser) Persist() error {
 func (user *KBUser) FindOne(p bson.D) error {
 	ctx, collection := initializers.GetCollection("KBUser")
 	err := collection.FindOne(ctx, p).Decode(&user)
+	return err
+}
+
+func NewUser(name, email, pwd, image string) error {
+	copy, err := lib.LoadImage(image)
+	if err != nil {
+		return err
+	}
+	hash, err := bcrypt.GenerateFromPassword([]byte(pwd), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	u := KBUser{Email: email, Name: name, Hash: hash, FaceImage: copy, Profile: Empty}
+	err = u.Persist()
 	return err
 }
 
@@ -52,8 +64,6 @@ func CheckIndexs() {
 	err = ret.All(ctx, &results)
 	initializers.Log(err, initializers.Fatal)
 	if len(results) == 1 {
-		//TODO: Create index dont work in linux docker
-		_, err = idx.CreateOne(ctx, mongo.IndexModel{Keys: bson.M{"email": 1}, Options: options.Index().SetUnique(true)})
-		initializers.Log(err, initializers.Fatal)
+		initializers.CreateUniqueIndex("KBUser", "email")
 	}
 }

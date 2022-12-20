@@ -463,7 +463,7 @@
   const avatar = params.get('avatar');
 
   document.getElementById("save").addEventListener("click", () => {
-    window.location.href = "/?avatar="+avatar;  
+    window.location.href = "/?avatar="+btoa(JSON.stringify(face));  
   });
 
   let face;

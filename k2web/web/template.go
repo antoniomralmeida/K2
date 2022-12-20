@@ -24,7 +24,7 @@ func InitTemplates() {
 	T["home"] = Minify("text/html", wd+"/k2web/pub/view/template.html")
 	T["404"] = Minify("text/html", wd+"/k2web/pub/view/404.html")
 	T["face"] = Minify("text/html", wd+"/k2web/pub/view/face.html")
-
+	T["sigup"] = Minify("text/html", wd+"/k2web/pub/view/register.html")
 }
 
 func Minify(mediatype string, from string) Template {

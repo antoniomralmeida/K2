@@ -12,8 +12,7 @@ func GetFace(c *fiber.Ctx) error {
 		return c.Redirect(c.OriginalURL() + "?avatar=" + ctxweb.Avatar)
 	}
 	//Context
-	lang := c.GetReqHeaders()["Accept-Language"]
-	ctxweb.Title = Translate("title", lang)
+	ctxweb.Title = Translate(i18n_title, c)
 
 	model := template.Must(template.ParseFiles(T["face"].original))
 	initializers.Log(model.Execute(c, ctxweb), initializers.Error)
