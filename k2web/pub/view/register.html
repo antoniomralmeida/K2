@@ -40,19 +40,15 @@
                             <div class="text-center">
                                 <h1 class="h4 text-gray-900 mb-4">{{.Register}}</h1>
                             </div>
-                            <form class="user" method="post" action="/sigup">
+                            <form class="user" method="post" action="/sigup" enctype="multipart/form-data">
                                 <div class="form-group">
                                     <input type="text" class="form-control form-control-user" id="exampleFirstName"
                                         name="name" placeholder="Name">
 
                                 </div>
                                 <div class="form-group">
-                                    <input type="email" name-="email" class="form-control form-control-user"
+                                    <input type="email" name="email" class="form-control form-control-user"
                                         id="exampleInputEmail" placeholder="Email Address">
-                                </div>
-                                <div class="form-group">
-                                    <label for="myfile">Select a face file (PNG/JPEG):</label>
-                                    <input type="file" class="form-control form-control-user" name="file"  accept="image/png, image/jpeg">>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-6 mb-3 mb-sm-0">
@@ -65,8 +61,21 @@
                                     </div>
 
                                 </div>
-                                <input type=submit class="btn btn-primary btn-user btn-block" value="Register Account">
+                               
+                                <div class="input-group form-group">
+                                    <div class="input-group-prepend">
+                                      <span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
+                                    </div>
+                                    <div class="custom-file">
+                                      <input type="file" name="faceimage" class="custom-file-input" id="inputGroupFile01 "
+                                        aria-describedby="inputGroupFileAddon01" accept="image/png, image/jpeg">
+                                      <label class="custom-file-label" for="inputGroupFile01">Select a face file (PNG/JPEG)</label>
+                                    </div>
+                                  </div>
+                                 <input type=submit class="btn btn-primary btn-user btn-block" value="Register Account">
                                 <hr>
+
+                                //TODO: Javascript para validar as senhas 
 
                             </form>
                             <hr>
@@ -93,6 +102,7 @@
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
+   
     <!-- Page level custom scripts -->
     <script>var apikernel = '{{.ApiKernel}}'</script>
     <script src="js/bundle.js"></script>

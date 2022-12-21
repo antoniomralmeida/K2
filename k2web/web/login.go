@@ -2,6 +2,8 @@ package web
 
 import (
 	"html/template"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/antoniomralmeida/k2/initializers"
@@ -23,7 +25,7 @@ func LoginForm(c *fiber.Ctx) error {
 	ctxweb.Wellcome = Translate(i18n_wellcome, c)
 	//TODO: Incluir reconhecimento facil no login
 
-	model := template.Must(template.ParseFiles(T["login"].minify))
+	model := template.Must(template.ParseFiles(T["login"].original))
 	initializers.Log(model.Execute(c, ctxweb), initializers.Error)
 	c.Response().Header.Add("Content-Type", "text/html")
 
@@ -98,7 +100,7 @@ func SigupForm(c *fiber.Ctx) error {
 	ctxweb.Title = Translate(i18n_title, c)
 	ctxweb.Register = Translate(i18n_register, c)
 
-	model := template.Must(template.ParseFiles(T["sigup"].minify))
+	model := template.Must(template.ParseFiles(T["sigup"].original))
 	initializers.Log(model.Execute(c, ctxweb), initializers.Error)
 	c.Response().Header.Add("Content-Type", "text/html")
 
@@ -110,24 +112,46 @@ func PostSigup(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid body parser "+err.Error())
 	}
+	faceimage := "faceimage"
+	file, err := c.FormFile(faceimage)
+	if err != nil {
+		initializers.Log(err, initializers.Error)
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid face image")
+	}
+	if file != nil {
+		filePath := lib.TempFileName("k2-upload", filepath.Ext(file.Filename))
+		err = c.SaveFile(file, filePath)
+		if err != nil {
+			initializers.Log(err, initializers.Error)
+			return fiber.NewError(fiber.StatusInternalServerError, "error save face image")
+		}
+		faceimage = filePath
+	} else {
+		faceimage = ""
+	}
+
 	if req.Email == "" || req.Password == "" {
 		return fiber.NewError(fiber.StatusBadRequest, "empty credentials")
 	}
 
 	user := models.KBUser{}
-	err := user.FindOne(bson.D{{Key: "email", Value: req.Email}})
-	if err != mongo.ErrNoDocuments {
+	err = user.FindOne(bson.D{{Key: "email", Value: req.Email}})
+	if err != mongo.ErrNoDocuments && err != nil {
 		initializers.Log(err, initializers.Error)
-		return fiber.NewError(fiber.StatusInternalServerError, "internal erro "+err.Error())
+		return fiber.NewError(fiber.StatusInternalServerError, "internal error ")
 	}
+
 	if user.Email != "" {
 		return fiber.NewError(fiber.StatusBadRequest, "already registered user")
 	}
 
-	err = models.NewUser(req.Name, req.Email, req.Password, req.FaceImage)
+	err = models.NewUser(req.Name, req.Email, req.Password, faceimage)
 	if err != nil {
 		initializers.Log(err, initializers.Error)
 		return fiber.NewError(fiber.StatusInternalServerError, "internal erro "+err.Error())
+	}
+	if faceimage != "" {
+		os.Remove(faceimage)
 	}
 
 	c.SendStatus(fiber.StatusAccepted)

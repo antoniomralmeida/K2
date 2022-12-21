@@ -2,6 +2,7 @@ package lib
 
 import (
 	"bytes"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
@@ -122,9 +123,9 @@ func KeyPress() byte {
 }
 
 func LoadImage(src string) (dst string, err error) {
-	dst = "./k2web/pub/img/" + uuid.New().String() + filepath.Ext(src)
+	dst = "./k2web/pub/upload/" + uuid.New().String() + filepath.Ext(src)
 	_, err = copy(src, dst)
-	dst = "./img/" + filepath.Base(dst)
+	dst = "./upload/" + filepath.Base(dst)
 	return
 }
 
@@ -238,4 +239,10 @@ func ValidateToken(jwtcookie string) (err error) {
 	}
 
 	return nil
+}
+
+func TempFileName(prefix, suffix string) string {
+	randBytes := make([]byte, 16)
+	rand.Read(randBytes)
+	return filepath.Join(os.TempDir(), prefix+hex.EncodeToString(randBytes)+suffix)
 }

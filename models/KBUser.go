@@ -28,18 +28,20 @@ func (user *KBUser) FindOne(p bson.D) error {
 	return err
 }
 
-func NewUser(name, email, pwd, image string) error {
-	copy, err := lib.LoadImage(image)
-	if err != nil {
-		return err
+func NewUser(name, email, pwd, image string) (err error) {
+	var copy string
+	if image != "" {
+		copy, err = lib.LoadImage(image)
+		if err != nil {
+			return
+		}
 	}
 	hash, err := bcrypt.GenerateFromPassword([]byte(pwd), bcrypt.DefaultCost)
 	if err != nil {
-		return err
+		return
 	}
 	u := KBUser{Email: email, Name: name, Hash: hash, FaceImage: copy, Profile: Empty}
-	err = u.Persist()
-	return err
+	return u.Persist()
 }
 
 func InitSecurity() {
