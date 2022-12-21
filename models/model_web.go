@@ -48,5 +48,6 @@ type Context struct {
 	Wellcome2  string
 	ApiKernel  string
 	Avatar     string
+	Register   string
 	Workspaces []Workspace
 }

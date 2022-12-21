@@ -14,7 +14,7 @@ func GetFace(c *fiber.Ctx) error {
 	//Context
 	ctxweb.Title = Translate(i18n_title, c)
 
-	model := template.Must(template.ParseFiles(T["face"].original))
+	model := template.Must(template.ParseFiles(T["face"].minify))
 	initializers.Log(model.Execute(c, ctxweb), initializers.Error)
 	c.Response().Header.Add("Content-Type", "text/html")
 

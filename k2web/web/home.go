@@ -38,7 +38,7 @@ func Home(c *fiber.Ctx) error {
 		initializers.Log(err, initializers.Error)
 	}
 	//Render
-	model := template.Must(template.ParseFiles(T["home"].original))
+	model := template.Must(template.ParseFiles(T["home"].minify))
 	model.Execute(c, ctxweb)
 	c.Response().Header.Add("Content-Type", "text/html")
 

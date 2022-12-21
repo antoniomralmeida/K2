@@ -17,6 +17,7 @@ const (
 	i18n_dateinput = "datainput"
 	i18n_workspace = "workspace"
 	i18n_alert     = "alert"
+	i18n_register  = "register"
 )
 
 func InitLangs() {

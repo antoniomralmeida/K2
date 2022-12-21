@@ -23,7 +23,7 @@ func LoginForm(c *fiber.Ctx) error {
 	ctxweb.Wellcome = Translate(i18n_wellcome, c)
 	//TODO: Incluir reconhecimento facil no login
 
-	model := template.Must(template.ParseFiles(T["login"].original))
+	model := template.Must(template.ParseFiles(T["login"].minify))
 	initializers.Log(model.Execute(c, ctxweb), initializers.Error)
 	c.Response().Header.Add("Content-Type", "text/html")
 
@@ -96,9 +96,9 @@ func SigupForm(c *fiber.Ctx) error {
 	}
 	//Context
 	ctxweb.Title = Translate(i18n_title, c)
-	ctxweb.Wellcome = Translate(i18n_wellcome, c)
+	ctxweb.Register = Translate(i18n_register, c)
 
-	model := template.Must(template.ParseFiles(T["sigup"].original))
+	model := template.Must(template.ParseFiles(T["sigup"].minify))
 	initializers.Log(model.Execute(c, ctxweb), initializers.Error)
 	c.Response().Header.Add("Content-Type", "text/html")
 
