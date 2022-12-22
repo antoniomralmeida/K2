@@ -45,15 +45,16 @@
                                     <div class="text-center">
                                         <h1 class="h4 text-gray-900 mb-4">{{.Wellcome}}</h1>
                                     </div>
-                                    <form name="login" class="user" method="post" action="/login">
+                                    <form name="login" class="user">
                                         <div class="form-group">
-                                            <input type="email" name="Email" class="form-control form-control-user"
-                                                id="exampleInputEmail" aria-describedby="emailHelp"
+                                            <input type="email" name="email" class="form-control form-control-user"
+                                                id="email" aria-describedby="emailHelp"
                                                 placeholder="Enter Email Address...">
                                         </div>
                                         <div class="form-group">
-                                            <input type="password" name="Password" class="form-control form-control-user"
-                                                id="exampleInputPassword" placeholder="Password">
+                                            <input type="password" name="password"
+                                                class="form-control form-control-user" id="password"
+                                                placeholder="Password">
                                         </div>
                                         <div class="form-group">
                                             <div class="custom-control custom-checkbox small">
@@ -62,9 +63,14 @@
                                                     Me</label>
                                             </div>
                                         </div>
-                                        <input type=submit class="btn btn-primary btn-user btn-block" value="Login">
+                                        <input type="button" class="btn btn-primary btn-user btn-block" value="Login" onclick="PostLogin();">
                                         <hr>
-                                        
+                                        <div class="col-sm-12">
+                                            <small id="passwordHelp" class="text-danger" >
+                                                <div id="errlabel">
+                                                </div>
+                                            </small>      
+                                          </div>
                                     </form>
                                     <hr>
                                     <div class="text-center">
@@ -84,7 +90,6 @@
         </div>
 
     </div>
-
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

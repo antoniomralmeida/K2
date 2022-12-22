@@ -117,3 +117,23 @@ $(function () {
     jwt = getCookie('jwt');
 });
 
+function PostLogin() {
+    var errlabel = document.getElementById('errlabel')
+    const email = document.getElementById("email");
+    const pwd = document.getElementById("password");
+    
+    $.ajax({
+        url: location.url,
+        type: 'POST',
+        data: {"email": email.value, "password": pwd.value},
+        error: function (xmlHttpRequest, textStatus, errorThrown) {
+            Speak("Ops!");
+            errlabel.innerHTML = xmlHttpRequest.responseText;
+        },
+        success: function (data) {
+            errlabel.innerHTML = "";
+            window.location.href = "/";
+        }
+    });
+    return true;
+}

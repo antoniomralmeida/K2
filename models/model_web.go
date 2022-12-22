@@ -2,6 +2,14 @@ package models
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
+type Language struct {
+	Code              string
+	Description       string
+	SpeechSynthesisId int
+}
+
+var Languages []Language
+
 type Workspace struct {
 	Workspace       string `json:"Workspace"`
 	BackgroundImage string `json:"BackgroundImage"`
