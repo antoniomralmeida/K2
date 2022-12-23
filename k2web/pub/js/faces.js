@@ -57,17 +57,8 @@ const TTS = async(text) => {
   // Testing for browser support
 	var speechSynthesisSupported = 'speechSynthesis' in window;
   let msg = new SpeechSynthesisUtterance();
-  i = 0;
-  voices.forEach((voice) => {
-    alert(i + ':'+voice);
-    i=i+1;
-  });
   msg.voice = speechSynthesis.getVoices()[1];
-  if (lang == 'pt') {
-    msg.voice = speechSynthesis.getVoices()[0];
-  } else if (lang == null && lang2 == 'pt-BR') {
-    msg.voice = speechSynthesis.getVoices()[0];
-  }
+  msg.voice = speechSynthesis.getVoices()[ SpeechSynthesisId];
   msg.text = text;
   speechSynthesis.speak(msg);  
 }

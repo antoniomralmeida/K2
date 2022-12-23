@@ -11,7 +11,7 @@
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 
 
-    <title>{{.Title}}</title>
+    <title>{{index .I18n "i18n_title"}}</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -43,7 +43,7 @@
                             <div class="col-lg-6">
                                 <div class="p-5">
                                     <div class="text-center">
-                                        <h1 class="h4 text-gray-900 mb-4">{{.Wellcome}}</h1>
+                                        <h1 class="h4 text-gray-900 mb-4">{{index .I18n "i18n_wellcome"}}</h1>
                                     </div>
                                     <form name="login" class="user">
                                         <div class="form-group">
@@ -74,10 +74,10 @@
                                     </form>
                                     <hr>
                                     <div class="text-center">
-                                        <a class="small" href="/forgot-password">Forgot Password?</a>
+                                        <a class="small" href="/forgot-password">{{index .I18n "i18n_forgot"}}</a>
                                     </div>
                                     <div class="text-center">
-                                        <a class="small" href="/sigup">Create an Account!</a>
+                                        <a class="small" href="/sigup">{{index .I18n "i18n_already"}} </a>
                                     </div>
                                 </div>
                             </div>
@@ -100,11 +100,12 @@
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
     <!-- Page level custom scripts -->
-    <script>var apikernel = '{{.ApiKernel}}'</script>
+    
     <script src="js/bundle.js"></script>
     <script src="js/faces.js"></script>
     <script src="js/k2.js"></script>
-    <script>Speak("{{.Wellcome}}");</script>
+    <script>var apikernel = '{{.ApiKernel}}'; var SpeechSynthesisId = '{{.SpeechSynthesisId}}';
+    Speak('{{index .I18n "i18n_wellcome"}}');</script>
 </body>
 
 </html>

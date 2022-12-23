@@ -2,14 +2,6 @@ package models
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
-type Language struct {
-	Code              string
-	Description       string
-	SpeechSynthesisId int
-}
-
-var Languages []Language
-
 type Workspace struct {
 	Workspace       string `json:"Workspace"`
 	BackgroundImage string `json:"BackgroundImage"`
@@ -46,15 +38,10 @@ type KBUser struct {
 }
 
 type Context struct {
-	User       string
-	Title      string
-	DataInput  string
-	Workspace  string
-	Alerts     string
-	Wellcome   string
-	Wellcome2  string
-	ApiKernel  string
-	Avatar     string
-	Register   string
-	Workspaces []Workspace
+	I18n              map[string]string
+	User              string
+	ApiKernel         string
+	Avatar            string
+	SpeechSynthesisId int
+	Workspaces        []Workspace
 }

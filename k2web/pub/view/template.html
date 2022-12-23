@@ -10,7 +10,8 @@
     <meta name="author" content="">
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 
-    <title>{{ .Title }}</title>
+    <title>{{index .I18n "i18n_title"}}
+    </title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -646,7 +647,7 @@
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3">
                                     <h6 class="m-0 font-weight-bold text-primary">
-                                        {{ .DataInput}} </h6>
+                                        {{index .I18n "i18n_dateinput"}} </h6>
                                 </div>
                                 <div class="card-body">
                                     <form>
@@ -738,10 +739,10 @@
     <script src="vendor/chart.js/Chart.min.js"></script>
 
     <!-- Page level custom scripts -->
-    <script>var apikernel = '{{.ApiKernel}}'</script>
     <script src="js/bundle.js"></script>
     <script src="js/faces.js"></script>
     <script src="js/k2.js"></script>
-    <script>Speak("{{.User}}, {{.Wellcome2}} ");LoadDataInput();</script>
+    <script>var apikernel = '{{.ApiKernel}}'; var SpeechSynthesisId = '{{.SpeechSynthesisId}}';
+    Speak('{{.User}}, {{index .I18n "i18n_wellcome2"}}');LoadDataInput();</script>
 </body>
 </html>

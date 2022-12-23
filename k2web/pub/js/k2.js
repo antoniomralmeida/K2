@@ -1,6 +1,7 @@
 var div_id = document.getElementById('form_di_37232723')
 var div_face_id = document.getElementById('face')
 var jwt = ''
+var SpeechSynthesisId =0
 
 
 function SendMessage(text) {
