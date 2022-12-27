@@ -12,6 +12,7 @@ func Routes(app *fiber.App) {
 	app.Static("/js", "./k2web/pub/js")
 	app.Static("/vendor", "./k2web/pub/vendor")
 	app.Static("/scss", "./k2web/pub/scss")
+	app.Static("/sounds", "./k2web/pub/sounds")
 
 	// Allow cors for cookie
 	app.Use(cors.New(cors.Config{

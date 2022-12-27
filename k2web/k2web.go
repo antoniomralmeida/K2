@@ -24,7 +24,9 @@ func init() {
 		fmt.Println(msg)
 		initializers.Log(msg, initializers.Info)
 	}
+
 }
+
 func main() {
 	web.Run()
 }

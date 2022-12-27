@@ -1,0 +1,17 @@
+FROM smartentry/ubuntu  as k2-olivia
+
+WORKDIR /var/www/k2
+
+COPY ./bin/olivia.so ./bin/
+COPY ["./config/", "./config/"] 
+COPY ./log/*.md ./log/
+COPY ./olivia/res/ ./olivia/res/
+
+RUN chmod -R 777 .
+EXPOSE 8090
+
+CMD "cd olivia"
+
+ENTRYPOINT ["sh", "-c", "./bin/olivia.so"]
+
+

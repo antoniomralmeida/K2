@@ -12,7 +12,7 @@ import (
 func Run(wg *sync.WaitGroup) {
 	//SERVICES WINDOWS
 	switch runtime.GOOS {
-	case "windows":
+	case "windows2":
 		wd, _ := os.Getwd()
 		cmd := wd + "/bin/k2web.exe"
 		_, err := exec.Command("cmd.exe", "/c", "start", cmd).Output()
