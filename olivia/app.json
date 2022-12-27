@@ -1,0 +1,12 @@
+{
+  "name": "olivia",
+  "description": "Your new best friend",
+  "keywords": [
+    "chatbot",
+    "golang",
+    "olivia",
+    "machine-learning"
+  ],
+  "website": "https://olivia-ai.org",
+  "repository": "https://github.com/olivia-ai/olivia"
+}
