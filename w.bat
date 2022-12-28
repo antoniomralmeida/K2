@@ -8,5 +8,7 @@ go build  -o ./bin/k2.exe k2.go
 cd olivia
 start ..\bin\olivia.exe
 cd ..
-start .\bin\k2.exe
 start .\bin\k2web.exe
+.\bin\k2.exe
+taskkill /im  olivia.exe /f
+taskkill /im  k2web.exe /f

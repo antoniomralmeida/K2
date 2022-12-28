@@ -10,12 +10,17 @@ import (
 	"github.com/antoniomralmeida/k2/kb"
 	"github.com/antoniomralmeida/k2/lib"
 	"github.com/antoniomralmeida/k2/models"
-	"github.com/antoniomralmeida/k2/services"
+	"github.com/antoniomralmeida/k2/olivia/util"
+	"github.com/gookit/color"
 
 	"github.com/antoniomralmeida/k2/version"
 )
 
 func init() {
+	// Print the K2 ascii text 3D
+	k2ASCII := string(util.ReadFile("config/k2.txt"))
+	fmt.Println(color.FgLightGreen.Render(k2ASCII))
+
 	msg := fmt.Sprintf("Initializing K2 System version: %v build: %v PID: %v", version.Version, version.Build, os.Getppid())
 	fmt.Println(msg)
 	initializers.InitEnvVars()
@@ -45,7 +50,6 @@ func StartSystem() {
 	wg.Add(5)
 	go apikernel.Run(&wg)
 	go kb.Run(&wg)
-	go services.Run(&wg)
 	go lib.Openbrowser("http://localhost" + os.Getenv("HTTPPORT"))
 	wg.Wait()
 }

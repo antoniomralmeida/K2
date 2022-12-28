@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"runtime"
 	"sort"
 	"sync"
 	"time"
@@ -11,7 +12,6 @@ import (
 	"github.com/antoniomralmeida/k2/ebnf"
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
-	"github.com/antoniomralmeida/k2/services"
 	"github.com/madflojo/tasks"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -196,13 +196,13 @@ func Run(wg *sync.WaitGroup) {
 	initializers.Log(err, initializers.Fatal)
 
 	initializers.Log("K2 System started!", initializers.Info)
-	fmt.Println("K2 System started! Press ESC to shutdown")
-
+	if runtime.GOOS == "windows" {
+		fmt.Println("K2 System started! Press ESC to shutdown")
+	}
 	for {
 		if lib.KeyPress() == 27 || GKB.halt {
 			fmt.Printf("Shutdown...")
 			scheduler.Stop()
-			services.Stop()
 			wg.Done()
 			os.Exit(0)
 		}
