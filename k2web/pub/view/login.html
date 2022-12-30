@@ -52,12 +52,12 @@
                                         <div class="form-group">
                                             <input type="email" name="email" class="form-control form-control-user"
                                                 id="email" aria-describedby="emailHelp"
-                                                placeholder="Enter Email Address...">
+                                                placeholder="Enter Email Address..." required>
                                         </div>
                                         <div class="form-group">
                                             <input type="password" name="password"
                                                 class="form-control form-control-user" id="password"
-                                                placeholder="Password">
+                                                placeholder="Password" required>
                                         </div>
                                         <div class="form-group">
                                             <div class="custom-control custom-checkbox small">
@@ -80,7 +80,7 @@
                                         <a class="small" href="/forgot-password">{{index .I18n "i18n_forgot"}}</a>
                                     </div>
                                     <div class="text-center">
-                                        <a class="small" href="/sigup">{{index .I18n "i18n_already"}} </a>
+                                        <a class="small" href="/sigup">{{index .I18n "i18n_register"}} </a>
                                     </div>
                                 </div>
                             </div>
@@ -104,10 +104,10 @@
     <script src="js/sb-admin-2.min.js"></script>
     <!-- Page level custom scripts -->
     
-    <script src="js/bundle.js"></script>
-    <script src="js/faces.js"></script>
-    <script src="js/k2.js"></script>
-    <script>var apikernel = '{{.ApiKernel}}'; var SpeechSynthesisId = '{{.SpeechSynthesisId}}';
+    <script src="js/bundle.min.js"></script>
+    <script src="js/faces.min.js"></script>
+    <script src="js/k2.min.js"></script>
+    <script>apikernel = '{{.ApiKernel}}';SpeechSynthesisId = '{{.SpeechSynthesisId}}';
     Speak('{{index .I18n "i18n_wellcome"}}');</script>
 </body>
 

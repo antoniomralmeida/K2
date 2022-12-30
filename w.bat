@@ -5,6 +5,8 @@ set GOOS=windows
 go build  -o ./bin/k2web.exe ./k2web/k2web.go
 go build  -o ./bin/olivia.exe ./olivia/main.go
 go build  -o ./bin/k2.exe k2.go
+del log\*.json
+del log\*.log
 cd olivia
 start ..\bin\olivia.exe
 cd ..

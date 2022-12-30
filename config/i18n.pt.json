@@ -7,5 +7,7 @@
     "i18n_alert": "Alertas",
     "i18n_register": "Por favor, se registre para acessar o K2!",
     "i18n_already": "Já tem uma conta? Conecte-se!",
-    "i18n_forgot": "Esqueceu sua senha?"
+    "i18n_forgot": "Esqueceu sua senha?",
+    "i18n_send": "Enviar",
+    "i18n_cancel": "Cancelar"
 }

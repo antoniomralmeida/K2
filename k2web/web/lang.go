@@ -24,7 +24,9 @@ var I18n_ID = []string{
 	"i18n_alert",
 	"i18n_register",
 	"i18n_already",
-	"i18n_forgot"}
+	"i18n_forgot",
+	"i18n_send",
+	"i18n_cancel"}
 
 type I18n_Messages struct {
 	I18n_title     string `json:"i18n_title"`
@@ -36,6 +38,8 @@ type I18n_Messages struct {
 	I18n_register  string `json:"i18n_register"`
 	I18n_already   string `json:"i18n_already"`
 	I18n_forgot    string `json:"i18n_forgot"`
+	I18n_send      string `json:"i18n_forgot"`
+	I18n_cancel    string `json:"i18n_forgot"`
 }
 
 var i18n_en = I18n_Messages{
@@ -48,7 +52,8 @@ var i18n_en = I18n_Messages{
 	"Please register to access K2!",
 	"Already have an account? Login!",
 	"Forgot Password?",
-}
+	"Send",
+	"Cancel"}
 
 type Language struct {
 	Code              string

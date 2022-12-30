@@ -7,6 +7,8 @@ const lang = params.get('lang');
 const lang2 = navigator.language
 const voices = window.speechSynthesis.getVoices();
 
+var SpeechSynthesisId = 0;
+
 (async() => {
 
   const getVoices = (voiceName = "") => {
@@ -57,11 +59,11 @@ const TTS = async(text) => {
   // Testing for browser support
 	var speechSynthesisSupported = 'speechSynthesis' in window;
   let msg = new SpeechSynthesisUtterance();
-  msg.voice = speechSynthesis.getVoices()[1];
   msg.voice = speechSynthesis.getVoices()[ SpeechSynthesisId];
   msg.text = text;
   speechSynthesis.speak(msg);  
 }
+
 
 const Speak = async (text) => {
   await sleep(50);

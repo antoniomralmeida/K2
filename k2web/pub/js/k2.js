@@ -1,13 +1,13 @@
 var div_id = document.getElementById('form_di_37232723')
 var div_face_id = document.getElementById('face')
 var jwt = ''
-var SpeechSynthesisId =0
+var apikernel = ''
 
 
 function SendMessage(text) {
     $.ajax({
         url: apikernel + '/chats',
-        data: { 'jwt': jwt, msg: text},
+        data: { 'jwt': jwt, msg: text },
         type: 'GET',
         dataType: 'text',
         error: function (jqXhr, Status) {
@@ -16,7 +16,7 @@ function SendMessage(text) {
         success: function (data) {
             Speak(data);
         }
-    });    
+    });
 }
 
 
@@ -24,7 +24,7 @@ function LoadDataInput() {
     $.ajax({
         url: apikernel + '/attributes',
         type: 'GET',
-        data: { "jwt": jwt},
+        data: { "jwt": jwt },
         dataType: 'json',
         error: function (jqXhr, Status) {
             div_id.innerHTML = Status;
@@ -74,17 +74,17 @@ function SubmitDataInput(form) {
     $(form).find("input[name]").each(function (index, node) {
         formData[node.name] = node.value;
     });
-    
+
     $(form).find("select[name]").each(function (index, node) {
         formData[node.name] = node.value;
     });
 
-    $.post(apikernel +'/attributes' ,formData).done(function(data){
+    $.post(apikernel + '/attributes', formData).done(function (data) {
         LoadDataInput();
     }).error(function (error) {
         alert(error);
     });
-    
+
     return true;
 }
 
@@ -93,8 +93,8 @@ function LoadWorkspace(name, img) {
     ctx.innerHTML = 'Workspace - ' + name;
     var canvas = document.getElementById("workspace");
     var background = new Image();
-    background.onload = function() {
-        canvas.getContext('2d').drawImage(background, 0,0);
+    background.onload = function () {
+        canvas.getContext('2d').drawImage(background, 0, 0);
     }
     background.width = '100%';
     background.height = '100%';
@@ -103,12 +103,12 @@ function LoadWorkspace(name, img) {
 
 function getCookie(cookieName) {
     let cookie = {};
-    document.cookie.split(';').forEach(function(el) {
-      let [key,value] = el.split('=');
-      cookie[key.trim()] = value;
+    document.cookie.split(';').forEach(function (el) {
+        let [key, value] = el.split('=');
+        cookie[key.trim()] = value;
     })
     return cookie[cookieName];
-  }
+}
 
 $(function () {
     var req = new XMLHttpRequest();
@@ -122,11 +122,11 @@ function PostLogin() {
     var errlabel = document.getElementById('errlabel')
     const email = document.getElementById("email");
     const pwd = document.getElementById("password");
-    
+
     $.ajax({
         url: location.url,
         type: 'POST',
-        data: {"email": email.value, "password": pwd.value},
+        data: { "email": email.value, "password": pwd.value },
         error: function (xmlHttpRequest, textStatus, errorThrown) {
             Speak("Ops!");
             errlabel.innerHTML = xmlHttpRequest.responseText;
@@ -137,4 +137,17 @@ function PostLogin() {
         }
     });
     return true;
+}
+
+function validateSigupFrom() {
+    var errlabel = document.getElementById('errlabel')
+    const pwd = document.getElementById("password");
+    const pwd2 = document.getElementById("password2");
+
+    if (pwd != pwd2) {
+        errlabel.innerHTML = "Senha não confere";
+        return false;
+    } else {
+        return true;
+    }
 }

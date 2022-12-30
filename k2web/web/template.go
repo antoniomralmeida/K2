@@ -5,10 +5,12 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/tdewolff/minify"
 	h "github.com/tdewolff/minify/html"
+	"github.com/tdewolff/minify/js"
 )
 
 type Template struct {
@@ -20,14 +22,18 @@ var T = make(map[string]Template)
 
 func InitTemplates() {
 	wd, _ := os.Getwd()
-	T["login"] = Minify("text/html", wd+"/k2web/pub/view/login.html")
-	T["home"] = Minify("text/html", wd+"/k2web/pub/view/template.html")
-	T["404"] = Minify("text/html", wd+"/k2web/pub/view/404.html")
-	T["face"] = Minify("text/html", wd+"/k2web/pub/view/face.html")
-	T["sigup"] = Minify("text/html", wd+"/k2web/pub/view/register.html")
+	T["login"] = Minify("text/html", wd+"/k2web/pub/view/login.html", true)
+	T["home"] = Minify("text/html", wd+"/k2web/pub/view/template.html", true)
+	T["404"] = Minify("text/html", wd+"/k2web/pub/view/404.html", true)
+	T["face"] = Minify("text/html", wd+"/k2web/pub/view/face.html", true)
+	T["sigup"] = Minify("text/html", wd+"/k2web/pub/view/register.html", true)
+	T["k2.js"] = Minify("text/javascript", wd+"/k2web/pub/js/k2.js", false)
+	T["faces.js"] = Minify("text/javascript", wd+"/k2web/pub/js/faces.js", false)
+	T["olivia.js"] = Minify("text/javascript", wd+"/k2web/pub/js/olivia.js", false)
+	T["bundle.js"] = Minify("text/javascript", wd+"/k2web/pub/js/bundle.js", false)
 }
 
-func Minify(mediatype string, from string) Template {
+func Minify(mediatype string, from string, temp bool) Template {
 	file, err := os.Open(from)
 	if err != nil {
 		initializers.Log(fmt.Sprintf("Error opening file!!! %v", from), initializers.Fatal)
@@ -37,13 +43,21 @@ func Minify(mediatype string, from string) Template {
 
 	o, _ := os.Open(from)
 	read := io.Reader(o)
-	f, _ := os.CreateTemp("", "tmpfile-")
+	var to string
+	var f *os.File
+	if temp {
+		f, _ = os.CreateTemp("", "tmpfile-")
+		to = f.Name()
+	} else {
+		to = strings.TrimSuffix(from, filepath.Ext(from)) + ".min" + filepath.Ext(from)
+		f, _ = os.Create(to)
+	}
 	write := io.Writer(f)
-	to := f.Name()
+
 	m := minify.New()
 	//m.AddFunc("text/css", css.Minify)
 	m.AddFunc("text/html", h.Minify)
-	//m.AddFunc("text/javascript", js.Minify)
+	m.AddFunc("text/javascript", js.Minify)
 	//m.AddFunc("image/svg+xml", svg.Minify)
 	//m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), json.Minify)
 	//m.AddFuncRegexp(regexp.MustCompile("[/+]xml$"), xml.Minify)
@@ -54,10 +68,14 @@ func Minify(mediatype string, from string) Template {
 	}
 	o.Close()
 	f.Close()
-	nto := to + filepath.Ext(from)
-	e := os.Rename(to, nto)
-	if e != nil {
-		initializers.Log(e, initializers.Error)
+	if temp {
+		nto := to + filepath.Ext(from)
+		e := os.Rename(to, nto)
+		if e != nil {
+			initializers.Log(e, initializers.Error)
+		}
+		return Template{from, nto}
+	} else {
+		return Template{from, to}
 	}
-	return Template{from, nto}
 }

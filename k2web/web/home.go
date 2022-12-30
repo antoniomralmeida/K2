@@ -33,9 +33,14 @@ func Home(c *fiber.Ctx) error {
 		initializers.Log(err, initializers.Error)
 	}
 	//Render
-	model := template.Must(template.ParseFiles(T["home"].minify))
-	model.Execute(c, ctxweb)
+	t, err := template.ParseFiles(T["home"].minify)
+	if err != nil {
+		initializers.Log(err, initializers.Error)
+		c.SendStatus(fiber.StatusInternalServerError)
+		return c.SendFile(T["404"].minify)
+	}
+	model := template.Must(t, nil)
+	initializers.Log(model.Execute(c, ctxweb), initializers.Error)
 	c.Response().Header.Add("Content-Type", "text/html")
-
 	return c.SendStatus(fiber.StatusOK)
 }
