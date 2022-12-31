@@ -10,9 +10,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/olivia-ai/olivia/user"
-
-	"github.com/olivia-ai/olivia/util"
+	"github.com/antoniomralmeida/k2/olivia/user"
+	"github.com/antoniomralmeida/k2/olivia/util"
 )
 
 // Movie is the serializer from res/datasets/movies.csv

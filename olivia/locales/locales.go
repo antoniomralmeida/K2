@@ -1,19 +1,6 @@
 package locales
 
-import (
-	// Import these packages to trigger the init() function
-	_ "github.com/olivia-ai/olivia/res/locales/ca"
-	_ "github.com/olivia-ai/olivia/res/locales/de"
-	_ "github.com/olivia-ai/olivia/res/locales/el"
-	_ "github.com/olivia-ai/olivia/res/locales/en"
-	_ "github.com/olivia-ai/olivia/res/locales/es"
-	_ "github.com/olivia-ai/olivia/res/locales/fr"
-	_ "github.com/olivia-ai/olivia/res/locales/it"
-	_ "github.com/olivia-ai/olivia/res/locales/nl"
-	_ "github.com/olivia-ai/olivia/res/locales/tr"
-	_ "github.com/olivia-ai/olivia/res/locales/el"
-
-)
+// Import these packages to trigger the init() function
 
 // Locales is the list of locales's tags and names
 // Please check if the language is supported in https://github.com/tebeka/snowball,

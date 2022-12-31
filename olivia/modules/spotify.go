@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/olivia-ai/olivia/util"
-
-	"github.com/olivia-ai/olivia/user"
-
-	"github.com/olivia-ai/olivia/language"
+	"github.com/antoniomralmeida/k2/olivia/language"
+	"github.com/antoniomralmeida/k2/olivia/user"
+	"github.com/antoniomralmeida/k2/olivia/util"
 	"github.com/zmb3/spotify"
 
-	spotifyModule "github.com/olivia-ai/olivia/modules/spotify"
+	spotifyModule "github.com/antoniomralmeida/k2/olivia/modules/spotify"
 )
 
 var (

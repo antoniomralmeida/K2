@@ -2,12 +2,14 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
 
 	"github.com/BurntSushi/toml"
 	"github.com/antoniomralmeida/k2/initializers"
+	"github.com/antoniomralmeida/k2/lib"
 	"github.com/gofiber/fiber/v2"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"golang.org/x/text/language"
@@ -87,7 +89,7 @@ func InitLangs() {
 	}
 }
 
-func TranslateAll(c *fiber.Ctx) {
+func SetContextInfo(c *fiber.Ctx) {
 	if ctxweb.I18n == nil {
 		ctxweb.I18n = make(map[string]string)
 	}
@@ -105,6 +107,10 @@ func TranslateAll(c *fiber.Ctx) {
 			}
 		}
 	}
+	ctxweb.JwtToken = c.Cookies("jwt")
+	keys := lib.DecodeToken(ctxweb.JwtToken)
+	ctxweb.User = fmt.Sprintf("%s", keys["name"])
+	ctxweb.UserId = fmt.Sprintf("%s", keys["user_id"])
 }
 
 func translateID(id string, c *fiber.Ctx) string {

@@ -16,7 +16,6 @@ require (
 	github.com/mattn/go-tty v0.0.4
 	github.com/montanaflynn/stats v0.6.6
 	github.com/nicksnyder/go-i18n/v2 v2.2.1
-	github.com/olivia-ai/olivia v0.0.0-20210717200133-c4bfc475e985
 	github.com/olivia-ai/olivia-kit-go v0.0.0-20210101112429-aea9c47282ca
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/rafaeljesus/parallel-fn v0.0.0-20180101203446-ef08331b38ac
@@ -40,6 +39,7 @@ require (
 
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
+	github.com/fatih/color v1.13.0 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect

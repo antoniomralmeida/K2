@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/olivia-ai/olivia/util"
+	"github.com/antoniomralmeida/k2/olivia/util"
 )
 
 // Country is the serializer of the countries.json file in the res folder
@@ -21,7 +21,7 @@ var countries = SerializeCountries()
 
 // SerializeCountries returns a list of countries, serialized from `res/datasets/countries.json`
 func SerializeCountries() (countries []Country) {
-	err := json.Unmarshal(util.ReadFile("res/datasets/countries.json"), &countries)
+	err := json.Unmarshal(util.ReadFile("./olivia/res/datasets/countries.json"), &countries)
 	if err != nil {
 		fmt.Println(err)
 	}

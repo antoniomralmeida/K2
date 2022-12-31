@@ -1,6 +1,8 @@
 package models
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type Workspace struct {
 	Workspace       string `json:"Workspace"`
@@ -39,6 +41,8 @@ type KBUser struct {
 
 type Context struct {
 	I18n              map[string]string
+	JwtToken          string
+	UserId            string
 	User              string
 	ApiKernel         string
 	Avatar            string

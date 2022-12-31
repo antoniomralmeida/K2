@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/antoniomralmeida/k2/olivia/analysis"
+	"github.com/antoniomralmeida/k2/olivia/network"
+	"github.com/antoniomralmeida/k2/olivia/util"
 	"github.com/gookit/color"
-	"github.com/olivia-ai/olivia/analysis"
-	"github.com/olivia-ai/olivia/network"
-	"github.com/olivia-ai/olivia/util"
 )
 
 // TrainData returns the inputs and outputs for the neural network
@@ -33,7 +33,7 @@ func TrainData(locale string) (inputs, outputs [][]float64) {
 // trained from TrainData() inputs and targets.
 func CreateNeuralNetwork(locale string, ignoreTrainingFile bool) (neuralNetwork network.Network) {
 	// Decide if the network is created by the save or is a new one
-	saveFile := "res/locales/" + locale + "/training.json"
+	saveFile := "./olivia/res/locales/" + locale + "/training.json"
 
 	_, err := os.Open(saveFile)
 	// Train the model if there is no training file

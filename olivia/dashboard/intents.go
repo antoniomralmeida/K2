@@ -6,12 +6,11 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/olivia-ai/olivia/util"
-
+	"github.com/antoniomralmeida/k2/olivia/analysis"
+	"github.com/antoniomralmeida/k2/olivia/util"
 	"github.com/gorilla/mux"
 
 	"github.com/gookit/color"
-	"github.com/olivia-ai/olivia/analysis"
 )
 
 // An Error is what the api replies when an error occurs
@@ -32,7 +31,7 @@ func WriteIntents(locale string, intents []analysis.Intent) {
 	bytes, _ := json.MarshalIndent(intents, "", "  ")
 
 	// Write it to the file
-	file, err := os.Create("res/locales/" + locale + "/intents.json")
+	file, err := os.Create("./olivia/res/locales/" + locale + "/intents.json")
 	if err != nil {
 		panic(err)
 	}

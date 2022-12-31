@@ -5,9 +5,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/antoniomralmeida/k2/olivia/network"
 	"github.com/gorilla/mux"
-
-	"github.com/olivia-ai/olivia/network"
 )
 
 // Dashboard contains the data sent for the dashboard

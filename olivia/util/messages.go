@@ -18,7 +18,7 @@ var messages = map[string][]Message{}
 // SerializeMessages serializes the content of `res/datasets/messages.json` in JSON
 func SerializeMessages(locale string) []Message {
 	var currentMessages []Message
-	err := json.Unmarshal(ReadFile("res/locales/"+locale+"/messages.json"), &currentMessages)
+	err := json.Unmarshal(ReadFile("./olivia/res/locales/"+locale+"/messages.json"), &currentMessages)
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -12,11 +12,17 @@ func GetFace(c *fiber.Ctx) error {
 		return c.Redirect(c.OriginalURL() + "?avatar=" + ctxweb.Avatar)
 	}
 	//Context
-	TranslateAll(c)
+	SetContextInfo(c)
 
-	model := template.Must(template.ParseFiles(T["face"].minify))
+	//Render
+	t, err := template.ParseFiles(T["face"].minify)
+	if err != nil {
+		initializers.Log(err, initializers.Error)
+		c.SendStatus(fiber.StatusInternalServerError)
+		return c.SendFile(T["404"].minify)
+	}
+	model := template.Must(t, nil)
 	initializers.Log(model.Execute(c, ctxweb), initializers.Error)
 	c.Response().Header.Add("Content-Type", "text/html")
-
 	return c.SendStatus(fiber.StatusOK)
 }

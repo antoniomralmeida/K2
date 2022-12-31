@@ -7,9 +7,7 @@ go build  -o ./bin/olivia.exe ./olivia/main.go
 go build  -o ./bin/k2.exe k2.go
 del log\*.json
 del log\*.log
-cd olivia
-start ..\bin\olivia.exe
-cd ..
+start .\bin\olivia.exe
 start .\bin\k2web.exe
 .\bin\k2.exe
 taskkill /im  olivia.exe /f

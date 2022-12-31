@@ -5,10 +5,9 @@ import (
 	"math/rand"
 	"strings"
 
-	"github.com/olivia-ai/olivia/user"
-	"github.com/olivia-ai/olivia/util"
-
-	"github.com/olivia-ai/olivia/language"
+	"github.com/antoniomralmeida/k2/olivia/language"
+	"github.com/antoniomralmeida/k2/olivia/user"
+	"github.com/antoniomralmeida/k2/olivia/util"
 )
 
 var (

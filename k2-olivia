@@ -10,8 +10,6 @@ COPY ./olivia/res/ ./olivia/res/
 RUN chmod -R 777 .
 EXPOSE 8090
 
-CMD "cd olivia"
-
 ENTRYPOINT ["sh", "-c", "./bin/olivia.so"]
 
 

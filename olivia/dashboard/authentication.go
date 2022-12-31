@@ -5,14 +5,13 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/olivia-ai/olivia/util"
-
+	"github.com/antoniomralmeida/k2/olivia/util"
 	"github.com/gookit/color"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-var fileName = "res/authentication.txt"
+var fileName = "./olivia/res/authentication.txt"
 
 var authenticationHash []byte
 

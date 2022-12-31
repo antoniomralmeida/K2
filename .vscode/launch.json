@@ -4,12 +4,12 @@
     // Para obter mais informações, acesse: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        {
+     { 
             "name": "Launch Package",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "./k2web/k2web.go"
-        }
-    ]
+            "program": "./olivia/main.go"
+    }
+]
 }

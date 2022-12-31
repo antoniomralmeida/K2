@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"sort"
 
-	"github.com/olivia-ai/olivia/modules"
-	"github.com/olivia-ai/olivia/util"
+	"github.com/antoniomralmeida/k2/olivia/modules"
+	"github.com/antoniomralmeida/k2/olivia/util"
 )
 
 var intents = map[string][]Intent{}
@@ -37,7 +37,7 @@ func GetIntents(locale string) []Intent {
 
 // SerializeIntents returns a list of intents retrieved from the given intents file
 func SerializeIntents(locale string) (_intents []Intent) {
-	err := json.Unmarshal(util.ReadFile("res/locales/"+locale+"/intents.json"), &_intents)
+	err := json.Unmarshal(util.ReadFile("./olivia/res/locales/"+locale+"/intents.json"), &_intents)
 	if err != nil {
 		panic(err)
 	}

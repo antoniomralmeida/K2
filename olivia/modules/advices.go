@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/olivia-ai/olivia/util"
+	"github.com/antoniomralmeida/k2/olivia/util"
 )
 
 const adviceURL = "https://api.adviceslip.com/advice"

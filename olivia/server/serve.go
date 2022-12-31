@@ -9,10 +9,11 @@ import (
 	"github.com/antoniomralmeida/k2/olivia/analysis"
 	"github.com/antoniomralmeida/k2/olivia/dashboard"
 	"github.com/antoniomralmeida/k2/olivia/modules/spotify"
+	"github.com/antoniomralmeida/k2/olivia/network"
 	"github.com/antoniomralmeida/k2/olivia/training"
 	"github.com/gookit/color"
 	"github.com/gorilla/mux"
-	"github.com/olivia-ai/olivia/network"
+
 	gocache "github.com/patrickmn/go-cache"
 )
 

@@ -2,11 +2,11 @@ package start
 
 import (
 	"fmt"
-	"github.com/olivia-ai/olivia/util"
 	"strings"
 	"time"
 
-	"github.com/olivia-ai/olivia/user"
+	"github.com/antoniomralmeida/k2/olivia/user"
+	"github.com/antoniomralmeida/k2/olivia/util"
 )
 
 func init() {

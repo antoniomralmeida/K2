@@ -20,10 +20,8 @@ func LoginForm(c *fiber.Ctx) error {
 		return c.Redirect(c.OriginalURL() + "?avatar=" + ctxweb.Avatar)
 	}
 	//Context
-	TranslateAll(c)
+	SetContextInfo(c)
 	//TODO: Incluir reconhecimento facil no login
-	//Context
-	TranslateAll(c)
 	//Render
 	t, err := template.ParseFiles(T["login"].minify)
 	if err != nil {
@@ -63,7 +61,7 @@ func PostLogin(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "non-validated user")
 	}
 
-	token, _, err := lib.CreateJWTToken(user.Id)
+	token, _, err := lib.CreateJWTToken(user.Id, user.Name)
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "error create token")
 	}
@@ -102,7 +100,7 @@ func SigupForm(c *fiber.Ctx) error {
 		return c.Redirect(c.OriginalURL() + "?avatar=" + ctxweb.Avatar)
 	}
 	//Context
-	TranslateAll(c)
+	SetContextInfo(c)
 	//Render
 	t, err := template.ParseFiles(T["sigup"].minify)
 	if err != nil {

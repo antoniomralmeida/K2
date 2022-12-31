@@ -208,17 +208,30 @@ func GeneratePassword(passwordLength, minSpecialChar, minNum, minUpperCase int) 
 
 const SignedKey = "uzUWld6Y0Ad6yUF8GU2gJGg8Q4wZaNNv"
 
-func CreateJWTToken(Id primitive.ObjectID) (string, int64, error) {
+func CreateJWTToken(id primitive.ObjectID, name string) (string, int64, error) {
 	exp := time.Now().Add(time.Minute * 30).Unix()
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
-	claims["user_id"] = Id.Hex()
+	claims["user_id"] = id.Hex()
+	claims["name"] = name
 	claims["exp"] = exp
 	t, err := token.SignedString([]byte(SignedKey))
 	if err != nil {
 		return "", 0, err
 	}
 	return t, exp, nil
+}
+
+func DecodeToken(jwtcookie string) map[string]interface{} {
+
+	claims := jwt.MapClaims{}
+	_, err := jwt.ParseWithClaims(jwtcookie, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(SignedKey), nil
+	})
+	if err != nil {
+		return nil
+	}
+	return claims
 }
 
 func ValidateToken(jwtcookie string) (err error) {

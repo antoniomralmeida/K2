@@ -140,6 +140,8 @@ function PostLogin() {
 }
 
 function validateSigupFrom() {
+
+    //TODO: fazer igual a PostLogin() 
     var errlabel = document.getElementById('errlabel')
     const pwd = document.getElementById("password");
     const pwd2 = document.getElementById("password2");

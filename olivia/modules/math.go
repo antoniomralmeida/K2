@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/olivia-ai/olivia/language"
-	"github.com/olivia-ai/olivia/util"
+	"github.com/antoniomralmeida/k2/olivia/language"
+	"github.com/antoniomralmeida/k2/olivia/util"
 	"github.com/soudy/mathcat"
 )
 
