@@ -148,7 +148,8 @@ func ParseAcceptLanguage(lang, acptLang string) []LangQ {
 			qp := strings.Split(langQ[1], "=")
 			q, err := strconv.ParseFloat(qp[1], 64)
 			if err != nil {
-				panic(err)
+				initializers.Log(err, initializers.Fatal)
+
 			}
 			lq := LangQ{langQ[0], q}
 			lqs = append(lqs, lq)

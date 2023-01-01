@@ -145,6 +145,7 @@ var daysOfWeek = map[string]time.Weekday{
 
 func init() {
 	// Register the rules
+	fmt.Println("init() rulus.go")
 	RegisterRule(RuleToday)
 	RegisterRule(RuleTomorrow)
 	RegisterRule(RuleDayOfWeek)

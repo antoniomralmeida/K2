@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"reflect"
 
+	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/olivia/analysis"
 	"github.com/antoniomralmeida/k2/olivia/locales"
 	"github.com/antoniomralmeida/k2/olivia/modules/start"
@@ -79,7 +80,7 @@ func SocketHandle(w http.ResponseWriter, r *http.Request) {
 
 				bytes, err := json.Marshal(response)
 				if err != nil {
-					panic(err)
+					initializers.Log(err, initializers.Fatal)
 				}
 
 				if err = conn.WriteMessage(msgType, bytes); err != nil {
@@ -126,9 +127,6 @@ func Reply(request RequestMessage) []byte {
 	}
 
 	bytes, err := json.Marshal(response)
-	if err != nil {
-		panic(err)
-	}
-
+	initializers.Log(err, initializers.Error)
 	return bytes
 }

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/olivia/analysis"
 	"github.com/antoniomralmeida/k2/olivia/dashboard"
 	"github.com/antoniomralmeida/k2/olivia/modules/spotify"
@@ -47,9 +48,7 @@ func Serve(_neuralNetworks map[string]network.Network, port string) {
 
 	// Serves the chat
 	err := http.ListenAndServe(":"+port, router)
-	if err != nil {
-		panic(err)
-	}
+	initializers.Log(err, initializers.Fatal)
 }
 
 // Train is the route to re-train the neural network

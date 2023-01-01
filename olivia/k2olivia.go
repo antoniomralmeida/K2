@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"strings"
@@ -10,11 +9,8 @@ import (
 	"github.com/antoniomralmeida/k2/olivia/dashboard"
 	"github.com/antoniomralmeida/k2/olivia/locales"
 	"github.com/antoniomralmeida/k2/olivia/network"
-	"github.com/antoniomralmeida/k2/olivia/server"
-	"github.com/antoniomralmeida/k2/olivia/training"
 	"github.com/antoniomralmeida/k2/olivia/util"
 	"github.com/antoniomralmeida/k2/version"
-
 	"github.com/gookit/color"
 )
 
@@ -29,13 +25,8 @@ func init() {
 }
 
 func main() {
-	port := flag.String("port", "8090", "The port for the API and WebSocket.")
-	localesFlag := flag.String("re-train", "", "The locale(s) to re-train.")
-	flag.Parse()
-
-	// If the locales flag isn't empty then retrain the given models
-	if *localesFlag != "" {
-		reTrainModels(*localesFlag)
+	for _, locale := range locales.Locales {
+		reTrainModels(locale.Tag)
 	}
 
 	// Print the Olivia ascii text
@@ -43,9 +34,10 @@ func main() {
 	fmt.Println(color.FgLightGreen.Render(oliviaASCII))
 
 	// Create the authentication token
+	fmt.Println("dashboard.Authenticate()")
 	dashboard.Authenticate()
 
-	for _, locale := range locales.Locales {
+	/*for _, locale := range locales.Locales {
 		util.SerializeMessages(locale.Tag)
 
 		neuralNetworks[locale.Tag] = training.CreateNeuralNetwork(
@@ -53,14 +45,10 @@ func main() {
 			false,
 		)
 	}
-
-	// Get port from environment variables if there is
-	if os.Getenv("OLIVIA_SERVER_PORT") != "" {
-		*port = os.Getenv("OLIVIA_SERVER_PORT")
-	}
+	*/
 
 	// Serves the server
-	server.Serve(neuralNetworks, *port)
+	//server.Serve(neuralNetworks, os.Getenv("OLIVIA_SERVER_PORT"))
 }
 
 // reTrainModels retrain the given locales
@@ -68,11 +56,6 @@ func reTrainModels(localesFlag string) {
 	// Iterate locales by separating them by comma
 	for _, localeFlag := range strings.Split(localesFlag, ",") {
 		path := fmt.Sprintf("./olivia/res/locales/%s/training.json", localeFlag)
-		err := os.Remove(path)
-
-		if err != nil {
-			fmt.Printf("Cannot re-train %s model.", localeFlag)
-			return
-		}
+		os.Remove(path)
 	}
 }

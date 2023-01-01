@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"sort"
 
+	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/olivia/modules"
 	"github.com/antoniomralmeida/k2/olivia/util"
 )
@@ -39,7 +40,7 @@ func GetIntents(locale string) []Intent {
 func SerializeIntents(locale string) (_intents []Intent) {
 	err := json.Unmarshal(util.ReadFile("./olivia/res/locales/"+locale+"/intents.json"), &_intents)
 	if err != nil {
-		panic(err)
+		initializers.Log(err, initializers.Fatal)
 	}
 
 	CacheIntents(locale, _intents)

@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/olivia/locales"
 	"github.com/gookit/color"
 	"gopkg.in/cheggaaa/pb.v1"
@@ -29,7 +30,8 @@ type Network struct {
 func LoadNetwork(fileName string) *Network {
 	inF, err := os.Open(fileName)
 	if err != nil {
-		panic("Failed to load " + fileName + ".")
+		initializers.Log("Failed to load "+fileName+".", initializers.Fatal)
+
 	}
 	defer inF.Close()
 
@@ -37,7 +39,7 @@ func LoadNetwork(fileName string) *Network {
 	neuralNetwork := &Network{}
 	err = decoder.Decode(neuralNetwork)
 	if err != nil {
-		panic(err)
+		initializers.Log(err, initializers.Fatal)
 	}
 
 	return neuralNetwork
@@ -88,14 +90,15 @@ func CreateNetwork(locale string, rate float64, input, output Matrix, hiddensNod
 func (network Network) Save(fileName string) {
 	outF, err := os.OpenFile(fileName, os.O_CREATE|os.O_RDWR, 0777)
 	if err != nil {
-		panic("Failed to save the network to " + fileName + ".")
+		initializers.Log("Failed to save the network to "+fileName+".", initializers.Fatal)
 	}
 	defer outF.Close()
 
 	encoder := json.NewEncoder(outF)
 	err = encoder.Encode(network)
 	if err != nil {
-		panic(err)
+		initializers.Log(err, initializers.Fatal)
+
 	}
 }
 

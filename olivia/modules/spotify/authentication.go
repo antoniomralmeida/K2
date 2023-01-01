@@ -22,6 +22,8 @@ var (
 )
 
 func init() {
+	fmt.Println("init() authentication.go")
+
 	// Set default value of the callback url
 	if callbackURL == "" {
 		callbackURL = "https://olivia-api.herokuapp.com/callback"

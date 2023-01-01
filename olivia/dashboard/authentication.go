@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/olivia/util"
 	"github.com/gookit/color"
 
@@ -39,15 +40,14 @@ func ChecksToken(token string) bool {
 // AuthenticationFileExists checks if the authentication file exists and return the condition
 func AuthenticationFileExists() bool {
 	_, err := os.Open(fileName)
+	fmt.Println(fileName, err)
 	return err == nil
 }
 
 // SaveHash saves the given hash to the authentication file
 func SaveHash(hash string) {
 	file, err := os.Create(fileName)
-	if err != nil {
-		panic(err)
-	}
+	initializers.Log(err, initializers.Fatal)
 
 	defer file.Close()
 
@@ -57,7 +57,9 @@ func SaveHash(hash string) {
 // Authenticate checks if the authentication file exists and if not it generates the file with a new token
 func Authenticate() {
 	// Do nothing if the authentication file exists
+	fmt.Println("// Do nothing if the authentication file exists")
 	if AuthenticationFileExists() {
+
 		authenticationHash = util.ReadFile(fileName)
 		return
 	}

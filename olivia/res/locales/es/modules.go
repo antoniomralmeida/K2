@@ -1,10 +1,13 @@
 package es
 
 import (
+	"fmt"
+
 	"github.com/antoniomralmeida/k2/olivia/modules"
 )
 
 func init() {
+	fmt.Println("init() modules.go")
 	modules.RegisterModules("es", []modules.Module{
 		// AREA
 		// For modules related to countries, please add the translations of the countries' names

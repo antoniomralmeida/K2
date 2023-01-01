@@ -2,6 +2,8 @@ package network
 
 import (
 	"math/rand"
+
+	"github.com/antoniomralmeida/k2/initializers"
 )
 
 // Matrix is an alias for [][]float64
@@ -71,7 +73,7 @@ func ApplyRate(matrix Matrix, rate float64) Matrix {
 // DotProduct returns a matrix which is the result of the dot product between matrix and matrix2
 func DotProduct(matrix, matrix2 Matrix) Matrix {
 	if Columns(matrix) != Rows(matrix2) {
-		panic("Cannot make dot product between these two matrix.")
+		initializers.Log("Cannot make dot product between these two matrix.", initializers.Fatal)
 	}
 
 	return ApplyFunctionWithIndex(
@@ -137,6 +139,6 @@ func Transpose(matrix Matrix) (resultMatrix Matrix) {
 // ErrorNotSameSize panics if the matrices do not have the same dimension
 func ErrorNotSameSize(matrix, matrix2 Matrix) {
 	if Rows(matrix) != Rows(matrix2) && Columns(matrix) != Columns(matrix2) {
-		panic("These two matrices must have the same dimension.")
+		initializers.Log("These two matrices must have the same dimension.", initializers.Fatal)
 	}
 }

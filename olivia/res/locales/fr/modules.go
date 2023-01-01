@@ -9,6 +9,7 @@ import (
 )
 
 func init() {
+	fmt.Println("init() modules.go")
 	modules.RegisterModules("fr", []modules.Module{
 		// AREA
 		// For modules related to countries, please add the translations of the countries' names

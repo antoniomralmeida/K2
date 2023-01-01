@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/olivia/analysis"
 	"github.com/antoniomralmeida/k2/olivia/util"
 	"github.com/gorilla/mux"
@@ -33,7 +34,8 @@ func WriteIntents(locale string, intents []analysis.Intent) {
 	// Write it to the file
 	file, err := os.Create("./olivia/res/locales/" + locale + "/intents.json")
 	if err != nil {
-		panic(err)
+
+		initializers.Log(err, initializers.Fatal)
 	}
 
 	defer file.Close()

@@ -10,6 +10,8 @@ import (
 )
 
 func init() {
+	fmt.Println("init() reminders.go")
+
 	RegisterModule(Module{
 		Action: CheckReminders,
 	})
