@@ -17,7 +17,7 @@ func (h *KBHistory) Persist() error {
 		_, err := collection.InsertOne(ctx, h)
 		return err
 	} else {
-		_, err := collection.UpdateOne(ctx, bson.D{{Key: "_id", Value: h.Id}}, h)
+		_, err := collection.ReplaceOne(ctx, bson.D{{Key: "_id", Value: h.Id}}, h)
 		return err
 	}
 }

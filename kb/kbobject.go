@@ -15,7 +15,7 @@ func (o *KBObject) Persist() error {
 		_, err := collection.InsertOne(ctx, o)
 		return err
 	} else {
-		_, err := collection.UpdateOne(ctx, bson.D{{Key: "_id", Value: o.Id}}, o)
+		_, err := collection.ReplaceOne(ctx, bson.D{{Key: "_id", Value: o.Id}}, o)
 		return err
 	}
 }

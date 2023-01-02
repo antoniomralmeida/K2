@@ -17,7 +17,7 @@ func (user *KBUser) Persist() error {
 		_, err := collection.InsertOne(ctx, user)
 		return err
 	} else {
-		_, err := collection.UpdateOne(ctx, bson.D{{Key: "_id", Value: user.Id}}, user)
+		_, err := collection.ReplaceOne(ctx, bson.D{{Key: "_id", Value: user.Id}}, user)
 		return err
 	}
 }

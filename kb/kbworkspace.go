@@ -15,7 +15,7 @@ func (w *KBWorkspace) Persist() error {
 		_, err := collection.InsertOne(ctx, w)
 		return err
 	} else {
-		_, err := collection.UpdateOne(ctx, bson.D{{Key: "_id", Value: w.Id}}, w)
+		_, err := collection.ReplaceOne(ctx, bson.D{{Key: "_id", Value: w.Id}}, w)
 		return err
 	}
 }

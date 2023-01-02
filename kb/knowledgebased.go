@@ -206,7 +206,7 @@ func (kb *KnowledgeBased) Persist() error {
 		return err
 	} else {
 
-		_, err := collection.UpdateOne(ctx, bson.D{{Key: "_id", Value: kb.Id}}, kb)
+		_, err := collection.ReplaceOne(ctx, bson.D{{Key: "_id", Value: kb.Id}}, kb)
 		return err
 	}
 }

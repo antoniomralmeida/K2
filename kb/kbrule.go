@@ -29,7 +29,7 @@ func (r *KBRule) Persist() error {
 		_, err := collection.InsertOne(ctx, r)
 		return err
 	} else {
-		_, err := collection.UpdateOne(ctx, bson.D{{Key: "_id", Value: r.Id}}, r)
+		_, err := collection.ReplaceOne(ctx, bson.D{{Key: "_id", Value: r.Id}}, r)
 		return err
 	}
 }
