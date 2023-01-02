@@ -7,10 +7,10 @@ import (
 
 	"github.com/antoniomralmeida/k2/apikernel"
 	"github.com/antoniomralmeida/k2/initializers"
+	"github.com/antoniomralmeida/k2/k2olivia/util"
 	"github.com/antoniomralmeida/k2/kb"
 	"github.com/antoniomralmeida/k2/lib"
 	"github.com/antoniomralmeida/k2/models"
-	"github.com/antoniomralmeida/k2/olivia/util"
 	"github.com/gookit/color"
 
 	"github.com/antoniomralmeida/k2/version"

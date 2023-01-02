@@ -19,7 +19,7 @@ func Run(wg *sync.WaitGroup) {
 	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 System API-KERNEL ", v.Version, "[", v.Build, "]"),
 		DisableStartupMessage: true,
 		Prefork:               false})
-	wd, _ := os.Getwd()
+	wd := initializers.GetHomeDir()
 	f := wd + os.Getenv("LOGPATH") + "k2apihttp." + time.Now().Format(lib.YYYYMMDD) + ".log"
 	file, err := os.OpenFile(f, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {

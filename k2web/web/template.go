@@ -21,7 +21,8 @@ type Template struct {
 var T = make(map[string]Template)
 
 func InitTemplates() {
-	wd, _ := os.Getwd()
+
+	wd := initializers.GetHomeDir()
 	T["login"] = Minify("text/html", wd+"/k2web/pub/view/login.html", true)
 	T["home"] = Minify("text/html", wd+"/k2web/pub/view/template.html", true)
 	T["404"] = Minify("text/html", wd+"/k2web/pub/view/404.html", true)

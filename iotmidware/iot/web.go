@@ -18,7 +18,8 @@ func Run() {
 	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 IoT MidWare ", v.Version, "[", v.Build, "]"),
 		DisableStartupMessage: true,
 		Prefork:               false})
-	wd, _ := os.Getwd()
+
+	wd := initializers.GetHomeDir()
 	f := wd + os.Getenv("LOGPATH") + "k2iothttp." + time.Now().Format(lib.YYYYMMDD) + ".log"
 	file, err := os.OpenFile(f, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
