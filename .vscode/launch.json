@@ -16,7 +16,8 @@
             "console": "integratedTerminal",
             "program": "${workspaceFolder}/k2olivia/k2olivia.go",
             "showLog": false,
-            "cwd": "${workspaceFolder}/k2olivia",
+            "cwd": "${workspaceFolder}",
+            "stopOnEntry": false
             
     }
 ]

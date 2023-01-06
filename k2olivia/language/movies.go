@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/k2olivia/user"
 	"github.com/antoniomralmeida/k2/k2olivia/util"
 )
@@ -62,10 +63,10 @@ var (
 
 // SerializeMovies retrieves the content of res/datasets/movies.csv and serialize it
 func SerializeMovies() (movies []Movie) {
-	path := "res/datasets/movies.csv"
+	path := initializers.GetHomeDir() + "/k2olivia/res/datasets/movies.csv"
 	bytes, err := os.Open(path)
 	if err != nil {
-		bytes, _ = os.Open("../" + path)
+		initializers.Log(err, initializers.Fatal)
 	}
 
 	reader := csv.NewReader(bufio.NewReader(bytes))

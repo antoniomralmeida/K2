@@ -9,7 +9,6 @@ import (
 	"github.com/antoniomralmeida/k2/k2olivia/locales"
 	"github.com/antoniomralmeida/k2/k2olivia/network"
 	"github.com/antoniomralmeida/k2/k2olivia/server"
-	"github.com/antoniomralmeida/k2/k2olivia/training"
 	"github.com/antoniomralmeida/k2/k2olivia/util"
 	"github.com/antoniomralmeida/k2/version"
 	"github.com/gookit/color"
@@ -36,10 +35,9 @@ func main() {
 	// Create the authentication token
 
 	//dashboard.Authenticate()
-	fmt.Println(locales.Locales)
 	for _, locale := range locales.Locales {
 		util.SerializeMessages(locale.Tag)
-		neuralNetworks[locale.Tag] = training.CreateNeuralNetwork(locale.Tag, false)
+		//neuralNetworks[locale.Tag] = training.CreateNeuralNetwork(locale.Tag, false)
 	}
 
 	// Serves the server

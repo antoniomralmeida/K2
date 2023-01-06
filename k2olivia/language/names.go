@@ -3,6 +3,7 @@ package language
 import (
 	"strings"
 
+	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/k2olivia/util"
 )
 
@@ -10,7 +11,7 @@ var names = SerializeNames()
 
 // SerializeNames retrieves all the names from res/datasets/names.txt and returns an array of names
 func SerializeNames() (names []string) {
-	namesFile := string(util.ReadFile("res/datasets/names.txt"))
+	namesFile := string(util.ReadFile(initializers.GetHomeDir() + "/k2olivia/res/datasets/names.txt"))
 
 	// Iterate each line of the file
 	names = append(names, strings.Split(strings.TrimSuffix(namesFile, "\n"), "\n")...)
