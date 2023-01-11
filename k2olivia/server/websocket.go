@@ -2,7 +2,6 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"reflect"
 
@@ -42,18 +41,15 @@ type ResponseMessage struct {
 // SocketHandle manages the entry connections and reply with the neural network
 func SocketHandle(w http.ResponseWriter, r *http.Request) {
 	conn, _ := upgrader.Upgrade(w, r, nil)
-	fmt.Println(color.FgGreen.Render("A new connection has been opened"))
+	initializers.Log(color.FgGreen.Render("A new connection has been opened"), initializers.Info)
 
 	for {
 		// Read message from browser
-
-		fmt.Println("conn.ReadMessage")
 		msgType, msg, err := conn.ReadMessage()
 		if err != nil {
 			break
 		}
 
-		fmt.Println("json.Unmarshal")
 		// Unmarshal the json content of the message
 		var request RequestMessage
 		if err = json.Unmarshal(msg, &request); err != nil {

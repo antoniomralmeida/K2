@@ -1,28 +1,30 @@
 package iot
 
 import (
+	"fmt"
+
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/gofiber/fiber/v2"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/kamva/mgm/v3"
 )
 
 func ReadGate(c *fiber.Ctx) error {
 	// Read the param noteId
 	id := c.Params("id")
+	fmt.Println(id)
 	return c.SendStatus(fiber.StatusOK)
 }
 
 func WriteGate(c *fiber.Ctx) error {
 	id := c.Params("id")
+	fmt.Println(id)
 	return c.SendStatus(fiber.StatusOK)
 }
 
 func NewGate(c *fiber.Ctx) error {
-	gate := Gate{}
+	gate := new(Gate)
 	c.BodyParser(gate)
-	gate.Id = primitive.NewObjectID()
-	ctx, collection := initializers.GetCollection("K2Gate")
-	_, err := collection.InsertOne(ctx, gate)
+	err := mgm.Coll(gate).Create(gate)
 	if err != nil {
 		initializers.Log(err, initializers.Error)
 		return c.SendStatus(fiber.StatusBadGateway)

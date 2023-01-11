@@ -40,8 +40,8 @@ type I18n_Messages struct {
 	I18n_register  string `json:"i18n_register"`
 	I18n_already   string `json:"i18n_already"`
 	I18n_forgot    string `json:"i18n_forgot"`
-	I18n_send      string `json:"i18n_forgot"`
-	I18n_cancel    string `json:"i18n_forgot"`
+	I18n_send      string `json:"i18n_send"`
+	I18n_cancel    string `json:"i18n_cancel"`
 }
 
 var i18n_en = I18n_Messages{

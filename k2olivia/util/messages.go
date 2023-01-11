@@ -2,7 +2,6 @@ package util
 
 import (
 	"encoding/json"
-	"fmt"
 	"math/rand"
 	"time"
 
@@ -23,7 +22,7 @@ func SerializeMessages(locale string) []Message {
 	wd := initializers.GetHomeDir()
 	err := json.Unmarshal(ReadFile(wd+"/k2olivia/res/locales/"+locale+"/messages.json"), &currentMessages)
 	if err != nil {
-		fmt.Println(err)
+		initializers.Log(err, initializers.Error)
 	}
 
 	messages[locale] = currentMessages

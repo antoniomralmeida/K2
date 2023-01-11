@@ -1,8 +1,6 @@
 package iot
 
-import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
-)
+import "github.com/kamva/mgm/v3"
 
 type Protocol string
 
@@ -33,11 +31,11 @@ const (
 )
 
 type Gate struct {
-	Id       primitive.ObjectID `bson:"_id" json:"id"`
-	Protocol Protocol           `bson:"protocol" json:"protocol"`
-	Access   Access             `bson:"access" json:"access"`
-	Url      string             `bson:"url" json:"url"`
-	Options  string             `bson:"options" json"options"`
+	mgm.DefaultModel `json:",inline" bson:",inline"`
+	Protocol         Protocol `bson:"protocol" json:"protocol"`
+	Access           Access   `bson:"access" json:"access"`
+	Url              string   `bson:"url" json:"url"`
+	Options          string   `bson:"options" json:"options"`
 }
 
 func (me Protocol) String() string {

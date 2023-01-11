@@ -2,8 +2,10 @@ package kb
 
 import (
 	"encoding/json"
+	"errors"
 
 	"github.com/antoniomralmeida/k2/initializers"
+	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -11,13 +13,19 @@ import (
 )
 
 func (h *KBHistory) Persist() error {
-	ctx, collection := initializers.GetCollection("KBHistory")
-	if h.Id.IsZero() {
-		h.Id = primitive.NewObjectID()
-		_, err := collection.InsertOne(ctx, h)
+	if h.ID.IsZero() {
+		err := mgm.Coll(h).Create(h)
 		return err
 	} else {
-		_, err := collection.ReplaceOne(ctx, bson.D{{Key: "_id", Value: h.Id}}, h)
+		db_doc := new(KBHistory)
+		err := mgm.Coll(h).FindByID(h.ID, db_doc)
+		if err != nil {
+			return err
+		}
+		if h.UpdatedAt != db_doc.UpdatedAt {
+			return errors.New("Old document!")
+		}
+		err = mgm.Coll(h).Update(h)
 		return err
 	}
 }
@@ -30,17 +38,17 @@ func (h *KBHistory) ClearingHistory(history int) error {
 	}
 
 	Id := h.Attribute
-	ctx, collection := initializers.GetCollection("KBHistory")
+	collection := mgm.Coll(h)
 	for {
 		matchStage := bson.D{{Key: "attribute_id", Value: Id}}
 		groupStage := bson.D{{Key: "$group", Value: bson.D{{Key: "_id", Value: "$attribute_id"}, {Key: "count", Value: bson.D{{Key: "$sum", Value: 1}}}}}}
-		ret, err := collection.Aggregate(ctx, mongo.Pipeline{matchStage, groupStage})
+		ret, err := collection.Aggregate(mgm.Ctx(), mongo.Pipeline{matchStage, groupStage})
 		initializers.Log(err, initializers.Error)
 		if err != nil {
 			return nil
 		}
 		results := []PipeCount{}
-		err = ret.All(ctx, &results)
+		err = ret.All(mgm.Ctx(), &results)
 		initializers.Log(err, initializers.Error)
 		if err != nil {
 			return nil
@@ -49,9 +57,9 @@ func (h *KBHistory) ClearingHistory(history int) error {
 			return nil
 		}
 		todel := KBHistory{}
-		collection.FindOne(ctx, bson.D{{Key: "attribute_id", Value: Id}}, options.FindOne().SetSort(bson.D{{Key: "when", Value: 1}})).Decode(&todel)
-		if !todel.Id.IsZero() {
-			collection.DeleteOne(ctx, bson.D{{Key: "_id", Value: todel.Id}})
+		collection.FindOne(mgm.Ctx(), bson.D{{Key: "attribute_id", Value: Id}}, options.FindOne().SetSort(bson.D{{Key: "when", Value: 1}})).Decode(&todel)
+		if !todel.ID.IsZero() {
+			collection.DeleteOne(mgm.Ctx(), bson.D{{Key: "_id", Value: todel.ID}})
 		} else {
 			return nil
 		}
@@ -59,8 +67,8 @@ func (h *KBHistory) ClearingHistory(history int) error {
 }
 
 func (h *KBHistory) FindLast(filter bson.D) error {
-	ctx, collection := initializers.GetCollection("KBHistory")
-	ret := collection.FindOne(ctx, filter, options.FindOne().SetSort(bson.D{{Key: "when", Value: -1}}))
+	collection := mgm.Coll(h)
+	ret := collection.FindOne(mgm.Ctx(), filter, options.FindOne().SetSort(bson.D{{Key: "when", Value: -1}}))
 	if ret != nil {
 		ret.Decode(h)
 	}

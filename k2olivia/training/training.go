@@ -46,7 +46,6 @@ func CreateNeuralNetwork(locale string, ignoreTrainingFile bool) (neuralNetwork 
 		neuralNetwork.Train(200)
 
 		// Save the neural network in res/training.json
-		fmt.Println("SAVE:" + saveFile)
 		neuralNetwork.Save(saveFile)
 	} else {
 		fmt.Printf(

@@ -34,7 +34,7 @@ func Home(c *fiber.Ctx) error {
 		initializers.Log(err, initializers.Error)
 	}
 	//Render
-	t, err := template.ParseFiles(T["home"].minify)
+	t, err := template.ParseFiles(T["home"].original)
 	if err != nil {
 		initializers.Log(err, initializers.Error)
 		c.SendStatus(fiber.StatusInternalServerError)

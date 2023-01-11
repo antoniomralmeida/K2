@@ -11,6 +11,7 @@ import (
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
 	"github.com/gofiber/fiber/v2"
+	"github.com/kamva/mgm/v3"
 	"github.com/montanaflynn/stats"
 	p "github.com/rafaeljesus/parallel-fn"
 	"go.mongodb.org/mongo-driver/bson"
@@ -127,7 +128,7 @@ func (attr *KBAttributeObject) SetValue(value any, source KBSource, trust float6
 			}
 		}
 	}
-	h := KBHistory{Attribute: attr.Id, When: time.Now().UnixNano(), Value: value, Source: source, Trust: trust}
+	h := KBHistory{Attribute: attr.ID, When: time.Now().UnixNano(), Value: value, Source: source, Trust: trust}
 	initializers.Log(h.Persist(), initializers.Fatal)
 	attr.KbHistory = &h
 	GKB.stack = append(GKB.stack, attr.KbAttribute.antecedentRules...) //  forward chaining
@@ -144,14 +145,14 @@ func (attr *KBAttributeObject) LinearRegression() error {
 		trust float64
 	}
 	initializers.Log("LinearRegression...", initializers.Info)
-	ctx, collection := initializers.GetCollection("KBHistory")
+	collection := mgm.Coll(new(KBHistory))
 	if attr.KbAttribute.AType == KBNumber {
-		matchStage := bson.D{{Key: "attribute_id", Value: attr.Id}}
+		matchStage := bson.D{{Key: "attribute_id", Value: attr.ID}}
 		groupStage := bson.D{{Key: "$project", Value: bson.D{{Key: "_id", Value: 0}, {Key: "value", Value: 1}, {Key: "when", Value: 1}, {Key: "trust", Value: 1}}}}
-		ret, err := collection.Aggregate(ctx, mongo.Pipeline{matchStage, groupStage}) // Aggregate(ctx,
+		ret, err := collection.Aggregate(mgm.Ctx(), mongo.Pipeline{matchStage, groupStage}) // Aggregate(ctx,
 		initializers.Log(err, initializers.Error)
 		var resp []PipeValue
-		err = ret.All(ctx, &resp)
+		err = ret.All(mgm.Ctx(), &resp)
 		initializers.Log(err, initializers.Error)
 		if len(resp) <= 2 {
 			initializers.Log("cannot do linear regression with | C|<=2", initializers.Info)
@@ -178,21 +179,21 @@ func (attr *KBAttributeObject) LinearRegression() error {
 func (attr *KBAttributeObject) MonteCarlo() error {
 	initializers.Log("MonteCarlo...", initializers.Info)
 	if attr.KbAttribute.AType == KBNumber {
-		ctx, collection := initializers.GetCollection("KBHistory")
-		matchStage := bson.D{{Key: "attribute_id", Value: attr.Id}}
+		collection := mgm.Coll(new(KBHistory))
+		matchStage := bson.D{{Key: "attribute_id", Value: attr.ID}}
 		groupStage := bson.D{{Key: "$group", Value: bson.D{{Key: "_id", Value: "$attribute_id"},
 			{Key: "avg", Value: bson.D{{Key: "$avg", Value: "$value"}}},
 			{Key: "stdDev", Value: bson.D{{Key: "$stdDevPop", Value: "$value"}}},
 			{Key: "trust", Value: bson.D{{Key: "$avg", Value: "$trust"}}},
 		}}}
-		ret, err := collection.Aggregate(ctx, mongo.Pipeline{matchStage, groupStage}) // Aggregate(ctx,
+		ret, err := collection.Aggregate(mgm.Ctx(), mongo.Pipeline{matchStage, groupStage}) // Aggregate(ctx,
 		initializers.Log(err, initializers.Error)
 		var results []Pipe
-		err = ret.All(ctx, &results)
+		err = ret.All(mgm.Ctx(), &results)
 		initializers.Log(err, initializers.Error)
 
 		resp := []Pipe{}
-		err = ret.All(ctx, &resp)
+		err = ret.All(mgm.Ctx(), &resp)
 		initializers.Log(err, initializers.Error)
 
 		avg := resp[0].avg
@@ -210,22 +211,22 @@ func (attr *KBAttributeObject) NormalDistribution() error {
 
 	initializers.Log("NormalDistribution...", initializers.Info)
 	if attr.KbAttribute.AType == KBNumber {
-		ctx, collection := initializers.GetCollection("KBHistory")
+		collection := mgm.Coll(new(KBHistory))
 
-		matchStage := bson.D{{Key: "attribute_id", Value: attr.Id}}
+		matchStage := bson.D{{Key: "attribute_id", Value: attr.ID}}
 		groupStage := bson.D{{Key: "$group", Value: bson.D{{Key: "_id", Value: "$attribute_id"},
 			{Key: "avg", Value: bson.D{{Key: "$avg", Value: "$value"}}},
 			{Key: "stdDev", Value: bson.D{{Key: "$stdDevPop", Value: "$value"}}},
 			{Key: "trust", Value: bson.D{{Key: "$avg", Value: "$trust"}}},
 		}}}
-		ret, err := collection.Aggregate(ctx, mongo.Pipeline{matchStage, groupStage}) // Aggregate(ctx,
+		ret, err := collection.Aggregate(mgm.Ctx(), mongo.Pipeline{matchStage, groupStage}) // Aggregate(ctx,
 		initializers.Log(err, initializers.Error)
 		var results []Pipe
-		err = ret.All(ctx, &results)
+		err = ret.All(mgm.Ctx(), &results)
 		initializers.Log(err, initializers.Error)
 
 		resp := []Pipe{}
-		err = ret.All(ctx, &resp)
+		err = ret.All(mgm.Ctx(), &resp)
 		initializers.Log(err, initializers.Error)
 		avg, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0].avg), 64)
 		stdDev, _ := strconv.ParseFloat(fmt.Sprintf("%v", resp[0].stdDev), 64)

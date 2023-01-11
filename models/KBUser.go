@@ -1,30 +1,36 @@
 package models
 
 import (
+	"errors"
 	"log"
 
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
+	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (user *KBUser) Persist() error {
-	ctx, collection := initializers.GetCollection("KBUser")
-	if user.Id.IsZero() {
-		user.Id = primitive.NewObjectID()
-		_, err := collection.InsertOne(ctx, user)
+func (obj *KBUser) Persist() error {
+	if obj.ID.IsZero() {
+		err := mgm.Coll(obj).Create(obj)
 		return err
 	} else {
-		_, err := collection.ReplaceOne(ctx, bson.D{{Key: "_id", Value: user.Id}}, user)
+		db_doc := new(KBUser)
+		err := mgm.Coll(obj).FindByID(obj.ID, db_doc)
+		if err != nil {
+			return err
+		}
+		if obj.UpdatedAt != db_doc.UpdatedAt {
+			return errors.New("Old document!")
+		}
+		err = mgm.Coll(obj).Update(obj)
 		return err
 	}
 }
 
 func (user *KBUser) FindOne(p bson.D) error {
-	ctx, collection := initializers.GetCollection("KBUser")
-	err := collection.FindOne(ctx, p).Decode(&user)
+	err := mgm.Coll(user).SimpleFind(user, p)
 	return err
 }
 
@@ -58,14 +64,14 @@ func InitSecurity() {
 }
 
 func CheckIndexs() {
-	ctx, collection := initializers.GetCollection("KBUser")
-	idx := collection.Indexes()
-	ret, err := idx.List(ctx)
+	coll := mgm.Coll(&KBUser{})
+	idx := coll.Indexes()
+	ret, err := idx.List(mgm.Ctx())
 	initializers.Log(err, initializers.Fatal)
 	var results []interface{}
-	err = ret.All(ctx, &results)
+	err = ret.All(mgm.Ctx(), &results)
 	initializers.Log(err, initializers.Fatal)
 	if len(results) == 1 {
-		initializers.CreateUniqueIndex("KBUser", "email")
+		initializers.CreateUniqueIndex(coll, "email")
 	}
 }

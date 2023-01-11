@@ -6,6 +6,7 @@ import (
 
 	"github.com/antoniomralmeida/k2/ebnf"
 	"github.com/antoniomralmeida/k2/lib"
+	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -149,7 +150,7 @@ var LiteralBinStr = map[string]LiteralBin{
 	"whenever":        b_whenever}
 
 type KnowledgeBased struct {
-	Id                  primitive.ObjectID              `bson:"_id,omitempty"`
+	mgm.DefaultModel    `json:",inline" bson:",inline"`
 	Name                string                          `bson:"name"`
 	Classes             []KBClass                       `bson:"-"`
 	IdxClasses          map[primitive.ObjectID]*KBClass `bson:"-"`
@@ -165,28 +166,28 @@ type KnowledgeBased struct {
 }
 
 type KBAttribute struct {
-	Id               primitive.ObjectID `bson:"id,omitempty"`
-	Name             string             `bson:"name"`
-	AType            KBAttributeType    `bson:"atype"`
-	KeepHistory      int                `bson:"keephistory"`      //Numero de historico a manter, 0- sempre
-	ValidityInterval int64              `bson:"validityinterval"` //validade do ultimo valor em microssegudos, 0- sempre
-	SimulationID     KBSimulation       `bson:"simulation,omitempty" json:"-"`
-	Simulation       string             `bson:"-" json:"simulation"`
-	SourcesID        []KBSource         `bson:"sources"`
-	Options          []string           `bson:"options,omitempty"`
-	Sources          []string           `bson:"-" json:"sources"`
-	antecedentRules  []*KBRule          `bson:"-"`
-	consequentRules  []*KBRule          `bson:"-"`
+	mgm.DefaultModel `json:",inline" bson:",inline"`
+	Name             string          `bson:"name"`
+	AType            KBAttributeType `bson:"atype"`
+	KeepHistory      int             `bson:"keephistory"`      //Numero de historico a manter, 0- sempre
+	ValidityInterval int64           `bson:"validityinterval"` //validade do ultimo valor em microssegudos, 0- sempre
+	SimulationID     KBSimulation    `bson:"simulation,omitempty" json:"-"`
+	Simulation       string          `bson:"-" json:"simulation"`
+	SourcesID        []KBSource      `bson:"sources"`
+	Options          []string        `bson:"options,omitempty"`
+	Sources          []string        `bson:"-" json:"sources"`
+	antecedentRules  []*KBRule       `bson:"-"`
+	consequentRules  []*KBRule       `bson:"-"`
 }
 
 type KBClass struct {
-	Id          primitive.ObjectID `bson:"_id,omitempty"`
-	Name        string             `bson:"name"`
-	Icon        string             `bson:"icon"`
-	ParentID    primitive.ObjectID `bson:"parent_id,omitempty"`
-	Parent      string             `bson:"-" json:"parent"`
-	Attributes  []KBAttribute      `bson:"attributes"`
-	ParentClass *KBClass           `bson:"-"`
+	mgm.DefaultModel `json:",inline" bson:",inline"`
+	Name             string             `bson:"name"`
+	Icon             string             `bson:"icon"`
+	ParentID         primitive.ObjectID `bson:"parent_id,omitempty"`
+	Parent           string             `bson:"-" json:"parent"`
+	Attributes       []KBAttribute      `bson:"attributes"`
+	ParentClass      *KBClass           `bson:"-"`
 }
 
 type BIN struct {
@@ -200,41 +201,41 @@ type BIN struct {
 }
 
 type KBRule struct {
-	Id                primitive.ObjectID `bson:"_id,omitempty"`
-	Rule              string             `bson:"rule"`
-	Priority          byte               `bson:"priority"` //0..100
-	ExecutionInterval int                `bson:"interval"`
-	lastexecution     time.Time          `bson:"-"`
-	consequent        int                `bson:"-"`
-	inRun             bool               `bson:"-"`
-	bkclasses         []*KBClass         `bson:"-"`
-	bin               []*BIN             `bson:"-"`
+	mgm.DefaultModel  `json:",inline" bson:",inline"`
+	Rule              string     `bson:"rule"`
+	Priority          byte       `bson:"priority"` //0..100
+	ExecutionInterval int        `bson:"interval"`
+	lastexecution     time.Time  `bson:"-"`
+	consequent        int        `bson:"-"`
+	inRun             bool       `bson:"-"`
+	bkclasses         []*KBClass `bson:"-"`
+	bin               []*BIN     `bson:"-"`
 }
 
 type KBHistory struct {
-	Id        primitive.ObjectID `bson:"_id,omitempty"`
-	Attribute primitive.ObjectID `bson:"attribute_id"`
-	When      int64              `bson:"when"`
-	Value     any                `bson:"value"`
-	Trust     float64            `bson:"trust,omitempty"`
-	Source    KBSource           `bson:"source"`
+	mgm.DefaultModel `json:",inline" bson:",inline"`
+	Attribute        primitive.ObjectID `bson:"attribute_id"`
+	When             int64              `bson:"when"`
+	Value            any                `bson:"value"`
+	Trust            float64            `bson:"trust,omitempty"`
+	Source           KBSource           `bson:"source"`
 }
 
 type KBAttributeObject struct {
-	Id          primitive.ObjectID `bson:"id"`
-	Attribute   primitive.ObjectID `bson:"attribute_id"  json:"AttributeId"`
-	KbObject    *KBObject          `bson:"-" json:"-"`
-	KbHistory   *KBHistory         `bson:"-" json:"History"`
-	KbAttribute *KBAttribute       `bson:"-"  json:"Attrinute"`
+	mgm.DefaultModel `json:",inline" bson:",inline"`
+	Attribute        primitive.ObjectID `bson:"attribute_id"  json:"AttributeId"`
+	KbObject         *KBObject          `bson:"-" json:"-"`
+	KbHistory        *KBHistory         `bson:"-" json:"History"`
+	KbAttribute      *KBAttribute       `bson:"-"  json:"Attrinute"`
 }
 
 type KBObject struct {
-	Id         primitive.ObjectID  `bson:"_id"`
-	Name       string              `bson:"name"`
-	Class      primitive.ObjectID  `bson:"class_id"`
-	Attributes []KBAttributeObject `bson:"attributes"`
-	Bkclass    *KBClass            `bson:"-" json:"Class"`
-	parsed     bool                `bson:"-"`
+	mgm.DefaultModel `json:",inline" bson:",inline"`
+	Name             string              `bson:"name"`
+	Class            primitive.ObjectID  `bson:"class_id"`
+	Attributes       []KBAttributeObject `bson:"attributes"`
+	Bkclass          *KBClass            `bson:"-" json:"Class"`
+	parsed           bool                `bson:"-"`
 }
 
 type KBObjectWS struct {
@@ -245,15 +246,15 @@ type KBObjectWS struct {
 }
 
 type KBWorkspace struct {
-	Id              primitive.ObjectID `bson:"_id,omitempty"`
-	Workspace       string             `bson:"workspace"`
-	Top             int                `bson:"top"`
-	Left            int                `bson:"left"`
-	Width           int                `bson:"width"`
-	Height          int                `bson:"height"`
-	BackgroundImage string             `bson:"backgroundimage,omitempty"`
-	Objects         []KBObjectWS       `bson:"objects"`
-	Posts           lib.Queue          `bson:"-"`
+	mgm.DefaultModel `json:",inline" bson:",inline"`
+	Workspace        string       `bson:"workspace"`
+	Top              int          `bson:"top"`
+	Left             int          `bson:"left"`
+	Width            int          `bson:"width"`
+	Height           int          `bson:"height"`
+	BackgroundImage  string       `bson:"backgroundimage,omitempty"`
+	Objects          []KBObjectWS `bson:"objects"`
+	Posts            lib.Queue    `bson:"-"`
 }
 
 type DataInput struct {

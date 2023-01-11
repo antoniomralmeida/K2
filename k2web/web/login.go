@@ -61,7 +61,7 @@ func PostLogin(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "non-validated user")
 	}
 
-	token, _, err := lib.CreateJWTToken(user.Id, user.Name)
+	token, _, err := lib.CreateJWTToken(user.ID, user.Name)
 	if err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "error create token")
 	}

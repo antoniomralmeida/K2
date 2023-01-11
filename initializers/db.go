@@ -7,14 +7,12 @@ import (
 	"time"
 
 	"github.com/antoniomralmeida/k2/lib"
+	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"go.mongodb.org/mongo-driver/x/bsonx"
 )
-
-var db *mongo.Database
-var ctx context.Context
 
 func ConnectDB() {
 	Log("ConnectDB", Info)
@@ -23,21 +21,18 @@ func ConnectDB() {
 	dbName := os.Getenv("DB")
 	Log(lib.Ping(dsn), Fatal)
 
-	ctx := context.Background()
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(dsn))
+	err := mgm.SetDefaultConfig(nil, dbName, options.Client().ApplyURI(dsn))
 	Log(err, Fatal)
+	client, err := mgm.NewClient()
+	Log(err, Fatal)
+	defer client.Disconnect(mgm.Ctx())
 	//ping db
-	err = client.Ping(ctx, readpref.Primary())
+	err = client.Ping(mgm.Ctx(), readpref.Primary())
 	Log(err, Fatal)
-	db = client.Database(dbName)
-}
-
-func GetCollection(name string) (context.Context, *mongo.Collection) {
-	return ctx, db.Collection(name)
 }
 
 // CreateUniqueIndex create UniqueIndex
-func CreateUniqueIndex(collection string, keys ...string) {
+func CreateUniqueIndex(coll *mgm.Collection, keys ...string) {
 	keysDoc := bsonx.Doc{}
 	for _, key := range keys {
 		if strings.HasPrefix(key, "-") {
@@ -46,7 +41,7 @@ func CreateUniqueIndex(collection string, keys ...string) {
 			keysDoc = keysDoc.Append(key, bsonx.Int32(1))
 		}
 	}
-	idxRet, err := db.Collection(collection).Indexes().CreateOne(
+	idxRet, err := coll.Indexes().CreateOne(
 		context.Background(),
 		mongo.IndexModel{
 			Keys:    keysDoc,

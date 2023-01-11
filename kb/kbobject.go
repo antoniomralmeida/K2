@@ -2,20 +2,27 @@ package kb
 
 import (
 	"encoding/json"
+	"errors"
 
 	"github.com/antoniomralmeida/k2/initializers"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/kamva/mgm/v3"
 )
 
-func (o *KBObject) Persist() error {
-	ctx, collection := initializers.GetCollection("KBObject")
-	if o.Id.IsZero() {
-		o.Id = primitive.NewObjectID()
-		_, err := collection.InsertOne(ctx, o)
+func (obj *KBObject) Persist() error {
+	if obj.ID.IsZero() {
+		err := mgm.Coll(obj).Create(obj)
 		return err
 	} else {
-		_, err := collection.ReplaceOne(ctx, bson.D{{Key: "_id", Value: o.Id}}, o)
+
+		db_doc := new(KBObject)
+		err := mgm.Coll(obj).FindByID(obj.ID, db_doc)
+		if err != nil {
+			return err
+		}
+		if obj.UpdatedAt != db_doc.UpdatedAt {
+			return errors.New("Old document!")
+		}
+		err = mgm.Coll(obj).Update(obj)
 		return err
 	}
 }
@@ -28,8 +35,7 @@ func (o *KBObject) String() string {
 
 func (o *KBObject) Delete() error {
 
-	ctx, collection := initializers.GetCollection("KBObject")
-	collection.DeleteOne(ctx, bson.D{{Key: "_id", Value: o.Id}})
+	mgm.Coll(o).Delete(o)
 
 	// Restart KB
 	Stop()

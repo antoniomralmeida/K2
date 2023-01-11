@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -30,13 +31,13 @@ const (
 )
 
 type KBUser struct {
-	Id         primitive.ObjectID   `bson:"_id" json:"id"`
-	Name       string               `bson:"name"`
-	Email      string               `bson:"email"`
-	Hash       []byte               `bson:"hash" json:"-"`
-	Profile    KBProfile            `bson:"profile"`
-	Workspaces []primitive.ObjectID `bson:"workspaces"`
-	FaceImage  string               `bson:"faceimage,omitempty"`
+	mgm.DefaultModel `json:",inline" bson:",inline"`
+	Name             string               `bson:"name"`
+	Email            string               `bson:"email"`
+	Hash             []byte               `bson:"hash" json:"-"`
+	Profile          KBProfile            `bson:"profile"`
+	Workspaces       []primitive.ObjectID `bson:"workspaces"`
+	FaceImage        string               `bson:"faceimage,omitempty"`
 }
 
 type Context struct {
