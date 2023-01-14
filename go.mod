@@ -12,6 +12,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/hegedustibor/htgo-tts v0.0.0-20220821045517-04f3cda7a12f
+	github.com/kamva/mgm/v3 v3.5.0
 	github.com/madflojo/tasks v1.0.4
 	github.com/mattn/go-tty v0.0.4
 	github.com/montanaflynn/stats v0.6.6
@@ -48,7 +49,6 @@ require (
 	github.com/hajimehoshi/go-mp3 v0.3.3 // indirect
 	github.com/hajimehoshi/oto/v2 v2.2.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
-	github.com/kamva/mgm/v3 v3.5.0 // indirect
 	github.com/klauspost/compress v1.15.11 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect

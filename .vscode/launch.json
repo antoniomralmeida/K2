@@ -14,7 +14,7 @@
             "request": "launch",
             "mode": "auto",
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/k2olivia/k2olivia.go",
+            "program": "${workspaceFolder}/k2.go",
             "showLog": false,
             "cwd": "${workspaceFolder}",
             "stopOnEntry": false

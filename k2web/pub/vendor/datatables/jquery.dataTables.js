@@ -3201,7 +3201,7 @@
 			var id = settings.rowIdFn( data );
 	
 			if ( id ) {
-				tr.ID = id;
+				tr.id = id;
 			}
 	
 			if ( data.DT_RowClass ) {
@@ -8206,8 +8206,8 @@
 		row._aData = data;
 	
 		// If the DOM has an id, and the data source is an array
-		if ( Array.isArray( data ) && row.nTr && row.nTr.ID ) {
-			_fnSetObjectDataFn( ctx[0].rowId )( data, row.nTr.ID );
+		if ( Array.isArray( data ) && row.nTr && row.nTr.id ) {
+			_fnSetObjectDataFn( ctx[0].rowId )( data, row.nTr.id );
 		}
 	
 		// Automatically invalidate

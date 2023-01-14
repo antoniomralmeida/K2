@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-	"log"
 
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
@@ -30,7 +29,7 @@ func (obj *KBUser) Persist() error {
 }
 
 func (user *KBUser) FindOne(p bson.D) error {
-	err := mgm.Coll(user).SimpleFind(user, p)
+	err := mgm.Coll(user).First(p, user)
 	return err
 }
 
@@ -53,13 +52,15 @@ func NewUser(name, email, pwd, image string) (err error) {
 func InitSecurity() {
 	user := KBUser{}
 	CheckIndexs()
-	if user.FindOne(bson.D{{Key: "profile", Value: Admin}}) != nil {
+	err := user.FindOne(bson.D{{Key: "profile", Value: Admin}})
+	initializers.Log(err, initializers.Fatal)
+	if user.ID.IsZero() {
 		pwd := lib.GeneratePassword(12, 1, 3, 2)
 		hash, err := bcrypt.GenerateFromPassword([]byte(pwd), bcrypt.DefaultCost)
 		initializers.Log(err, initializers.Fatal)
 		user = KBUser{Name: "Default Admin", Email: "admin@k2.com", Hash: hash, Profile: Admin}
 		initializers.Log(user.Persist(), initializers.Fatal)
-		log.Println("Default Hash " + pwd)
+		initializers.Log("Default Hash "+pwd, initializers.Info)
 	}
 }
 
