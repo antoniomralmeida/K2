@@ -175,7 +175,7 @@ func GeneratePassword(passwordLength, minSpecialChar, minNum, minUpperCase int) 
 		numberSet      = "0123456789"
 		allCharSet     = lowerCharSet + upperCharSet + specialCharSet + numberSet
 	)
-
+	rand.Seed(time.Now().UnixNano())
 	//Set special character
 	for i := 0; i < minSpecialChar; i++ {
 		random := rand.Intn(len(specialCharSet))
