@@ -244,8 +244,11 @@ func ValidateToken(jwtcookie string) (err error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("There was an error in parsing")
 		}
-		return SignedKey, nil
+		return []byte(SignedKey), nil
 	})
+	if err != nil {
+		return
+	}
 
 	if token == nil {
 		return errors.New("Invalid Token")
