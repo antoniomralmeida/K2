@@ -122,6 +122,8 @@ function PostLogin() {
     var errlabel = document.getElementById('errlabel')
     const email = document.getElementById("email");
     const pwd = document.getElementById("password");
+    const params = new URLSearchParams(window.location.search);
+    const lang = params.get("lang");
 
     $.ajax({
         url: location.url,
@@ -133,23 +135,46 @@ function PostLogin() {
         },
         success: function (data) {
             errlabel.innerHTML = "";
-            window.location.href = "/";
+            if (lang == "") {
+                window.location.href = "/";    
+            } else {
+                window.location.href = "/?lang="+lang
+            }        
         }
     });
     return true;
 }
 
-function validateSigupFrom() {
-
-    //TODO: fazer igual a PostLogin() 
+function PostSigout() {
     var errlabel = document.getElementById('errlabel')
+    const email = document.getElementById("email");
     const pwd = document.getElementById("password");
     const pwd2 = document.getElementById("password2");
+    const faceimage = document.getElementById("faceimage");
+    const params = new URLSearchParams(window.location.search);
+    const lang = params.get("lang");
 
-    if (pwd != pwd2) {
-        errlabel.innerHTML = "Senha não confere";
-        return false;
-    } else {
-        return true;
-    }
+    $.ajax({
+        url: location.url,
+        type: 'POST',
+        enctype:"multipart/form-data",
+        data: { "email": email.value, 
+                "password": pwd.value,
+                "password2": pwd2.value,
+
+             },
+        error: function (xmlHttpRequest, textStatus, errorThrown) {
+            Speak("Ops!");
+            errlabel.innerHTML = xmlHttpRequest.responseText;
+        },
+        success: function (data) {
+            errlabel.innerHTML = "";
+            if (lang == "") {
+                window.location.href = "/";    
+            } else {
+                window.location.href = "/?lang="+lang
+            }
+        }
+    });
+    return true;
 }

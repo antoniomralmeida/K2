@@ -16,9 +16,10 @@ type LoginRequest struct {
 }
 
 type SigupRequest struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Name      string `json:"name"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	Password2 string `json:"password2"`
 }
 
 type KBProfile byte

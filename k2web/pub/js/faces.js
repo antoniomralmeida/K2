@@ -59,7 +59,7 @@ const TTS = async(text) => {
   // Testing for browser support
 	var speechSynthesisSupported = 'speechSynthesis' in window;
   let msg = new SpeechSynthesisUtterance();
-  alert(SpeechSynthesisId);
+  console.log(SpeechSynthesisId);
   msg.voice = speechSynthesis.getVoices()[ SpeechSynthesisId];
   msg.text = text;
   speechSynthesis.speak(msg);  
