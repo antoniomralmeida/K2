@@ -58,34 +58,39 @@ var i18n_en = I18n_Messages{
 	"Cancel"}
 
 type Language struct {
-	Code              string
 	Description       string
 	SpeechSynthesisId int
 }
 
-var Languages []Language
+var languages map[string]Language
 
 func InitLangs() {
+	languages = make(map[string]Language)
+	languages["en"] = Language{Description: "English", SpeechSynthesisId: 1}
+	languages["pt"] = Language{Description: "Português Brasileiro", SpeechSynthesisId: 0}
+	languages["es"] = Language{Description: "Espanhol", SpeechSynthesisId: 262}
+	languages["de"] = Language{Description: "Germany", SpeechSynthesisId: 143}
 
-	Languages = append(Languages, Language{Code: "en", Description: "English", SpeechSynthesisId: 1})
-	Languages = append(Languages, Language{Code: "pt", Description: "Português Brasileiro", SpeechSynthesisId: 0})
-	Languages = append(Languages, Language{Code: "es", Description: "Espanhol", SpeechSynthesisId: 262})
-	Languages = append(Languages, Language{Code: "de", Description: "Germany", SpeechSynthesisId: 143})
+	//TODO: Hindi	hi
+	//TODO: Arabic	ar
+	//TODO: Bengali	bn
+	//TODO: Russian	ru
+	//TODO: Japanese	ja
 
 	bundle = i18n.NewBundle(language.English)
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 
-	for _, l := range Languages {
-		_, err := os.Stat(TomlFile(l.Code))
-		if l.Code == "en" || os.IsNotExist(err) {
-			f, err := os.Create(TomlFile(l.Code))
+	for code := range languages {
+		_, err := os.Stat(TomlFile(code))
+		if code == "en" || os.IsNotExist(err) {
+			f, err := os.Create(TomlFile(code))
 			initializers.Log(err, initializers.Error)
 			js, err := json.Marshal(i18n_en)
 			initializers.Log(err, initializers.Error)
 			f.WriteString(string(js))
 			f.Close()
 		}
-		bundle.MustLoadMessageFile(TomlFile(l.Code))
+		bundle.MustLoadMessageFile(TomlFile(code))
 	}
 }
 
@@ -99,12 +104,10 @@ func SetContextInfo(c *fiber.Ctx) {
 	lang := c.Query("lang")
 	accept := c.GetReqHeaders()["Accept-Language"]
 	LangQ := ParseAcceptLanguage(lang, accept)
-	for _, l := range Languages {
-		for _, l2 := range LangQ {
-			if l2.Lang == l.Code {
-				ctxweb.SpeechSynthesisId = l.SpeechSynthesisId
-				break
-			}
+	for _, l := range LangQ {
+		if l2, ok := languages[l.Lang]; ok {
+			ctxweb.SpeechSynthesisId = l2.SpeechSynthesisId
+			break
 		}
 	}
 	ctxweb.JwtToken = c.Cookies("jwt")
