@@ -17,65 +17,44 @@ import (
 
 var bundle *i18n.Bundle
 
-var I18n_ID = []string{
-	"i18n_title",
-	"i18n_wellcome",
-	"i18n_dateinput",
-	"i18n_wellcome2",
-	"i18n_workspace",
-	"i18n_alert",
-	"i18n_register",
-	"i18n_already",
-	"i18n_forgot",
-	"i18n_send",
-	"i18n_cancel"}
-
-type I18n_Messages struct {
-	I18n_title     string `json:"i18n_title"`
-	I18n_wellcome  string `json:"i18n_wellcome"`
-	I18n_dateinput string `json:"i18n_dateinput"`
-	I18n_wellcome2 string `json:"i18n_wellcome2"`
-	I18n_workspace string `json:"i18n_workspace"`
-	I18n_alert     string `json:"i18n_alert"`
-	I18n_register  string `json:"i18n_register"`
-	I18n_already   string `json:"i18n_already"`
-	I18n_forgot    string `json:"i18n_forgot"`
-	I18n_send      string `json:"i18n_send"`
-	I18n_cancel    string `json:"i18n_cancel"`
-}
-
-var i18n_en = I18n_Messages{
-	"K2 System KnowledgeBase",
-	"Wellcome to K2!",
-	"Data Input",
-	"What are we going to do today?",
-	"Workspace",
-	"Alerts",
-	"Please register to access K2!",
-	"Already have an account? Login!",
-	"Forgot Password?",
-	"Send",
-	"Cancel"}
-
 type Language struct {
 	Description       string
 	SpeechSynthesisId int
 }
 
 var languages map[string]Language
+var i18n_en map[string]string
 
 func InitLangs() {
 	languages = make(map[string]Language)
 	languages["en"] = Language{Description: "English", SpeechSynthesisId: 1}
 	languages["pt"] = Language{Description: "Português Brasileiro", SpeechSynthesisId: 0}
-	languages["es"] = Language{Description: "Espanhol", SpeechSynthesisId: 262}
-	languages["de"] = Language{Description: "Germany", SpeechSynthesisId: 143}
+	//languages["es"] = Language{Description: "Espanhol", SpeechSynthesisId: 262}
+	//languages["de"] = Language{Description: "Germany", SpeechSynthesisId: 143}
+	//languages["hi"] = Language{Description: "Hindi", SpeechSynthesisId: 154}
+	//languages["ar"] = Language{Description: "Arabic", SpeechSynthesisId: 12}
+	//languages["bn"] = Language{Description: "Bengali", SpeechSynthesisId: 48}
+	//languages["ru"] = Language{Description: "Russian", SpeechSynthesisId: 213}
+	languages["ja"] = Language{Description: "Japanese", SpeechSynthesisId: 167}
 
-	//TODO: Hindi	hi
-	//TODO: Arabic	ar
-	//TODO: Bengali	bn
-	//TODO: Russian	ru
-	//TODO: Japanese	ja
+	i18n_en = make(map[string]string)
+	i18n_en["i18n_title"] = "K2 System KnowledgeBase"
+	i18n_en["i18n_wellcome"] = "Wellcome to K2!"
+	i18n_en["i18n_dateinput"] = "Data Input"
+	i18n_en["i18n_wellcome2"] = "What are we going to do today?"
+	i18n_en["i18n_workspace"] = "Workspace"
+	i18n_en["i18n_alert"] = "Alerts"
+	i18n_en["i18n_register"] = "Please register to access K2!"
+	i18n_en["i18n_already"] = "Already have an account? Login!"
+	i18n_en["i18n_forgot"] = "Forgot Password?"
+	i18n_en["i18n_send"] = "Send"
+	i18n_en["i18n_cancel"] = "Cancel"
+	i18n_en["i18n_remember"] = "Remember me"
+	i18n_en["i18n_badrequest"] = "Bad Request"
+	i18n_en["i18n_invalidimage"] = "Invalid or empty image"
+	i18n_en["i18n_internalservererror"] = "InternalServerError"
+	i18n_en["i18n_invalidcredentials"] = "Invalid credentials"
+	i18n_en["i18n_alreadyregistered"] = "Already registered"
 
 	bundle = i18n.NewBundle(language.English)
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
@@ -98,8 +77,8 @@ func SetContextInfo(c *fiber.Ctx) {
 	if ctxweb.I18n == nil {
 		ctxweb.I18n = make(map[string]string)
 	}
-	for _, id := range I18n_ID {
-		ctxweb.I18n[id] = translateID(id, c)
+	for key := range i18n_en {
+		ctxweb.I18n[key] = translateID(key, c)
 	}
 	lang := c.Query("lang")
 	accept := c.GetReqHeaders()["Accept-Language"]
