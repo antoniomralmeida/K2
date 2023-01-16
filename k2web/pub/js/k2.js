@@ -142,7 +142,7 @@ function PostLogin() {
             }
         }
     });
-    return true;
+    return false;
 }
 
 function PostSignup() {
@@ -172,5 +172,5 @@ function PostSignup() {
             }
         }
     });
-    return true;
+    return false;
 }

@@ -36,12 +36,12 @@
                   <div class="text-center">
                     <h1 class="h4 text-gray-900 mb-4">{{index .I18n "i18n_wellcome"}}</h1>
                   </div>
-                  <form name="login" class="user">
+                  <form name="login" class="user"  onsubmit="return PostLogin();">
                     <div class="form-group">
-                      <input type="email" name="email" class="form-control form-control-user" id="email" aria-describedby="emailHelp" placeholder="Email" required="">
+                      <input type="email" name="email" class="form-control form-control-user" id="email" aria-describedby="emailHelp" placeholder="Email" required>
                     </div>
                     <div class="form-group">
-                      <input type="password" name="password" class="form-control form-control-user" id="password" placeholder="Password" required="">
+                      <input type="password" name="password" class="form-control form-control-user" id="password" placeholder="Password" required>
                     </div>
                     <div class="form-group">
                       <div class="custom-control custom-checkbox small">
@@ -49,7 +49,7 @@
                         <label class="custom-control-label" for="customCheck">{{index .I18n "i18n_remember"}}</label>
                       </div>
                     </div>
-                    <input type="button" class="btn btn-primary btn-user btn-block" value="{{index .I18n &quot;i18n_send&quot;}}" onclick="PostLogin();">
+                    <input type="submit" class="btn btn-primary btn-user btn-block" value="{{index .I18n &quot;i18n_send&quot;}}">
                     <hr>
                     <div class="col-sm-12">
                       <small id="passwordHelp" class="text-danger">

@@ -46,7 +46,7 @@
                             <!-- <form name="signup"  action="signup" class="user" enctype="multipart/form-data"
                             method="post"> -->
 
-                            <form id="signup" name="signup"  class="user" enctype="multipart/form-data">
+                            <form id="signup" name="signup"  class="user" onsubmit="return PostSignup();">
                                 <div class="form-group">
                                     <input type="text" class="form-control form-control-user" id="name" name="name"
                                         placeholder="Name" required>
@@ -80,10 +80,8 @@
                                             (PNG/JPEG)</label>
                                     </div>
                                 </div>
-                                <!-- <input type="submit" class="btn btn-primary btn-user btn-block" value="{{index .I18n &quot;i18n_send&quot;}}"> -->
-                                
-                                <input type="button" class="btn btn-primary btn-user btn-block" value="{{index .I18n &quot;i18n_send&quot;}}" onclick="PostSignup();"> 
-                                <hr>
+                                <input type="submit" class="btn btn-primary btn-user btn-block" value="{{index .I18n &quot;i18n_send&quot;}}">
+                                 <hr>
                                 <div class="col-sm-12">
                                     <small id="passwordHelp" class="text-danger">
                                         <div id="errlabel">

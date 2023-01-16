@@ -1,7 +1,6 @@
 package web
 
 import (
-	"fmt"
 	"html/template"
 	"os"
 	"path/filepath"
@@ -41,12 +40,6 @@ func SignupForm(c *fiber.Ctx) error {
 
 func PostSignup(c *fiber.Ctx) error {
 	req := new(models.SigupRequest)
-	fmt.Println(string(c.Request().Header.ContentType()))
-	fmt.Println(c.FormValue("name"))
-	fmt.Println(c.FormValue("email"))
-	fmt.Println(c.FormValue("password"))
-	fmt.Println(c.FormValue("password2"))
-
 	if err := c.BodyParser(req); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, translateID("i18n_badrequest", c)+":"+err.Error())
 	}
