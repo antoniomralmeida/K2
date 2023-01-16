@@ -55,6 +55,7 @@ func InitLangs() {
 	i18n_en["i18n_internalservererror"] = "InternalServerError"
 	i18n_en["i18n_invalidcredentials"] = "Invalid credentials"
 	i18n_en["i18n_alreadyregistered"] = "Already registered"
+	i18n_en["i18n_accessforbidden"] = "Access forbidden"
 
 	bundle = i18n.NewBundle(language.English)
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)

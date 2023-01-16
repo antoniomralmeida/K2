@@ -136,33 +136,29 @@ function PostLogin() {
         success: function (data) {
             errlabel.innerHTML = "";
             if (lang == "") {
-                window.location.href = "/";    
+                window.location.href = "/";
             } else {
-                window.location.href = "/?lang="+lang
-            }        
+                window.location.href = "/?lang=" + lang
+            }
         }
     });
     return true;
 }
 
-function PostSigout() {
+function PostSignup() {
     var errlabel = document.getElementById('errlabel')
-    const email = document.getElementById("email");
-    const pwd = document.getElementById("password");
-    const pwd2 = document.getElementById("password2");
-    const faceimage = document.getElementById("faceimage");
+    //const faceimage = document.getElementById("faceimage");
+    const form = document.getElementById("signup");
     const params = new URLSearchParams(window.location.search);
     const lang = params.get("lang");
 
     $.ajax({
         url: location.url,
         type: 'POST',
-        enctype:"multipart/form-data",
-        data: { "email": email.value, 
-                "password": pwd.value,
-                "password2": pwd2.value,
-
-             },
+        contentType: 'multipart/form-data',
+        data: new FormData( form ),
+        processData: false,
+        contentType: false,
         error: function (xmlHttpRequest, textStatus, errorThrown) {
             Speak("Ops!");
             errlabel.innerHTML = xmlHttpRequest.responseText;
@@ -170,9 +166,9 @@ function PostSigout() {
         success: function (data) {
             errlabel.innerHTML = "";
             if (lang == "") {
-                window.location.href = "/";    
+                window.location.href = "/";
             } else {
-                window.location.href = "/?lang="+lang
+                window.location.href = "/?lang=" + lang
             }
         }
     });

@@ -42,10 +42,10 @@ func LoginForm(c *fiber.Ctx) error {
 func PostLogin(c *fiber.Ctx) error {
 	req := models.LoginRequest{}
 	if err := c.BodyParser(&req); err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "invalid body parser "+err.Error())
+		return fiber.NewError(fiber.StatusBadRequest, translateID("i18n_badrequest", c)+":"+err.Error())
 	}
 	if req.Email == "" || req.Password == "" {
-		return fiber.NewError(fiber.StatusBadRequest, "empty credentials")
+		return fiber.NewError(fiber.StatusBadRequest, translateID("i18n_invalidcredentials", c))
 	}
 
 	user := models.KBUser{}
@@ -54,20 +54,20 @@ func PostLogin(c *fiber.Ctx) error {
 		initializers.Log(err, initializers.Error)
 	}
 	if user.Email == "" {
-		return fiber.NewError(fiber.StatusBadRequest, "invalid login credentials")
+		return fiber.NewError(fiber.StatusBadRequest, translateID("i18n_invalidcredentials", c))
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Hash), []byte(req.Password)); err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "invalid login credentials")
+		return fiber.NewError(fiber.StatusBadRequest, translateID("i18n_invalidcredentials", c))
 	}
 
 	if user.Profile == models.Empty {
-		return fiber.NewError(fiber.StatusBadRequest, "non-validated user")
+		return fiber.NewError(fiber.StatusForbidden, translateID("i18n_accessforbidden", c))
 	}
 
 	token, _, err := lib.CreateJWTToken(user.ID, user.Name)
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "error create token")
+		return fiber.NewError(fiber.StatusBadRequest, translateID("i18n_internalservererror", c))
 	}
 	ctxweb.User = user.Name
 	// Create cookie

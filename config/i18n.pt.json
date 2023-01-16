@@ -11,11 +11,13 @@
     "i18n_send": "Enviar",
     "i18n_cancel": "Cancelar",
     "i18n_remember" : "Lembre-se de mim",
-    "i18n_badrequest": "Bad Request",
+    "i18n_badrequest": "Requisição inválida",
     "i18n_invalidimage" : "Imagem inválida ou vazia",
     "i18n_internalservererror": "Erro interno na aplicação",
-    "i18n_invalidcredentials" : "Credenciais inválida",
-    "i18n_alreadyregistered":"Já registrado"
+    "i18n_invalidcredentials" : "Credenciais inválidas",
+    "i18n_alreadyregistered":"Já registrado",
+    "i18n_accessforbidden" : "Acessso não autorizado"
+
 
 
 

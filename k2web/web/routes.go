@@ -25,8 +25,8 @@ func Routes(app *fiber.App) {
 	app.Post("/login", PostLogin)
 	app.Post("/logout", Logout)
 	app.Get("/face", GetFace)
-	app.Get("/sigup", SigupForm)
-	app.Post("/sigup", PostSigup)
+	app.Get("/signup", SignupForm)
+	app.Post("/signup", PostSignup)
 
 	// 404 Handler
 	app.Use(func(c *fiber.Ctx) error {

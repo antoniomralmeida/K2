@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"html/template"
 	"os"
 	"path/filepath"
@@ -14,7 +15,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func SigupForm(c *fiber.Ctx) error {
+func SignupForm(c *fiber.Ctx) error {
 	if len(c.Query("avatar")) == 0 && len(ctxweb.Avatar) > 0 {
 		url := c.OriginalURL()
 		sep := "?"
@@ -38,10 +39,16 @@ func SigupForm(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusOK)
 }
 
-func PostSigup(c *fiber.Ctx) error {
-	req := models.SigupRequest{}
-	if err := c.BodyParser(&req); err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, translateID("i18n_badrequest", c)+err.Error())
+func PostSignup(c *fiber.Ctx) error {
+	req := new(models.SigupRequest)
+	fmt.Println(string(c.Request().Header.ContentType()))
+	fmt.Println(c.FormValue("name"))
+	fmt.Println(c.FormValue("email"))
+	fmt.Println(c.FormValue("password"))
+	fmt.Println(c.FormValue("password2"))
+
+	if err := c.BodyParser(req); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, translateID("i18n_badrequest", c)+":"+err.Error())
 	}
 	faceimage := "faceimage"
 	file, err := c.FormFile(faceimage)
@@ -65,6 +72,10 @@ func PostSigup(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, translateID("i18n_invalidcredentials", c))
 	}
 
+	if req.Password2 != req.Password {
+		return fiber.NewError(fiber.StatusBadRequest, translateID("i18n_invalidcredentials", c))
+	}
+
 	user := models.KBUser{}
 	err = user.FindOne(bson.D{{Key: "email", Value: req.Email}})
 	if err != mongo.ErrNoDocuments && err != nil {
@@ -79,7 +90,7 @@ func PostSigup(c *fiber.Ctx) error {
 	err = models.NewUser(req.Name, req.Email, req.Password, faceimage)
 	if err != nil {
 		initializers.Log(err, initializers.Error)
-		return fiber.NewError(fiber.StatusInternalServerError, translateID("i18n_internalservererror", c)+err.Error())
+		return fiber.NewError(fiber.StatusInternalServerError, translateID("i18n_internalservererror", c)+":"+err.Error())
 	}
 	if faceimage != "" {
 		os.Remove(faceimage)
