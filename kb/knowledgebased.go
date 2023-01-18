@@ -200,22 +200,12 @@ func (kb *KnowledgeBased) UpdateKB(name string) error {
 }
 
 func (obj *KnowledgeBased) Persist() error {
-	if obj.ID.IsZero() {
-		err := mgm.Coll(obj).Create(obj)
-		return err
-	} else {
+	return initializers.Persist(obj)
 
-		db_doc := new(KnowledgeBased)
-		err := mgm.Coll(obj).FindByID(obj.ID, db_doc)
-		if err != nil {
-			return err
-		}
-		if obj.UpdatedAt != db_doc.UpdatedAt {
-			return errors.New("Old document!")
-		}
-		err = mgm.Coll(obj).Update(obj)
-		return err
-	}
+}
+
+func (obj *KnowledgeBased) GetPrimitiveUpdateAt() primitive.DateTime {
+	return primitive.NewDateTimeFromTime(obj.UpdatedAt)
 }
 
 func (kb *KnowledgeBased) FindOne() error {

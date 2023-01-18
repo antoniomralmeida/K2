@@ -7,24 +7,16 @@ import (
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (class *KBClass) Persist() error {
-	if class.ID.IsZero() {
-		err := mgm.Coll(class).Create(class)
-		return err
-	} else {
-		db_doc := new(KBClass)
-		err := mgm.Coll(class).FindByID(class.ID, db_doc)
-		if err != nil {
-			return err
-		}
-		if class.UpdatedAt != db_doc.UpdatedAt {
-			return errors.New("Old document!")
-		}
-		err = mgm.Coll(class).Update(class)
-		return err
-	}
+func (obj *KBClass) Persist() error {
+	return initializers.Persist(obj)
+
+}
+
+func (obj *KBClass) GetPrimitiveUpdateAt() primitive.DateTime {
+	return primitive.NewDateTimeFromTime(obj.UpdatedAt)
 }
 
 func (class *KBClass) FindOne(p bson.D) error {

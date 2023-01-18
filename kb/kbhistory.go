@@ -2,7 +2,6 @@ package kb
 
 import (
 	"encoding/json"
-	"errors"
 
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/kamva/mgm/v3"
@@ -12,22 +11,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (h *KBHistory) Persist() error {
-	if h.ID.IsZero() {
-		err := mgm.Coll(h).Create(h)
-		return err
-	} else {
-		db_doc := new(KBHistory)
-		err := mgm.Coll(h).FindByID(h.ID, db_doc)
-		if err != nil {
-			return err
-		}
-		if h.UpdatedAt != db_doc.UpdatedAt {
-			return errors.New("Old document!")
-		}
-		err = mgm.Coll(h).Update(h)
-		return err
-	}
+func (obj *KBHistory) Persist() error {
+	return initializers.Persist(obj)
+
+}
+
+func (obj *KBHistory) GetPrimitiveUpdateAt() primitive.DateTime {
+	return primitive.NewDateTimeFromTime(obj.UpdatedAt)
 }
 
 func (h *KBHistory) ClearingHistory(history int) error {

@@ -1,32 +1,22 @@
 package models
 
 import (
-	"errors"
-
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func (obj *KBUser) Persist() error {
-	if obj.ID.IsZero() {
-		err := mgm.Coll(obj).Create(obj)
-		return err
-	} else {
-		db_doc := new(KBUser)
-		err := mgm.Coll(obj).FindByID(obj.ID, db_doc)
-		if err != nil {
-			return err
-		}
-		if obj.UpdatedAt != db_doc.UpdatedAt {
-			return errors.New("Old document!")
-		}
-		err = mgm.Coll(obj).Update(obj)
-		return err
-	}
+	return initializers.Persist(obj)
+
+}
+
+func (obj *KBUser) GetPrimitiveUpdateAt() primitive.DateTime {
+	return primitive.NewDateTimeFromTime(obj.UpdatedAt)
 }
 
 func (user *KBUser) FindOne(p bson.D) error {

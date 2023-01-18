@@ -2,29 +2,19 @@ package kb
 
 import (
 	"encoding/json"
-	"errors"
 
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/kamva/mgm/v3"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func (obj *KBObject) Persist() error {
-	if obj.ID.IsZero() {
-		err := mgm.Coll(obj).Create(obj)
-		return err
-	} else {
+	return initializers.Persist(obj)
 
-		db_doc := new(KBObject)
-		err := mgm.Coll(obj).FindByID(obj.ID, db_doc)
-		if err != nil {
-			return err
-		}
-		if obj.UpdatedAt != db_doc.UpdatedAt {
-			return errors.New("Old document!")
-		}
-		err = mgm.Coll(obj).Update(obj)
-		return err
-	}
+}
+
+func (obj *KBObject) GetPrimitiveUpdateAt() primitive.DateTime {
+	return primitive.NewDateTimeFromTime(obj.UpdatedAt)
 }
 
 func (o *KBObject) String() string {
