@@ -8,6 +8,7 @@ import (
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func (obj *KBClass) Persist() error {
@@ -29,16 +30,21 @@ func (class *KBClass) FindOne(p bson.D) error {
 	}
 }
 
-func (class *KBClass) Delete(force bool) error {
-	//TODO: Verificar se há classes filhas, se houver não exclui
-	//TODO: Verificar se há objetos, se houver não exclui
-	//TODO: com force, excluir todas as dependências antes
-	mgm.Coll(class).Delete(class)
-
-	// Restart KB
-	Stop()
-	Init()
-	return nil
+func (class *KBClass) Delete() error {
+	res := mgm.Coll(class).FindOne(mgm.Ctx(), bson.D{{"parente", class.ID}})
+	if res.Err() == mongo.ErrNoDocuments {
+		res = mgm.Coll(new(KBObject)).FindOne(mgm.Ctx(), bson.D{{"class", class.ID}})
+		if res.Err() == mongo.ErrNoDocuments {
+			err := mgm.Coll(class).Delete(class)
+			if err == nil {
+				// Restart KB
+				Stop()
+				Init()
+			}
+			return err
+		}
+	}
+	return mongo.ErrMultipleIndexDrop
 }
 
 func (class *KBClass) String() string {
