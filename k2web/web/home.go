@@ -14,10 +14,12 @@ import (
 func Home(c *fiber.Ctx) error {
 	if lib.ValidateToken(c.Cookies("jwt")) != nil {
 		c.SendStatus(fiber.StatusForbidden)
-		return c.Redirect("/login")
+		url := c.BaseURL() + "/login?lang=" + c.Query("lang") + "&avatar=" + ctxweb.Avatar
+		return c.Redirect(url)
 	}
 	if len(c.Query("avatar")) == 0 && len(ctxweb.Avatar) > 0 {
-		return c.Redirect(c.BaseURL() + "?avatar=" + ctxweb.Avatar)
+		url := c.BaseURL() + "?lang=" + c.Query("lang") + "&avatar=" + ctxweb.Avatar
+		return c.Redirect(url)
 	}
 	//Context
 	SetContextInfo(c)

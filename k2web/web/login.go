@@ -2,7 +2,6 @@ package web
 
 import (
 	"html/template"
-	"strings"
 	"time"
 
 	"github.com/antoniomralmeida/k2/initializers"
@@ -16,16 +15,14 @@ import (
 
 func LoginForm(c *fiber.Ctx) error {
 	if len(c.Query("avatar")) == 0 && len(ctxweb.Avatar) > 0 {
-		url := c.OriginalURL()
-		sep := "?"
-		if strings.Contains(url, sep) {
-			sep = "&"
-		}
-		return c.Redirect(url + sep + "avatar=" + ctxweb.Avatar)
+		url := c.BaseURL() + "/login?lang=" + c.Query("lang") + "&avatar=" + ctxweb.Avatar
+		return c.Redirect(url)
 	}
 	//Context
 	SetContextInfo(c)
 	//TODO: Incluir reconhecimento facil no login
+	//TODO: Selecionar lingua no login
+
 	//Render
 	t, err := template.ParseFiles(T["login"].minify)
 	if err != nil {

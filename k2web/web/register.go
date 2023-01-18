@@ -4,7 +4,6 @@ import (
 	"html/template"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
@@ -16,12 +15,8 @@ import (
 
 func SignupForm(c *fiber.Ctx) error {
 	if len(c.Query("avatar")) == 0 && len(ctxweb.Avatar) > 0 {
-		url := c.OriginalURL()
-		sep := "?"
-		if strings.Contains(url, sep) {
-			sep = "&"
-		}
-		return c.Redirect(url + sep + "avatar=" + ctxweb.Avatar)
+		url := c.BaseURL() + "/signup?lang=" + c.Query("lang") + "&avatar=" + ctxweb.Avatar
+		return c.Redirect(url)
 	}
 	//Context
 	SetContextInfo(c)

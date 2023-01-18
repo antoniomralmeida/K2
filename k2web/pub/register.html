@@ -33,6 +33,13 @@
 
         <div class="card o-hidden border-0 shadow-lg my-5">
             <div class="card-body p-0">
+                <ul class="nav">
+                    {{range $key, $item := .Locales}}
+                    <li class="nav-item">
+                        <a href="/signup?lang={{$key}}" class="nav-link active">{{$item}}</a>
+                    </li>
+                    {{end}}
+                </ul>
                 <!-- Nested Row within Card Body -->
                 <div class="row">
                     <div class=" d-lg-block ">
@@ -46,7 +53,7 @@
                             <!-- <form name="signup"  action="signup" class="user" enctype="multipart/form-data"
                             method="post"> -->
 
-                            <form id="signup" name="signup"  class="user" onsubmit="return PostSignup();">
+                            <form id="signup" name="signup" class="user" onsubmit="return PostSignup();">
                                 <div class="form-group">
                                     <input type="text" class="form-control form-control-user" id="name" name="name"
                                         placeholder="Name" required>
@@ -80,8 +87,9 @@
                                             (PNG/JPEG)</label>
                                     </div>
                                 </div>
-                                <input type="submit" class="btn btn-primary btn-user btn-block" value="{{index .I18n &quot;i18n_send&quot;}}">
-                                 <hr>
+                                <input type="submit" class="btn btn-primary btn-user btn-block"
+                                    value="{{index .I18n &quot;i18n_send&quot;}}">
+                                <hr>
                                 <div class="col-sm-12">
                                     <small id="passwordHelp" class="text-danger">
                                         <div id="errlabel">

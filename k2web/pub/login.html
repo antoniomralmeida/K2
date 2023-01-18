@@ -27,6 +27,13 @@
         <div class="card o-hidden border-0 shadow-lg my-5">
           <div class="card-body p-0">
             <!-- Nested Row within Card Body -->
+            <ul class="nav">
+              {{range $key, $item := .Locales}}
+              <li class="nav-item">
+                <a href="/login?lang={{$key}}" class="nav-link active">{{$item}}</a>
+              </li>
+              {{end}}
+            </ul>
             <div class="row">
               <div class=" d-lg-block ">
                 <div id="face"></div>
@@ -36,12 +43,12 @@
                   <div class="text-center">
                     <h1 class="h4 text-gray-900 mb-4">{{index .I18n "i18n_wellcome"}}</h1>
                   </div>
-                  <form name="login" class="user"  onsubmit="return PostLogin();">
+                  <form name="login" class="user" onsubmit="return PostLogin();">
                     <div class="form-group">
-                      <input type="email" name="email" class="form-control form-control-user" id="email" aria-describedby="emailHelp" placeholder="Email" required>
+                      <input type="email" name="email" class="form-control form-control-user" id="email" aria-describedby="emailHelp" placeholder="Email" required="">
                     </div>
                     <div class="form-group">
-                      <input type="password" name="password" class="form-control form-control-user" id="password" placeholder="Password" required>
+                      <input type="password" name="password" class="form-control form-control-user" id="password" placeholder="Password" required="">
                     </div>
                     <div class="form-group">
                       <div class="custom-control custom-checkbox small">
@@ -65,6 +72,11 @@
                   <div class="text-center">
                     <a class="small" href="/signup">{{index .I18n "i18n_register"}} </a>
                   </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="row">
+                  <div class="col-md-12"></div>
                 </div>
               </div>
             </div>

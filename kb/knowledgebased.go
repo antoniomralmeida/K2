@@ -83,7 +83,7 @@ func (kb *KnowledgeBased) NewWorkspace(name string, image string) *KBWorkspace {
 		kb.Workspaces = append(kb.Workspaces, w)
 		return &w
 	} else {
-		initializers.Log(err, initializers.Error)
+		initializers.Log(err, initializers.Fatal)
 		return nil
 	}
 }
@@ -178,7 +178,7 @@ func (kb *KnowledgeBased) NewAttributeObject(obj *KBObject, attr *KBAttribute) *
 	if err == nil {
 		return &a
 	} else {
-		initializers.Log(err, initializers.Error)
+		initializers.Log(err, initializers.Fatal)
 		return nil
 	}
 }

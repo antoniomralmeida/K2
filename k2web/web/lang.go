@@ -28,13 +28,13 @@ var i18n_en map[string]string
 func InitLangs() {
 	languages = make(map[string]Language)
 	languages["en"] = Language{Description: "English", SpeechSynthesisId: 1}
-	languages["pt"] = Language{Description: "Português Brasileiro", SpeechSynthesisId: 0}
-	//languages["es"] = Language{Description: "Espanhol", SpeechSynthesisId: 262}
-	//languages["de"] = Language{Description: "Germany", SpeechSynthesisId: 143}
-	//languages["hi"] = Language{Description: "Hindi", SpeechSynthesisId: 154}
-	//languages["ar"] = Language{Description: "Arabic", SpeechSynthesisId: 12}
-	//languages["bn"] = Language{Description: "Bengali", SpeechSynthesisId: 48}
-	//languages["ru"] = Language{Description: "Russian", SpeechSynthesisId: 213}
+	languages["pt"] = Language{Description: "Portuguese(BR)", SpeechSynthesisId: 0}
+	languages["es"] = Language{Description: "Espanhol", SpeechSynthesisId: 262}
+	languages["de"] = Language{Description: "Germany", SpeechSynthesisId: 143}
+	languages["hi"] = Language{Description: "Hindi", SpeechSynthesisId: 154}
+	languages["ar"] = Language{Description: "Arabic", SpeechSynthesisId: 12}
+	languages["bn"] = Language{Description: "Bengali", SpeechSynthesisId: 48}
+	languages["ru"] = Language{Description: "Russian", SpeechSynthesisId: 213}
 	languages["ja"] = Language{Description: "Japanese", SpeechSynthesisId: 167}
 
 	i18n_en = make(map[string]string)
@@ -89,6 +89,10 @@ func SetContextInfo(c *fiber.Ctx) {
 			ctxweb.SpeechSynthesisId = l2.SpeechSynthesisId
 			break
 		}
+	}
+	ctxweb.Locales = make(map[string]string)
+	for key, value := range languages {
+		ctxweb.Locales[key] = value.Description
 	}
 	ctxweb.JwtToken = c.Cookies("jwt")
 	keys := lib.DecodeToken(ctxweb.JwtToken)

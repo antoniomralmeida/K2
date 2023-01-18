@@ -44,6 +44,7 @@ type KBUser struct {
 
 type Context struct {
 	I18n              map[string]string
+	Locales           map[string]string
 	JwtToken          string
 	UserId            string
 	User              string
