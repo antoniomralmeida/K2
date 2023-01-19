@@ -2,14 +2,14 @@ FROM smartentry/ubuntu  as k2-olivia
 
 WORKDIR /var/www/k2
 
-COPY ./bin/k2olivia.so ./bin/
+COPY ./bin/k2olivia.bin ./bin/
 COPY ["./config/", "./config/"] 
 COPY ./log/*.md ./log/
-COPY ./olivia/res/ ./olivia/res/
+COPY ./k2olivia/res/ ./k2olivia/res/
 
 RUN chmod -R 777 .
 EXPOSE 8090
 
-ENTRYPOINT ["sh", "-c", "./bin/k2olivia.so"]
+ENTRYPOINT ["sh", "-c", "./bin/k2olivia.bin"]
 
 

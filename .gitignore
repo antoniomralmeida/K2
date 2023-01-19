@@ -4,4 +4,4 @@ bin/*.*
 log/*.*
 
 *.exe
-*.so
+*.bin

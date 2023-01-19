@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/antoniomralmeida/k2/lib"
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -22,7 +21,6 @@ func ConnectDB() {
 
 	dsn := os.Getenv("DSN")
 	dbName := os.Getenv("DB")
-	Log(lib.Ping(dsn), Fatal)
 
 	err := mgm.SetDefaultConfig(nil, dbName, options.Client().ApplyURI(dsn))
 	Log(err, Fatal)
