@@ -1,5 +1,11 @@
 package locales
 
+import (
+	"fmt"
+
+	"github.com/antoniomralmeida/k2/lib"
+)
+
 // Import these packages to trigger the init() function
 
 // Locales is the list of locales's tags and names
@@ -48,10 +54,23 @@ var Locales = []Locale{
 	},
 }
 
+func init() {
+	for i := range Locales {
+		var err error
+		Locales[i].Stemmer, err = lib.NewStem(Locales[i].Tag)
+		if err != nil {
+			fmt.Println("Stemmer error", err)
+			return
+		}
+	}
+
+}
+
 // A Locale is a registered locale in the file
 type Locale struct {
-	Tag  string
-	Name string
+	Tag     string
+	Name    string
+	Stemmer *lib.Stem
 }
 
 // GetNameByTag returns the name of the given locale's tag
@@ -64,7 +83,7 @@ func GetNameByTag(tag string) string {
 		return locale.Name
 	}
 
-	return ""
+	return "English"
 }
 
 // GetTagByName returns the tag of the given locale's name
@@ -77,7 +96,19 @@ func GetTagByName(name string) string {
 		return locale.Tag
 	}
 
-	return ""
+	return "en"
+}
+
+func GetLocaleByName(name string) Locale {
+	for _, locale := range Locales {
+		if locale.Name != name {
+			continue
+		}
+
+		return locale
+	}
+
+	return Locales[0]
 }
 
 // Exists checks if the given tag exists in the list of locales

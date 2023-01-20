@@ -1,4 +1,4 @@
-@echo off
+ren @echo off
 go mod tidy
 set GOARCH=amd64
 set GOOS=linux

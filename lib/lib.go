@@ -8,6 +8,7 @@ import (
 	"io"
 	"math/rand"
 	"net"
+	"net/http"
 	"net/url"
 	"os"
 	"os/exec"
@@ -155,15 +156,16 @@ func copy(src, dst string) (int64, error) {
 }
 
 func Ping(uri string) error {
-	if runtime.GOOS == "linux" {
+	if runtime.GOOS == "windows" {
+		u, err := url.Parse(uri)
+		if err != nil {
+			return err
+		}
+		_, err = net.Dial("tcp", u.Host)
+		return err
+	} else {
 		return nil
 	}
-	u, err := url.Parse(uri)
-	if err != nil {
-		return err
-	}
-	_, err = net.Dial("tcp", u.Host)
-	return err
 }
 
 func GeneratePassword(passwordLength, minSpecialChar, minNum, minUpperCase int) string {
@@ -261,4 +263,38 @@ func TempFileName(prefix, suffix string) string {
 	randBytes := make([]byte, 16)
 	rand.Read(randBytes)
 	return filepath.Join(os.TempDir(), prefix+hex.EncodeToString(randBytes)+suffix)
+}
+
+func DownloadFile(fullURLFile string, dirPath string) (error, string) {
+
+	// Build fileName from fullPath
+	fileURL, err := url.Parse(fullURLFile)
+	if err != nil {
+		return err, ""
+	}
+	path := fileURL.Path
+	segments := strings.Split(path, "/")
+	fileName := dirPath + segments[len(segments)-1]
+	// Create blank file
+	file, err := os.Create(fileName)
+	if err != nil {
+		return err, ""
+	}
+	client := http.Client{
+		CheckRedirect: func(r *http.Request, via []*http.Request) error {
+			r.URL.Opaque = r.URL.Path
+			return nil
+		},
+	}
+	// Put content on file
+	resp, err := client.Get(fullURLFile)
+	if err != nil {
+		return err, ""
+	}
+	defer resp.Body.Close()
+
+	_, err = io.Copy(file, resp.Body)
+
+	defer file.Close()
+	return err, fileName
 }

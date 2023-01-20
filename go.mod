@@ -23,7 +23,6 @@ require (
 	github.com/soudy/mathcat v0.0.0-20201027222343-588f3d377cb9
 	github.com/subosito/gotenv v1.4.1
 	github.com/tdewolff/minify v2.3.6+incompatible
-	github.com/tebeka/snowball v0.7.0
 	github.com/zmb3/spotify v1.3.0
 	go.mongodb.org/mongo-driver v1.11.1
 	go.opentelemetry.io/otel v1.11.2

@@ -1,13 +1,11 @@
 package analysis
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 
 	"github.com/antoniomralmeida/k2/k2olivia/locales"
 	"github.com/antoniomralmeida/k2/k2olivia/util"
-	"github.com/tebeka/snowball"
 )
 
 // arrange checks the format of a string to normalize it, remove ignored characters
@@ -31,7 +29,7 @@ func removeStopWords(locale string, words []string) []string {
 	}
 
 	// Read the content of the stopwords file
-	stopWords := string(util.ReadFile("res/locales/" + locale + "/stopwords.txt"))
+	stopWords := string(util.ReadFile("./k2olivia/res/locales/" + locale + "/stopwords.txt"))
 
 	var wordsToRemove []string
 
@@ -68,23 +66,13 @@ func (sentence Sentence) tokenize() (tokens []string) {
 
 // stem returns the sentence split in stemmed words
 func (sentence Sentence) stem() (tokenizeWords []string) {
-	locale := locales.GetTagByName(sentence.Locale)
-	// Set default locale to english
-	if locale == "" {
-		locale = "english"
-	}
+	locale := locales.GetLocaleByName(sentence.Locale)
 
 	tokens := sentence.tokenize()
 
-	stemmer, err := snowball.New(locale)
-	if err != nil {
-		fmt.Println("Stemmer error", err)
-		return
-	}
-
 	// Get the string token and push it to tokenizeWord
 	for _, tokenizeWord := range tokens {
-		word := stemmer.Stem(tokenizeWord)
+		word := locale.Stemmer.Stem(tokenizeWord)
 		tokenizeWords = append(tokenizeWords, word)
 	}
 
