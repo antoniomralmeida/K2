@@ -29,13 +29,15 @@ func InitLangs() {
 	languages = make(map[string]Language)
 	languages["en"] = Language{Description: "English", SpeechSynthesisId: 1}
 	languages["pt"] = Language{Description: "Portuguese(BR)", SpeechSynthesisId: 0}
-	languages["es"] = Language{Description: "Espanhol", SpeechSynthesisId: 262}
-	languages["de"] = Language{Description: "Germany", SpeechSynthesisId: 143}
+	languages["es"] = Language{Description: "Spanish", SpeechSynthesisId: 262}
+	languages["de"] = Language{Description: "German", SpeechSynthesisId: 143}
 	languages["hi"] = Language{Description: "Hindi", SpeechSynthesisId: 154}
 	languages["ar"] = Language{Description: "Arabic", SpeechSynthesisId: 12}
 	languages["bn"] = Language{Description: "Bengali", SpeechSynthesisId: 48}
 	languages["ru"] = Language{Description: "Russian", SpeechSynthesisId: 213}
 	languages["ja"] = Language{Description: "Japanese", SpeechSynthesisId: 167}
+	languages["fr"] = Language{Description: "French", SpeechSynthesisId: 133}
+	languages["it"] = Language{Description: "Italian", SpeechSynthesisId: 164}
 
 	i18n_en = make(map[string]string)
 	i18n_en["i18n_title"] = "K2 System KnowledgeBase"

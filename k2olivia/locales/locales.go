@@ -3,7 +3,7 @@ package locales
 import (
 	"fmt"
 
-	"github.com/antoniomralmeida/k2/lib"
+	"github.com/antoniomralmeida/k2/k2olivia/util"
 )
 
 // Import these packages to trigger the init() function
@@ -11,6 +11,7 @@ import (
 // Locales is the list of locales's tags and names
 // Please check if the language is supported in https://github.com/tebeka/snowball,
 // if it is please add the correct language name.
+
 var Locales = []Locale{
 	{
 		Tag:  "en",
@@ -29,35 +30,39 @@ var Locales = []Locale{
 		Name: "spanish",
 	},
 	{
-		Tag:  "ca",
-		Name: "catalan",
+		Tag:  "hi",
+		Name: "hindi",
 	},
 	{
 		Tag:  "it",
 		Name: "italian",
 	},
 	{
-		Tag:  "tr",
-		Name: "turkish",
+		Tag:  "ar",
+		Name: "arabic",
 	},
 	{
-		Tag:  "nl",
-		Name: "dutch",
+		Tag:  "bn",
+		Name: "bengali",
 	},
 	{
-		Tag:  "el",
-		Name: "greek",
+		Tag:  "ja",
+		Name: "japanese",
 	},
 	{
 		Tag:  "pt",
-		Name: "Portuguese",
+		Name: "portuguese",
+	},
+	{
+		Tag:  "ru",
+		Name: "russian",
 	},
 }
 
 func init() {
 	for i := range Locales {
 		var err error
-		Locales[i].Stemmer, err = lib.NewStem(Locales[i].Tag)
+		Locales[i].Stemmer, err = util.NewStem(Locales[i].Tag)
 		if err != nil {
 			fmt.Println("Stemmer error", err)
 			return
@@ -70,7 +75,7 @@ func init() {
 type Locale struct {
 	Tag     string
 	Name    string
-	Stemmer *lib.Stem
+	Stemmer *util.Stem
 }
 
 // GetNameByTag returns the name of the given locale's tag
@@ -92,10 +97,8 @@ func GetTagByName(name string) string {
 		if locale.Name != name {
 			continue
 		}
-
 		return locale.Tag
 	}
-
 	return "en"
 }
 
@@ -104,10 +107,8 @@ func GetLocaleByName(name string) Locale {
 		if locale.Name != name {
 			continue
 		}
-
 		return locale
 	}
-
 	return Locales[0]
 }
 

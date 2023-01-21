@@ -73,7 +73,7 @@ func (sentence Sentence) stem() (tokenizeWords []string) {
 	// Get the string token and push it to tokenizeWord
 	for _, tokenizeWord := range tokens {
 		word := locale.Stemmer.Stem(tokenizeWord)
-		tokenizeWords = append(tokenizeWords, word)
+		tokenizeWords = append(tokenizeWords, word...)
 	}
 
 	return
