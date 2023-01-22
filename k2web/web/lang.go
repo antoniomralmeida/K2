@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/BurntSushi/toml"
+	"github.com/antoniomralmeida/golibretranslate"
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
 	"github.com/gofiber/fiber/v2"
@@ -67,13 +68,35 @@ func InitLangs() {
 		if code == "en" || os.IsNotExist(err) {
 			f, err := os.Create(TomlFile(code))
 			initializers.Log(err, initializers.Error)
-			js, err := json.Marshal(i18n_en)
-			initializers.Log(err, initializers.Error)
-			f.WriteString(string(js))
+			if code == "en" {
+				js, err := json.Marshal(i18n_en)
+				initializers.Log(err, initializers.Error)
+				f.WriteString(string(js))
+			} else {
+				i18n, err := I18nTranslate(&i18n_en, code)
+				fmt.Println(i18n)
+				initializers.Log(err, initializers.Error)
+				js, err := json.Marshal(i18n)
+				initializers.Log(err, initializers.Error)
+				f.WriteString(string(js))
+			}
 			f.Close()
 		}
 		bundle.MustLoadMessageFile(TomlFile(code))
 	}
+}
+
+func I18nTranslate(orignal *map[string]string, locale string) (map[string]string, error) {
+	translated := make(map[string]string)
+	for key, _ := range *orignal {
+		trans, err := golibretranslate.Translate((*orignal)[key], "en", locale)
+		if err == nil {
+			translated[key] = trans
+		} else {
+			return translated, err
+		}
+	}
+	return translated, nil
 }
 
 func SetContextInfo(c *fiber.Ctx) {

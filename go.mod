@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/BurntSushi/toml v1.2.1
 	github.com/PaesslerAG/gval v1.2.1
+	github.com/antoniomralmeida/golibretranslate v0.0.0-20230122161113-46a7d746ca82
 	github.com/gofiber/fiber/v2 v2.40.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.0
