@@ -74,10 +74,9 @@ func InitLangs() {
 				f.WriteString(string(js))
 			} else {
 				i18n, err := I18nTranslate(&i18n_en, code)
-				fmt.Println(i18n)
-				initializers.Log(err, initializers.Error)
+				initializers.Log(err, initializers.Fatal)
 				js, err := json.Marshal(i18n)
-				initializers.Log(err, initializers.Error)
+				initializers.Log(err, initializers.Fatal)
 				f.WriteString(string(js))
 			}
 			f.Close()
@@ -89,6 +88,7 @@ func InitLangs() {
 func I18nTranslate(orignal *map[string]string, locale string) (map[string]string, error) {
 	translated := make(map[string]string)
 	for key, _ := range *orignal {
+		fmt.Println(key)
 		trans, err := golibretranslate.Translate((*orignal)[key], "en", locale)
 		if err == nil {
 			translated[key] = trans
@@ -135,7 +135,12 @@ func translateID(id string, c *fiber.Ctx) string {
 }
 
 func TomlFile(code string) string {
-	return "./config/i18n." + code + ".json"
+	path := "./k2web/pub/res/locale/" + code + "/"
+	if ok, _ := lib.Exists(path); !ok {
+		err := os.Mkdir(path, os.FileMode(0777))
+		initializers.Log(err, initializers.Fatal)
+	}
+	return path + "i18n.json"
 }
 
 type LangQ struct {
