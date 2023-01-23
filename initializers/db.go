@@ -78,7 +78,7 @@ func Persist(model ModelExt) error {
 	if !primitive.IsValidObjectID(fmt.Sprint(model.GetID())) {
 		return mgm.Coll(model).Create(model)
 	} else {
-		res := mgm.Coll(model).FindOne(mgm.Ctx(), bson.D{{"_id", model.GetID()}, {"updated_at", model.GetPrimitiveUpdateAt()}})
+		res := mgm.Coll(model).FindOne(mgm.Ctx(), bson.D{{Key: "_id", Value: model.GetID()}, {Key: "updated_at", Value: model.GetPrimitiveUpdateAt()}})
 		if res.Err() == nil {
 			return mgm.Coll(model).Update(model)
 		} else {

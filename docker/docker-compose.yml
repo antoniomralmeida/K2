@@ -1,0 +1,63 @@
+# Use root/example as user/password credentials
+version: '3.1'
+
+services:
+  app-olivia:
+    ports:
+      - 8090:8090
+    build:
+      dockerfile: k2-olivia
+      context: .
+      target: k2-olivia
+
+  mongodb:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: k2user
+      MONGO_INITDB_ROOT_PASSWORD: SOh3TbYhx8ypJPxmt1oOfL
+    ports:
+      - 27017:27017
+
+  app-back:
+    depends_on:
+      - mongodb
+      - telemetry
+      - app-olivia
+    environment: 
+      - DSN=mongodb://k2user:SOh3TbYhx8ypJPxmt1oOfL@mongodb
+    ports:
+      - 5050:5050
+    build:
+      dockerfile: k2-back
+      context: .
+      target: k2-back
+
+  app-web:
+    depends_on:
+      - app-back
+    ports:
+      - 8080:8080
+    build:
+      dockerfile: k2-web
+      context: .
+      target: k2-web
+    environment: 
+      - DSN=mongodb://k2user:SOh3TbYhx8ypJPxmt1oOfL@mongodb
+
+  telemetry:
+    image: openzipkin/zipkin
+    hostname: k2host
+    restart: always
+    ports:
+      - 9411:9411
+
+  mongo-express:
+    image: mongo-express
+    depends_on:
+      - mongodb
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://k2user:SOh3TbYhx8ypJPxmt1oOfL@mongodb

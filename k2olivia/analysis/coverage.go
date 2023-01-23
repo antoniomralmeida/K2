@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/antoniomralmeida/k2/k2olivia/locales"
+	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/k2olivia/modules"
 	"github.com/antoniomralmeida/k2/k2olivia/util"
 )
@@ -49,18 +49,19 @@ func GetCoverage(writer http.ResponseWriter, _ *http.Request) {
 	var coverage []LocaleCoverage
 
 	// Calculate coverage for each language
-	for _, locale := range locales.Locales {
-		if locale.Tag == "en" {
+	for key, value := range initializers.Locales {
+
+		if key == "en" {
 			continue
 		}
 
 		coverage = append(coverage, LocaleCoverage{
-			Tag:      locale.Tag,
-			Language: locales.GetNameByTag(locale.Tag),
+			Tag:      key,
+			Language: value.Description,
 			Coverage: Coverage{
-				Modules:  getModuleCoverage(locale.Tag),
-				Intents:  getIntentCoverage(locale.Tag),
-				Messages: getMessageCoverage(locale.Tag),
+				Modules:  getModuleCoverage(key),
+				Intents:  getIntentCoverage(key),
+				Messages: getMessageCoverage(key),
 			},
 		})
 	}

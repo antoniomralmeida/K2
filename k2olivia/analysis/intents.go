@@ -38,6 +38,9 @@ func GetIntents(locale string) []Intent {
 
 // SerializeIntents returns a list of intents retrieved from the given intents file
 func SerializeIntents(locale string) (_intents []Intent) {
+
+	//TODO: use golibretranslate to create file if not exists
+
 	err := json.Unmarshal(util.ReadFile("./k2olivia/res/locales/"+locale+"/intents.json"), &_intents)
 	if err != nil {
 		initializers.Log(err, initializers.Fatal)
