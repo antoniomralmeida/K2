@@ -1,5 +1,6 @@
 @echo off
-go mod tidy
+rem go get -u
+rem go mod tidy
 set GOARCH=amd64
 set GOOS=windows
 del bin\*.exe
