@@ -23,7 +23,7 @@ func Run() {
 
 	ctxweb.ApiKernel = os.Getenv("APIKERNEL")
 	ctxweb.Avatar = os.Getenv("AVATAR")
-	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 System ", version.Version, "[", version.Build, "]"),
+	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 System ", version.GetVersion(), "[", version.GetBuild(), "]"),
 		DisableStartupMessage: false,
 		Prefork:               false})
 	wd := initializers.GetHomeDir()

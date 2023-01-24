@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	msg := fmt.Sprintf("Initializing Web Server K2 system version: %v build: %v", version.Version, version.Build)
+	msg := fmt.Sprintf("Initializing Web Server K2 system version: %v build: %v", version.GetVersion(), version.GetBuild())
 
 	initializers.LogInit("k2weblog")
 	if !fiber.IsChild() {

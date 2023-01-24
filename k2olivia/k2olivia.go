@@ -19,7 +19,7 @@ var neuralNetworks = map[string]network.Network{}
 
 func init() {
 	initializers.LogInit("k2olivia")
-	msg := fmt.Sprintf("Initializing K2 Olivia version: %v build: %v PID: %v", version.Version, version.Build, os.Getppid())
+	msg := fmt.Sprintf("Initializing K2 Olivia version: %v build: %v PID: %v", version.GetVersion(), version.GetBuild(), os.Getppid())
 	fmt.Println(msg)
 	initializers.Log(msg, initializers.Info)
 }

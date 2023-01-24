@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	msg := fmt.Sprintf("Initializing K2 IoT Midware: %v build: %v PID: %v", version.Version, version.Build, os.Getppid())
+	msg := fmt.Sprintf("Initializing K2 IoT Midware: %v build: %v PID: %v", version.GetVersion(), version.GetBuild(), os.Getppid())
 	fmt.Println(msg)
 	initializers.InitEnvVars()
 	initializers.LogInit("k2iot")

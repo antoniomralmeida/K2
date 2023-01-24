@@ -15,7 +15,7 @@ import (
 )
 
 func Run() {
-	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 IoT MidWare ", v.Version, "[", v.Build, "]"),
+	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 IoT MidWare ", v.GetVersion(), "[", v.GetBuild(), "]"),
 		DisableStartupMessage: true,
 		Prefork:               false})
 
