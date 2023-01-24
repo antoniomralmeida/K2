@@ -291,6 +291,9 @@ func DownloadFile(fullURLFile string, dirPath string) (error, string) {
 	if err != nil {
 		return err, ""
 	}
+	if resp.StatusCode != 200 {
+		return errors.New(resp.Status), ""
+	}
 	defer resp.Body.Close()
 
 	_, err = io.Copy(file, resp.Body)

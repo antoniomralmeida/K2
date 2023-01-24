@@ -19,26 +19,29 @@ var neuralNetworks = map[string]network.Network{}
 
 func init() {
 	initializers.LogInit("k2olivia")
+<<<<<<< HEAD
 	msg := fmt.Sprintf("Initializing K2 Olivia version: %v build: %v PID: %v", version.GetVersion(), version.GetBuild(), os.Getppid())
+=======
+	initializers.InitLangs()
+	locales.InitStem()
+	msg := fmt.Sprintf("Initializing K2 Olivia version: %v build: %v PID: %v", version.Version, version.Build, os.Getppid())
+>>>>>>> 01887a253f097f28bcbfe9116bed04d1b593fab3
 	fmt.Println(msg)
 	initializers.Log(msg, initializers.Info)
 }
 
 func main() {
-	for _, locale := range locales.Locales {
-		reTrainModels(locale.Tag)
+	for key := range initializers.Locales {
+		reTrainModels(key)
 	}
 	wd := initializers.GetHomeDir()
 	// Print the Olivia ascii text
 	oliviaASCII := string(util.ReadFile(wd + "/k2olivia/res/olivia-ascii.txt"))
 	fmt.Println(color.FgLightGreen.Render(oliviaASCII))
 
-	// Create the authentication token
-
-	//dashboard.Authenticate()
-	for _, locale := range locales.Locales {
-		util.SerializeMessages(locale.Tag)
-		neuralNetworks[locale.Tag] = training.CreateNeuralNetwork(locale.Tag, false)
+	for key := range initializers.Locales {
+		util.SerializeMessages(key)
+		neuralNetworks[key] = training.CreateNeuralNetwork(key, false)
 	}
 
 	// Serves the server

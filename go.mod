@@ -5,14 +5,17 @@ go 1.19
 require (
 	github.com/BurntSushi/toml v1.2.1
 	github.com/PaesslerAG/gval v1.2.1
+<<<<<<< HEAD
 	github.com/antoniomralmeida/golibretranslate v0.0.0-20230122161113-46a7d746ca82
+=======
+	github.com/antoniomralmeida/golibretranslate v0.0.0-20230123180058-2bd65c7a248b
+>>>>>>> 01887a253f097f28bcbfe9116bed04d1b593fab3
 	github.com/gofiber/fiber/v2 v2.41.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.0
 	github.com/gookit/color v1.5.2
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.5.0
-	github.com/hegedustibor/htgo-tts v0.0.0-20220821045517-04f3cda7a12f
 	github.com/kamva/mgm/v3 v3.5.0
 	github.com/madflojo/tasks v1.0.4
 	github.com/mattn/go-tty v0.0.4
@@ -32,7 +35,11 @@ require (
 	go.opentelemetry.io/otel/trace v1.11.2
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.5.0
+<<<<<<< HEAD
 	golang.org/x/oauth2 v0.3.0
+=======
+	golang.org/x/oauth2 v0.4.0
+>>>>>>> 01887a253f097f28bcbfe9116bed04d1b593fab3
 	golang.org/x/text v0.6.0
 	gonum.org/v1/gonum v0.12.0
 	gopkg.in/cheggaaa/pb.v1 v1.0.28
@@ -46,8 +53,6 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
-	github.com/hajimehoshi/go-mp3 v0.3.3 // indirect
-	github.com/hajimehoshi/oto/v2 v2.2.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/klauspost/compress v1.15.15 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect

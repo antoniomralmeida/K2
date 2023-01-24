@@ -6,9 +6,9 @@ RUN apt-get update
 
 WORKDIR /var/www/k2
 
-COPY ./bin/k2.bin ./bin/
-COPY ["./config/", "./config/"] 
-COPY ./log/*.md ./log/
+COPY ../bin/k2.bin ./bin/
+COPY ["../config/", "./config/"] 
+COPY ../log/*.md ./log/
 
 RUN chmod -R 777 .
 

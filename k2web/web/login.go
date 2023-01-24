@@ -21,7 +21,6 @@ func LoginForm(c *fiber.Ctx) error {
 	//Context
 	SetContextInfo(c)
 	//TODO: Incluir reconhecimento facil no login
-	//TODO: Selecionar lingua no login
 
 	//Render
 	t, err := template.ParseFiles(T["login"].minify)

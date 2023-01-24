@@ -1,9 +1,7 @@
 package locales
 
 import (
-	"fmt"
-
-	"github.com/antoniomralmeida/k2/k2olivia/util"
+	"github.com/antoniomralmeida/k2/initializers"
 )
 
 // Import these packages to trigger the init() function
@@ -12,113 +10,48 @@ import (
 // Please check if the language is supported in https://github.com/tebeka/snowball,
 // if it is please add the correct language name.
 
-var Locales = []Locale{
-	{
-		Tag:  "en",
-		Name: "english",
-	},
-	{
-		Tag:  "de",
-		Name: "german",
-	},
-	{
-		Tag:  "fr",
-		Name: "french",
-	},
-	{
-		Tag:  "es",
-		Name: "spanish",
-	},
-	{
-		Tag:  "hi",
-		Name: "hindi",
-	},
-	{
-		Tag:  "it",
-		Name: "italian",
-	},
-	{
-		Tag:  "ar",
-		Name: "arabic",
-	},
-	{
-		Tag:  "bn",
-		Name: "bengali",
-	},
-	{
-		Tag:  "ja",
-		Name: "japanese",
-	},
-	{
-		Tag:  "pt",
-		Name: "portuguese",
-	},
-	{
-		Tag:  "ru",
-		Name: "russian",
-	},
-}
+const Locale_default = "en"
 
-func init() {
-	for i := range Locales {
-		var err error
-		Locales[i].Stemmer, err = util.NewStem(Locales[i].Tag)
+func InitStem() {
+	for key := range initializers.Locales {
+		st, err := initializers.NewStem(key)
 		if err != nil {
-			fmt.Println("Stemmer error", err)
-			return
+			initializers.Log(err, initializers.Error)
+		} else {
+			l := initializers.Locales[key]
+			l.Stemmer = st
+			initializers.Locales[key] = l
 		}
 	}
-
-}
-
-// A Locale is a registered locale in the file
-type Locale struct {
-	Tag     string
-	Name    string
-	Stemmer *util.Stem
 }
 
 // GetNameByTag returns the name of the given locale's tag
 func GetNameByTag(tag string) string {
-	for _, locale := range Locales {
-		if locale.Tag != tag {
-			continue
-		}
-
-		return locale.Name
-	}
-
-	return "English"
+	return initializers.Locales[tag].Description
 }
 
 // GetTagByName returns the tag of the given locale's name
 func GetTagByName(name string) string {
-	for _, locale := range Locales {
-		if locale.Name != name {
-			continue
+
+	for key, value := range initializers.Locales {
+		if value.Description == name {
+			return key
 		}
-		return locale.Tag
 	}
-	return "en"
+	return Locale_default
 }
 
-func GetLocaleByName(name string) Locale {
-	for _, locale := range Locales {
-		if locale.Name != name {
-			continue
+func GetLocaleByName(name string) initializers.Locale {
+	for key, value := range initializers.Locales {
+		if value.Description == name {
+			return initializers.Locales[key]
 		}
-		return locale
 	}
-	return Locales[0]
+	return initializers.Locales[Locale_default]
 }
 
 // Exists checks if the given tag exists in the list of locales
 func Exists(tag string) bool {
-	for _, locale := range Locales {
-		if locale.Tag == tag {
-			return true
-		}
-	}
-
-	return false
+	_, ok := initializers.Locales[tag]
+	return ok
 }

@@ -2,11 +2,15 @@ package analysis
 
 import (
 	"encoding/json"
+	"os"
 	"sort"
 
+	"github.com/antoniomralmeida/golibretranslate"
 	"github.com/antoniomralmeida/k2/initializers"
+	"github.com/antoniomralmeida/k2/k2olivia/locales"
 	"github.com/antoniomralmeida/k2/k2olivia/modules"
 	"github.com/antoniomralmeida/k2/k2olivia/util"
+	"github.com/antoniomralmeida/k2/lib"
 )
 
 var intents = map[string][]Intent{}
@@ -36,12 +40,69 @@ func GetIntents(locale string) []Intent {
 	return intents[locale]
 }
 
+func intentsFile(locale string) string {
+
+	return initializers.GetHomeDir() + "/k2olivia/res/locales/" + locale + "/intents.json"
+}
+
+func translateIntents(_intents *[]Intent, locale string) (err error) {
+	for i := range *_intents {
+		var trans string
+		trans, err = golibretranslate.Translate((*_intents)[i].Tag, "en", locale)
+		if err == nil {
+			(*_intents)[i].Tag = trans
+		} else {
+			return
+		}
+		trans, err = golibretranslate.Translate((*_intents)[i].Context, "en", locale)
+		if err == nil {
+			(*_intents)[i].Context = trans
+		} else {
+			return
+		}
+		for j := range (*_intents)[i].Patterns {
+			trans, err = golibretranslate.Translate((*_intents)[i].Patterns[j], "en", locale)
+			if err == nil {
+				(*_intents)[i].Patterns[j] = trans
+			} else {
+				return
+			}
+		}
+		for j := range (*_intents)[i].Responses {
+			trans, err = golibretranslate.Translate((*_intents)[i].Responses[j], "en", locale)
+			if err == nil {
+				(*_intents)[i].Responses[j] = trans
+			} else {
+				return
+			}
+		}
+	}
+	return
+}
+
 // SerializeIntents returns a list of intents retrieved from the given intents file
 func SerializeIntents(locale string) (_intents []Intent) {
-	err := json.Unmarshal(util.ReadFile("./k2olivia/res/locales/"+locale+"/intents.json"), &_intents)
-	if err != nil {
+
+	//TODO: use golibretranslate to create file if not exists
+	intents := intentsFile(locale)
+
+	if ok, _ := lib.Exists(intents); !ok {
+		intents_tmp := []Intent{}
+		intentsFile := intentsFile(locales.Locale_default)
+		err := json.Unmarshal(util.ReadFile(intentsFile), &intents_tmp)
 		initializers.Log(err, initializers.Fatal)
+		err = translateIntents(&intents_tmp, locale)
+		initializers.Log(err, initializers.Fatal)
+		js, err := json.Marshal(intents_tmp)
+		initializers.Log(err, initializers.Error)
+		f, err := os.Create(intents)
+		initializers.Log(err, initializers.Error)
+		f.WriteString(string(js))
+		f.Close()
 	}
+
+	err := json.Unmarshal(util.ReadFile(intents), &_intents)
+	initializers.Log(err, initializers.Fatal)
 
 	CacheIntents(locale, _intents)
 

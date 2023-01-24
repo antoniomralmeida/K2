@@ -1,11 +1,15 @@
 package analysis
 
 import (
+	"os"
 	"regexp"
 	"strings"
 
+	"github.com/antoniomralmeida/golibretranslate"
+	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/k2olivia/locales"
 	"github.com/antoniomralmeida/k2/k2olivia/util"
+	"github.com/antoniomralmeida/k2/lib"
 )
 
 // arrange checks the format of a string to normalize it, remove ignored characters
@@ -20,6 +24,9 @@ func (sentence *Sentence) arrange() {
 	sentence.Content = strings.ReplaceAll(sentence.Content, "-", " ")
 	sentence.Content = strings.TrimSpace(sentence.Content)
 }
+func stopWorksFile(locale string) string {
+	return initializers.GetHomeDir() + "/k2olivia/res/locales/" + locale + "/stopwords.txt"
+}
 
 // removeStopWords takes an arary of words, removes the stopwords and returns it
 func removeStopWords(locale string, words []string) []string {
@@ -28,8 +35,20 @@ func removeStopWords(locale string, words []string) []string {
 		return words
 	}
 
+	stopfile := stopWorksFile(locale)
+	if ok, _ := lib.Exists(stopfile); !ok {
+		tmpFile := intentsFile(locales.Locale_default)
+		tmpWords := string(util.ReadFile(tmpFile))
+		tmpWords, err := golibretranslate.Translate(tmpWords, locales.Locale_default, locale)
+		initializers.Log(err, initializers.Error)
+		f, err := os.Create(stopfile)
+		initializers.Log(err, initializers.Error)
+		f.WriteString(tmpWords)
+		f.Close()
+	}
+
 	// Read the content of the stopwords file
-	stopWords := string(util.ReadFile("./k2olivia/res/locales/" + locale + "/stopwords.txt"))
+	stopWords := string(util.ReadFile(stopfile))
 
 	var wordsToRemove []string
 

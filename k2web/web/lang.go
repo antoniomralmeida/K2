@@ -18,27 +18,9 @@ import (
 
 var bundle *i18n.Bundle
 
-type Language struct {
-	Description       string
-	SpeechSynthesisId int
-}
-
-var languages map[string]Language
 var i18n_en map[string]string
 
 func InitLangs() {
-	languages = make(map[string]Language)
-	languages["en"] = Language{Description: "English", SpeechSynthesisId: 1}
-	languages["pt"] = Language{Description: "Portuguese(BR)", SpeechSynthesisId: 0}
-	languages["es"] = Language{Description: "Spanish", SpeechSynthesisId: 262}
-	languages["de"] = Language{Description: "German", SpeechSynthesisId: 143}
-	languages["hi"] = Language{Description: "Hindi", SpeechSynthesisId: 154}
-	languages["ar"] = Language{Description: "Arabic", SpeechSynthesisId: 12}
-	languages["bn"] = Language{Description: "Bengali", SpeechSynthesisId: 48}
-	languages["ru"] = Language{Description: "Russian", SpeechSynthesisId: 213}
-	languages["ja"] = Language{Description: "Japanese", SpeechSynthesisId: 167}
-	languages["fr"] = Language{Description: "French", SpeechSynthesisId: 133}
-	languages["it"] = Language{Description: "Italian", SpeechSynthesisId: 164}
 
 	i18n_en = make(map[string]string)
 	i18n_en["i18n_title"] = "K2 System KnowledgeBase"
@@ -63,7 +45,7 @@ func InitLangs() {
 	bundle = i18n.NewBundle(language.English)
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 
-	for code := range languages {
+	for code := range initializers.Locales {
 		_, err := os.Stat(TomlFile(code))
 		if code == "en" || os.IsNotExist(err) {
 			f, err := os.Create(TomlFile(code))
@@ -87,7 +69,11 @@ func InitLangs() {
 
 func I18nTranslate(orignal *map[string]string, locale string) (map[string]string, error) {
 	translated := make(map[string]string)
+<<<<<<< HEAD
 	for key, _ := range *orignal {
+=======
+	for key := range *orignal {
+>>>>>>> 01887a253f097f28bcbfe9116bed04d1b593fab3
 		trans, err := golibretranslate.Translate((*orignal)[key], "en", locale)
 		if err == nil {
 			translated[key] = trans
@@ -109,13 +95,13 @@ func SetContextInfo(c *fiber.Ctx) {
 	accept := c.GetReqHeaders()["Accept-Language"]
 	LangQ := ParseAcceptLanguage(lang, accept)
 	for _, l := range LangQ {
-		if l2, ok := languages[l.Lang]; ok {
+		if l2, ok := initializers.Locales[l.Lang]; ok {
 			ctxweb.SpeechSynthesisId = l2.SpeechSynthesisId
 			break
 		}
 	}
 	ctxweb.Locales = make(map[string]string)
-	for key, value := range languages {
+	for key, value := range initializers.Locales {
 		ctxweb.Locales[key] = value.Description
 	}
 	ctxweb.JwtToken = c.Cookies("jwt")
@@ -136,7 +122,7 @@ func translateID(id string, c *fiber.Ctx) string {
 func TomlFile(code string) string {
 	path := "./k2web/pub/res/locale/" + code + "/"
 	if ok, _ := lib.Exists(path); !ok {
-		err := os.Mkdir(path, os.FileMode(0777))
+		err := os.MkdirAll(path, os.ModePerm)
 		initializers.Log(err, initializers.Fatal)
 	}
 	return path + "i18n.json"
