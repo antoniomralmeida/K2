@@ -69,11 +69,7 @@ func InitLangs() {
 
 func I18nTranslate(orignal *map[string]string, locale string) (map[string]string, error) {
 	translated := make(map[string]string)
-<<<<<<< HEAD
-	for key, _ := range *orignal {
-=======
 	for key := range *orignal {
->>>>>>> 01887a253f097f28bcbfe9116bed04d1b593fab3
 		trans, err := golibretranslate.Translate((*orignal)[key], "en", locale)
 		if err == nil {
 			translated[key] = trans
