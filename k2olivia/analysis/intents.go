@@ -48,6 +48,12 @@ func intentsFile(locale string) string {
 func translateIntents(_intents *[]Intent, locale string) (err error) {
 	for i := range *_intents {
 		var trans string
+		trans, err = golibretranslate.Translate((*_intents)[i].Tag, "en", locale)
+		if err == nil {
+			(*_intents)[i].Tag = trans
+		} else {
+			return
+		}
 		trans, err = golibretranslate.Translate((*_intents)[i].Context, "en", locale)
 		if err == nil {
 			(*_intents)[i].Context = trans

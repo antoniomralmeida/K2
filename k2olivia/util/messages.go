@@ -27,7 +27,12 @@ func messagesFile(locale string) string {
 func translateMessages(_messages *[]Message, locale string) (err error) {
 	for i := range *_messages {
 		var trans string
-
+		trans, err = golibretranslate.Translate((*_messages)[i].Tag, "en", locale)
+		if err == nil {
+			(*_messages)[i].Tag = trans
+		} else {
+			return
+		}
 		for j := range (*_messages)[i].Messages {
 			trans, err = golibretranslate.Translate((*_messages)[i].Messages[j], locales.Locale_default, locale)
 			if err == nil {
