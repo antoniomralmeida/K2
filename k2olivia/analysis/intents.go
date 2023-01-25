@@ -7,7 +7,6 @@ import (
 
 	"github.com/antoniomralmeida/golibretranslate"
 	"github.com/antoniomralmeida/k2/initializers"
-	"github.com/antoniomralmeida/k2/k2olivia/locales"
 	"github.com/antoniomralmeida/k2/k2olivia/modules"
 	"github.com/antoniomralmeida/k2/k2olivia/util"
 	"github.com/antoniomralmeida/k2/lib"
@@ -88,7 +87,7 @@ func SerializeIntents(locale string) (_intents []Intent) {
 
 	if ok, _ := lib.Exists(intents); !ok {
 		intents_tmp := []Intent{}
-		intentsFile := intentsFile(locales.Locale_default)
+		intentsFile := intentsFile(initializers.DefaultLocale)
 		err := json.Unmarshal(util.ReadFile(intentsFile), &intents_tmp)
 		initializers.Log(err, initializers.Fatal)
 		err = translateIntents(&intents_tmp, locale)

@@ -8,7 +8,6 @@ import (
 
 	"github.com/antoniomralmeida/golibretranslate"
 	"github.com/antoniomralmeida/k2/initializers"
-	"github.com/antoniomralmeida/k2/k2olivia/locales"
 	"github.com/antoniomralmeida/k2/lib"
 )
 
@@ -27,14 +26,14 @@ func messagesFile(locale string) string {
 func translateMessages(_messages *[]Message, locale string) (err error) {
 	for i := range *_messages {
 		var trans string
-		trans, err = golibretranslate.Translate((*_messages)[i].Tag, "en", locale)
+		trans, err = golibretranslate.Translate((*_messages)[i].Tag, initializers.DefaultLocale, locale)
 		if err == nil {
 			(*_messages)[i].Tag = trans
 		} else {
 			return
 		}
 		for j := range (*_messages)[i].Messages {
-			trans, err = golibretranslate.Translate((*_messages)[i].Messages[j], locales.Locale_default, locale)
+			trans, err = golibretranslate.Translate((*_messages)[i].Messages[j], initializers.DefaultLocale, locale)
 			if err == nil {
 				(*_messages)[i].Messages[j] = trans
 			} else {
@@ -54,7 +53,7 @@ func SerializeMessages(locale string) []Message {
 
 	if ok, _ := lib.Exists(msgFile); !ok {
 		messages_tmp := []Message{}
-		tmpFile := messagesFile(locales.Locale_default)
+		tmpFile := messagesFile(initializers.DefaultLocale)
 		err := json.Unmarshal(ReadFile(tmpFile), &messages_tmp)
 		initializers.Log(err, initializers.Fatal)
 		err = translateMessages(&messages_tmp, locale)
@@ -71,9 +70,7 @@ func SerializeMessages(locale string) []Message {
 	if err != nil {
 		initializers.Log(err, initializers.Error)
 	}
-
 	messages[locale] = currentMessages
-
 	return currentMessages
 }
 
@@ -88,10 +85,8 @@ func GetMessageByTag(tag, locale string) Message {
 		if tag != message.Tag {
 			continue
 		}
-
 		return message
 	}
-
 	return Message{}
 }
 

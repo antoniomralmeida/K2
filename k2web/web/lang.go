@@ -21,7 +21,6 @@ var bundle *i18n.Bundle
 var i18n_en map[string]string
 
 func InitLangs() {
-	fmt.Println("InitLangs")
 	i18n_en = make(map[string]string)
 	i18n_en["i18n_title"] = "K2 System KnowledgeBase"
 	i18n_en["i18n_wellcome"] = "Wellcome to K2!"
@@ -48,25 +47,24 @@ func InitLangs() {
 	for code := range initializers.Locales {
 		tomFile := TomlFile(code)
 		_, err := os.Stat(tomFile)
-		if code == "en" || os.IsNotExist(err) {
-
-			if code == "en" {
+		if code == initializers.DefaultLocale || os.IsNotExist(err) {
+			if code == initializers.DefaultLocale {
 
 				js, err := json.Marshal(i18n_en)
 				initializers.Log(err, initializers.Error)
 				f, err := os.Create(tomFile)
-				defer f.Close()
 				initializers.Log(err, initializers.Error)
 				f.WriteString(string(js))
+				f.Close()
 			} else {
 				i18n, err := I18nTranslate(&i18n_en, code)
 				initializers.Log(err, initializers.Fatal)
 				f, err := os.Create(tomFile)
-				defer f.Close()
 				initializers.Log(err, initializers.Error)
 				js, err := json.Marshal(i18n)
 				initializers.Log(err, initializers.Fatal)
 				f.WriteString(string(js))
+				f.Close()
 			}
 		}
 		bundle.MustLoadMessageFile(tomFile)
@@ -76,7 +74,7 @@ func InitLangs() {
 func I18nTranslate(orignal *map[string]string, locale string) (map[string]string, error) {
 	translated := make(map[string]string)
 	for key := range *orignal {
-		trans, err := golibretranslate.Translate((*orignal)[key], "en", locale)
+		trans, err := golibretranslate.Translate((*orignal)[key], initializers.DefaultLocale, locale)
 		if err == nil {
 			translated[key] = trans
 		} else {
@@ -106,8 +104,8 @@ func SetContextInfo(c *fiber.Ctx) {
 	for key, value := range initializers.Locales {
 		ctxweb.Locales[key] = value.Description
 	}
-	ctxweb.JwtToken = c.Cookies("jwt")
-	keys := lib.DecodeToken(ctxweb.JwtToken)
+	//ctxweb.JwtToken = c.Cookies("jwt")
+	keys := lib.DecodeToken(c.Cookies("jwt"))
 	ctxweb.User = fmt.Sprintf("%s", keys["name"])
 	ctxweb.UserId = fmt.Sprintf("%s", keys["user_id"])
 }

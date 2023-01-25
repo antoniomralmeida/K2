@@ -37,9 +37,9 @@ func removeStopWords(locale string, words []string) []string {
 
 	stopfile := stopWorksFile(locale)
 	if ok, _ := lib.Exists(stopfile); !ok {
-		tmpFile := intentsFile(locales.Locale_default)
+		tmpFile := intentsFile(initializers.DefaultLocale)
 		tmpWords := string(util.ReadFile(tmpFile))
-		tmpWords, err := golibretranslate.Translate(tmpWords, locales.Locale_default, locale)
+		tmpWords, err := golibretranslate.Translate(tmpWords, initializers.DefaultLocale, locale)
 		initializers.Log(err, initializers.Error)
 		f, err := os.Create(stopfile)
 		initializers.Log(err, initializers.Error)

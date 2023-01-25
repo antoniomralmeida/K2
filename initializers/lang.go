@@ -14,21 +14,63 @@ type Locale struct {
 	Stemmer           *Stem
 }
 
+const DefaultLocale = "en"
+
 var Locales map[string]Locale
+
+func inLocales(locale string) bool {
+	if os.Getenv("LOCALES") == "" {
+		return true
+	} else {
+		locales := strings.Split(os.Getenv("LOCALES"), "|")
+		for _, v := range locales {
+			if v == locale {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func GetSupportedLocales() (ret string) {
+	ret = ""
+	for key, value := range Locales {
+		ret = ret + " " + key + ":" + value.Description
+	}
+	return
+}
 
 func InitLangs() {
 	Locales = make(map[string]Locale)
 	Locales["en"] = Locale{Description: "English", SpeechSynthesisId: 1}
 	Locales["pt"] = Locale{Description: "Portuguese(BR)", SpeechSynthesisId: 0}
-	Locales["es"] = Locale{Description: "Spanish", SpeechSynthesisId: 262}
-	Locales["de"] = Locale{Description: "German", SpeechSynthesisId: 143}
-	Locales["hi"] = Locale{Description: "Hindi", SpeechSynthesisId: 154}
-	Locales["ar"] = Locale{Description: "Arabic", SpeechSynthesisId: 12}
-	Locales["bn"] = Locale{Description: "Bengali", SpeechSynthesisId: 48}
-	Locales["ru"] = Locale{Description: "Russian", SpeechSynthesisId: 213}
-	Locales["ja"] = Locale{Description: "Japanese", SpeechSynthesisId: 167}
-	Locales["fr"] = Locale{Description: "French", SpeechSynthesisId: 133}
-	Locales["it"] = Locale{Description: "Italian", SpeechSynthesisId: 164}
+	if inLocales("es") {
+		Locales["es"] = Locale{Description: "Spanish", SpeechSynthesisId: 262}
+	}
+	if inLocales("de") {
+		Locales["de"] = Locale{Description: "German", SpeechSynthesisId: 143}
+	}
+	if inLocales("hi") {
+		Locales["hi"] = Locale{Description: "Hindi", SpeechSynthesisId: 154}
+	}
+	if inLocales("ar") {
+		Locales["ar"] = Locale{Description: "Arabic", SpeechSynthesisId: 12}
+	}
+	if inLocales("de") {
+		Locales["bn"] = Locale{Description: "Bengali", SpeechSynthesisId: 48}
+	}
+	if inLocales("ru") {
+		Locales["ru"] = Locale{Description: "Russian", SpeechSynthesisId: 213}
+	}
+	if inLocales("ja") {
+		Locales["ja"] = Locale{Description: "Japanese", SpeechSynthesisId: 167}
+	}
+	if inLocales("fr") {
+		Locales["fr"] = Locale{Description: "French", SpeechSynthesisId: 133}
+	}
+	if inLocales("it") {
+		Locales["it"] = Locale{Description: "Italian", SpeechSynthesisId: 164}
+	}
 }
 
 type Stem struct {

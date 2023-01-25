@@ -10,8 +10,6 @@ import (
 // Please check if the language is supported in https://github.com/tebeka/snowball,
 // if it is please add the correct language name.
 
-const Locale_default = "en"
-
 func InitStem() {
 	for key := range initializers.Locales {
 		st, err := initializers.NewStem(key)
@@ -38,7 +36,7 @@ func GetTagByName(name string) string {
 			return key
 		}
 	}
-	return Locale_default
+	return initializers.DefaultLocale
 }
 
 func GetLocaleByName(name string) initializers.Locale {
@@ -47,7 +45,7 @@ func GetLocaleByName(name string) initializers.Locale {
 			return initializers.Locales[key]
 		}
 	}
-	return initializers.Locales[Locale_default]
+	return initializers.Locales[initializers.DefaultLocale]
 }
 
 // Exists checks if the given tag exists in the list of locales

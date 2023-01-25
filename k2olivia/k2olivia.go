@@ -18,11 +18,15 @@ import (
 var neuralNetworks = map[string]network.Network{}
 
 func init() {
+	oliviaASCII := string(util.ReadFile("./config/olivia-ascii.txt"))
+	fmt.Println(color.FgLightGreen.Render(oliviaASCII))
+
 	initializers.LogInit("k2olivia")
 	initializers.InitLangs()
 	locales.InitStem()
 	msg := fmt.Sprintf("Initializing K2 Olivia version: %v build: %v PID: %v", version.GetVersion(), version.GetBuild(), os.Getppid())
 	fmt.Println(msg)
+	fmt.Println("Supported Languages: " + initializers.GetSupportedLocales())
 	initializers.Log(msg, initializers.Info)
 }
 
@@ -30,10 +34,6 @@ func main() {
 	for key := range initializers.Locales {
 		reTrainModels(key)
 	}
-	wd := initializers.GetHomeDir()
-	// Print the Olivia ascii text
-	oliviaASCII := string(util.ReadFile(wd + "/k2olivia/res/olivia-ascii.txt"))
-	fmt.Println(color.FgLightGreen.Render(oliviaASCII))
 
 	for key := range initializers.Locales {
 		util.SerializeMessages(key)
