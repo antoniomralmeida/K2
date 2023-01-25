@@ -39,7 +39,7 @@ func init() {
 	models.InitSecurity()
 	span.End()
 	_, span = initializers.Begin("InitOlivia", ctx)
-	initializers.InitOlivia()
+	//initializers.InitOlivia()
 	span.End()
 	spanbase.End()
 }

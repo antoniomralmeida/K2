@@ -21,7 +21,7 @@ var bundle *i18n.Bundle
 var i18n_en map[string]string
 
 func InitLangs() {
-
+	fmt.Println("InitLangs")
 	i18n_en = make(map[string]string)
 	i18n_en["i18n_title"] = "K2 System KnowledgeBase"
 	i18n_en["i18n_wellcome"] = "Wellcome to K2!"
@@ -46,24 +46,30 @@ func InitLangs() {
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 
 	for code := range initializers.Locales {
-		_, err := os.Stat(TomlFile(code))
+		tomFile := TomlFile(code)
+		_, err := os.Stat(tomFile)
 		if code == "en" || os.IsNotExist(err) {
-			f, err := os.Create(TomlFile(code))
-			initializers.Log(err, initializers.Error)
+
 			if code == "en" {
+
 				js, err := json.Marshal(i18n_en)
+				initializers.Log(err, initializers.Error)
+				f, err := os.Create(tomFile)
+				defer f.Close()
 				initializers.Log(err, initializers.Error)
 				f.WriteString(string(js))
 			} else {
 				i18n, err := I18nTranslate(&i18n_en, code)
 				initializers.Log(err, initializers.Fatal)
+				f, err := os.Create(tomFile)
+				defer f.Close()
+				initializers.Log(err, initializers.Error)
 				js, err := json.Marshal(i18n)
 				initializers.Log(err, initializers.Fatal)
 				f.WriteString(string(js))
 			}
-			f.Close()
 		}
-		bundle.MustLoadMessageFile(TomlFile(code))
+		bundle.MustLoadMessageFile(tomFile)
 	}
 }
 
@@ -116,12 +122,13 @@ func translateID(id string, c *fiber.Ctx) string {
 }
 
 func TomlFile(code string) string {
-	path := "./k2web/pub/res/locale/" + code + "/"
+	wd := initializers.GetHomeDir()
+	path := wd + "/k2web/pub/res/locale/"
 	if ok, _ := lib.Exists(path); !ok {
 		err := os.MkdirAll(path, os.ModePerm)
 		initializers.Log(err, initializers.Fatal)
 	}
-	return path + "i18n.json"
+	return path + "i18n." + code + ".json"
 }
 
 type LangQ struct {
