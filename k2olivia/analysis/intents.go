@@ -81,10 +81,7 @@ func translateIntents(_intents *[]Intent, locale string) (err error) {
 
 // SerializeIntents returns a list of intents retrieved from the given intents file
 func SerializeIntents(locale string) (_intents []Intent) {
-
-	//TODO: use golibretranslate to create file if not exists
 	intents := intentsFile(locale)
-
 	if ok, _ := lib.Exists(intents); !ok {
 		intents_tmp := []Intent{}
 		intentsFile := intentsFile(initializers.DefaultLocale)

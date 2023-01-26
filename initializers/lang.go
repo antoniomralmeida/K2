@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"github.com/antoniomralmeida/k2/lib"
+	"golang.org/x/text/language"
+	"golang.org/x/text/language/display"
 )
 
 type Locale struct {
@@ -14,11 +16,11 @@ type Locale struct {
 	Stemmer           *Stem
 }
 
-const DefaultLocale = "en"
+var DefaultLocale = language.English.String()
 
 var Locales map[string]Locale
 
-func inLocales(locale string) bool {
+func inLocalesConfig(locale string) bool {
 	if os.Getenv("LOCALES") == "" {
 		return true
 	} else {
@@ -35,42 +37,31 @@ func inLocales(locale string) bool {
 func GetSupportedLocales() (ret string) {
 	ret = ""
 	for key, value := range Locales {
-		ret = ret + " " + key + ":" + value.Description
+		ret = ret + value.Description + "[" + key + "] "
 	}
 	return
+}
+func NewSupportedLanguage(locale string, SynthesisId int) {
+	if inLocalesConfig(locale) || locale == language.English.String() || locale == language.Portuguese.String() {
+		toen := display.English.Languages()
+		tag := language.MustParse(locale)
+		Locales[locale] = Locale{Description: toen.Name(tag), SpeechSynthesisId: SynthesisId}
+	}
 }
 
 func InitLangs() {
 	Locales = make(map[string]Locale)
-	Locales["en"] = Locale{Description: "English", SpeechSynthesisId: 1}
-	Locales["pt"] = Locale{Description: "Portuguese(BR)", SpeechSynthesisId: 0}
-	if inLocales("es") {
-		Locales["es"] = Locale{Description: "Spanish", SpeechSynthesisId: 262}
-	}
-	if inLocales("de") {
-		Locales["de"] = Locale{Description: "German", SpeechSynthesisId: 143}
-	}
-	if inLocales("hi") {
-		Locales["hi"] = Locale{Description: "Hindi", SpeechSynthesisId: 154}
-	}
-	if inLocales("ar") {
-		Locales["ar"] = Locale{Description: "Arabic", SpeechSynthesisId: 12}
-	}
-	if inLocales("de") {
-		Locales["bn"] = Locale{Description: "Bengali", SpeechSynthesisId: 48}
-	}
-	if inLocales("ru") {
-		Locales["ru"] = Locale{Description: "Russian", SpeechSynthesisId: 213}
-	}
-	if inLocales("ja") {
-		Locales["ja"] = Locale{Description: "Japanese", SpeechSynthesisId: 167}
-	}
-	if inLocales("fr") {
-		Locales["fr"] = Locale{Description: "French", SpeechSynthesisId: 133}
-	}
-	if inLocales("it") {
-		Locales["it"] = Locale{Description: "Italian", SpeechSynthesisId: 164}
-	}
+	NewSupportedLanguage(language.English.String(), 1)
+	NewSupportedLanguage(language.Portuguese.String(), 0)
+	NewSupportedLanguage(language.Spanish.String(), 262)
+	NewSupportedLanguage(language.German.String(), 143)
+	NewSupportedLanguage(language.Hindi.String(), 154)
+	NewSupportedLanguage(language.Arabic.String(), 12)
+	NewSupportedLanguage(language.Bengali.String(), 48)
+	NewSupportedLanguage(language.Russian.String(), 213)
+	NewSupportedLanguage(language.Japanese.String(), 167)
+	NewSupportedLanguage(language.French.String(), 133)
+	NewSupportedLanguage(language.Italian.String(), 164)
 }
 
 type Stem struct {
