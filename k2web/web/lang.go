@@ -34,12 +34,13 @@ func InitLangs() {
 	i18n_en["i18n_send"] = "Send"
 	i18n_en["i18n_cancel"] = "Cancel"
 	i18n_en["i18n_remember"] = "Remember me"
-	i18n_en["i18n_badrequest"] = "Bad Request"
-	i18n_en["i18n_invalidimage"] = "Invalid or empty image"
-	i18n_en["i18n_internalservererror"] = "InternalServerError"
-	i18n_en["i18n_invalidcredentials"] = "Invalid credentials"
-	i18n_en["i18n_alreadyregistered"] = "Already registered"
-	i18n_en["i18n_accessforbidden"] = "Access forbidden"
+	i18n_en["i18n_badrequest"] = "Bad Request!"
+	i18n_en["i18n_invalidimage"] = "Invalid or empty image!"
+	i18n_en["i18n_internalservererror"] = "Internal Server Error!"
+	i18n_en["i18n_invalidcredentials"] = "Invalid credentials!"
+	i18n_en["i18n_alreadyregistered"] = "Already registered!"
+	i18n_en["i18n_accessforbidden"] = "Access forbidden!"
+	i18n_en["i18n_avatar"] = "Avatar"
 
 	bundle = i18n.NewBundle(language.English)
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)

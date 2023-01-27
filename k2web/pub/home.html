@@ -235,11 +235,11 @@
           <!-- Content Row -->
           <div class="row">
             <!-- Area Chart -->
-            <div class="col-xl-8 col-lg-7">
+            <div class="col-xl-8 col-lg-4">
               <div class="card shadow mb-4">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                  <h6 class="m-0 font-weight-bold text-primary">Workspace</h6>
+                  <h6 class="m-0 font-weight-bold text-primary">{{index .I18n "i18n_workspace"}}</h6>
                   <div class="dropdown no-arrow">
                     <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
@@ -263,15 +263,33 @@
               </div>
             </div>
             <!-- Pie Chart -->
-            <div class="col-xl-4 col-lg-5">
+            <div class="col-xl-4 col-lg-4">
               <div class="card shadow mb-4">
                 <!-- Card Header - Dropdown -->
                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                  <h6 class="m-0 font-weight-bold text-primary">Avatar</h6>
+                  <h6 class="m-0 font-weight-bold text-primary">{{index .I18n "i18n_workspace"}}</h6>
                   <div class="dropdown no-arrow">
-                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                    </a>
+                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
+                  </div>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="chart-pie pt-4 pb-2 text-center" id="face"></div>
+                    </div>
+                    <div class="col-md-6"><img class="img-fluid d-block rounded-circle mx-auto" src="img/listening.gif"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-4 col-lg-4">
+              <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">{{index .I18n "i18n_datainput"}}</h6>
+                  <div class="dropdown no-arrow">
+                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></a>
                     <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink" style="">
                       <div class="dropdown-header">Dropdown Header:</div>
                       <a class="dropdown-item" href="#">Action</a>
@@ -284,10 +302,7 @@
                 <!-- Card Body -->
                 <div class="card-body">
                   <div class="row">
-                    <div class="col-md-6">
-                      <div class="chart-pie pt-4 pb-2 text-center" id="face"></div>
-                    </div>
-                    <div class="col-md-6"><img class="img-fluid d-block rounded-circle mx-auto" src="img/listening.gif"></div>
+                    <div class="col-md-12" id="datainput"></div>
                   </div>
                 </div>
               </div>
@@ -348,12 +363,13 @@
   <script src="js/faces.min.js"></script>
   <script src="js/k2.min.js"></script>
   <script src="js/olivia.min.js"></script>
-  <script>
+  <script style="">
     apikernel = '{{.ApiKernel}}';
     SpeechSynthesisId = '{{.SpeechSynthesisId}}';
     Speak('{{.User}}, {{index .I18n "i18n_wellcome2"}}');
     LoadDataInput();
   </script>
+  <pingendo onclick="window.open('https://pingendo.com/', '_blank')" style="cursor:pointer;position: fixed;bottom: 20px;right:20px;padding:4px;background-color: #00b0eb;border-radius: 8px; width:220px;display:flex;flex-direction:row;align-items:center;justify-content:center;font-size:14px;color:white">Made with Pingendo Free&nbsp;&nbsp;<img src="https://pingendo.com/site-assets/Pingendo_logo_big.png" class="d-block" alt="Pingendo logo" height="16"></pingendo>
 </body>
 
 </html>

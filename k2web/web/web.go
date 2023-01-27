@@ -10,7 +10,6 @@ import (
 	"github.com/antoniomralmeida/k2/models"
 	"github.com/antoniomralmeida/k2/version"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/csrf"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
@@ -37,7 +36,7 @@ func Run() {
 	app.Use(logger.New(logger.Config{Output: file,
 		TimeFormat: "02/01/2006 15:04:05",
 		Format:     "${time} [${ip}:${port}] ${status} ${latency} ${method} ${path} \n"}))
-	app.Use(csrf.New())
+
 	Routes(app)
 	app.Listen(os.Getenv("HTTPPORT"))
 }

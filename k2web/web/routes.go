@@ -3,6 +3,7 @@ package web
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/csrf"
 )
 
 func Routes(app *fiber.App) {
@@ -17,6 +18,11 @@ func Routes(app *fiber.App) {
 	// Allow cors for cookie
 	app.Use(cors.New(cors.Config{
 		AllowCredentials: true,
+	}))
+	app.Use(csrf.New(csrf.Config{
+		KeyLookup:  "form:csrf",
+		CookieName: "csrf_",
+		ContextKey: "csrf",
 	}))
 
 	app.Get("/", Home)

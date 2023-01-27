@@ -20,6 +20,8 @@ function SendMessage(text) {
 }
 
 
+//TODO: LoadDataInput in home /
+
 function LoadDataInput() {
     $.ajax({
         url: apikernel + '/attributes',
@@ -124,11 +126,11 @@ function PostLogin() {
     const pwd = document.getElementById("password");
     const params = new URLSearchParams(window.location.search);
     const lang = params.get("lang");
-
+//TODO: CSRF COOKIE
     $.ajax({
         url: location.url,
         type: 'POST',
-        data: { "email": email.value, "password": pwd.value },
+        data: { "email": email.value, "password": pwd.value, "csrf" :getCookie("csrf_") },
         error: function (xmlHttpRequest, textStatus, errorThrown) {
             Speak("Ops!");
             errlabel.innerHTML = xmlHttpRequest.responseText;
