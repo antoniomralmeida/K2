@@ -28,7 +28,7 @@ func Init() {
 	GKB = &k
 	GKB.FindOne()
 	if GKB.Name == "" {
-		GKB.Name = "K2 System KB"
+		GKB.Name = "K2 KnowledgeBase System "
 	}
 	GKB.Persist()
 	GKB.IdxClasses = make(map[primitive.ObjectID]*KBClass)
@@ -196,9 +196,9 @@ func Run(wg *sync.WaitGroup) {
 	})
 	initializers.Log(err, initializers.Fatal)
 
-	initializers.Log("K2 System started!", initializers.Info)
+	initializers.Log("K2 KB System started!", initializers.Info)
 	if runtime.GOOS == "windows" {
-		fmt.Println("K2 System started! Press ESC to shutdown")
+		fmt.Println("K2 KB System started! Press ESC to shutdown")
 	}
 	for {
 		if lib.KeyPress() == 27 || GKB.halt {

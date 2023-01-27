@@ -1,4 +1,4 @@
-var div_id = document.getElementById('form_di_37232723')
+var div_id = document.getElementById('datainput')
 var div_face_id = document.getElementById('face')
 var jwt = ''
 var apikernel = ''
@@ -126,7 +126,7 @@ function PostLogin() {
     const pwd = document.getElementById("password");
     const params = new URLSearchParams(window.location.search);
     const lang = params.get("lang");
-//TODO: CSRF COOKIE
+
     $.ajax({
         url: location.url,
         type: 'POST',
@@ -153,12 +153,13 @@ function PostSignup() {
     const form = document.getElementById("signup");
     const params = new URLSearchParams(window.location.search);
     const lang = params.get("lang");
-
+    data = new FormData( form );
+    data.append( "csrf" ,getCookie("csrf_"))
     $.ajax({
         url: location.url,
         type: 'POST',
         contentType: 'multipart/form-data',
-        data: new FormData( form ),
+        data: data,
         processData: false,
         contentType: false,
         error: function (xmlHttpRequest, textStatus, errorThrown) {

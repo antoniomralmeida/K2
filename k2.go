@@ -17,12 +17,11 @@ import (
 )
 
 func init() {
-	//version.LogVersion()
 	// Print the K2 ascii text 3D
 	k2ASCII := string(util.ReadFile("config/k2.txt"))
 	fmt.Println(color.FgLightGreen.Render(k2ASCII))
 
-	msg := fmt.Sprintf("Initializing K2 System version: %v build: %v PID: %v", version.GetVersion(), version.GetBuild(), os.Getppid())
+	msg := fmt.Sprintf("Initializing K2 System, version: %v build: %v PID: %v", version.GetVersion(), version.GetBuild(), os.Getppid())
 	fmt.Println(msg)
 	initializers.InitEnvVars()
 	initializers.LogInit("k2log")

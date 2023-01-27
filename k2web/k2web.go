@@ -16,7 +16,7 @@ func init() {
 	k2webASCII := string(util.ReadFile("./config/k2web.txt"))
 	fmt.Println(color.FgLightGreen.Render(k2webASCII))
 
-	msg := fmt.Sprintf("Initializing Web Server K2 system version: %v build: %v", version.GetVersion(), version.GetBuild())
+	msg := fmt.Sprintf("Initializing Web Server from K2 KB System,  version: %v build: %v", version.GetVersion(), version.GetBuild())
 	initializers.InitEnvVars()
 	initializers.InitLangs()
 	initializers.LogInit("k2weblog")

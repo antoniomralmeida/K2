@@ -6,7 +6,7 @@ A knowledge-based system (KBS) is a type of computer system that analyzes knowle
 
 Build an open source KBS, to be real-time expert system development platform for building mission critical process control, alarm management, and complex simulation applications
 
-### K2 System can be used in various workspaces, such as:
+### K2 BK System can be used in various workspaces, such as:
 1. Manage industrial plants autonomously (PLCs)
 2. Reduce setup time for industrial lines
 3. Manage call centers or service management

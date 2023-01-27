@@ -16,7 +16,7 @@ import (
 func Run(wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 System API-KERNEL ", v.GetVersion(), "[", v.GetBuild(), "]"),
+	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 KB System API-KERNEL ", v.GetVersion(), "[", v.GetBuild(), "]"),
 		DisableStartupMessage: true,
 		Prefork:               false})
 	wd := initializers.GetHomeDir()

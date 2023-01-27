@@ -24,7 +24,7 @@ func init() {
 	initializers.LogInit("k2olivia")
 	initializers.InitLangs()
 	locales.InitStem()
-	msg := fmt.Sprintf("Initializing K2 Olivia version: %v build: %v PID: %v", version.GetVersion(), version.GetBuild(), os.Getppid())
+	msg := fmt.Sprintf("Initializing Olivia from K2 KB System, version: %v build: %v PID: %v", version.GetVersion(), version.GetBuild(), os.Getppid())
 	fmt.Println(msg)
 	fmt.Println("Supported Languages: " + initializers.GetSupportedLocales())
 	initializers.Log(msg, initializers.Info)

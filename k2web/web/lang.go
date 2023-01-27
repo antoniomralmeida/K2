@@ -22,7 +22,7 @@ var i18n_en map[string]string
 
 func InitLangs() {
 	i18n_en = make(map[string]string)
-	i18n_en["i18n_title"] = "K2 System KnowledgeBase"
+	i18n_en["i18n_title"] = "K2 KnowledgeBase System "
 	i18n_en["i18n_wellcome"] = "Wellcome to K2!"
 	i18n_en["i18n_dateinput"] = "Data Input"
 	i18n_en["i18n_wellcome2"] = "What are we going to do today?"
