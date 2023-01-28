@@ -1,0 +1,21 @@
+{
+    "i18n_accessforbidden": "禁止访问！",
+    "i18n_alert": "警报",
+    "i18n_already": "已有帐户？",
+    "i18n_alreadyregistered": "注册过了！",
+    "i18n_avatar": "头像",
+    "i18n_badrequest": "错误的请求！",
+    "i18n_cancel": "取消",
+    "i18n_dateinput": "数据输入",
+    "i18n_forgot": "忘记密码？",
+    "i18n_internalservererror": "内部服务器错误！",
+    "i18n_invalidcredentials": "无效证件！",
+    "i18n_invalidimage": "图片无效或为空！",
+    "i18n_register": "请注册以访问 K2！",
+    "i18n_remember": "记住账号",
+    "i18n_send": "发送",
+    "i18n_title": "K2知识库系统",
+    "i18n_wellcome": "欢迎来到K2！",
+    "i18n_wellcome2": "我们今天要做什么？",
+    "i18n_workspace": "工作区"
+}

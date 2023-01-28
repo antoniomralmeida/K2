@@ -62,6 +62,8 @@ func InitLangs() {
 	NewSupportedLanguage(language.Japanese.String(), 167)
 	NewSupportedLanguage(language.French.String(), 133)
 	NewSupportedLanguage(language.Italian.String(), 164)
+	NewSupportedLanguage(language.Chinese.String(), 68)
+
 }
 
 type Stem struct {

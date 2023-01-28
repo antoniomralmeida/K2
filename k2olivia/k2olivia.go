@@ -11,6 +11,7 @@ import (
 	"github.com/antoniomralmeida/k2/k2olivia/server"
 	"github.com/antoniomralmeida/k2/k2olivia/training"
 	"github.com/antoniomralmeida/k2/k2olivia/util"
+	"github.com/antoniomralmeida/k2/lib"
 	"github.com/antoniomralmeida/k2/version"
 	"github.com/gookit/color"
 )
@@ -32,6 +33,11 @@ func init() {
 
 func main() {
 	for key := range initializers.Locales {
+		path := initializers.GetHomeDir() + "/k2olivia/res/locales/" + key + "/"
+		if ok, _ := lib.Exists(path); !ok {
+			err := os.MkdirAll(path, os.ModePerm)
+			initializers.Log(err, initializers.Fatal)
+		}
 		reTrainModels(key)
 	}
 
