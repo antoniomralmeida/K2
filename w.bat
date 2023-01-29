@@ -21,5 +21,5 @@ del log\*.log
 start .\bin\k2olivia.exe
 start .\bin\k2web.exe
 .\bin\k2.exe
-taskkill /im  k2olivia.exe /f
+rem taskkill /im  k2olivia.exe /f
 taskkill /im  k2web.exe /f

@@ -28,6 +28,45 @@ func (kb *KnowledgeBased) AddAttribute(c *KBClass, attrs ...*KBAttribute) {
 	initializers.Log(c.Persist(), initializers.Fatal)
 }
 
+func (kb *KnowledgeBased) CopyClass(name string, copy *KBClass) *KBClass {
+	if copy == nil {
+		initializers.Log(errors.New("Invalid class!"), initializers.Error)
+	}
+	class := KBClass{}
+	class.Name = name
+	class.Attributes = copy.Attributes
+	for i := range class.Attributes {
+		class.Attributes[i].ID = primitive.NewObjectID()
+	}
+	err := class.Persist()
+	if err == nil {
+		kb.Classes = append(kb.Classes, class)
+		kb.IdxClasses[class.ID] = &class
+		return &class
+	} else {
+		initializers.Log(err, initializers.Error)
+		return nil
+	}
+}
+
+func (kb *KnowledgeBased) NewSimpleClass(name string, parent *KBClass) *KBClass {
+	class := KBClass{}
+	class.Name = name
+	if parent != nil {
+		class.ParentID = parent.ID
+		class.ParentClass = parent
+	}
+	err := class.Persist()
+	if err == nil {
+		kb.Classes = append(kb.Classes, class)
+		kb.IdxClasses[class.ID] = &class
+		return &class
+	} else {
+		initializers.Log(err, initializers.Error)
+		return nil
+	}
+}
+
 func (kb *KnowledgeBased) NewClass(newclass_json string) *KBClass {
 	class := KBClass{}
 	err := json.Unmarshal([]byte(newclass_json), &class)
@@ -100,6 +139,18 @@ func (kb *KnowledgeBased) FindWorkspaceByName(name string) *KBWorkspace {
 	}
 	initializers.Log("Workspace not found!", initializers.Error)
 	return nil
+}
+
+func (kb *KnowledgeBased) NewSimpleObject(name string, class *KBClass) *KBObject {
+	o := KBObject{Name: name, Class: class.ID, Bkclass: class}
+	for _, x := range kb.FindAttributes(class) {
+		n := KBAttributeObject{Attribute: x.ID, KbAttribute: x, KbObject: &o}
+		o.Attributes = append(o.Attributes, n)
+		kb.IdxAttributeObjects[n.getFullName()] = &n
+	}
+	initializers.Log(o.Persist(), initializers.Fatal)
+	kb.IdxObjects[name] = &o
+	return &o
 }
 
 func (kb *KnowledgeBased) NewObject(class string, name string) *KBObject {

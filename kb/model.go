@@ -57,20 +57,22 @@ var KBSimulationStr = map[string]KBSimulation{
 type LiteralBin byte
 
 const (
-	b_null LiteralBin = iota
-	b_open_par
-	b_close_par
-	b_equal_sym
+	b_a LiteralBin = iota
 	b_activate
+	b_an
 	b_and
 	b_any
+	b_by
 	b_change
+	b_cloning
+	b_close_par
 	b_conclude
 	b_create
 	b_deactivate
 	b_delete
 	b_different
 	b_equal
+	b_equal_sym
 	b_focus
 	b_for
 	b_greater
@@ -80,13 +82,17 @@ const (
 	b_inform
 	b_initially
 	b_insert
+	b_instance
 	b_invoke
 	b_is
 	b_less
 	b_move
+	b_named
 	b_of
+	b_open_par
 	b_operator
 	b_or
+	b_parent
 	b_remove
 	b_rotate
 	b_set
@@ -101,23 +107,26 @@ const (
 	b_unconditionally
 	b_when
 	b_whenever
+	b_whose
 )
 
 var LiteralBinStr = map[string]LiteralBin{
-	"":                b_null,
-	"(":               b_open_par,
-	")":               b_close_par,
-	"=":               b_equal_sym,
+	"a":               b_a,
 	"activate":        b_activate,
+	"an":              b_an,
 	"and":             b_and,
 	"any":             b_any,
+	"by":              b_by,
 	"change":          b_change,
+	"cloning":         b_cloning,
+	")":               b_close_par,
 	"conclude":        b_conclude,
 	"create":          b_create,
 	"deactivate":      b_deactivate,
 	"delete":          b_delete,
 	"different":       b_different,
 	"equal":           b_equal,
+	"=":               b_equal_sym,
 	"focus":           b_focus,
 	"for":             b_for,
 	"greater":         b_greater,
@@ -127,27 +136,33 @@ var LiteralBinStr = map[string]LiteralBin{
 	"inform":          b_inform,
 	"initially":       b_initially,
 	"insert":          b_insert,
+	"instance":        b_instance,
 	"invoke":          b_invoke,
 	"is":              b_is,
 	"less":            b_less,
 	"move":            b_move,
+	"named":           b_named,
 	"of":              b_of,
+	"(":               b_open_par,
 	"operator":        b_operator,
 	"or":              b_or,
+	"parent":          b_parent,
 	"remove":          b_remove,
 	"rotate":          b_rotate,
 	"set":             b_set,
 	"show":            b_show,
 	"start":           b_start,
 	"than":            b_than,
-	"that":            b_than,
+	"that":            b_that,
 	"the":             b_the,
 	"then":            b_then,
 	"to":              b_to,
 	"transfer":        b_transfer,
 	"unconditionally": b_unconditionally,
 	"when":            b_when,
-	"whenever":        b_whenever}
+	"whenever":        b_whenever,
+	"whose":           b_whose,
+}
 
 type KnowledgeBased struct {
 	mgm.DefaultModel    `json:",inline" bson:",inline"`

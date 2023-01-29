@@ -15,8 +15,8 @@ func (b *BIN) GetTokentype() ebnf.Tokentype {
 
 func (b *BIN) setTokenBin() {
 	if b.GetTokentype() == ebnf.Literal {
-		b.literalbin = LiteralBinStr[b.token]
-		if b.literalbin == b_null {
+		var ok bool
+		if b.literalbin, ok = LiteralBinStr[b.token]; !ok {
 			initializers.Log("Literal unknown!"+b.GetToken(), initializers.Fatal)
 		}
 	}
