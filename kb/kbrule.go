@@ -404,9 +404,19 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 					GKB.NewSimpleObject(objectName, baseClass)
 				}
 			}
+		case b_conclude:
+			pc += 6
+			if len(r.bin[pc].attributeObjects) != 1 {
+				return initializers.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, initializers.Error)
+			}
+			attributeObject := r.bin[pc].attributeObjects[0]
+			pc += 2
+			attributeObject.SetValue(r.bin[pc].GetToken(), Inference, trust)
 		default:
 			return initializers.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, initializers.Error)
 		}
+
+		//TODO: Definir sintaxe EBNF do comandos abaixo
 
 		//TODO: transfer
 		//TODO: delete
@@ -421,7 +431,6 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 		//TODO: deactivate
 		//TODO: focus
 		//TODO: invoke
-		//TODO: conclude
 
 	}
 	return nil
