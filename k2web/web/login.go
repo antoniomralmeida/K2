@@ -40,12 +40,12 @@ func LoginForm(c *fiber.Ctx) error {
 func PostLogin(c *fiber.Ctx) error {
 	req := models.LoginRequest{}
 	if err := c.BodyParser(&req); err != nil {
-		msg := translateID("i18n_badrequest", c) + ":" + err.Error()
+		msg := translateID(initializers.I18n_badrequest, c) + ":" + err.Error()
 		initializers.Log(msg, initializers.Info)
 		return fiber.NewError(fiber.StatusBadRequest, msg)
 	}
 	if req.Email == "" || req.Password == "" {
-		msg := translateID("i18n_invalidcredentials", c)
+		msg := translateID(initializers.I18n_invalidcredentials, c)
 		initializers.Log(msg, initializers.Info)
 		return fiber.NewError(fiber.StatusBadRequest, msg)
 	}
@@ -56,26 +56,26 @@ func PostLogin(c *fiber.Ctx) error {
 		initializers.Log(err, initializers.Error)
 	}
 	if user.Email == "" {
-		msg := translateID("i18n_invalidcredentials", c)
+		msg := translateID(initializers.I18n_invalidcredentials, c)
 		initializers.Log(msg, initializers.Info)
 		return fiber.NewError(fiber.StatusBadRequest, msg)
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Hash), []byte(req.Password)); err != nil {
-		msg := translateID("i18n_invalidcredentials", c)
+		msg := translateID(initializers.I18n_invalidcredentials, c)
 		initializers.Log(msg, initializers.Info)
 		return fiber.NewError(fiber.StatusBadRequest, msg)
 	}
 
 	if user.Profile == models.Empty {
-		msg := translateID("i18n_accessforbidden", c)
+		msg := translateID(initializers.I18n_accessforbidden, c)
 		initializers.Log(msg, initializers.Info)
 		return fiber.NewError(fiber.StatusForbidden, msg)
 	}
 
 	token, _, err := lib.CreateJWTToken(user.ID, user.Name)
 	if err != nil {
-		msg := translateID("i18n_internalservererror", c)
+		msg := translateID(initializers.I18n_internalservererror, c)
 		initializers.Log(msg, initializers.Info)
 		return fiber.NewError(fiber.StatusBadRequest, msg)
 	}

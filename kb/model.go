@@ -277,10 +277,3 @@ type DataInput struct {
 	Atype   KBAttributeType `json:"atype"`
 	Options []string        `json:"options"`
 }
-
-type Pipe struct {
-	id     primitive.ObjectID `json:"_id"`
-	avg    float64            `json:"avg"`
-	stdDev float64            `json:"stdDev"`
-	trust  float64            `json:"trust"`
-}

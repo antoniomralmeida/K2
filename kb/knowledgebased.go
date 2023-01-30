@@ -28,6 +28,14 @@ func (kb *KnowledgeBased) AddAttribute(c *KBClass, attrs ...*KBAttribute) {
 	initializers.Log(c.Persist(), initializers.Fatal)
 }
 
+func (kb *KnowledgeBased) Pause() {
+	kb.halt = true
+}
+
+func (kb *KnowledgeBased) Resumo() {
+	kb.halt = false
+}
+
 func (kb *KnowledgeBased) CopyClass(name string, copy *KBClass) *KBClass {
 	if copy == nil {
 		initializers.Log(errors.New("Invalid class!"), initializers.Error)

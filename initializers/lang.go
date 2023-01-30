@@ -10,6 +10,30 @@ import (
 	"golang.org/x/text/language/display"
 )
 
+const (
+	I18n_accessforbidden     = "I18n_accessforbidden"
+	I18n_alert               = "I18n_alert"
+	I18n_already             = "I18n_already"
+	I18n_alreadyregistered   = "I18n_alreadyregistered"
+	I18n_avatar              = "I18n_avatar"
+	I18n_badrequest          = "I18n_badrequest"
+	I18n_cancel              = "I18n_cancel"
+	I18n_dateinput           = "I18n_dateinput"
+	I18n_forgot              = "I18n_forgot"
+	I18n_halt                = "I18n_halt"
+	I18n_internalservererror = "I18n_internalservererror"
+	I18n_invalidcredentials  = "I18n_invalidcredentials"
+	I18n_invalidimage        = "I18n_invalidimage"
+	I18n_register            = "I18n_register"
+	I18n_remember            = "I18n_remember"
+	I18n_resume              = "I18n_resume"
+	I18n_send                = "I18n_send"
+	I18n_title               = "I18n_title"
+	I18n_wellcome            = "I18n_wellcome"
+	I18n_wellcome2           = "I18n_wellcome2"
+	I18n_workspace           = "I18n_workspace"
+)
+
 type Locale struct {
 	Description       string
 	SpeechSynthesisId int

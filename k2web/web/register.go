@@ -36,20 +36,20 @@ func SignupForm(c *fiber.Ctx) error {
 func PostSignup(c *fiber.Ctx) error {
 	req := new(models.SigupRequest)
 	if err := c.BodyParser(req); err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, translateID("i18n_badrequest", c)+":"+err.Error())
+		return fiber.NewError(fiber.StatusBadRequest, translateID(initializers.I18n_badrequest, c)+":"+err.Error())
 	}
 	faceimage := "faceimage"
 	file, err := c.FormFile(faceimage)
 	if err != nil {
 		initializers.Log(err, initializers.Error)
-		return fiber.NewError(fiber.StatusBadRequest, translateID("i18n_invalidimage", c))
+		return fiber.NewError(fiber.StatusBadRequest, translateID(initializers.I18n_invalidimage, c))
 	}
 	if file != nil {
 		filePath := lib.TempFileName("k2-upload", filepath.Ext(file.Filename))
 		err = c.SaveFile(file, filePath)
 		if err != nil {
 			initializers.Log(err, initializers.Error)
-			return fiber.NewError(fiber.StatusInternalServerError, translateID("i18n_internalservererror", c))
+			return fiber.NewError(fiber.StatusInternalServerError, translateID(initializers.I18n_internalservererror, c))
 		}
 		faceimage = filePath
 	} else {
@@ -57,28 +57,28 @@ func PostSignup(c *fiber.Ctx) error {
 	}
 
 	if req.Email == "" || req.Password == "" {
-		return fiber.NewError(fiber.StatusBadRequest, translateID("i18n_invalidcredentials", c))
+		return fiber.NewError(fiber.StatusBadRequest, translateID(initializers.I18n_invalidcredentials, c))
 	}
 
 	if req.Password2 != req.Password {
-		return fiber.NewError(fiber.StatusBadRequest, translateID("i18n_invalidcredentials", c))
+		return fiber.NewError(fiber.StatusBadRequest, translateID(initializers.I18n_invalidcredentials, c))
 	}
 
 	user := models.KBUser{}
 	err = user.FindOne(bson.D{{Key: "email", Value: req.Email}})
 	if err != mongo.ErrNoDocuments && err != nil {
 		initializers.Log(err, initializers.Error)
-		return fiber.NewError(fiber.StatusInternalServerError, translateID("i18n_internalservererror", c))
+		return fiber.NewError(fiber.StatusInternalServerError, translateID(initializers.I18n_internalservererror, c))
 	}
 
 	if user.Email != "" {
-		return fiber.NewError(fiber.StatusBadRequest, translateID("i18n_alreadyregistered", c))
+		return fiber.NewError(fiber.StatusBadRequest, translateID(initializers.I18n_alreadyregistered, c))
 	}
 
 	err = models.NewUser(req.Name, req.Email, req.Password, faceimage)
 	if err != nil {
 		initializers.Log(err, initializers.Error)
-		return fiber.NewError(fiber.StatusInternalServerError, translateID("i18n_internalservererror", c)+":"+err.Error())
+		return fiber.NewError(fiber.StatusInternalServerError, translateID(initializers.I18n_internalservererror, c)+":"+err.Error())
 	}
 	if faceimage != "" {
 		os.Remove(faceimage)

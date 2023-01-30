@@ -12,6 +12,7 @@ import (
 	"github.com/antoniomralmeida/k2/fuzzy"
 	"github.com/antoniomralmeida/k2/initializers"
 	"github.com/antoniomralmeida/k2/lib"
+	"github.com/antoniomralmeida/k2/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -338,8 +339,6 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 				}
 			}
 			pc++
-		case b_halt:
-			GKB.halt = true
 
 		case b_create:
 			var baseClass *KBClass
@@ -412,6 +411,9 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 			attributeObject := r.bin[pc].attributeObjects[0]
 			pc += 2
 			attributeObject.SetValue(r.bin[pc].GetToken(), Inference, trust)
+		case b_halt:
+			GKB.Pause()
+			models.NewAlert(initializers.I18n_halt, "") //All users
 		default:
 			return initializers.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, initializers.Error)
 		}

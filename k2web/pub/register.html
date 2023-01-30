@@ -11,7 +11,7 @@
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
 
 
-    <title>{{index .I18n "i18n_title"}}</title>
+    <title>{{index .I18n "I18n_title"}}</title>
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -48,7 +48,7 @@
                     <div class="col-lg-7">
                         <div class="p-5">
                             <div class="text-center">
-                                <h1 class="h4 text-gray-900 mb-4">{{index .I18n "i18n_register"}}</h1>
+                                <h1 class="h4 text-gray-900 mb-4">{{index .I18n "I18n_register"}}</h1>
                             </div>
                             <!-- <form name="signup"  action="signup" class="user" enctype="multipart/form-data"
                             method="post"> -->
@@ -88,7 +88,7 @@
                                     </div>
                                 </div>
                                 <input type="submit" class="btn btn-primary btn-user btn-block"
-                                    value="{{index .I18n &quot;i18n_send&quot;}}">
+                                    value="{{index .I18n &quot;I18n_send&quot;}}">
                                 <hr>
                                 <div class="col-sm-12">
                                     <small id="passwordHelp" class="text-danger">
@@ -99,10 +99,10 @@
                             </form>
                             <hr>
                             <div class="text-center">
-                                <a class="small" href="/forgot">{{index .I18n "i18n_forgot"}}</a>
+                                <a class="small" href="/forgot">{{index .I18n "I18n_forgot"}}</a>
                             </div>
                             <div class="text-center">
-                                <a class="small" href="/login">{{index .I18n "i18n_already"}}</a>
+                                <a class="small" href="/login">{{index .I18n "I18n_already"}}</a>
                             </div>
                         </div>
                     </div>
@@ -128,7 +128,7 @@
     <script>
         apikernel = '{{.ApiKernel}}';
         SpeechSynthesisId = '{{.SpeechSynthesisId}}';
-        Speak('{{index .I18n "i18n_register"}}');</script>
+        Speak('{{index .I18n "I18n_register"}}');</script>
 </body>
 
 </html>

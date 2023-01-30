@@ -203,9 +203,13 @@ func Run(wg *sync.WaitGroup) {
 	for {
 		if lib.KeyPress() == 27 || GKB.halt {
 			fmt.Printf("Shutdown...")
-			scheduler.Stop()
+			Stop()
 			wg.Done()
 			os.Exit(0)
+		}
+		if GKB.halt {
+			fmt.Printf("Halting...")
+			Stop()
 		}
 	}
 

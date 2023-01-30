@@ -20,7 +20,7 @@ function SendMessage(text) {
 }
 
 
-//TODO: LoadDataInput in home /
+
 
 function LoadDataInput() {
     $.ajax({
@@ -70,6 +70,7 @@ function LoadDataInput() {
     });
 }
 
+//TODO: Submit LoadDataInput in home /
 
 function SubmitDataInput(form) {
     var formData = {};

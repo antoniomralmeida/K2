@@ -42,10 +42,16 @@ type KBUser struct {
 	FaceImage        string               `bson:"faceimage,omitempty"`
 }
 
+type KBAlert struct {
+	mgm.DefaultModel `json:",inline" bson:",inline"`
+	Message          string               `bson:"message"`
+	User             primitive.ObjectID   `bson:"user"`
+	Views            []primitive.ObjectID `bson:"views"`
+}
+
 type Context struct {
-	I18n    map[string]string
-	Locales map[string]string
-	//JwtToken          string
+	I18n              map[string]string
+	Locales           map[string]string
 	UserId            string
 	User              string
 	ApiKernel         string

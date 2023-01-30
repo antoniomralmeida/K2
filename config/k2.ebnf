@@ -31,7 +31,7 @@ Consequent =   ( Set
 		| deactivate 
 		| focus 
 		| invoke 
-		| halt 
+		| Halt 
 		| Conclude  )
 		{ and Consequent }.
 
@@ -42,3 +42,6 @@ Inform = inform to the operator that Text \n [ {the Attribute of ( the Object | 
 Conclude = conclude that the Attribute of Object is (ListType |Constant | Text).
 
 Create = create ( a Class [(by cloning Class| whose parent is Class)]| an instance of the Class) named by Text.
+
+Halt = halt with Text if breakpoints are enabled.
+

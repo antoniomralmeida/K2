@@ -8,7 +8,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
   <link rel="icon" type="image/x-icon" href="img/favicon.ico">
-  <title>{{index .I18n "i18n_title"}}</title>
+  <title>{{index .I18n "I18n_title"}}</title>
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
   <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
@@ -41,7 +41,7 @@
               <div class="col-lg-6">
                 <div class="p-5">
                   <div class="text-center">
-                    <h1 class="h4 text-gray-900 mb-4">{{index .I18n "i18n_wellcome"}}</h1>
+                    <h1 class="h4 text-gray-900 mb-4">{{index .I18n "I18n_wellcome"}}</h1>
                   </div>
                   <form name="login" class="user" onsubmit="return PostLogin();">
                     <div class="form-group">
@@ -53,10 +53,10 @@
                     <div class="form-group">
                       <div class="custom-control custom-checkbox small">
                         <input type="checkbox" class="custom-control-input" id="customCheck">
-                        <label class="custom-control-label" for="customCheck">{{index .I18n "i18n_remember"}}</label>
+                        <label class="custom-control-label" for="customCheck">{{index .I18n "I18n_remember"}}</label>
                       </div>
                     </div>
-                    <input type="submit" class="btn btn-primary btn-user btn-block" value="{{index .I18n &quot;i18n_send&quot;}}">
+                    <input type="submit" class="btn btn-primary btn-user btn-block" value="{{index .I18n &quot;I18n_send&quot;}}">
                     <hr>
                     <div class="col-sm-12">
                       <small id="passwordHelp" class="text-danger">
@@ -67,10 +67,10 @@
                   </form>
                   <hr>
                   <div class="text-center">
-                    <a class="small" href="/forgot-password">{{index .I18n "i18n_forgot"}}</a>
+                    <a class="small" href="/forgot-password">{{index .I18n "I18n_forgot"}}</a>
                   </div>
                   <div class="text-center">
-                    <a class="small" href="/signup">{{index .I18n "i18n_register"}} </a>
+                    <a class="small" href="/signup">{{index .I18n "I18n_register"}} </a>
                   </div>
                 </div>
               </div>
@@ -99,7 +99,7 @@
   <script>
     apikernel = '{{.ApiKernel}}';
     SpeechSynthesisId = '{{.SpeechSynthesisId}}';
-    Speak('{{index .I18n "i18n_wellcome"}}');
+    Speak('{{index .I18n "I18n_wellcome"}}');
   </script>
 </body>
 

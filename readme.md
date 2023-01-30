@@ -24,72 +24,30 @@ http://ec2-15-228-21-212.sa-east-1.compute.amazonaws.com/
 
 ### TODO List
 └─ K2
-		<br/>
-   ├─ apikernel
-		<br/>
-   │  └─ aiml.go
-		<br/>
-   │     ├─ line 15: TODO : usar jwt como identificador de contexto
-		<br/>
-   │     └─ line 16: TODO : expandir aiml.xml
-		<br/>
    ├─ k2web
-		<br/>
+   │  ├─ pub
+   │  │  └─ k2.js
+   │  │     └─ line 73: TODO : Submit LoadDataInput in home /
    │  └─ web
-		<br/>
    │     └─ login.go
-		<br/>
-   │        ├─ line 22: TODO : Ajustar tela de login, colocar avatar
-		<br/>
-   │        └─ line 23: TODO : Incluir reconhecimento facil no login
-		<br/>
+   │        └─ line 24: TODO : Incluir reconhecimento facil no login
    ├─ kb
-		<br/>
    │  ├─ kbattributeobject.go
-		<br/>
-   │  │  └─ line 81: TODO : testar a execução paralela
-		<br/>
-   │  ├─ kbclass.go
-		<br/>
-   │  │  └─ line 36: TODO : Restart KB
-		<br/>
-   │  ├─ kbobject.go
-		<br/>
-   │  │  └─ line 30: TODO : Reiniciar KB
-		<br/>
+   │  │  └─ line 82: TODO : testar a execução paralela
    │  └─ kbrule.go
-		<br/>
-   │     ├─ line 345: TODO : create
-		<br/>
-   │     ├─ line 346: TODO : transfer
-		<br/>
-   │     ├─ line 347: TODO : delete
-		<br/>
-   │     ├─ line 348: TODO : insert
-		<br/>
-   │     ├─ line 349: TODO : remove
-		<br/>
-   │     ├─ line 350: TODO : change
-		<br/>
-   │     ├─ line 351: TODO : move
-		<br/>
-   │     ├─ line 352: TODO : rotate
-		<br/>
-   │     ├─ line 353: TODO : show
-		<br/>
-   │     ├─ line 354: TODO : hide
-		<br/>
-   │     ├─ line 355: TODO : activate
-		<br/>
-   │     ├─ line 356: TODO : deactivate
-		<br/>
-   │     ├─ line 357: TODO : focus
-		<br/>
-   │     ├─ line 358: TODO : invoke
-		<br/>
-   │     └─ line 359: TODO : conclude
-		<br/>
+   │     ├─ line 419: TODO : Definir sintaxe EBNF do comandos abaixo
+   │     ├─ line 421: TODO : transfer
+   │     ├─ line 422: TODO : delete
+   │     ├─ line 423: TODO : insert
+   │     ├─ line 424: TODO : remove
+   │     ├─ line 425: TODO : change
+   │     ├─ line 426: TODO : move
+   │     ├─ line 427: TODO : rotate
+   │     ├─ line 428: TODO : show
+   │     ├─ line 429: TODO : hide
+   │     ├─ line 430: TODO : activate
+   │     ├─ line 431: TODO : deactivate
+   │     ├─ line 432: TODO : focus
+   │     └─ line 433: TODO : invoke
    └─ readme.md
-		<br/>
-      └─ line 19: TODO List
-		<br/>
+      └─ line 25: TODO List
