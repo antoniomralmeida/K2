@@ -3,7 +3,7 @@ FROM smartentry/ubuntu  as k2-olivia
 WORKDIR /var/www/k2
 
 COPY ../bin/k2olivia.bin ./bin/
-COPY ["../config/", "./config/"] 
+COPY ["../configs/", "./configs/"] 
 COPY ../log/*.md ./log/
 COPY ../k2olivia/res/ ./k2olivia/res/
 

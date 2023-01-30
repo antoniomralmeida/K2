@@ -10,6 +10,7 @@ import (
 	"github.com/antoniomralmeida/k2/cmd/k2olivia/modules/start"
 	"github.com/antoniomralmeida/k2/cmd/k2olivia/user"
 	"github.com/antoniomralmeida/k2/cmd/k2olivia/util"
+	"github.com/antoniomralmeida/k2/inits"
 
 	"github.com/gookit/color"
 	"github.com/gorilla/websocket"

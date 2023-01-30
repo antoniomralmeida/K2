@@ -6,6 +6,7 @@ import (
 
 	"github.com/antoniomralmeida/k2/cmd/k2olivia/modules"
 	"github.com/antoniomralmeida/k2/cmd/k2olivia/util"
+	"github.com/antoniomralmeida/k2/inits"
 )
 
 var (

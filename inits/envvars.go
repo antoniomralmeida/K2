@@ -5,7 +5,7 @@ import (
 )
 
 func InitEnvVars() {
-	if gotenv.Load("./config/.env") != nil {
-		gotenv.Load("../config/.env")
+	if gotenv.Load("./configs/.env") != nil {
+		gotenv.Load("../configs/.env")
 	}
 }

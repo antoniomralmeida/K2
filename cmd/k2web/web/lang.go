@@ -126,7 +126,7 @@ func translateID(id string, c *fiber.Ctx) string {
 
 func TomlFile(code string) string {
 	wd := inits.GetHomeDir()
-	path := wd + "/k2web/pub/res/locale/"
+	path := wd + "/web/res/locale/"
 	if ok, _ := lib.Exists(path); !ok {
 		err := os.MkdirAll(path, os.ModePerm)
 		inits.Log(err, inits.Fatal)

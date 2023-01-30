@@ -10,22 +10,22 @@ import (
 	"github.com/antoniomralmeida/k2/cmd/k2olivia/server"
 	"github.com/antoniomralmeida/k2/cmd/k2olivia/training"
 	"github.com/antoniomralmeida/k2/cmd/k2olivia/util"
+	"github.com/antoniomralmeida/k2/inits"
+	"github.com/antoniomralmeida/k2/internal/lib"
 
-	"github.com/antoniomralmeida/k2/lib"
-	"github.com/antoniomralmeida/k2/version"
 	"github.com/gookit/color"
 )
 
 var neuralNetworks = map[string]network.Network{}
 
 func init() {
-	oliviaASCII := string(util.ReadFile("./config/olivia-ascii.txt"))
+	oliviaASCII := string(util.ReadFile("./configs/olivia-ascii.txt"))
 	fmt.Println(color.FgLightGreen.Render(oliviaASCII))
 
 	inits.LogInit("k2olivia")
 	inits.InitLangs()
 	locales.InitStem()
-	msg := fmt.Sprintf("Initializing Olivia from K2 KB System, version: %v build: %v PID: %v", version.GetVersion(), version.GetBuild(), os.Getppid())
+	msg := fmt.Sprintf("Initializing Olivia from K2 KB System, version: %v build: %v PID: %v", lib.GetVersion(), lib.GetBuild(), os.Getppid())
 	fmt.Println(msg)
 	fmt.Println("Supported Languages: " + inits.GetSupportedLocales())
 	inits.Log(msg, inits.Info)

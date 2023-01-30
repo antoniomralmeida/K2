@@ -8,6 +8,7 @@ import (
 
 	"github.com/antoniomralmeida/k2/cmd/k2olivia/analysis"
 	"github.com/antoniomralmeida/k2/cmd/k2olivia/util"
+	"github.com/antoniomralmeida/k2/inits"
 
 	"github.com/gorilla/mux"
 

@@ -3,8 +3,8 @@ package analysis
 import (
 	"testing"
 
-	"github.com/antoniomralmeida/k2/k2olivia/modules"
-	"github.com/antoniomralmeida/k2/k2olivia/util"
+	"github.com/antoniomralmeida/k2/cmd/k2olivia/modules"
+	"github.com/antoniomralmeida/k2/cmd/k2olivia/util"
 )
 
 func TestGetModuleCoverage(t *testing.T) {

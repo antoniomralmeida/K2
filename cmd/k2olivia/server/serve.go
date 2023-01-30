@@ -11,6 +11,7 @@ import (
 	"github.com/antoniomralmeida/k2/cmd/k2olivia/modules/spotify"
 	"github.com/antoniomralmeida/k2/cmd/k2olivia/network"
 	"github.com/antoniomralmeida/k2/cmd/k2olivia/training"
+	"github.com/antoniomralmeida/k2/inits"
 
 	"github.com/gookit/color"
 	"github.com/gorilla/mux"

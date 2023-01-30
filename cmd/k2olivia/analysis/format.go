@@ -8,8 +8,8 @@ import (
 	"github.com/antoniomralmeida/golibretranslate"
 	"github.com/antoniomralmeida/k2/cmd/k2olivia/locales"
 	"github.com/antoniomralmeida/k2/cmd/k2olivia/util"
-
-	"github.com/antoniomralmeida/k2/lib"
+	"github.com/antoniomralmeida/k2/inits"
+	"github.com/antoniomralmeida/k2/internal/lib"
 )
 
 // arrange checks the format of a string to normalize it, remove ignored characters
