@@ -3,7 +3,6 @@ package kb
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"sort"
 	"strings"
 	"time"
@@ -470,9 +469,6 @@ func (kb *KnowledgeBased) linkerRule(r *KBRule, bin []*BIN) error {
 	dr := make(map[string]*KBClass)
 	consequent := -1
 	for j, x := range bin {
-		if x.tokentype == ebnf.Literal {
-			fmt.Println(x.token, x.literalbin)
-		}
 		switch x.literalbin {
 		case models.B_initially:
 			kb.mutex.Lock()
@@ -483,6 +479,10 @@ func (kb *KnowledgeBased) linkerRule(r *KBRule, bin []*BIN) error {
 			r.consequent = j + 1
 		}
 		switch x.GetTokentype() {
+		case ebnf.Workspace:
+			if bin[j].workspace == nil {
+				bin[j].workspace = kb.FindWorkspaceByName(r.bin[j].token)
+			}
 		case ebnf.Object:
 			if len(bin[j].objects) == 0 {
 				obj := kb.FindObjectByName(r.bin[j].token)

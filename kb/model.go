@@ -102,6 +102,7 @@ type BIN struct {
 	token            string
 	class            *KBClass
 	attribute        *KBAttribute
+	workspace        *KBWorkspace
 	objects          []*KBObject
 	attributeObjects []*KBAttributeObject
 }

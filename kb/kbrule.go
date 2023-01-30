@@ -243,7 +243,7 @@ oulter:
 func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 	//Program counter [pc] – It stores the counter which contains the address of the next instruction that is to be executed for the process.
 
-	for pc := r.consequent; pc < len(r.bin); {
+	for pc := r.consequent; pc < len(r.bin); pc++ {
 		switch r.bin[pc].literalbin {
 		case models.B_inform:
 			attrs := make(map[string][]*KBAttributeObject)
@@ -338,8 +338,6 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 					}
 				}
 			}
-			pc++
-
 		case models.B_create:
 			var baseClass *KBClass
 			var parentClass *KBClass
@@ -414,13 +412,22 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 		case models.B_halt:
 			GKB.Pause()
 			models.NewAlert(initializers.I18n_halt, "") //All users
+		case models.B_transfer:
+			pc++
+			if len(r.bin[pc].objects) == 0 {
+				return initializers.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", initializers.Error)
+			}
+			obj := r.bin[pc].objects[0]
+			pc += 2
+			if r.bin[pc].workspace == nil {
+				return initializers.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", initializers.Error)
+			}
+			w := r.bin[pc].workspace
+			w.AddObject(obj, 0, 0)
 		default:
 			return initializers.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, initializers.Error)
 		}
 
-		//TODO: Definir sintaxe EBNF do comandos abaixo
-
-		//TODO: transfer
 		//TODO: delete
 		//TODO: insert
 		//TODO: remove
@@ -429,8 +436,7 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 		//TODO: rotate
 		//TODO: show
 		//TODO: hide
-		//TODO: activate
-		//TODO: deactivate
+
 		//TODO: focus
 		//TODO: invoke
 

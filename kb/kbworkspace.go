@@ -21,3 +21,13 @@ func (w *KBWorkspace) String() string {
 	initializers.Log(err, initializers.Error)
 	return string(j)
 }
+
+func (w *KBWorkspace) AddObject(obj *KBObject, left, top int) {
+	ows := new(KBObjectWS)
+	ows.KBObject = obj
+	ows.Object = obj.ID
+	ows.Left = left
+	ows.Top = top
+	w.Objects = append(w.Objects, *ows)
+	w.Persist()
+}
