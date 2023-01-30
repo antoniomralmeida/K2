@@ -75,15 +75,15 @@ oulter:
 	//Program counter [pc] – It stores the counter which contains the address of the next instruction that is to be executed for the process.
 	for pc := 0; pc < len(r.bin); {
 		switch r.bin[pc].literalbin {
-		case b_unconditionally:
+		case models.B_unconditionally:
 			conditionally = true
-		case b_then:
+		case models.B_then:
 			if !conditionally {
 				break oulter
 			}
-		case b_for:
+		case models.B_for:
 			pc++
-			if r.bin[pc].literalbin != b_any {
+			if r.bin[pc].literalbin != models.B_any {
 				return initializers.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, initializers.Error)
 			}
 			pc++
@@ -101,17 +101,17 @@ oulter:
 			if r.bin[pc+1].tokentype == ebnf.DynamicReference {
 				pc++
 			}
-		case b_if:
+		case models.B_if:
 
 		inner:
 			for {
 
 				pc++
-				for ; r.bin[pc].literalbin == b_open_par; pc++ {
+				for ; r.bin[pc].literalbin == models.B_open_par; pc++ {
 					expression = expression + r.bin[pc].token
 					fuzzyexp = fuzzyexp + r.bin[pc].token
 				}
-				if r.bin[pc].literalbin != b_the {
+				if r.bin[pc].literalbin != models.B_the {
 					return initializers.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, initializers.Error)
 				}
 				pc++
@@ -129,7 +129,7 @@ oulter:
 				objs[key] = r.bin[pc].objects
 
 				pc++
-				if r.bin[pc].literalbin == b_of {
+				if r.bin[pc].literalbin == models.B_of {
 					pc++
 					if r.bin[pc].tokentype != ebnf.DynamicReference && r.bin[pc].tokentype != ebnf.Object {
 						return initializers.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, initializers.Error)
@@ -137,23 +137,23 @@ oulter:
 					pc++
 				}
 				switch r.bin[pc].literalbin {
-				case b_is:
+				case models.B_is:
 					expression = expression + "=="
-				case b_equal:
+				case models.B_equal:
 					expression = expression + "=="
-				case b_different:
+				case models.B_different:
 					expression = expression + "!="
-				case b_less:
+				case models.B_less:
 					expression = expression + "<"
 					pc += 2
-					if r.bin[pc].literalbin == b_or {
+					if r.bin[pc].literalbin == models.B_or {
 						expression = expression + "="
 						pc += 2
 					}
-				case b_greater:
+				case models.B_greater:
 					expression = expression + ">"
 					pc += 2
-					if r.bin[pc].literalbin == b_or {
+					if r.bin[pc].literalbin == models.B_or {
 						expression = expression + "="
 						pc += 2
 					}
@@ -163,19 +163,19 @@ oulter:
 					expression = expression + r.bin[pc].token
 				}
 				pc++
-				for ; r.bin[pc].literalbin == b_close_par; pc++ {
+				for ; r.bin[pc].literalbin == models.B_close_par; pc++ {
 					expression = expression + r.bin[pc].token
 					fuzzyexp = fuzzyexp + r.bin[pc].token
 				}
 
 				switch r.bin[pc].literalbin {
-				case b_then:
+				case models.B_then:
 					break inner
-				case b_and:
+				case models.B_and:
 					pc++
 					expression = expression + " " + r.bin[pc].token + " "
 					fuzzyexp = fuzzyexp + " " + r.bin[pc].token + " "
-				case b_or:
+				case models.B_or:
 					pc++
 					fuzzyexp = fuzzyexp + " " + r.bin[pc].token + " "
 				}
@@ -245,7 +245,7 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 
 	for pc := r.consequent; pc < len(r.bin); {
 		switch r.bin[pc].literalbin {
-		case b_inform:
+		case models.B_inform:
 			attrs := make(map[string][]*KBAttributeObject)
 			cart := lib.Cartesian{}
 			pc += 5
@@ -257,7 +257,7 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 			for {
 				txt = txt + r.bin[pc].token
 				pc++
-				if r.bin[pc].literalbin != b_the {
+				if r.bin[pc].literalbin != models.B_the {
 					break
 				}
 				if r.bin[pc].tokentype != ebnf.Attribute {
@@ -272,7 +272,7 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 				cart.AddItem(key, len(attrs[key])-1)
 
 				pc += 2
-				if r.bin[pc].literalbin == b_the {
+				if r.bin[pc].literalbin == models.B_the {
 					pc += 2
 				} else if r.bin[pc].tokentype != ebnf.DynamicReference {
 					return initializers.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, initializers.Error)
@@ -308,7 +308,7 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 				}
 			}
 
-		case b_set:
+		case models.B_set:
 			pc += 2
 			if r.bin[pc].tokentype != ebnf.Attribute {
 				return initializers.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, initializers.Error)
@@ -340,7 +340,7 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 			}
 			pc++
 
-		case b_create:
+		case models.B_create:
 			var baseClass *KBClass
 			var parentClass *KBClass
 			createClass := false
@@ -350,7 +350,7 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 				return initializers.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, initializers.Error)
 			}
 			switch r.bin[pc].literalbin {
-			case b_a: //Class
+			case models.B_a: //Class
 				pc++
 				createClass = true
 				if r.bin[pc].class == nil {
@@ -361,26 +361,26 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 					return initializers.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, initializers.Error)
 				}
 				switch r.bin[pc].literalbin {
-				case b_by:
+				case models.B_by:
 					pc += 2
 					if r.bin[pc].class == nil {
 						return initializers.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", initializers.Error)
 					}
 					baseClass = r.bin[pc].class
 					pc++
-				case b_whose:
+				case models.B_whose:
 					pc += 3
 					if r.bin[pc].class == nil {
 						return initializers.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", initializers.Error)
 					}
 					parentClass = r.bin[pc].class
 					pc++
-				case b_named:
+				case models.B_named:
 				default:
 					return initializers.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, initializers.Error)
 				}
 
-			case b_an: //Instance
+			case models.B_an: //Instance
 				pc += 4
 				if r.bin[pc].class == nil {
 					return initializers.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", initializers.Error)
@@ -389,7 +389,7 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 			default:
 				return initializers.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, initializers.Error)
 			}
-			if r.bin[pc].literalbin == b_named {
+			if r.bin[pc].literalbin == models.B_named {
 				pc += 2
 				if createClass {
 					className := r.bin[pc].GetToken()
@@ -403,7 +403,7 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 					GKB.NewSimpleObject(objectName, baseClass)
 				}
 			}
-		case b_conclude:
+		case models.B_conclude:
 			pc += 6
 			if len(r.bin[pc].attributeObjects) != 1 {
 				return initializers.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, initializers.Error)
@@ -411,7 +411,7 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 			attributeObject := r.bin[pc].attributeObjects[0]
 			pc += 2
 			attributeObject.SetValue(r.bin[pc].GetToken(), Inference, trust)
-		case b_halt:
+		case models.B_halt:
 			GKB.Pause()
 			models.NewAlert(initializers.I18n_halt, "") //All users
 		default:

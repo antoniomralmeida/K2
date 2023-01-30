@@ -18,19 +18,16 @@ Expression =  { "("  } the Attribute [of ( DynamicReference | Object ) ]  \n
 Consequent =   ( Set  
 		| Inform
 		| Create 
-		| transfer 
-		| delete 
-		| insert 
-		| remove 
-		| change 
-		| move 
-		| rotate 
-		| show 
-		| hide 
-		| activate 
-		| deactivate 
-		| focus 
-		| invoke 
+		| Transfer 
+		| Delete 
+		| Insert 
+		| Remove 
+		| Change 
+		| Move 
+		| Rotate 
+		| Show 
+		| Hide 
+		| Focus 
 		| Halt 
 		| Conclude  )
 		{ and Consequent }.
@@ -45,3 +42,24 @@ Create = create ( a Class [(by cloning Class| whose parent is Class)]| an instan
 
 Halt = halt with Text if breakpoints are enabled.
 
+Transfer = transfer Object to Workspace.
+
+Delete = delete Object.
+
+Insert = insert Rule at the end of task-queue.
+
+Remove = remove the first-task from task-queue.
+
+Change = change the Object to Color.
+
+Color = (red|blue|yellow|green).
+
+Move = move the Object to "(" Constant "," Constant ")".
+
+Rotate = rotate Object by Constant degrees.
+
+Show = show Workspace.
+
+Hide = hide Workspace.
+
+Focus = focus on Object.

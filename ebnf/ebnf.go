@@ -11,6 +11,7 @@ import (
 	"unicode"
 
 	"github.com/antoniomralmeida/k2/initializers"
+	"github.com/antoniomralmeida/k2/models"
 )
 
 func (e *EBNF) GetBase() *Token {
@@ -159,7 +160,7 @@ func (e *EBNF) ReadToken(Tokenfile string) int {
 			e.parsingStatement(nrule)
 		}
 	}
-
+	errorFatal := false
 	for _, r := range e.Rules {
 		for _, t := range r.Tokens {
 			if t.GetTokentype() == Reference {
@@ -172,12 +173,23 @@ func (e *EBNF) ReadToken(Tokenfile string) int {
 						}
 					}
 					if t.GetTokentype() == Reference {
-						initializers.Log("Reference not found! "+t.Token, initializers.Fatal)
+						errorFatal = true
+						initializers.Log("Reference not found! "+t.Token, initializers.Error)
 					}
 				}
 
 			}
+			if t.Tokentype == Literal {
+				if _, ok := models.LiteralBinStr[t.Token]; !ok {
+					errorFatal = true
+					initializers.Log("Literal not found! "+t.Token, initializers.Error)
+				}
+			}
 		}
+	}
+	if errorFatal == true {
+		initializers.Log("Fatal error(s) in EBNF parsing!", initializers.Fatal)
+
 	}
 	e.Base = e.Rules[0].Tokens[0]
 	data, err := os.Create(Tokenfile + ".json")

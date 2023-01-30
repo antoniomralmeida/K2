@@ -1,4 +1,4 @@
-package kb
+package models
 
 func (me LiteralBin) String() string {
 	return string(me)

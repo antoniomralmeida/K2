@@ -15,6 +15,7 @@ const (
 	Constant
 	Class
 	ListType
+	Workspace
 )
 
 type Token struct {
@@ -49,4 +50,4 @@ type PAIR struct {
 
 var symbols = []SYMBOL{{"=", "."}, {"{", "}"}, {"[", "]"}, {"(", ")"}, {"\"", "\""}, {"'", "'"}}
 
-var TokentypeStr = []string{"", "Reference", "Literal", "Text", "Control", "Jump", "Object", "DynamicReference", "Attribute", "Constant", "Class", "ListType"}
+var TokentypeStr = []string{"", "Reference", "Literal", "Text", "Control", "Jump", "Object", "DynamicReference", "Attribute", "Constant", "Class", "ListType", "Workspace"}

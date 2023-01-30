@@ -3,6 +3,7 @@ package kb
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"sort"
 	"strings"
 	"time"
@@ -443,6 +444,9 @@ func (kb *KnowledgeBased) ParsingCommand(cmd string) ([]*ebnf.Token, []*BIN, err
 		}
 		code := BIN{tokentype: pt.GetTokentype(), token: x}
 		code.setTokenBin()
+		if code.tokentype == ebnf.Literal && code.literalbin == models.B_null {
+			initializers.Log("Literal not found!", initializers.Fatal)
+		}
 		bin = append(bin, &code)
 	}
 	for _, y := range pt.GetNexts() {
@@ -466,12 +470,15 @@ func (kb *KnowledgeBased) linkerRule(r *KBRule, bin []*BIN) error {
 	dr := make(map[string]*KBClass)
 	consequent := -1
 	for j, x := range bin {
+		if x.tokentype == ebnf.Literal {
+			fmt.Println(x.token, x.literalbin)
+		}
 		switch x.literalbin {
-		case b_initially:
+		case models.B_initially:
 			kb.mutex.Lock()
 			kb.stack = append(kb.stack, r)
 			kb.mutex.Unlock()
-		case b_then:
+		case models.B_then:
 			consequent = j
 			r.consequent = j + 1
 		}
@@ -493,7 +500,7 @@ func (kb *KnowledgeBased) linkerRule(r *KBRule, bin []*BIN) error {
 			}
 		case ebnf.Attribute:
 			ref := -1
-			if bin[j+1].literalbin == b_of {
+			if bin[j+1].literalbin == models.B_of {
 				ref = j + 2
 			} else {
 				for z := j - 1; z >= 0; z-- {
