@@ -5,7 +5,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/antoniomralmeida/k2/kb"
+	"github.com/antoniomralmeida/k2/cmd/k2/kb"
 )
 
 func TestConvert(t *testing.T) {
