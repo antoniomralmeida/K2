@@ -41,7 +41,7 @@ func GetIntents(locale string) []Intent {
 
 func intentsFile(locale string) string {
 
-	return inits.GetHomeDir() + "/k2olivia/res/locales/" + locale + "/intents.json"
+	return inits.GetHomeDir() + "/data/locales/" + locale + "/intents.json"
 }
 
 func translateIntents(_intents *[]Intent, locale string) (err error) {

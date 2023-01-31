@@ -33,7 +33,7 @@ func init() {
 
 func main() {
 	for key := range inits.Locales {
-		path := inits.GetHomeDir() + "/k2olivia/res/locales/" + key + "/"
+		path := inits.GetHomeDir() + "/data/locales/" + key + "/"
 		if ok, _ := lib.Exists(path); !ok {
 			err := os.MkdirAll(path, os.ModePerm)
 			inits.Log(err, inits.Fatal)
@@ -55,7 +55,7 @@ func reTrainModels(localesFlag string) {
 	// Iterate locales by separating them by comma
 	wd := inits.GetHomeDir()
 	for _, localeFlag := range strings.Split(localesFlag, ",") {
-		path := fmt.Sprintf(wd+"/k2olivia/res/locales/%s/training.json", localeFlag)
+		path := fmt.Sprintf(wd+"/data/locales/%s/training.json", localeFlag)
 		os.Remove(path)
 	}
 }

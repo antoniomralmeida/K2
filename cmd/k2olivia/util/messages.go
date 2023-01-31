@@ -20,7 +20,7 @@ type Message struct {
 var messages = map[string][]Message{}
 
 func messagesFile(locale string) string {
-	return inits.GetHomeDir() + "/k2olivia/res/locales/" + locale + "/messages.json"
+	return inits.GetHomeDir() + "/data/locales/" + locale + "/messages.json"
 }
 
 func translateMessages(_messages *[]Message, locale string) (err error) {

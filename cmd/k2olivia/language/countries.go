@@ -23,7 +23,7 @@ var countries = SerializeCountries()
 // SerializeCountries returns a list of countries, serialized from `res/datasets/countries.json`
 func SerializeCountries() (countries []Country) {
 	wd := inits.GetHomeDir()
-	err := json.Unmarshal(util.ReadFile(wd+"/k2olivia/res/datasets/countries.json"), &countries)
+	err := json.Unmarshal(util.ReadFile(wd+"/data/datasets/countries.json"), &countries)
 	if err != nil {
 		fmt.Println(err)
 	}

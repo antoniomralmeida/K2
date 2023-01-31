@@ -63,7 +63,7 @@ var (
 
 // SerializeMovies retrieves the content of res/datasets/movies.csv and serialize it
 func SerializeMovies() (movies []Movie) {
-	path := inits.GetHomeDir() + "/k2olivia/res/datasets/movies.csv"
+	path := inits.GetHomeDir() + "/data/datasets/movies.csv"
 	bytes, err := os.Open(path)
 	if err != nil {
 		inits.Log(err, inits.Fatal)

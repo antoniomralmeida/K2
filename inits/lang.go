@@ -102,7 +102,7 @@ func NewStem(locale string) (*Stem, error) {
 	stam := new(Stem)
 	stam.stams = make(map[string][]string)
 
-	err, filename := lib.DownloadFile("https://raw.githubusercontent.com/michmech/lemmatization-lists/master/lemmatization-"+locale+".txt", GetHomeDir()+"/k2olivia/res/locales/"+locale+"/")
+	err, filename := lib.DownloadFile("https://raw.githubusercontent.com/michmech/lemmatization-lists/master/lemmatization-"+locale+".txt", GetHomeDir()+"/data/locales/"+locale+"/")
 	if err != nil {
 		return nil, err
 	}

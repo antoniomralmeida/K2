@@ -17,7 +17,7 @@ import (
 
 func init() {
 	// Print the K2 ascii text 3D
-	k2ASCII := string(util.ReadFile("config/k2.txt"))
+	k2ASCII := string(util.ReadFile("./configs/k2.txt"))
 	fmt.Println(color.FgLightGreen.Render(k2ASCII))
 
 	msg := fmt.Sprintf("Initializing K2 KB System, version: %v build: %v PID: %v", lib.GetVersion(), lib.GetBuild(), os.Getppid())

@@ -34,7 +34,7 @@ func WriteIntents(locale string, intents []analysis.Intent) {
 
 	// Write it to the file
 	wd := inits.GetHomeDir()
-	file, err := os.Create(wd + "/k2olivia/res/locales/" + locale + "/intents.json")
+	file, err := os.Create(wd + "/data/locales/" + locale + "/intents.json")
 	if err != nil {
 
 		inits.Log(err, inits.Fatal)

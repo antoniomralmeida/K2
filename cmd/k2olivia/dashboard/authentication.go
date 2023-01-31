@@ -13,7 +13,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var fileName = inits.GetHomeDir() + "/k2olivia/res/authentication.txt"
+var fileName = inits.GetHomeDir() + "/data/authentication.txt"
 
 var authenticationHash []byte
 

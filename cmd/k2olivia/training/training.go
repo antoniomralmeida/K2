@@ -36,7 +36,7 @@ func TrainData(locale string) (inputs, outputs [][]float64) {
 func CreateNeuralNetwork(locale string, ignoreTrainingFile bool) (neuralNetwork network.Network) {
 	// Decide if the network is created by the save or is a new one
 	wd := inits.GetHomeDir()
-	saveFile := wd + "/k2olivia/res/locales/" + locale + "/training.json"
+	saveFile := wd + "/data/locales/" + locale + "/training.json"
 
 	_, err := os.Open(saveFile)
 	// Train the model if there is no training file
