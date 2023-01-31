@@ -11,34 +11,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type KBAttributeType string
-
-const (
-	NotDefined KBAttributeType = ""
-	KBString   KBAttributeType = "String"
-	KBDate     KBAttributeType = "Date"
-	KBNumber   KBAttributeType = "Number"
-	KBList     KBAttributeType = "List"
-)
-
-type KBSource int8
-
-const (
-	Empty KBSource = iota
-	User
-	IOT
-	Simulation
-	Inference
-)
-
-var KBSourceStr = map[string]KBSource{
-	"":           Empty,
-	"User":       User,
-	"IOT":        IOT,
-	"Inference":  Inference,
-	"Simulation": Simulation,
-}
-
 type KBSimulation int8
 
 const (

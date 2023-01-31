@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/antoniomralmeida/k2/inits"
+	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
@@ -9,6 +9,16 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
+
+type KBUser struct {
+	mgm.DefaultModel `json:",inline" bson:",inline"`
+	Name             string               `bson:"name"`
+	Email            string               `bson:"email"`
+	Hash             []byte               `bson:"hash" json:"-"`
+	Profile          KBProfile            `bson:"profile"`
+	Workspaces       []primitive.ObjectID `bson:"workspaces"`
+	FaceImage        string               `bson:"faceimage,omitempty"`
+}
 
 func (obj *KBUser) Persist() error {
 	return inits.Persist(obj)

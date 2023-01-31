@@ -1,12 +1,19 @@
 package models
 
 import (
-	"github.com/antoniomralmeida/k2/inits"
+	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+type KBAlert struct {
+	mgm.DefaultModel `json:",inline" bson:",inline"`
+	Message          string               `bson:"message"`
+	User             primitive.ObjectID   `bson:"user"`
+	Views            []primitive.ObjectID `bson:"views"`
+}
 
 func getLastAlerts(user primitive.ObjectID) ([]KBAlert, error) {
 	alerts := []KBAlert{}
