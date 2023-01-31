@@ -1,4 +1,4 @@
-package kb
+package models
 
 import (
 	"encoding/json"
@@ -21,11 +21,12 @@ import (
 	"gonum.org/v1/gonum/stat"
 )
 
-type Pipe struct {
-	id     primitive.ObjectID `json:"_id"`
-	avg    float64            `json:"avg"`
-	stdDev float64            `json:"stdDev"`
-	trust  float64            `json:"trust"`
+type KBAttributeObject struct {
+	mgm.DefaultModel `json:",inline" bson:",inline"`
+	Attribute        primitive.ObjectID `bson:"attribute_id"  json:"AttributeId"`
+	KbObject         *KBObject          `bson:"-" json:"-"`
+	KbHistory        *KBHistory         `bson:"-" json:"History"`
+	KbAttribute      *KBAttribute       `bson:"-"  json:"Attrinute"`
 }
 
 func (ao *KBAttributeObject) Validity() bool {

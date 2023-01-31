@@ -1,10 +1,11 @@
-package kb
+package models
 
 import (
 	"encoding/json"
 	"errors"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 	"unicode"
 
@@ -19,6 +20,22 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
+
+type KnowledgeBased struct {
+	mgm.DefaultModel    `json:",inline" bson:",inline"`
+	Name                string                          `bson:"name"`
+	Classes             []KBClass                       `bson:"-"`
+	IdxClasses          map[primitive.ObjectID]*KBClass `bson:"-"`
+	Rules               []KBRule                        `bson:"-"`
+	Workspaces          []KBWorkspace                   `bson:"-"`
+	Objects             []KBObject                      `bson:"-"`
+	IdxObjects          map[string]*KBObject            `bson:"-"`
+	IdxAttributeObjects map[string]*KBAttributeObject   `bson:"-"`
+	ebnf                *ebnf.EBNF                      `bson:"-"`
+	stack               []*KBRule                       `bson:"-"`
+	mutex               sync.Mutex                      `bson:"-"`
+	halt                bool                            `bson:"-"`
+}
 
 func (kb *KnowledgeBased) AddAttribute(c *KBClass, attrs ...*KBAttribute) {
 	for i := range attrs {

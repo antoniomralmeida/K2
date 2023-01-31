@@ -1,4 +1,4 @@
-package kb
+package models
 
 import (
 	"encoding/json"
@@ -10,6 +10,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
+
+type KBClass struct {
+	mgm.DefaultModel `json:",inline" bson:",inline"`
+	Name             string             `bson:"name"`
+	Icon             string             `bson:"icon"`
+	ParentID         primitive.ObjectID `bson:"parent_id,omitempty"`
+	Parent           string             `bson:"-" json:"parent"`
+	Attributes       []KBAttribute      `bson:"attributes"`
+	ParentClass      *KBClass           `bson:"-"`
+}
 
 func (obj *KBClass) Persist() error {
 	return inits.Persist(obj)

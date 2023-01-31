@@ -1,4 +1,4 @@
-package kb
+package models
 
 import (
 	"encoding/json"
@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/PaesslerAG/gval"
+	"github.com/kamva/mgm/v3"
 
 	"github.com/antoniomralmeida/k2/cmd/k2/ebnf"
 	"github.com/antoniomralmeida/k2/cmd/k2/fuzzy"
@@ -17,6 +18,18 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
+
+type KBRule struct {
+	mgm.DefaultModel  `json:",inline" bson:",inline"`
+	Rule              string     `bson:"rule"`
+	Priority          byte       `bson:"priority"` //0..100
+	ExecutionInterval int        `bson:"interval"`
+	lastexecution     time.Time  `bson:"-"`
+	consequent        int        `bson:"-"`
+	inRun             bool       `bson:"-"`
+	bkclasses         []*KBClass `bson:"-"`
+	bin               []*BIN     `bson:"-"`
+}
 
 func (r *KBRule) String() string {
 	j, err := json.MarshalIndent(*r, "", "\t")

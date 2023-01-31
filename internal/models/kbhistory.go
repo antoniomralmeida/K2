@@ -1,4 +1,4 @@
-package kb
+package models
 
 import (
 	"encoding/json"
@@ -10,6 +10,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
+
+type KBHistory struct {
+	mgm.DefaultModel `json:",inline" bson:",inline"`
+	Attribute        primitive.ObjectID `bson:"attribute_id"`
+	When             int64              `bson:"when"`
+	Value            any                `bson:"value"`
+	Trust            float64            `bson:"trust,omitempty"`
+	Source           KBSource           `bson:"source"`
+}
 
 func (obj *KBHistory) Persist() error {
 	return inits.Persist(obj)

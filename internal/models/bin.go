@@ -1,10 +1,21 @@
-package kb
+package models
 
 import (
 	"github.com/antoniomralmeida/k2/cmd/k2/ebnf"
 	"github.com/antoniomralmeida/k2/inits"
 	"github.com/antoniomralmeida/k2/internal/models"
 )
+
+type BIN struct {
+	tokentype        ebnf.Tokentype
+	literalbin       models.LiteralBin
+	token            string
+	class            *KBClass
+	attribute        *KBAttribute
+	workspace        *KBWorkspace
+	objects          []*KBObject
+	attributeObjects []*KBAttributeObject
+}
 
 func (b *BIN) GetToken() string {
 	return b.token
