@@ -1,13 +1,9 @@
 FROM smartentry/ubuntu  as k2-back
 
-
-RUN apt-get upgrade
-RUN apt-get update
-
 WORKDIR /var/www/k2
 
 COPY ./bin/k2.bin ./bin/
-COPY ["./configs/", "./configs/"] 
+COPY ./configs/* ./configs/ 
 COPY ./log/*.md ./log/
 
 RUN chmod -R 777 .

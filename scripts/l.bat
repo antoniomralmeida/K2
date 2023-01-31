@@ -15,6 +15,5 @@ go build  -ldflags "-X github.com/antoniomralmeida/k2/version.version=%version% 
 
 del log\*.json
 del log\*.log
-docker-compose build --no-cache --file ./build/docker-compose.yml
-docker-compose up -d --file ./build/docker-compose.yml
-cd ..
+docker-compose -f ./build/docker-compose.yml  build
+docker-compose -f ./build/docker-compose.yml  up -d  
