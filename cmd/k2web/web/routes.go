@@ -26,7 +26,6 @@ func Routes(app *fiber.App) {
 	}))
 
 	app.Get("/", Home)
-
 	app.Get("/login", LoginForm)
 	app.Post("/login", PostLogin)
 	app.Post("/logout", Logout)

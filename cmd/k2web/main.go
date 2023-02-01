@@ -5,7 +5,7 @@ import (
 
 	"github.com/antoniomralmeida/k2/cmd/k2olivia/util"
 	"github.com/antoniomralmeida/k2/cmd/k2web/web"
-	"github.com/antoniomralmeida/k2/inits"
+	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
 
 	"github.com/gofiber/fiber/v2"

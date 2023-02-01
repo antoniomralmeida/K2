@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/antoniomralmeida/k2/cmd/iotmidware/iot"
-	"github.com/antoniomralmeida/k2/inits"
+	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
 )
 

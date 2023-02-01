@@ -1,14 +1,10 @@
 package models
 
-import (
-	"github.com/antoniomralmeida/k2/cmd/k2/ebnf"
-	"github.com/antoniomralmeida/k2/inits"
-	"github.com/antoniomralmeida/k2/internal/models"
-)
+import "github.com/antoniomralmeida/k2/internal/inits"
 
 type BIN struct {
-	tokentype        ebnf.Tokentype
-	literalbin       models.LiteralBin
+	tokentype        Tokentype
+	literalbin       LiteralBin
 	token            string
 	class            *KBClass
 	attribute        *KBAttribute
@@ -21,14 +17,14 @@ func (b *BIN) GetToken() string {
 	return b.token
 }
 
-func (b *BIN) GetTokentype() ebnf.Tokentype {
+func (b *BIN) GetTokentype() Tokentype {
 	return b.tokentype
 }
 
 func (b *BIN) setTokenBin() {
-	if b.GetTokentype() == ebnf.Literal {
+	if b.GetTokentype() == Literal {
 		var ok bool
-		if b.literalbin, ok = models.LiteralBinStr[b.token]; !ok {
+		if b.literalbin, ok = LiteralBinStr[b.token]; !ok {
 			inits.Log("Literal unknown!"+b.GetToken(), inits.Fatal)
 		}
 	}

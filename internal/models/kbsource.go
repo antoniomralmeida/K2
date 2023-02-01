@@ -3,16 +3,16 @@ package models
 type KBSource int8
 
 const (
-	Empty KBSource = iota
-	User
+	Undefined KBSource = iota
+	FromUser
 	IOT
 	Simulation
 	Inference
 )
 
 var KBSourceStr = map[string]KBSource{
-	"":           Empty,
-	"User":       User,
+	"":           Undefined,
+	"User":       FromUser,
 	"IOT":        IOT,
 	"Inference":  Inference,
 	"Simulation": Simulation,

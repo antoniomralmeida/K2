@@ -1,6 +1,6 @@
 package locales
 
-import "github.com/antoniomralmeida/k2/inits"
+import "github.com/antoniomralmeida/k2/internal/inits"
 
 // Import these packages to trigger the init() function
 

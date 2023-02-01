@@ -3,7 +3,7 @@ package models
 import (
 	"encoding/json"
 
-	"github.com/antoniomralmeida/k2/inits"
+	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -37,18 +37,7 @@ func (o *KBObject) Delete() error {
 	mgm.Coll(o).Delete(o)
 
 	// Restart KB
-	Stop()
-	Init()
+	KBStop()
+	KBInit()
 	return nil
-}
-
-func (o *KBObject) GetWorkspaces() (ret []*KBWorkspace) {
-	for i := range GKB.Workspaces {
-		for j := range GKB.Workspaces[i].Objects {
-			if GKB.Workspaces[i].Objects[j].KBObject == o {
-				ret = append(ret, &GKB.Workspaces[i])
-			}
-		}
-	}
-	return
 }

@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/antoniomralmeida/k2/inits"
+	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/tdewolff/minify"
 	h "github.com/tdewolff/minify/html"
 	"github.com/tdewolff/minify/js"

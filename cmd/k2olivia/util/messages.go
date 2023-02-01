@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/antoniomralmeida/golibretranslate"
-	"github.com/antoniomralmeida/k2/inits"
+	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
 )
 

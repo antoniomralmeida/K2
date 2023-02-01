@@ -5,8 +5,9 @@ import (
 )
 
 func Routes(app *fiber.App) {
-	app.Get("/api/v1/attributes", GetAttributes)
-	app.Post("/api/v1/attributes", PostAttributes)
-	app.Get("/api/v1/workspaces", GetWorkspaces)
-	app.Get("/api/v1/chats", GetChats)
+	api := app.Group("/api/v1")
+	api.Get("/attributes", GetAttributes)
+	api.Post("/attributes", PostAttributes)
+	api.Get("/workspaces", GetWorkspaces)
+	api.Get("/chats", GetChats)
 }

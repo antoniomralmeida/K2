@@ -3,7 +3,7 @@ package util
 import (
 	"io/ioutil"
 
-	"github.com/antoniomralmeida/k2/inits"
+	"github.com/antoniomralmeida/k2/internal/inits"
 )
 
 // ReadFile returns the bytes of a file searched in the path and beyond it

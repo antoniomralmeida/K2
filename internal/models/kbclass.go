@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/antoniomralmeida/k2/inits"
+	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -48,8 +48,8 @@ func (class *KBClass) Delete() error {
 			err := mgm.Coll(class).Delete(class)
 			if err == nil {
 				// Restart KB
-				Stop()
-				Init()
+				KBStop()
+				KBInit()
 			}
 			return err
 		}

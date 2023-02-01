@@ -1,7 +1,7 @@
 package apikernel
 
 import (
-	"github.com/antoniomralmeida/k2/inits"
+	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/gofiber/fiber/v2"
 )
 

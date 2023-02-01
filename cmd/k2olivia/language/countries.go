@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/antoniomralmeida/k2/cmd/k2olivia/util"
-	"github.com/antoniomralmeida/k2/inits"
+	"github.com/antoniomralmeida/k2/internal/inits"
 )
 
 // Country is the serializer of the countries.json file in the res folder

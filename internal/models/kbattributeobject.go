@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/antoniomralmeida/k2/inits"
+	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
 
 	"github.com/gofiber/fiber/v2"
@@ -141,7 +141,8 @@ func (attr *KBAttributeObject) SetValue(value any, source KBSource, trust float6
 	h := KBHistory{Attribute: attr.ID, When: time.Now().UnixNano(), Value: value, Source: source, Trust: trust}
 	inits.Log(h.Persist(), inits.Fatal)
 	attr.KbHistory = &h
-	GKB.stack = append(GKB.stack, attr.KbAttribute.antecedentRules...) //  forward chaining
+	KBAddStack(attr.KbAttribute.antecedentRules) //  forward chaining
+
 	if attr.KbAttribute.KeepHistory != 0 {
 		go h.ClearingHistory(attr.KbAttribute.KeepHistory)
 	}
