@@ -7,12 +7,11 @@ import (
 
 	"github.com/gookit/color"
 
-	"github.com/antoniomralmeida/k2/cmd/k2/apikernel"
-
-	"github.com/antoniomralmeida/k2/cmd/k2olivia/util"
+	"github.com/antoniomralmeida/k2/internal/apikernel"
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
 	"github.com/antoniomralmeida/k2/internal/models"
+	"github.com/antoniomralmeida/k2/internal/olivia/util"
 )
 
 func init() {

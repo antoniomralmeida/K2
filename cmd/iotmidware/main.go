@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/antoniomralmeida/k2/cmd/iotmidware/iot"
 	"github.com/antoniomralmeida/k2/internal/inits"
+	"github.com/antoniomralmeida/k2/internal/iot"
 	"github.com/antoniomralmeida/k2/internal/lib"
 )
 

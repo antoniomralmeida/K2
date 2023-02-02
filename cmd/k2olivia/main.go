@@ -5,13 +5,13 @@ import (
 	"os"
 	"strings"
 
-	"github.com/antoniomralmeida/k2/cmd/k2olivia/locales"
-	"github.com/antoniomralmeida/k2/cmd/k2olivia/network"
-	"github.com/antoniomralmeida/k2/cmd/k2olivia/server"
-	"github.com/antoniomralmeida/k2/cmd/k2olivia/training"
-	"github.com/antoniomralmeida/k2/cmd/k2olivia/util"
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
+	"github.com/antoniomralmeida/k2/internal/olivia/locales"
+	"github.com/antoniomralmeida/k2/internal/olivia/network"
+	"github.com/antoniomralmeida/k2/internal/olivia/server"
+	"github.com/antoniomralmeida/k2/internal/olivia/training"
+	"github.com/antoniomralmeida/k2/internal/olivia/util"
 
 	"github.com/gookit/color"
 )

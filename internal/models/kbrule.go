@@ -10,7 +10,7 @@ import (
 	"github.com/PaesslerAG/gval"
 	"github.com/kamva/mgm/v3"
 
-	"github.com/antoniomralmeida/k2/cmd/k2/fuzzy"
+	"github.com/antoniomralmeida/k2/internal/fuzzy"
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
 

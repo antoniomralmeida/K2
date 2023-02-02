@@ -1,0 +1,19 @@
+[
+    {
+        "Regexp": "^(.|.*([^A]|[^S].))?$",
+        "Article": "de las"
+    },
+    {
+        "Regexp": "^(.|.*([^O]|[^S].))?$",
+        "Article": "de los"
+    },
+    {
+        "Regexp": "[aA]$",
+        "Article": "de"
+    },
+    {
+        "Regexp": ".*",
+        "Article": "del"
+    }
+
+]
