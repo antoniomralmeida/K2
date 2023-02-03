@@ -11,9 +11,6 @@ import (
 
 const adviceURL = "https://api.adviceslip.com/advice"
 
-// AdvicesTag is the intent tag for its module
-var AdvicesTag = "advices"
-
 // AdvicesReplacer replaces the pattern contained inside the response by a random advice from the api
 // specified by the adviceURL.
 // See modules/modules.go#Module.Replacer() for more details.

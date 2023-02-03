@@ -7,9 +7,6 @@ import (
 	"github.com/antoniomralmeida/k2/internal/olivia/util"
 )
 
-// AreaTag is the intent tag for its module
-var AreaTag = "area"
-
 // AreaReplacer replaces the pattern contained inside the response by the area of the country
 // specified in the message.
 // See modules/modules.go#Module.Replacer() for more details.
@@ -22,5 +19,5 @@ func AreaReplacer(locale, entry, response, _ string) (string, string) {
 		return responseTag, util.GetMessage(locale, responseTag)
 	}
 
-	return AreaTag, fmt.Sprintf(response, ArticleCountries[locale](country.Name[locale]), country.Area)
+	return AreaTag, fmt.Sprintf(response, ArticleCountries(locale, country.Name[locale]), country.Area)
 }

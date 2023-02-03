@@ -8,7 +8,7 @@ import (
 )
 
 // CurrencyTag is the intent tag for its module
-var CurrencyTag = "currency"
+//var CurrencyTag = "currency"
 
 // CurrencyReplacer replaces the pattern contained inside the response by the currency of the country
 // specified in the message.
@@ -22,5 +22,5 @@ func CurrencyReplacer(locale, entry, response, _ string) (string, string) {
 		return responseTag, util.GetMessage(locale, responseTag)
 	}
 
-	return CurrencyTag, fmt.Sprintf(response, ArticleCountries[locale](country.Name[locale]), country.Currency)
+	return CurrencyTag, fmt.Sprintf(response, ArticleCountries(locale, country.Name[locale]), country.Currency)
 }

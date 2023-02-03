@@ -10,13 +10,6 @@ import (
 	"github.com/antoniomralmeida/k2/internal/olivia/util"
 )
 
-var (
-	// ReminderSetterTag is the intent tag for its module
-	ReminderSetterTag = "reminder setter"
-	// ReminderGetterTag is the intent tag for its module
-	ReminderGetterTag = "reminder getter"
-)
-
 // ReminderSetterReplacer replaces the pattern contained inside the response by the date of the reminder
 // and its reason.
 // See modules/modules.go#Module.Replacer() for more details.

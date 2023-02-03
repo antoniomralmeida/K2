@@ -1,0 +1,198 @@
+[
+    {
+        "Tag": "AreaTag",
+        "Patterns": [
+            "Quelle est la superficie de ",
+            "Donne moi la superficie de "
+        ],
+        "Responses": [
+            "La superficie %s est de %gkm²"
+        ],
+        "Replacer": "AreaReplacer"
+    },
+    {
+        "Tag": "CapitalTag",
+        "Patterns": [
+            "Quelle est la capitale de ",
+				"Donne moi la capitale de "
+        ],
+        "Responses": [
+            "La capitale %s est %s"
+        ],
+        "Replacer": "CapitalReplacer"
+    },
+    {
+        "Tag": "CurrencyTag",
+        "Patterns": [
+            "Quelle monnaie est utilisée en ",
+				"Donne moi la monnaie utilisée en",
+				"Donne moi la monnaie de ",
+				"Quelle est la monnaie de "
+        ],
+        "Responses": [
+            "La monnaie %s est %s"
+        ],
+        "Replacer": "CurrencyReplacer"
+    },
+    {
+        "Tag": "MathTag",
+        "Patterns": [
+            "Donne moi le résultat de ",
+				"Calcule "
+        ],
+        "Responses": [
+            "Le résultat est %s",
+            "Cela fait %s"
+        ],
+        "Replacer": "MathReplacer"
+    },
+    {
+        "Tag": "GenresTag",
+        "Patterns": [
+            "J'aime les films d'aventure, animation",
+            "Je regarde des films de science-fiction"
+        ],
+        "Responses": [
+            "Très bon choix! Je sauvegarde ces informations dans votre client.",
+				"C'est compris, j'envoie ces informations dans votre client"
+        ],
+        "Replacer": "GenresReplacer"
+    },
+    {
+        "Tag": "MoviesTag",
+        "Patterns": [
+            "Trouves un film de ",
+            "Donne moi un film de ",
+            "J'aimerais regarder un film de ",
+            "Je souhaiterais regarder un film de "
+        ],
+        "Responses": [
+            "J'ai trouvé ceci pour vous “%s” qui est noté %.02f/5"
+        ],
+        "Replacer": "MovieSearchReplacer"
+    },
+    {
+        "Tag": "MoviesAlreadyTag",
+        "Patterns": [
+            "J'ai déjà vu ce film",
+            "J'ai déjà regardé ce film"
+        ],
+        "Responses": [
+            "Je vois, en voici un autre “%s” noté %.02f/5"
+        ],
+        "Replacer": "MovieSearchReplacer",
+        "Context":"MoviesTag"
+    },
+    {
+        "Tag": "MoviesDataTag",
+        "Patterns": [
+            "Je m'ennuie",
+				"Je ne sais pas quoi faire"
+        ],
+        "Responses": [
+            "Je vous propose un film %s “%s” noté %.02f/5"
+        ],
+        "Replacer": "MovieSearchFromInformationReplacer"
+    },
+    {
+        "Tag": "NameGetterTag",
+        "Patterns": [
+            "Connais-tu mon nom"
+        ],
+        "Responses": [
+            "Votre nom est %s!"
+        ],
+        "Replacer": "NameGetterReplacer"
+    },
+    {
+        "Tag": "NameSetterTag",
+        "Patterns": [
+            "Mon nom est ",
+            "Tu peux m'appeler "
+        ],
+        "Responses": [
+            "Super! Bonjour %s"
+        ],
+        "Replacer": "NameSetterReplacer"
+    },
+    {
+        "Tag": "RandomTag",
+        "Patterns": [
+            "Donne moi un nombre aléatoire",
+            "Génère un nombre aléatoire"
+        ],
+        "Responses": [
+            "Le nombre est %s"
+        ],
+        "Replacer": "RandomNumberReplacer"
+    },
+    {
+        "Tag": "ReminderSetterTag",
+        "Patterns": [
+            "Rappelle moi de cuisiner à 8 heures",
+            "Rappelle moi d'appeler maman demain",
+            "Note que j'ai un examen",
+            "Rappelle moi que j'ai un appel de travail demain à 8h"
+        ],
+        "Responses": [
+            "Noté! Je vous rappelerai: “%s” pour le %s"
+        ],
+        "Replacer": "ReminderSetterReplacer"
+    },
+    {
+        "Tag": "ReminderGetterTag",
+        "Patterns": [
+            "Qu'est-ce que je t'ai demandé de te rappeler",
+				"Donnes moi mes rappels"
+        ],
+        "Responses": [
+            "Vous m'avez demandé de me rappeler de ces choses:\n%s"
+        ],
+        "Replacer": "ReminderGetterReplacer"
+    },
+    {
+        "Tag": "SpotifySetterTag",
+        "Patterns": [
+            "Voici mes identifiants spotify"
+        ],
+        "Responses": [
+            "Connexion en cours"
+        ],
+        "Replacer": "SpotifySetterReplacer"
+    },
+    {
+        "Tag": "SpotifyPlayerTag",
+        "Patterns": [
+            "Joue de sur Spotify"
+        ],
+        "Responses": [
+            "Je joue %s de %s sur Spotify."
+        ],
+        "Replacer": "SpotifyPlayerReplacer"
+    },
+    {
+        "Tag": "JokesTag",
+        "Patterns": [
+            "Raconte moi une blague",
+            "Fais moi rire"
+        ],
+        "Responses": [
+            "Voilà, %s",
+            "En voici un, %s"
+        ],
+        "Replacer": "JokesReplacer"
+    },
+    {
+        "Tag": "AdvicesTag",
+        "Patterns": [
+            "Donnez-moi un conseil",
+            "Conseille-moi"
+        ],
+        "Responses": [
+            "Voilà, %s",
+            "En voici un, %s",
+            "Écoutez attentivement, %s" 
+        ],
+        "Replacer": "AdvicesReplacer"
+    }
+]

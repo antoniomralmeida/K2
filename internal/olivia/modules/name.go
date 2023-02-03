@@ -9,13 +9,6 @@ import (
 	"github.com/antoniomralmeida/k2/internal/olivia/util"
 )
 
-var (
-	// NameGetterTag is the intent tag for its module
-	NameGetterTag = "name getter"
-	// NameSetterTag is the intent tag for its module
-	NameSetterTag = "name setter"
-)
-
 // NameGetterReplacer replaces the pattern contained inside the response by the user's name.
 // See modules/modules.go#Module.Replacer() for more details.
 func NameGetterReplacer(locale, _, response, token string) (string, string) {

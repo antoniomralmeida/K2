@@ -12,14 +12,14 @@ import (
 )
 
 var (
-	// GenresTag is the intent tag for its module
-	GenresTag = "movies genres"
-	// MoviesTag is the intent tag for its module
-	MoviesTag = "movies search"
-	// MoviesAlreadyTag is the intent tag for its module
-	MoviesAlreadyTag = "already seen movie"
-	// MoviesDataTag is the intent tag for its module
-	MoviesDataTag = "movies search from data"
+// GenresTag is the intent tag for its module
+// GenresTag = "movies genres"
+// MoviesTag is the intent tag for its module
+// MoviesTag = "movies search"
+// MoviesAlreadyTag is the intent tag for its module
+// MoviesAlreadyTag = "already seen movie"
+// MoviesDataTag is the intent tag for its module
+// MoviesDataTag = "movies search from data"
 )
 
 // GenresReplacer gets the genre specified in the message and adds it to the user information.

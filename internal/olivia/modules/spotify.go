@@ -12,13 +12,6 @@ import (
 	"github.com/antoniomralmeida/k2/internal/olivia/util"
 )
 
-var (
-	// SpotifySetterTag is the intent tag for its module
-	SpotifySetterTag = "spotify setter"
-	// SpotifyPlayerTag is the intent tag for its module
-	SpotifyPlayerTag = "spotify player"
-)
-
 // SpotifySetterReplacer gets the tokens in the user entry and save them into the client's information.
 // See modules/modules.go#Module.Replacer() for more details.
 func SpotifySetterReplacer(locale, entry, _, token string) (string, string) {

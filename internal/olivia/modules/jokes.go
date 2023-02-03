@@ -12,7 +12,6 @@ import (
 const jokeURL = "https://official-joke-api.appspot.com/random_joke"
 
 // JokesTag is the intent tag for its module
-var JokesTag = "jokes"
 
 // Joke represents the response from the joke api
 type Joke struct {

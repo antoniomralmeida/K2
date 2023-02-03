@@ -9,6 +9,25 @@ import (
 	"github.com/antoniomralmeida/k2/internal/olivia/util"
 )
 
+const (
+	JokesTag          = "JokesTag"
+	AdvicesTag        = "AdvicesTag"
+	AreaTag           = "AreaTag"
+	CapitalTag        = "CapitalTag"
+	CurrencyTag       = "CurrencyTag"
+	GenresTag         = "GenresTag"
+	MoviesTag         = "MoviesTag"
+	MoviesAlreadyTag  = "MoviesAlreadyTag"
+	MoviesDataTag     = "MoviesDataTag"
+	NameGetterTag     = "NameGetterTag"
+	NameSetterTag     = "NameSetterTag"
+	RandomTag         = "RandomTag"
+	ReminderSetterTag = "ReminderSetterTag"
+	ReminderGetterTag = "ReminderGetterTag"
+	SpotifySetterTag  = "SpotifySetterTag"
+	SpotifyPlayerTag  = "SpotifyPlayerTag"
+)
+
 // Module is a structure for dynamic intents with a Tag, some Patterns and Responses and
 // a Replacer function to execute the dynamic changes.
 type Module struct {

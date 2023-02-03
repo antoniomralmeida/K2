@@ -1,6 +1,6 @@
 [
     {
-        "Tag": "area",
+        "Tag": "AreaTag",
         "Patterns": [
             "What is the area of ",
             "Give me the area of "
@@ -11,7 +11,7 @@
         "Replacer": "AreaReplacer"
     },
     {
-        "Tag": "capital",
+        "Tag": "CapitalTag",
         "Patterns": [
             "What is the capital of ",
             "What's the capital of ",
@@ -23,7 +23,7 @@
         "Replacer": "CapitalReplacer"
     },
     {
-        "Tag": "currency",
+        "Tag": "CurrencyTag",
         "Patterns": [
             "Which currency is used in ",
             "Give me the used currency of ",
@@ -36,7 +36,7 @@
         "Replacer": "CurrencyReplacer"
     },
     {
-        "Tag": "math",
+        "Tag": "MathTag",
         "Patterns": [
             "Give me the result of ",
             "Calculate "
@@ -48,7 +48,7 @@
         "Replacer": "MathReplacer"
     },
     {
-        "Tag": "movies genres",
+        "Tag": "GenresTag",
         "Patterns": [
             "My favorite movie genres are Comedy, Horror",
             "I like the Comedy, Horror genres",
@@ -62,7 +62,7 @@
         "Replacer": "GenresReplacer"
     },
     {
-        "Tag": "movies search",
+        "Tag": "MoviesTag",
         "Patterns": [
             "Find me a movie about",
             "Give me a movie about",
@@ -75,7 +75,7 @@
         "Replacer": "MovieSearchReplacer"
     },
     {
-        "Tag": "already seen movie",
+        "Tag": "MoviesAlreadyTag",
         "Patterns": [
             "I already saw this movie",
             "I have already watched this film",
@@ -85,10 +85,11 @@
         "Responses": [
             "Oh I see, here's another one “%s” which is rated %.02f/5"
         ],
-        "Replacer": "MovieSearchReplacer"
+        "Replacer": "MovieSearchReplacer",
+        "Context":"MoviesTag"
     },
     {
-        "Tag": "movies search from data",
+        "Tag": "MoviesDataTag",
         "Patterns": [
             "I'm bored",
             "I don't know what to do"
@@ -99,7 +100,7 @@
         "Replacer": "MovieSearchFromInformationReplacer"
     },
     {
-        "Tag": "name getter",
+        "Tag": "NameGetterTag",
         "Patterns": [
             "Do you know my name?"
         ],
@@ -109,7 +110,7 @@
         "Replacer": "NameGetterReplacer"
     },
     {
-        "Tag": "name setter",
+        "Tag": "NameSetterTag",
         "Patterns": [
             "My name is ",
             "You can call me "
@@ -120,7 +121,7 @@
         "Replacer": "NameSetterReplacer"
     },
     {
-        "Tag": "random number",
+        "Tag": "RandomTag",
         "Patterns": [
             "Give me a random number",
             "Generate a random number"
@@ -131,7 +132,7 @@
         "Replacer": "RandomNumberReplacer"
     },
     {
-        "Tag": "reminder setter",
+        "Tag": "ReminderSetterTag",
         "Patterns": [
             "Remind me to cook a breakfast at 8pm",
             "Remind me to call mom tuesday",
@@ -144,7 +145,7 @@
         "Replacer": "ReminderSetterReplacer"
     },
     {
-        "Tag": "reminder getter",
+        "Tag": "ReminderGetterTagr",
         "Patterns": [
             "What did I ask for you to remember",
             "Give me my reminders"
@@ -155,7 +156,7 @@
         "Replacer": "ReminderGetterReplacer"
     },
     {
-        "Tag": "spotify setter",
+        "Tag": "SpotifySetterTag",
         "Patterns": [
             "Here are my spotify tokens",
             "My spotify secrets"
@@ -166,7 +167,7 @@
         "Replacer": "SpotifySetterReplacer"
     },
     {
-        "Tag": "spotify player",
+        "Tag": "SpotifyPlayerTag",
         "Patterns": [
             "Play from on Spotify"
         ],
@@ -176,7 +177,7 @@
         "Replacer": "SpotifyPlayerReplacer"
     },
     {
-        "Tag": "jokes",
+        "Tag": "JokesTag",
         "Patterns": [
             "Tell me a joke",
             "Make me laugh"
@@ -188,7 +189,7 @@
         "Replacer": "JokesReplacer"
     },
     {
-        "Tag": "advices",
+        "Tag": "AdvicesTag",
         "Patterns": [
             "Give me an advice",
             "Advise me"
