@@ -87,6 +87,8 @@ func InitLangs() {
 	NewSupportedLanguage(language.French.String(), 133)
 	NewSupportedLanguage(language.Italian.String(), 164)
 	NewSupportedLanguage(language.Chinese.String(), 68)
+	NewSupportedLanguage(language.Greek.String(), 149)
+	NewSupportedLanguage(language.Dutch.String(), 81)
 
 }
 

@@ -1,0 +1,10 @@
+[
+    {
+        "Regexp": "^.*vereinigten Staaten.*$",
+        "Article": "die"
+    },
+    {
+        "Regexp": ".*",
+        "Article": ""
+    }
+]

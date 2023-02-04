@@ -1,0 +1,207 @@
+[
+    {
+        "Tag": "AreaTag",
+        "Patterns": [
+            "Ποιά είναι η περιοχή της",
+            "Ποιά είναι η περιοχή του",
+            "Πες μου την περιοχή της",
+            "Πες μου την περιοχή του"
+        ],
+        "Responses": [
+            "Η περιοχή της/του %s είναι %gkm²"
+        ],
+        "Replacer": "AreaReplacer"
+    },
+    {
+        "Tag": "CapitalTag",
+        "Patterns": [
+            "Ποια είναι η πρωτεύουσα της",
+            "Ποια είναι η πρωτεύουσα του",
+            "Πες μου την πρωτεύουσα της",
+            "Πες μου την πρωτεύουσα του"
+        ],
+        "Responses": [
+            "Η πρωτεύουσα της/του %s είναι η/το %s"
+        ],
+        "Replacer": "CapitalReplacer"
+    },
+    {
+        "Tag": "CurrencyTag",
+        "Patterns": [
+            "Τι νόμισμα χρησιμοποιείται στην",
+            "Τι νόμισμα χρησιμοποιείται στον",
+            "Τι νόμισμα χρησιμοποιείται στο",
+            "Πες μου τι νόμισμα χρησιμοποείται στην",
+            "Πες μου τι νόμισμα χρησιμοποείται στον",
+            "Πες μου τι νόμισμα χρησιμοποείται στη"
+        ],
+        "Responses": [
+            "Το νόμισμα της/του %s είναι %s"
+        ],
+        "Replacer": "CurrencyReplacer"
+    },
+    {
+        "Tag": "MathTag",
+        "Patterns": [
+            "Πες μου το αποτελέσμα του",
+            "Υπολόγισε"
+        ],
+        "Responses": [
+            "Το αποτέλεσμα είναι %s",
+            "Αυτό μας κάνει %s"
+        ],
+        "Replacer": "MathReplacer"
+    },
+    {
+        "Tag": "GenresTag",
+        "Patterns": [
+            "Μου αρέσουν οι ταινίες δράσης και κινουμένων σχεδίων",
+            "Βλέπω ταινίες επιστημονικής φαντασίας"
+        ],
+        "Responses": [
+            "Πολύ καλές επιλογές. Τις αποθήκευσα στα στοιχεία σου.",
+            "Κατάλαβα, στέλνω τις προτιμήσεις αυτές στα στοιχεία σου."
+        ],
+        "Replacer": "GenresReplacer"
+    },
+    {
+        "Tag": "MoviesTag",
+        "Patterns": [
+            "Μπορείς να μου βρεις την ταινία",
+            "Βρες μου μια ταινία",
+            "Ψάξε μια ταινία",
+            "Θα ήθελα να δω μια ταινία"
+        ],
+        "Responses": [
+            "Βρήκα αυτήν για σένα “%s” που έχει αξιολογηθεί με %.02f/5",
+            "Αμέ, βρήκα αυτή την ταινία “%s” με αξιολόγηση %.02f/5"
+        ],
+        "Replacer": "MovieSearchReplacer"
+    },
+    {
+        "Tag": "MoviesAlreadyTag",
+        "Patterns": [
+            "Έχω ήδη δει αυτή την ταινία",
+            "Την έχω δεί",
+            "Αυτή την ταινία την έχω δει"
+        ],
+        "Responses": [
+            "Α δεν ήξερα, να μια άλλη “%s” με βαθμολογία %.02f/5"
+        ],
+        "Replacer": "MovieSearchReplacer",
+        "Context": "MoviesTag"
+    },
+    {
+        "Tag": "MoviesDataTag",
+        "Patterns": [
+            "Βαριέμαι",
+            "Δεν ξέρω τι να κάνω"
+        ],
+        "Responses": [
+            "Σου προτείνω να δεις αυτή την ταινία %s “%s” που είναι βαθμολογημένη με %.02f/5"
+        ],
+        "Replacer": "MovieSearchFromInformationReplacer"
+    },
+    {
+        "Tag": "NameGetterTag",
+        "Patterns": [
+            "Ξέρεις το όνομα μου?"
+        ],
+        "Responses": [
+            "Αμέ, το όνομα σου είναι %s!"
+        ],
+        "Replacer": "NameGetterReplacer"
+    },
+    {
+        "Tag": "NameSetterTag",
+        "Patterns": [
+            "Το όνομα μου είναι",
+            "Μπορείς να με φωνάζεις"
+        ],
+        "Responses": [
+            "Τέλεια! Γεια σου %s"
+        ],
+        "Replacer": "NameSetterReplacer"
+    },
+    {
+        "Tag": "RandomTag",
+        "Patterns": [
+            "Δώσε μου ένα τυχαίο αριθμό",
+            "Πάραξε ένα τυχαίο αριθμό"
+        ],
+        "Responses": [
+            "Ο τυχαίος αριθμός είναι:  %s"
+        ],
+        "Replacer": "RandomNumberReplacer"
+    },
+    {
+        "Tag": "ReminderSetterTag",
+        "Patterns": [
+            "Υπενθύμισε μου να μαγειρέψω πρωϊνό στις 8πμ",
+            "Θύμισε μου να καλέσω τη μαμά την Τρίτη",
+            "Σημείωσε ότι έχω εξετάσεις",
+            "Θύμισε μου ότι έχω ένα συνέδριο αύριο το πρωί στις 9πμ"
+        ],
+        "Responses": [
+            "Σημειώθηκε! Θα σε ενημερώσω για : “%s” για τις %s"
+        ],
+        "Replacer": "ReminderSetterReplacer"
+    },
+    {
+        "Tag": "ReminderGetterTagr",
+        "Patterns": [
+            "Τι σου ζήτησα να μου θυμίσεις",
+            "Πες μου τις υπενθυμίσεις μου"
+        ],
+        "Responses": [
+            "Μου ζήτησες να θυμάμαι τα παρακάτω:\n%s"
+        ],
+        "Replacer": "ReminderGetterReplacer"
+    },
+    {
+        "Tag": "SpotifySetterTag",
+        "Patterns": [
+            "Εδώ είναι τα στοιχεία του Spotify μου",
+            "Οι κωδικοί του Spotify μου"
+        ],
+        "Responses": [
+            "Είσοδος σε εξέλιξη"
+        ],
+        "Replacer": "SpotifySetterReplacer"
+    },
+    {
+        "Tag": "SpotifyPlayerTag",
+        "Patterns": [
+            "Παίξε από το Spotify"
+        ],
+        "Responses": [
+            "Παίζει %s από %s στο Spotify."
+        ],
+        "Replacer": "SpotifyPlayerReplacer"
+    },
+    {
+        "Tag": "JokesTag",
+        "Patterns": [
+            "Πες μου ένα αστείο",
+            "Κάνε με να γελάσω"
+        ],
+        "Responses": [
+            "Εδώ είσαι, %s",
+            "Να ένα καλό, %s"
+        ],
+        "Replacer": "JokesReplacer"
+    },
+    {
+        "Tag": "AdvicesTag",
+        "Patterns": [
+            "Δώσε μου μια συμβουλή",
+            "Συμβούλεψε με"
+        ],
+        "Responses": [
+            "Εδώ είσαι, %s",
+            "Να ένα καλό, %s",
+            "Άκου προσεκτικά, %s"
+        ],
+        "Replacer": "AdvicesReplacer"
+    }
+]
