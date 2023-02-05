@@ -1,6 +1,6 @@
 package iot
 
-import "github.com/gofiber/fiber/v2"
+import "github.com/antoniomralmeida/k2/vendor/github.com/gofiber/fiber/v2"
 
 func Routes(app *fiber.App) {
 	app.Get("/api/v1/gates/:id", ReadGate)

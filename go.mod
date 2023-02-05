@@ -6,7 +6,6 @@ require (
 	github.com/BurntSushi/toml v1.2.1
 	github.com/PaesslerAG/gval v1.2.1
 	github.com/antoniomralmeida/golibretranslate v0.1.0
-	github.com/gofiber/fiber/v2 v2.41.1-0.20230127080137-167a8b5e9421
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.0
 	github.com/gookit/color v1.5.2
@@ -23,9 +22,11 @@ require (
 	github.com/olivia-ai/olivia-kit-go v0.0.0-20210101112429-aea9c47282ca
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/rafaeljesus/parallel-fn v0.0.0-20180101203446-ef08331b38ac
+	github.com/savsgio/dictpool v0.0.0-20221023140959-7bf2e61cea94
 	github.com/soudy/mathcat v0.0.0-20201027222343-588f3d377cb9
 	github.com/subosito/gotenv v1.4.2
 	github.com/tdewolff/minify v2.3.6+incompatible
+	github.com/tinylib/msgp v1.1.8
 	github.com/valyala/bytebufferpool v1.0.0
 	github.com/valyala/fasthttp v1.44.0
 	github.com/zmb3/spotify v1.3.0
@@ -51,24 +52,26 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
-	github.com/klauspost/compress v1.15.15 // indirect
+	github.com/klauspost/compress v1.15.11 // indirect
 	github.com/openzipkin/zipkin-go v0.4.1 // indirect
+	github.com/philhofer/fwd v1.1.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/rivo/uniseg v0.4.3 // indirect
-	github.com/rs/xid v1.4.0 // indirect
+	github.com/rivo/uniseg v0.2.0 // indirect
+	github.com/rs/xid v1.3.0 // indirect
+	github.com/savsgio/gotils v0.0.0-20220530130905-52f3993e8d6d // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/stretchr/testify v1.8.1 // indirect
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/tdewolff/test v1.0.7 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
-	github.com/xdg-go/scram v1.1.2 // indirect
-	github.com/xdg-go/stringprep v1.0.4 // indirect
-	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
-	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
-	go.uber.org/atomic v1.10.0 // indirect
-	go.uber.org/multierr v1.9.0 // indirect
+	github.com/xdg-go/scram v1.1.1 // indirect
+	github.com/xdg-go/stringprep v1.0.3 // indirect
+	github.com/xo/terminfo v0.0.0-20210125001918-ca9a967f8778 // indirect
+	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
+	go.uber.org/atomic v1.7.0 // indirect
+	go.uber.org/multierr v1.6.0 // indirect
 	golang.org/x/net v0.5.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.4.0 // indirect

@@ -7,10 +7,10 @@ import (
 
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/compress"
-	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/gofiber/fiber/v2/middleware/requestid"
+	"github.com/antoniomralmeida/k2/vendor/github.com/gofiber/fiber/v2"
+	"github.com/antoniomralmeida/k2/vendor/github.com/gofiber/fiber/v2/middleware/compress"
+	"github.com/antoniomralmeida/k2/vendor/github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/antoniomralmeida/k2/vendor/github.com/gofiber/fiber/v2/middleware/requestid"
 )
 
 func Run() {

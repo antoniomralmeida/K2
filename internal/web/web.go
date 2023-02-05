@@ -10,9 +10,8 @@ import (
 	"github.com/antoniomralmeida/k2/internal/web/context"
 	"github.com/antoniomralmeida/k2/internal/web/controllers"
 	"github.com/antoniomralmeida/k2/internal/web/views"
-
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/antoniomralmeida/k2/vendor/github.com/gofiber/fiber/v2"
+	"github.com/antoniomralmeida/k2/vendor/github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 func Run() {

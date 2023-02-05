@@ -5,7 +5,7 @@ import (
 
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/web/context"
-	"github.com/gofiber/fiber/v2"
+	"github.com/antoniomralmeida/k2/vendor/github.com/gofiber/fiber/v2"
 )
 
 func HomeView(c *fiber.Ctx) error {
