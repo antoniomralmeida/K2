@@ -9,7 +9,7 @@ import (
 	"github.com/antoniomralmeida/k2/internal/web/context"
 	"github.com/antoniomralmeida/k2/internal/web/views"
 
-	"github.com/antoniomralmeida/k2/vendor/github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"

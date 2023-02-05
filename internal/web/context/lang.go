@@ -11,7 +11,7 @@ import (
 	"github.com/antoniomralmeida/golibretranslate"
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
-	"github.com/antoniomralmeida/k2/vendor/github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2"
 
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"golang.org/x/text/language"

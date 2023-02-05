@@ -2,7 +2,7 @@ package apikernel
 
 import (
 	"github.com/antoniomralmeida/k2/internal/inits"
-	"github.com/antoniomralmeida/k2/vendor/github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2"
 )
 
 func GetChats(c *fiber.Ctx) error {

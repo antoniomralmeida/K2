@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"github.com/antoniomralmeida/k2/internal/web/views"
-	"github.com/antoniomralmeida/k2/vendor/github.com/gofiber/fiber/v2"
-	"github.com/antoniomralmeida/k2/vendor/github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/antoniomralmeida/k2/vendor/github.com/gofiber/fiber/v2/middleware/csrf"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/csrf"
 )
 
 func Routes(app *fiber.App) {

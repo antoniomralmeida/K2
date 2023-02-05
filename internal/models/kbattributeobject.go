@@ -11,7 +11,7 @@ import (
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
 
-	"github.com/antoniomralmeida/k2/vendor/github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2"
 	"github.com/kamva/mgm/v3"
 	"github.com/montanaflynn/stats"
 	p "github.com/rafaeljesus/parallel-fn"
