@@ -1,4 +1,4 @@
-FROM smartentry/ubuntu  as k2-olivia
+FROM scratch as k2-olivia
 
 WORKDIR /var/www/k2
 
@@ -7,7 +7,8 @@ COPY ./configs/* ./configs/
 COPY ./log/*.md ./log/
 COPY ./data/* ./data/
 
-RUN chmod -R 777 .
+USER noroot:noroot
+
 EXPOSE 8090
 
 ENTRYPOINT ["sh", "-c", "./bin/k2olivia.bin"]

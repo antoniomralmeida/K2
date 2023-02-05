@@ -14,6 +14,9 @@ require (
 	github.com/gorilla/websocket v1.5.0
 	github.com/kamva/mgm/v3 v3.5.0
 	github.com/madflojo/tasks v1.0.4
+	github.com/mattn/go-colorable v0.1.13
+	github.com/mattn/go-isatty v0.0.17
+	github.com/mattn/go-runewidth v0.0.14
 	github.com/mattn/go-tty v0.0.4
 	github.com/montanaflynn/stats v0.7.0
 	github.com/nicksnyder/go-i18n/v2 v2.2.1
@@ -23,6 +26,8 @@ require (
 	github.com/soudy/mathcat v0.0.0-20201027222343-588f3d377cb9
 	github.com/subosito/gotenv v1.4.2
 	github.com/tdewolff/minify v2.3.6+incompatible
+	github.com/valyala/bytebufferpool v1.0.0
+	github.com/valyala/fasthttp v1.44.0
 	github.com/zmb3/spotify v1.3.0
 	go.mongodb.org/mongo-driver v1.11.1
 	go.opentelemetry.io/otel v1.12.0
@@ -47,9 +52,6 @@ require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/klauspost/compress v1.15.15 // indirect
-	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.17 // indirect
-	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/openzipkin/zipkin-go v0.4.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
@@ -59,8 +61,6 @@ require (
 	github.com/stretchr/testify v1.8.1 // indirect
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/tdewolff/test v1.0.7 // indirect
-	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.44.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect

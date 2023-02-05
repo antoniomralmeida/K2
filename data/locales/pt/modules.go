@@ -1,6 +1,6 @@
 package en
 
-import "github.com/antoniomralmeida/k2/cmd/k2olivia/modules"
+import "github.com/antoniomralmeida/k2/internal/olivia/modules"
 
 func init() {
 	modules.RegisterModules("pt", []modules.Module{

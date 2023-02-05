@@ -1,4 +1,4 @@
-FROM smartentry/ubuntu  as k2-web
+FROM scratch  as k2-web
 
 WORKDIR /var/www/k2
 
@@ -9,7 +9,8 @@ COPY ./web/* ./web/
 COPY ./data/* ./data/
 
 
-RUN chmod -R 777 .
+USER noroot:noroot
+
 EXPOSE 8080
 
 ENTRYPOINT ["sh", "-c", "./bin/k2web.bin"]

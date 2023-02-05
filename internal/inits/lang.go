@@ -69,6 +69,7 @@ func NewSupportedLanguage(locale string, SynthesisId int) {
 	if inLocalesConfig(locale) || locale == language.English.String() || locale == language.Portuguese.String() {
 		toen := display.English.Languages()
 		tag := language.MustParse(locale)
+		//TODO: locale pt não está funcionando
 		Locales[locale] = Locale{Description: toen.Name(tag), SpeechSynthesisId: SynthesisId}
 	}
 }
@@ -79,6 +80,7 @@ func InitLangs() {
 	NewSupportedLanguage(language.Portuguese.String(), 0)
 	NewSupportedLanguage(language.Spanish.String(), 262)
 	NewSupportedLanguage(language.German.String(), 143)
+	//TODO: Fala 143 feminina
 	NewSupportedLanguage(language.Hindi.String(), 154)
 	NewSupportedLanguage(language.Arabic.String(), 12)
 	NewSupportedLanguage(language.Bengali.String(), 48)

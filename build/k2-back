@@ -1,4 +1,4 @@
-FROM smartentry/ubuntu  as k2-back
+FROM scratch  as k2-back
 
 WORKDIR /var/www/k2
 
@@ -6,7 +6,7 @@ COPY ./bin/k2.bin ./bin/
 COPY ./configs/* ./configs/ 
 COPY ./log/*.md ./log/
 
-RUN chmod -R 777 .
+USER noroot:noroot
 
 EXPOSE 5050
 

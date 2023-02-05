@@ -7,21 +7,21 @@ import (
 
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
-	"github.com/antoniomralmeida/k2/internal/models"
+	"github.com/antoniomralmeida/k2/internal/web/context"
+	"github.com/antoniomralmeida/k2/internal/web/controllers"
+	"github.com/antoniomralmeida/k2/internal/web/views"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
-var ctxweb = models.Context{}
-
 func Run() {
-	InitLangs()
-	InitTemplates()
+	context.InitLangs()
+	views.InitTemplates()
 	inits.ConnectDB()
 
-	ctxweb.ApiKernel = os.Getenv("APIKERNEL")
-	ctxweb.Avatar = os.Getenv("AVATAR")
+	context.Ctxweb.ApiKernel = os.Getenv("APIKERNEL")
+	context.Ctxweb.Avatar = os.Getenv("AVATAR")
 	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 KB System ", lib.GetVersion(), "[", lib.GetBuild(), "]"),
 		DisableStartupMessage: false,
 		Prefork:               false})
@@ -37,6 +37,6 @@ func Run() {
 		TimeFormat: "02/01/2006 15:04:05",
 		Format:     "${time} [${ip}:${port}] ${status} ${latency} ${method} ${path} \n"}))
 
-	Routes(app)
+	controllers.Routes(app)
 	app.Listen(os.Getenv("HTTPPORT"))
 }
