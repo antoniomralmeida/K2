@@ -3,8 +3,6 @@ package inits
 import (
 	"bufio"
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -42,13 +40,14 @@ const (
 )
 
 type Locale struct {
-	Description       string
-	SpeechSynthesisId int
-	Stemmer           *Stem
+	Description string
+	Voice       string
+	Stemmer     *Stem
 }
 
 var (
 	DefaultLocale = language.English.String()
+	DefaultVoice  = "Mark"
 	Locales       map[string]Locale
 	bundle        *i18n.Bundle
 	I18n_en       map[string]string
@@ -88,33 +87,32 @@ func GetSupportedLocales() (ret string) {
 	}
 	return
 }
-func NewSupportedLanguage(locale string, SynthesisId int) {
+func NewSupportedLanguage(locale string, voice string) {
 	if inLocalesConfig(locale) || locale == language.English.String() || locale == language.Portuguese.String() {
 		toen := display.English.Languages()
 		tag := language.MustParse(locale)
-		Locales[locale] = Locale{Description: toen.Name(tag), SpeechSynthesisId: SynthesisId}
+		Locales[locale] = Locale{Description: toen.Name(tag), Voice: voice}
 	}
 }
 
 func InitLangs() {
 	Locales = make(map[string]Locale)
 
-	//TODO: trocar ID pelo nome, por a lista muda
-	//TODO: fazer um cache de nome em Javascript
-	NewSupportedLanguage(language.English.String(), 1)
-	NewSupportedLanguage(language.Portuguese.String(), 0)
-	NewSupportedLanguage(language.Spanish.String(), 262)
-	NewSupportedLanguage(language.German.String(), 144)
-	NewSupportedLanguage(language.Hindi.String(), 155)
-	NewSupportedLanguage(language.Arabic.String(), 12)
-	NewSupportedLanguage(language.Bengali.String(), 48)
-	NewSupportedLanguage(language.Russian.String(), 213)
-	NewSupportedLanguage(language.Japanese.String(), 165)
-	NewSupportedLanguage(language.French.String(), 134)
-	NewSupportedLanguage(language.Italian.String(), 164)
-	NewSupportedLanguage(language.Chinese.String(), 68)
-	NewSupportedLanguage(language.Greek.String(), 149)
-	NewSupportedLanguage(language.Dutch.String(), 81)
+	NewSupportedLanguage(DefaultLocale, DefaultVoice)
+	//
+	NewSupportedLanguage(language.Portuguese.String(), "Daniel")
+	NewSupportedLanguage(language.Spanish.String(), "ManuelEsCU")
+	NewSupportedLanguage(language.German.String(), "Conrad")
+	NewSupportedLanguage(language.Hindi.String(), "Madhur")
+	NewSupportedLanguage(language.Arabic.String(), "Shakir")
+	NewSupportedLanguage(language.Bengali.String(), "Tanishaa")
+	NewSupportedLanguage(language.Russian.String(), "Dmitry")
+	NewSupportedLanguage(language.Japanese.String(), "Nanami")
+	NewSupportedLanguage(language.French.String(), "Henri")
+	NewSupportedLanguage(language.Italian.String(), "Diego")
+	NewSupportedLanguage(language.Chinese.String(), "Yunyang")
+	NewSupportedLanguage(language.Greek.String(), "Nestoras")
+	NewSupportedLanguage(language.Dutch.String(), "Maarten")
 
 	I18n_en = make(map[string]string)
 
@@ -146,7 +144,6 @@ func InitLangs() {
 	for code := range Locales {
 		tomFile := TomlFile(code)
 		_, err := os.Stat(tomFile)
-		fmt.Println(tomFile, os.IsNotExist(err))
 		if code == DefaultLocale || os.IsNotExist(err) {
 			if code == DefaultLocale {
 				js, err := json.MarshalIndent(I18n_en, "", "	")
@@ -166,12 +163,8 @@ func InitLangs() {
 				f.Close()
 			}
 		}
-		//TODO: locale pt não está funcionando
-		txt, _ := ioutil.ReadFile(tomFile)
-		fmt.Println(string(txt))
+
 		bundle.MustLoadMessageFile(tomFile)
-		fmt.Println(bundle.LanguageTags())
-		fmt.Println(TranslateTag(I18n_wellcome, code))
 	}
 }
 

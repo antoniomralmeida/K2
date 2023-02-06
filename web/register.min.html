@@ -3,5 +3,5 @@
 <label class=custom-file-label for=inputGroupFile01>Select a face file
 (PNG/JPEG)</label></div></div><input type=submit class="btn btn-primary btn-user btn-block" value='{{index .I18n "I18n_send"}}'><hr><div class=col-sm-12><small id=passwordHelp class=text-danger><div id=errlabel></div></small></div></form><hr><div class=text-center><a class=small href=/forgot>{{index .I18n "I18n_forgot"}}</a></div><div class=text-center><a class=small href=/login>{{index .I18n "I18n_already"}}</a></div></div></div></div></div></div></div><script src=vendor/jquery/jquery.min.js></script><script src=vendor/bootstrap/js/bootstrap.bundle.min.js></script><script src=vendor/jquery-easing/jquery.easing.min.js></script><script src=js/sb-admin-2.min.js></script><script src=js/bundle.min.js></script><script src=js/faces.min.js></script><script src=js/k2.js></script><script>
         apikernel = '{{.ApiKernel}}';
-        SpeechSynthesisId = '{{.SpeechSynthesisId}}';
+        voice = '{{.Voice}}';
         Speak('{{index .I18n "I18n_register"}}');</script>

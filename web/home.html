@@ -363,13 +363,7 @@
   <script src="js/faces.min.js"></script>
   <script src="js/k2.min.js"></script>
   <script src="js/olivia.min.js"></script>
-  <script style="">
-    apikernel = '{{.ApiKernel}}';
-    SpeechSynthesisId = '{{.SpeechSynthesisId}}';
-    Speak('{{.User}}, {{index .I18n "I18n_wellcome2"}}');
-    LoadDataInput();
-  </script>
-  <pingendo onclick="window.open('https://pingendo.com/', '_blank')" style="cursor:pointer;position: fixed;bottom: 20px;right:20px;padding:4px;background-color: #00b0eb;border-radius: 8px; width:220px;display:flex;flex-direction:row;align-items:center;justify-content:center;font-size:14px;color:white">Made with Pingendo Free&nbsp;&nbsp;<img src="https://pingendo.com/site-assets/Pingendo_logo_big.png" class="d-block" alt="Pingendo logo" height="16"></pingendo>
-</body>
+  <script style="">apikernel = '{{.ApiKernel}}';voice = '{{.Voice}}';Speak('{{.User}}, {{index .I18n "I18n_wellcome2"}}');LoadDataInput();</script>
+ /body>
 
 </html>

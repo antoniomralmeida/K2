@@ -1,13 +1,12 @@
 var div_id = document.getElementById('datainput')
 var div_face_id = document.getElementById('face')
-var jwt = ''
 var apikernel = ''
 
 
 function SendMessage(text) {
     $.ajax({
         url: apikernel + '/chats',
-        data: { 'jwt': jwt, msg: text },
+        data: { msg: text },
         type: 'GET',
         dataType: 'text',
         error: function (jqXhr, Status) {
@@ -19,14 +18,10 @@ function SendMessage(text) {
     });
 }
 
-
-
-
 function LoadDataInput() {
     $.ajax({
         url: apikernel + '/attributes',
         type: 'GET',
-        data: { "jwt": jwt },
         dataType: 'json',
         error: function (jqXhr, Status) {
             div_id.innerHTML = Status;
@@ -113,13 +108,6 @@ function getCookie(cookieName) {
     return cookie[cookieName];
 }
 
-$(function () {
-    var req = new XMLHttpRequest();
-    req.open('GET', document.location, false);
-    req.send(null);
-    var headers = req.getAllResponseHeaders().toLowerCase();
-    jwt = getCookie('jwt');
-});
 
 function PostLogin() {
     var errlabel = document.getElementById('errlabel')

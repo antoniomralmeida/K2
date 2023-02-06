@@ -5,23 +5,8 @@ const params = new URL(location.href).searchParams;
 const avatar = params.get('avatar');
 const lang = params.get('lang');
 const lang2 = navigator.language
-const voices = window.speechSynthesis.getVoices();
-
-var SpeechSynthesisId = 0;
-
-(async() => {
-
-  const getVoices = (voiceName = "") => {
-    return new Promise(resolve => {
-      window.speechSynthesis.onvoiceschanged = e => {
-        resolve(window.speechSynthesis.getVoices());
-      }
-      window.speechSynthesis.getVoices();
-    })
-  }
-  const voices = await getVoices();
-  console.log(voices);
-})();
+var voices = window.speechSynthesis.getVoices();
+var voice = '';
 
 if (avatar.length <= 1) {
   face = faces.generate();
@@ -53,17 +38,38 @@ const speaking = () => {
   updateDisplay();
 }
 
+var voicesApp = {"Mark":1};
 
+function GetSpeechSynthesisId(voice) {
+  console.log(voicesApp);
+  for (var key in voicesApp) {
+    if (key == voice) {
+      return voicesApp[key]
+    }
+  }
+  for (var i=0;i < voices.length;i++) {
+    if (voices[i].name.includes(voice)) {
+      voicesApp[voice] = i;
+      return i
+    }
+  }
+  return 1
+}
 
 const Speak = async(text) => {
   // Testing for browser support
 	var speechSynthesisSupported = 'speechSynthesis' in window;
   let Speech = new SpeechSynthesisUtterance();
-  console.log(SpeechSynthesisId);
+  while (voices.length==0) { 
+    voices = window.speechSynthesis.getVoices();
+    await sleep(50);
+  }
   Speech.addEventListener('start', handleStartSpeechEvent);
   Speech.addEventListener('end', handleEndSpeechEvent);
-  Speech.voice = speechSynthesis.getVoices()[ SpeechSynthesisId];
+  id =  GetSpeechSynthesisId(voice);
+  Speech.voice = voices[id];
   Speech.text = text;
+  console.log(voice, id);
   speechSynthesis.speak(Speech);  
 }
 var speakingMode = false;
@@ -84,4 +90,3 @@ const handleEndSpeechEvent = async() => {
 }
 
 updateDisplay();
-

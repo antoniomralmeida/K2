@@ -10,16 +10,16 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func getCurrentLang(c *fiber.Ctx) (string, int) {
+func getCurrentLang(c *fiber.Ctx) (string, string) {
 	lang := c.Query("lang")
 	accept := c.GetReqHeaders()["Accept-Language"]
 	LangQ := ParseAcceptLanguage(lang, accept)
 	for _, l := range LangQ {
 		if l2, ok := inits.Locales[l.Lang]; ok {
-			return l.Lang, l2.SpeechSynthesisId
+			return l.Lang, l2.Voice
 		}
 	}
-	return inits.DefaultLocale, 0
+	return inits.DefaultLocale, inits.DefaultVoice
 }
 
 func SetContextInfo(c *fiber.Ctx) {
@@ -27,7 +27,7 @@ func SetContextInfo(c *fiber.Ctx) {
 		Ctxweb.I18n = make(map[string]string)
 	}
 	var currentLang string
-	currentLang, Ctxweb.SpeechSynthesisId = getCurrentLang(c)
+	currentLang, Ctxweb.Voice = getCurrentLang(c)
 	if Ctxweb.Locale != currentLang {
 		for key := range inits.I18n_en {
 			Ctxweb.I18n[key] = inits.TranslateTag(key, currentLang)
