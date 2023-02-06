@@ -15,7 +15,6 @@ import (
 )
 
 func Run() {
-	context.InitLangs()
 	views.InitTemplates()
 	inits.ConnectDB()
 

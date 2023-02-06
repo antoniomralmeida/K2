@@ -13,15 +13,19 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
 func ConnectDB() {
+
+	type Ping struct {
+		mgm.DefaultModel `json:",inline" bson:",inline"`
+	}
 	Log("ConnectDB", Info)
 
 	dsn := os.Getenv("DSN")
 	dbName := os.Getenv("DB")
+	Log(dsn+" "+dbName, Info)
 
 	Log(lib.Ping(dsn), Fatal)
 
@@ -31,8 +35,11 @@ func ConnectDB() {
 	Log(err, Fatal)
 	defer client.Disconnect(mgm.Ctx())
 	//ping db
-	err = client.Ping(mgm.Ctx(), readpref.Primary())
-	Log(err, Fatal)
+	ping := new(Ping)
+	err = mgm.Coll(ping).FindByID(0, ping)
+	if err != mongo.ErrNoDocuments {
+		Log(err, Fatal)
+	}
 }
 
 // CreateUniqueIndex create UniqueIndex
@@ -59,11 +66,6 @@ func CreateUniqueIndex(coll *mgm.Collection, keys ...string) {
 	Log("collection.Indexes().CreateOne:"+idxRet, Info)
 }
 
-/*
-	func (u *User) GetPrimitiveUpdateAt() primitive.DateTime {
-		return primitive.NewDateTimeFromTime(u.UpdatedAt)
-	}
-*/
 type ModelExt interface {
 	// PrepareID converts the id value if needed, then
 	// returns it (e.g convert string to objectId).

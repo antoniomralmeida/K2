@@ -3,14 +3,12 @@ FROM scratch as k2-olivia
 WORKDIR /var/www/k2
 
 COPY ./bin/k2olivia.bin ./bin/
-COPY ./configs/* ./configs/
+COPY ./configs/ ./configs/
 COPY ./log/*.md ./log/
 COPY ./data/* ./data/
 
-USER noroot:noroot
-
 EXPOSE 8090
 
-ENTRYPOINT ["sh", "-c", "./bin/k2olivia.bin"]
+ENTRYPOINT ["./bin/k2olivia.bin"]
 
 

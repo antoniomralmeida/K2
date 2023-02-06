@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"os"
 	"sync"
 
@@ -11,13 +12,12 @@ import (
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
 	"github.com/antoniomralmeida/k2/internal/models"
-	"github.com/antoniomralmeida/k2/internal/olivia/util"
 )
 
 func init() {
 	// Print the K2 ascii text 3D
-	k2ASCII := string(util.ReadFile("./configs/k2.txt"))
-	fmt.Println(color.FgLightGreen.Render(k2ASCII))
+	k2ASCII, _ := os.ReadFile("./configs/k2.txt")
+	fmt.Println(color.FgLightGreen.Render(string(k2ASCII)))
 
 	msg := fmt.Sprintf("Initializing K2 KB System, version: %v build: %v PID: %v", lib.GetVersion(), lib.GetBuild(), os.Getppid())
 	fmt.Println(msg)

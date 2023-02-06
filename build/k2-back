@@ -6,10 +6,9 @@ COPY ./bin/k2.bin ./bin/
 COPY ./configs/* ./configs/ 
 COPY ./log/*.md ./log/
 
-USER noroot:noroot
 
 EXPOSE 5050
 
-ENTRYPOINT  ["sh", "-c", "./bin/k2.bin"]
+ENTRYPOINT  ["./bin/k2.bin"]
 
 

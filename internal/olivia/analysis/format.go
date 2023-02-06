@@ -1,6 +1,7 @@
 package analysis
 
 import (
+	"io/ioutil"
 	"os"
 	"regexp"
 	"strings"
@@ -39,7 +40,8 @@ func removeStopWords(locale string, words []string) []string {
 	stopfile := stopWorksFile(locale)
 	if ok, _ := lib.Exists(stopfile); !ok {
 		tmpFile := intentsFile(inits.DefaultLocale)
-		tmpWords := string(util.ReadFile(tmpFile))
+		bytes, _ := ioutil.ReadFile(tmpFile)
+		tmpWords := string(bytes)
 		tmpWords, err := golibretranslate.Translate(tmpWords, inits.DefaultLocale, locale)
 		inits.Log(err, inits.Error)
 		f, err := os.Create(stopfile)
@@ -49,7 +51,8 @@ func removeStopWords(locale string, words []string) []string {
 	}
 
 	// Read the content of the stopwords file
-	stopWords := string(util.ReadFile(stopfile))
+	txt, _ := ioutil.ReadFile(stopfile)
+	stopWords := string(txt)
 
 	var wordsToRemove []string
 

@@ -19,8 +19,8 @@ import (
 var neuralNetworks = map[string]network.Network{}
 
 func init() {
-	oliviaASCII := string(util.ReadFile("./configs/olivia-ascii.txt"))
-	fmt.Println(color.FgLightGreen.Render(oliviaASCII))
+	oliviaASCII, _ := os.ReadFile("./configs/olivia-ascii.txt")
+	fmt.Println(color.FgLightGreen.Render(string(oliviaASCII)))
 
 	inits.LogInit("k2olivia")
 	inits.InitLangs()

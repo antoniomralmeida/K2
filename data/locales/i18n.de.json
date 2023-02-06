@@ -1,1 +1,23 @@
-{"I18n_accessforbidden":"Zutritt verboten!","I18n_alert":"Warnungen","I18n_already":"Sie haben bereits ein Konto? ","I18n_alreadyregistered":"Bereits registriert!","I18n_avatar":"Benutzerbild","I18n_badrequest":"Ungültige Anforderung!","I18n_cancel":"Stornieren","I18n_dateinput":"Dateneingabe","I18n_forgot":"Passwort vergessen?","I18n_halt":"KnowledgeBase war halt!","I18n_internalservererror":"Interner Serverfehler!","I18n_invalidcredentials":"Ungültige Anmeldeinformationen!","I18n_invalidimage":"Ungültiges oder leeres Bild!","I18n_register":"Bitte registrieren Sie sich für den Zugang zu K2!","I18n_remember":"Mich erinnern","I18n_resume":"KnowledgeBase war Lebenslauf!","I18n_send":"Schicken","I18n_title":"K2 KnowledgeBase-System","I18n_wellcome":"Willkommen bei K2!","I18n_wellcome2":"Was machen wir heute?","I18n_workspace":"Arbeitsplatz"}
+{
+    "I18n_accessforbidden": "Zutritt verboten!",
+    "I18n_alert": "Warnungen",
+    "I18n_already": "Sie haben bereits ein Konto? ",
+    "I18n_alreadyregistered": "Bereits registriert!",
+    "I18n_avatar": "Benutzerbild",
+    "I18n_badrequest": "Ungültige Anforderung!",
+    "I18n_cancel": "Stornieren",
+    "I18n_dateinput": "Dateneingabe",
+    "I18n_forgot": "Passwort vergessen?",
+    "I18n_halt": "KnowledgeBase war halt!",
+    "I18n_internalservererror": "Interner Serverfehler!",
+    "I18n_invalidcredentials": "Ungültige Anmeldeinformationen!",
+    "I18n_invalidimage": "Ungültiges oder leeres Bild!",
+    "I18n_register": "Bitte registrieren Sie sich für den Zugang zu K2!",
+    "I18n_remember": "Mich erinnern",
+    "I18n_resume": "KnowledgeBase war Lebenslauf!",
+    "I18n_send": "Schicken",
+    "I18n_title": "K2 KnowledgeBase-System",
+    "I18n_wellcome": "Willkommen bei K2!",
+    "I18n_wellcome2": "Was machen wir heute?",
+    "I18n_workspace": "Arbeitsplatz"
+}

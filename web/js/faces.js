@@ -55,32 +55,31 @@ const speaking = () => {
 
 
 
-const TTS = async(text) => {
+const Speak = async(text) => {
   // Testing for browser support
 	var speechSynthesisSupported = 'speechSynthesis' in window;
-  let msg = new SpeechSynthesisUtterance();
+  let Speech = new SpeechSynthesisUtterance();
   console.log(SpeechSynthesisId);
-  msg.voice = speechSynthesis.getVoices()[ SpeechSynthesisId];
-  msg.text = text;
-  speechSynthesis.speak(msg);  
+  Speech.addEventListener('start', handleStartSpeechEvent);
+  Speech.addEventListener('end', handleEndSpeechEvent);
+  Speech.voice = speechSynthesis.getVoices()[ SpeechSynthesisId];
+  Speech.text = text;
+  speechSynthesis.speak(Speech);  
+}
+var speakingMode = false;
+
+const handleStartSpeechEvent = async() => {
+  speakingMode = true;
+  document.body.style.cursor = 'wait';
+  while (speakingMode) {
+    await sleep(100);
+    speaking();
+  }
 }
 
 
-const Speak = async (text) => {
-  await sleep(50);
-  document.body.style.cursor = 'wait';
-  interval = text.length * 100;
-  TTS(text);
-  var d = new Date();
-  var begin = d.getTime()
-  while (true) {
-    speaking();
-    var d = new Date();
-    if (d.getTime() > begin + interval) {
-      break
-    }
-    await sleep(100);
-  }
+const handleEndSpeechEvent = async() => {
+  speakingMode = false;
   document.body.style.cursor = 'default';
 }
 

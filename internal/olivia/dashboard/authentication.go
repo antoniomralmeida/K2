@@ -3,10 +3,10 @@ package dashboard
 import (
 	"crypto/rand"
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	"github.com/antoniomralmeida/k2/internal/inits"
-	"github.com/antoniomralmeida/k2/internal/olivia/util"
 
 	"github.com/gookit/color"
 
@@ -61,7 +61,7 @@ func Authenticate() {
 	fmt.Println("// Do nothing if the authentication file exists")
 	if AuthenticationFileExists() {
 
-		authenticationHash = util.ReadFile(fileName)
+		authenticationHash, _ = ioutil.ReadFile(fileName)
 		return
 	}
 

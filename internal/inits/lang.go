@@ -2,10 +2,17 @@ package inits
 
 import (
 	"bufio"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
 
+	"github.com/BurntSushi/toml"
+	"github.com/antoniomralmeida/golibretranslate"
 	"github.com/antoniomralmeida/k2/internal/lib"
+
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"golang.org/x/text/language"
 	"golang.org/x/text/language/display"
 )
@@ -40,9 +47,25 @@ type Locale struct {
 	Stemmer           *Stem
 }
 
-var DefaultLocale = language.English.String()
+var (
+	DefaultLocale = language.English.String()
+	Locales       map[string]Locale
+	bundle        *i18n.Bundle
+	I18n_en       map[string]string
+)
 
-var Locales map[string]Locale
+func I18nTranslate(orignal *map[string]string, locale string) (map[string]string, error) {
+	translated := make(map[string]string)
+	for key := range *orignal {
+		trans, err := golibretranslate.Translate((*orignal)[key], DefaultLocale, locale)
+		if err == nil {
+			translated[key] = trans
+		} else {
+			return translated, err
+		}
+	}
+	return translated, nil
+}
 
 func inLocalesConfig(locale string) bool {
 	if os.Getenv("LOCALES") == "" {
@@ -69,29 +92,104 @@ func NewSupportedLanguage(locale string, SynthesisId int) {
 	if inLocalesConfig(locale) || locale == language.English.String() || locale == language.Portuguese.String() {
 		toen := display.English.Languages()
 		tag := language.MustParse(locale)
-		//TODO: locale pt não está funcionando
 		Locales[locale] = Locale{Description: toen.Name(tag), SpeechSynthesisId: SynthesisId}
 	}
 }
 
 func InitLangs() {
 	Locales = make(map[string]Locale)
+
+	//TODO: trocar ID pelo nome, por a lista muda
+	//TODO: fazer um cache de nome em Javascript
 	NewSupportedLanguage(language.English.String(), 1)
 	NewSupportedLanguage(language.Portuguese.String(), 0)
 	NewSupportedLanguage(language.Spanish.String(), 262)
-	NewSupportedLanguage(language.German.String(), 143)
-	//TODO: Fala 143 feminina
-	NewSupportedLanguage(language.Hindi.String(), 154)
+	NewSupportedLanguage(language.German.String(), 144)
+	NewSupportedLanguage(language.Hindi.String(), 155)
 	NewSupportedLanguage(language.Arabic.String(), 12)
 	NewSupportedLanguage(language.Bengali.String(), 48)
 	NewSupportedLanguage(language.Russian.String(), 213)
-	NewSupportedLanguage(language.Japanese.String(), 167)
-	NewSupportedLanguage(language.French.String(), 133)
+	NewSupportedLanguage(language.Japanese.String(), 165)
+	NewSupportedLanguage(language.French.String(), 134)
 	NewSupportedLanguage(language.Italian.String(), 164)
 	NewSupportedLanguage(language.Chinese.String(), 68)
 	NewSupportedLanguage(language.Greek.String(), 149)
 	NewSupportedLanguage(language.Dutch.String(), 81)
 
+	I18n_en = make(map[string]string)
+
+	I18n_en[I18n_accessforbidden] = "Access forbidden!"
+	I18n_en[I18n_alert] = "Alerts"
+	I18n_en[I18n_already] = "Already have an account? Login!"
+	I18n_en[I18n_alreadyregistered] = "Already registered!"
+	I18n_en[I18n_avatar] = "Avatar"
+	I18n_en[I18n_badrequest] = "Bad Request!"
+	I18n_en[I18n_cancel] = "Cancel"
+	I18n_en[I18n_dateinput] = "Data Input"
+	I18n_en[I18n_forgot] = "Forgot Password?"
+	I18n_en[I18n_halt] = "KnowledgeBase was halt! "
+	I18n_en[I18n_internalservererror] = "Internal Server Error!"
+	I18n_en[I18n_invalidcredentials] = "Invalid credentials!"
+	I18n_en[I18n_invalidimage] = "Invalid or empty image!"
+	I18n_en[I18n_register] = "Please register to access K2!"
+	I18n_en[I18n_remember] = "Remember me"
+	I18n_en[I18n_resume] = "KnowledgeBase was resume! "
+	I18n_en[I18n_send] = "Send"
+	I18n_en[I18n_title] = "K2 KnowledgeBase System "
+	I18n_en[I18n_wellcome] = "Wellcome to K2!"
+	I18n_en[I18n_wellcome2] = "What are we going to do today?"
+	I18n_en[I18n_workspace] = "Workspace"
+
+	bundle = i18n.NewBundle(language.English)
+	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+
+	for code := range Locales {
+		tomFile := TomlFile(code)
+		_, err := os.Stat(tomFile)
+		fmt.Println(tomFile, os.IsNotExist(err))
+		if code == DefaultLocale || os.IsNotExist(err) {
+			if code == DefaultLocale {
+				js, err := json.MarshalIndent(I18n_en, "", "	")
+				Log(err, Error)
+				f, err := os.Create(tomFile)
+				Log(err, Error)
+				f.WriteString(string(js))
+				f.Close()
+			} else {
+				i18n, err := I18nTranslate(&I18n_en, code)
+				Log(err, Fatal)
+				f, err := os.Create(tomFile)
+				Log(err, Error)
+				js, err := json.MarshalIndent(i18n, "", "	")
+				Log(err, Fatal)
+				f.WriteString(string(js))
+				f.Close()
+			}
+		}
+		//TODO: locale pt não está funcionando
+		txt, _ := ioutil.ReadFile(tomFile)
+		fmt.Println(string(txt))
+		bundle.MustLoadMessageFile(tomFile)
+		fmt.Println(bundle.LanguageTags())
+		fmt.Println(TranslateTag(I18n_wellcome, code))
+	}
+}
+
+func TranslateTag(tag string, langs string) string {
+	localizer := i18n.NewLocalizer(bundle, langs)
+	msg, err := localizer.LocalizeMessage(&i18n.Message{ID: tag})
+	Log(err, Error)
+	return msg
+}
+
+func TomlFile(code string) string {
+	wd := GetHomeDir()
+	path := wd + "/data/locales/"
+	if ok, _ := lib.Exists(path); !ok {
+		err := os.MkdirAll(path, os.ModePerm)
+		Log(err, Fatal)
+	}
+	return path + "i18n." + code + ".json"
 }
 
 type Stem struct {

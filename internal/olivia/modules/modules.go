@@ -2,11 +2,11 @@ package modules
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"reflect"
 
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
-	"github.com/antoniomralmeida/k2/internal/olivia/util"
 )
 
 const (
@@ -67,7 +67,8 @@ func init() {
 		mfile := modulesFile(locale)
 		if ok, _ := lib.Exists(mfile); ok {
 			var mods []Module
-			err := json.Unmarshal(util.ReadFile(mfile), &mods)
+			bytes, _ := ioutil.ReadFile(mfile)
+			err := json.Unmarshal(bytes, &mods)
 			inits.Log(err, inits.Fatal)
 
 			for i := range mods {
@@ -80,7 +81,8 @@ func init() {
 		afile := articleFile(locale)
 		if ok, _ := lib.Exists(afile); ok {
 			var atrs []Article
-			err := json.Unmarshal(util.ReadFile(afile), &atrs)
+			bytes, _ := ioutil.ReadFile(afile)
+			err := json.Unmarshal(bytes, &atrs)
 			inits.Log(err, inits.Fatal)
 			RegisterArticles(locale, atrs)
 		}

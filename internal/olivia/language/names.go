@@ -1,17 +1,18 @@
 package language
 
 import (
+	"io/ioutil"
 	"strings"
 
 	"github.com/antoniomralmeida/k2/internal/inits"
-	"github.com/antoniomralmeida/k2/internal/olivia/util"
 )
 
 var names = SerializeNames()
 
 // SerializeNames retrieves all the names from res/datasets/names.txt and returns an array of names
 func SerializeNames() (names []string) {
-	namesFile := string(util.ReadFile(inits.GetHomeDir() + "/data/datasets/names.txt"))
+	bytes, _ := ioutil.ReadFile(inits.GetHomeDir() + "/data/datasets/names.txt")
+	namesFile := string(bytes)
 
 	// Iterate each line of the file
 	names = append(names, strings.Split(strings.TrimSuffix(namesFile, "\n"), "\n")...)

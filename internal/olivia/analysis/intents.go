@@ -2,6 +2,7 @@ package analysis
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"os"
 	"sort"
 
@@ -86,7 +87,8 @@ func SerializeIntents(locale string) (_intents []Intent) {
 	if ok, _ := lib.Exists(intents); !ok {
 		intents_tmp := []Intent{}
 		intentsFile := intentsFile(inits.DefaultLocale)
-		err := json.Unmarshal(util.ReadFile(intentsFile), &intents_tmp)
+		bytes, _ := ioutil.ReadFile(intentsFile)
+		err := json.Unmarshal(bytes, &intents_tmp)
 		inits.Log(err, inits.Fatal)
 		err = translateIntents(&intents_tmp, locale)
 		inits.Log(err, inits.Fatal)
@@ -97,8 +99,8 @@ func SerializeIntents(locale string) (_intents []Intent) {
 		f.WriteString(string(js))
 		f.Close()
 	}
-
-	err := json.Unmarshal(util.ReadFile(intents), &_intents)
+	txt, _ := ioutil.ReadFile(intents)
+	err := json.Unmarshal(txt, &_intents)
 	inits.Log(err, inits.Fatal)
 
 	CacheIntents(locale, _intents)

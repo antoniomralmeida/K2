@@ -5,14 +5,12 @@ WORKDIR /var/www/k2
 COPY ./bin/k2web.bin ./bin/
 COPY ./configs/* ./configs/ 
 COPY ./log/*.md ./log/
-COPY ./web/* ./web/
-COPY ./data/* ./data/
+COPY ./web/ ./web/
+COPY ./data/ ./data/
 
-
-USER noroot:noroot
 
 EXPOSE 8080
 
-ENTRYPOINT ["sh", "-c", "./bin/k2web.bin"]
+ENTRYPOINT ["./bin/k2web.bin"]
 
 

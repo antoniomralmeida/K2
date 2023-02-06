@@ -2,6 +2,7 @@ package util
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"math/rand"
 	"os"
 	"time"
@@ -54,7 +55,8 @@ func SerializeMessages(locale string) []Message {
 	if ok, _ := lib.Exists(msgFile); !ok {
 		messages_tmp := []Message{}
 		tmpFile := messagesFile(inits.DefaultLocale)
-		err := json.Unmarshal(ReadFile(tmpFile), &messages_tmp)
+		bytes, _ := ioutil.ReadFile(tmpFile)
+		err := json.Unmarshal(bytes, &messages_tmp)
 		inits.Log(err, inits.Fatal)
 		err = translateMessages(&messages_tmp, locale)
 		inits.Log(err, inits.Fatal)
@@ -66,7 +68,8 @@ func SerializeMessages(locale string) []Message {
 		f.Close()
 	}
 
-	err := json.Unmarshal(ReadFile(msgFile), &currentMessages)
+	bytes, _ := ioutil.ReadFile(msgFile)
+	err := json.Unmarshal(bytes, &currentMessages)
 	if err != nil {
 		inits.Log(err, inits.Error)
 	}

@@ -29,13 +29,14 @@ func LoginForm(c *fiber.Ctx) error {
 
 func PostLogin(c *fiber.Ctx) error {
 	req := models.LoginRequest{}
+	context.SetContextInfo(c)
 	if err := c.BodyParser(&req); err != nil {
-		msg := context.TranslateTag(inits.I18n_badrequest, c) + ":" + err.Error()
+		msg := context.Ctxweb.I18n[inits.I18n_badrequest] + ":" + err.Error()
 		inits.Log(msg, inits.Info)
 		return fiber.NewError(fiber.StatusBadRequest, msg)
 	}
 	if req.Email == "" || req.Password == "" {
-		msg := context.TranslateTag(inits.I18n_invalidcredentials, c)
+		msg := context.Ctxweb.I18n[inits.I18n_invalidcredentials]
 		inits.Log(msg, inits.Info)
 		return fiber.NewError(fiber.StatusBadRequest, msg)
 	}
@@ -46,26 +47,26 @@ func PostLogin(c *fiber.Ctx) error {
 		inits.Log(err, inits.Error)
 	}
 	if user.Email == "" {
-		msg := context.TranslateTag(inits.I18n_invalidcredentials, c)
+		msg := context.Ctxweb.I18n[inits.I18n_invalidcredentials]
 		inits.Log(msg, inits.Info)
 		return fiber.NewError(fiber.StatusBadRequest, msg)
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Hash), []byte(req.Password)); err != nil {
-		msg := context.TranslateTag(inits.I18n_invalidcredentials, c)
+		msg := context.Ctxweb.I18n[inits.I18n_invalidcredentials]
 		inits.Log(msg, inits.Info)
 		return fiber.NewError(fiber.StatusBadRequest, msg)
 	}
 
 	if user.Profile == models.Empty {
-		msg := context.TranslateTag(inits.I18n_accessforbidden, c)
+		msg := context.Ctxweb.I18n[inits.I18n_accessforbidden]
 		inits.Log(msg, inits.Info)
 		return fiber.NewError(fiber.StatusForbidden, msg)
 	}
 
 	token, _, err := lib.CreateJWTToken(user.ID, user.Name)
 	if err != nil {
-		msg := context.TranslateTag(inits.I18n_internalservererror, c)
+		msg := context.Ctxweb.I18n[inits.I18n_internalservererror]
 		inits.Log(msg, inits.Info)
 		return fiber.NewError(fiber.StatusBadRequest, msg)
 	}
