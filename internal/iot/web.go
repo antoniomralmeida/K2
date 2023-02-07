@@ -7,6 +7,7 @@ import (
 
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
+	"github.com/antoniomralmeida/k2/pkg/version"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -14,7 +15,7 @@ import (
 )
 
 func Run() {
-	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 IoT MidWare ", lib.GetVersion(), "[", lib.GetBuild(), "]"),
+	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 IoT MidWare ", version.GetVersion(), "[", version.GetBuild(), "]"),
 		DisableStartupMessage: true,
 		Prefork:               false})
 

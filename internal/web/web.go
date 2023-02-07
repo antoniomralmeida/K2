@@ -10,6 +10,7 @@ import (
 	"github.com/antoniomralmeida/k2/internal/web/context"
 	"github.com/antoniomralmeida/k2/internal/web/controllers"
 	"github.com/antoniomralmeida/k2/internal/web/views"
+	"github.com/antoniomralmeida/k2/pkg/version"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
@@ -20,7 +21,7 @@ func Run() {
 
 	context.Ctxweb.ApiKernel = os.Getenv("APIKERNEL")
 	context.Ctxweb.Avatar = os.Getenv("AVATAR")
-	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 KB System ", lib.GetVersion(), "[", lib.GetBuild(), "]"),
+	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 KB System ", version.GetVersion(), "[", version.GetBuild(), "]"),
 		DisableStartupMessage: false,
 		Prefork:               false})
 	wd := inits.GetHomeDir()

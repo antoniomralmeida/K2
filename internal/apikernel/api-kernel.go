@@ -8,6 +8,7 @@ import (
 
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
+	"github.com/antoniomralmeida/k2/pkg/version"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
@@ -15,7 +16,7 @@ import (
 func Run(wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 KB System API-KERNEL ", lib.GetVersion(), "[", lib.GetBuild(), "]"),
+	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 KB System API-KERNEL ", version.GetVersion(), "[", version.GetBuild(), "]"),
 		DisableStartupMessage: true,
 		Prefork:               false})
 	wd := inits.GetHomeDir()

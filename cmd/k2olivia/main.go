@@ -12,6 +12,7 @@ import (
 	"github.com/antoniomralmeida/k2/internal/olivia/server"
 	"github.com/antoniomralmeida/k2/internal/olivia/training"
 	"github.com/antoniomralmeida/k2/internal/olivia/util"
+	"github.com/antoniomralmeida/k2/pkg/version"
 
 	"github.com/gookit/color"
 )
@@ -25,7 +26,7 @@ func init() {
 	inits.LogInit("k2olivia")
 	inits.InitLangs()
 	locales.InitStem()
-	msg := fmt.Sprintf("Initializing Olivia from K2 KB System, version: %v build: %v PID: %v", lib.GetVersion(), lib.GetBuild(), os.Getppid())
+	msg := fmt.Sprintf("Initializing Olivia from K2 KB System, version: %v build: %v PID: %v", version.GetVersion(), version.GetBuild(), os.Getppid())
 	fmt.Println(msg)
 	fmt.Println("Supported Languages: " + inits.GetSupportedLocales())
 	inits.Log(msg, inits.Info)

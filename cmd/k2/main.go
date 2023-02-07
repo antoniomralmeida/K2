@@ -12,6 +12,7 @@ import (
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
 	"github.com/antoniomralmeida/k2/internal/models"
+	"github.com/antoniomralmeida/k2/pkg/version"
 )
 
 func init() {
@@ -19,7 +20,7 @@ func init() {
 	k2ASCII, _ := os.ReadFile("./configs/k2.txt")
 	fmt.Println(color.FgLightGreen.Render(string(k2ASCII)))
 
-	msg := fmt.Sprintf("Initializing K2 KB System, version: %v build: %v PID: %v", lib.GetVersion(), lib.GetBuild(), os.Getppid())
+	msg := fmt.Sprintf("Initializing K2 KB System, version: %v build: %v PID: %v", version.GetVersion(), version.GetBuild(), os.Getppid())
 	fmt.Println(msg)
 	inits.InitEnvVars()
 	inits.LogInit("k2log")
