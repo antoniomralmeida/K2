@@ -46,8 +46,8 @@ type KnowledgeBased struct {
 	halt                bool                            `bson:"-"`
 }
 
-func KBAddStack(news []*KBRule) {
-	_kb.stack = append(_kb.stack, news...) //  forward chaining
+func KBAddStack(rules []*KBRule) {
+	_kb.stack = append(_kb.stack, rules...) //  forward chaining
 }
 
 func (kb *KnowledgeBased) AddAttribute(c *KBClass, attrs ...*KBAttribute) {
@@ -105,40 +105,6 @@ func KBNewSimpleClass(name string, parent *KBClass) *KBClass {
 	}
 }
 
-func (kb *KnowledgeBased) NewClass(newclass_json string) *KBClass {
-	class := KBClass{}
-	err := json.Unmarshal([]byte(newclass_json), &class)
-	if err != nil {
-		inits.Log(err, inits.Info)
-		return nil
-	}
-	if class.Parent != "" {
-		p := kb.FindClassByName(class.Parent, true)
-		if p == nil {
-			inits.Log("Class not found "+class.Parent, inits.Info)
-			return nil
-		}
-		class.ParentID = p.ID
-		class.ParentClass = p
-	}
-	for i := range class.Attributes {
-		class.Attributes[i].ID = primitive.NewObjectID()
-		for _, x := range class.Attributes[i].Sources {
-			class.Attributes[i].SourcesID = append(class.Attributes[i].SourcesID, KBSourceStr[x])
-		}
-		class.Attributes[i].SimulationID = KBSimulationStr[class.Attributes[i].Simulation]
-	}
-	err = class.Persist()
-	if err == nil {
-		kb.Classes = append(kb.Classes, class)
-		kb.IdxClasses[class.ID] = &class
-		return &class
-	} else {
-		inits.Log(err, inits.Error)
-		return nil
-	}
-}
-
 func (kb *KnowledgeBased) UpdateClass(c *KBClass) {
 	for i := range c.Attributes {
 		if c.Attributes[i].ID.IsZero() {
@@ -146,23 +112,6 @@ func (kb *KnowledgeBased) UpdateClass(c *KBClass) {
 		}
 	}
 	inits.Log(c.Persist(), inits.Fatal)
-}
-
-func (kb *KnowledgeBased) NewWorkspace(name string, image string) *KBWorkspace {
-	copy, err := lib.LoadImage(image)
-	if err != nil {
-		inits.Log(err, inits.Error)
-		return nil
-	}
-	w := KBWorkspace{Workspace: name, BackgroundImage: copy}
-	err = w.Persist()
-	if err == nil {
-		kb.Workspaces = append(kb.Workspaces, w)
-		return &w
-	} else {
-		inits.Log(err, inits.Fatal)
-		return nil
-	}
 }
 
 func (kb *KnowledgeBased) UpdateWorkspace(w *KBWorkspace) {
@@ -177,35 +126,6 @@ func (kb *KnowledgeBased) FindWorkspaceByName(name string) *KBWorkspace {
 	}
 	inits.Log("Workspace not found!", inits.Error)
 	return nil
-}
-
-func KBNewSimpleObject(name string, class *KBClass) *KBObject {
-	o := KBObject{Name: name, Class: class.ID, Bkclass: class}
-	for _, x := range _kb.FindAttributes(class) {
-		n := KBAttributeObject{Attribute: x.ID, KbAttribute: x, KbObject: &o}
-		o.Attributes = append(o.Attributes, n)
-		_kb.IdxAttributeObjects[n.getFullName()] = &n
-	}
-	inits.Log(o.Persist(), inits.Fatal)
-	_kb.IdxObjects[name] = &o
-	return &o
-}
-
-func (kb *KnowledgeBased) NewObject(class string, name string) *KBObject {
-	p := kb.FindClassByName(class, true)
-	if p == nil {
-		inits.Log("Class not found "+class, inits.Error)
-		return nil
-	}
-	o := KBObject{Name: name, Class: p.ID, Bkclass: p}
-	for _, x := range kb.FindAttributes(p) {
-		n := KBAttributeObject{Attribute: x.ID, KbAttribute: x, KbObject: &o}
-		o.Attributes = append(o.Attributes, n)
-		kb.IdxAttributeObjects[n.getFullName()] = &n
-	}
-	inits.Log(o.Persist(), inits.Fatal)
-	kb.IdxObjects[name] = &o
-	return &o
 }
 
 func (kb *KnowledgeBased) LinkObjects(ws *KBWorkspace, obj *KBObject, left int, top int) {
@@ -228,29 +148,6 @@ func (kb *KnowledgeBased) FindClassByName(nm string, mandatory bool) *KBClass {
 	return kb.IdxClasses[ret.ID]
 }
 
-func (kb *KnowledgeBased) FindAttribute(c *KBClass, name string) *KBAttribute {
-	attrs := kb.FindAttributes(c)
-	for i, x := range attrs {
-		if x.Name == name {
-			return attrs[i]
-		}
-	}
-	return nil
-}
-
-func (kb *KnowledgeBased) FindAttributes(c *KBClass) []*KBAttribute {
-	var ret []*KBAttribute
-	if c != nil {
-		if c.ParentClass != nil {
-			ret = append(ret, kb.FindAttributes(c.ParentClass)...)
-		}
-		for i := range c.Attributes {
-			ret = append(ret, &c.Attributes[i])
-		}
-	}
-	return ret
-}
-
 func (kb *KnowledgeBased) FindAttributeObject(obj *KBObject, attr string) *KBAttributeObject {
 	for i := range obj.Attributes {
 		if obj.Attributes[i].KbAttribute.Name == attr {
@@ -260,7 +157,7 @@ func (kb *KnowledgeBased) FindAttributeObject(obj *KBObject, attr string) *KBAtt
 	return nil
 }
 
-func (kb *KnowledgeBased) NewAttributeObject(obj *KBObject, attr *KBAttribute) *KBAttributeObject {
+func (kb *KnowledgeBased) AttributeObjectFactory(obj *KBObject, attr *KBAttribute) *KBAttributeObject {
 	a := KBAttributeObject{Attribute: attr.ID}
 	obj.Attributes = append(obj.Attributes, a)
 	err := obj.Persist()
@@ -272,17 +169,6 @@ func (kb *KnowledgeBased) NewAttributeObject(obj *KBObject, attr *KBAttribute) *
 	}
 }
 
-func (kb *KnowledgeBased) NewRule(rule string, priority byte, interval int) *KBRule {
-	_, bin, err := kb.ParsingCommand(rule)
-	if inits.Log(err, inits.Info) != nil {
-		return nil
-	}
-	r := KBRule{Rule: rule, Priority: priority, ExecutionInterval: interval}
-	inits.Log(r.Persist(), inits.Fatal)
-	kb.linkerRule(&r, bin)
-	kb.Rules = append(kb.Rules, r)
-	return &r
-}
 func (kb *KnowledgeBased) UpdateKB(name string) error {
 	kb.Name = name
 	return kb.Persist()
@@ -560,7 +446,7 @@ func (kb *KnowledgeBased) linkerRule(r *KBRule, bin []*BIN) error {
 						bin[j].objects = append(bin[j].objects, obj)
 						bin[j].class = obj.Bkclass
 					}
-					bin[j].attribute = kb.FindAttribute(bin[ref].class, x.GetToken())
+					bin[j].attribute = FindAttribute(bin[ref].class, x.GetToken())
 					if len(bin[j].objects) > 0 {
 						atro := kb.FindAttributeObject(bin[ref].objects[0], x.GetToken())
 						bin[j].attributeObjects = append(bin[j].attributeObjects, atro)
@@ -573,7 +459,7 @@ func (kb *KnowledgeBased) linkerRule(r *KBRule, bin []*BIN) error {
 						bin[ref].class = c
 					}
 					bin[j].class = c
-					bin[j].attribute = kb.FindAttribute(c, x.GetToken())
+					bin[j].attribute = FindAttribute(c, x.GetToken())
 					objs := []KBObject{}
 					inits.Log(FindAllObjects(bson.M{"class_id": c.ID}, "_id", &objs), inits.Fatal)
 					for _, y := range objs {
@@ -592,7 +478,7 @@ func (kb *KnowledgeBased) linkerRule(r *KBRule, bin []*BIN) error {
 					if c == nil {
 						return inits.Log("Attribute class not found in KB! "+x.GetToken(), inits.Error)
 					}
-					bin[j].attribute = kb.FindAttribute(c, x.GetToken())
+					bin[j].attribute = FindAttribute(c, x.GetToken())
 					objs := []KBObject{}
 					inits.Log(FindAllObjects(bson.M{"class_id": c.ID}, "_id", &objs), inits.Fatal)
 					for _, y := range objs {
@@ -713,7 +599,7 @@ func KBInit() {
 		c := _kb.IdxClasses[o.Class]
 		if c != nil {
 			_kb.Objects[j].Bkclass = c
-			attrs := _kb.FindAttributes(c)
+			attrs := FindAttributes(c)
 			sort.Slice(attrs, func(i, j int) bool {
 				return attrs[i].ID.Hex() < attrs[j].ID.Hex()
 			})

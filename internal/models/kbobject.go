@@ -17,6 +17,35 @@ type KBObject struct {
 	parsed           bool                `bson:"-"`
 }
 
+func ObjectFactory(class string, name string) *KBObject {
+	p := _kb.FindClassByName(class, true)
+	if p == nil {
+		inits.Log("Class not found "+class, inits.Error)
+		return nil
+	}
+	o := KBObject{Name: name, Class: p.ID, Bkclass: p}
+	for _, x := range FindAttributes(p) {
+		n := KBAttributeObject{Attribute: x.ID, KbAttribute: x, KbObject: &o}
+		o.Attributes = append(o.Attributes, n)
+		_kb.IdxAttributeObjects[n.getFullName()] = &n
+	}
+	inits.Log(o.Persist(), inits.Fatal)
+	_kb.IdxObjects[name] = &o
+	return &o
+}
+
+func ObjectFacroryByClass(name string, class *KBClass) *KBObject {
+	o := KBObject{Name: name, Class: class.ID, Bkclass: class}
+	for _, x := range FindAttributes(class) {
+		n := KBAttributeObject{Attribute: x.ID, KbAttribute: x, KbObject: &o}
+		o.Attributes = append(o.Attributes, n)
+		_kb.IdxAttributeObjects[n.getFullName()] = &n
+	}
+	inits.Log(o.Persist(), inits.Fatal)
+	_kb.IdxObjects[name] = &o
+	return &o
+}
+
 func (obj *KBObject) Persist() error {
 	return inits.Persist(obj)
 

@@ -12,7 +12,7 @@ import (
 
 	"github.com/antoniomralmeida/k2/internal/fuzzy"
 	"github.com/antoniomralmeida/k2/internal/inits"
-	"github.com/antoniomralmeida/k2/internal/lib"
+	"github.com/antoniomralmeida/k2/pkg/cartesian"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -27,6 +27,18 @@ type KBRule struct {
 	inRun             bool       `bson:"-"`
 	bkclasses         []*KBClass `bson:"-"`
 	bin               []*BIN     `bson:"-"`
+}
+
+func RuleFactory(rule string, priority byte, interval int) *KBRule {
+	_, bin, err := _kb.ParsingCommand(rule)
+	if inits.Log(err, inits.Info) != nil {
+		return nil
+	}
+	r := KBRule{Rule: rule, Priority: priority, ExecutionInterval: interval}
+	inits.Log(r.Persist(), inits.Fatal)
+	_kb.linkerRule(&r, bin)
+	_kb.Rules = append(_kb.Rules, r)
+	return &r
 }
 
 func (r *KBRule) String() string {
@@ -199,7 +211,7 @@ oulter:
 	}
 
 	if !conditionally {
-		cart := lib.Cartesian{}
+		cart := cartesian.Cartesian{}
 		values := make(map[string][]Value)
 		idx2 := []string{}
 		for ix := range attrs {
@@ -260,7 +272,7 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 		switch r.bin[pc].literalbin {
 		case B_inform:
 			attrs := make(map[string][]*KBAttributeObject)
-			cart := lib.Cartesian{}
+			cart := cartesian.Cartesian{}
 			pc += 5
 			if r.bin[pc].tokentype != Text {
 				return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
@@ -411,7 +423,7 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 					}
 				} else {
 					objectName := r.bin[pc].GetToken()
-					KBNewSimpleObject(objectName, baseClass)
+					ObjectFacroryByClass(objectName, baseClass)
 				}
 			}
 		case B_conclude:

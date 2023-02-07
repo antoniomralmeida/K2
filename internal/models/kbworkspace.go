@@ -21,6 +21,23 @@ type KBWorkspace struct {
 	Posts            lib.Queue    `bson:"-"`
 }
 
+func WorkspaceFactory(name string, image string) *KBWorkspace {
+	copy, err := lib.LoadImage(image)
+	if err != nil {
+		inits.Log(err, inits.Error)
+		return nil
+	}
+	w := KBWorkspace{Workspace: name, BackgroundImage: copy}
+	err = w.Persist()
+	if err == nil {
+		_kb.Workspaces = append(_kb.Workspaces, w)
+		return &w
+	} else {
+		inits.Log(err, inits.Fatal)
+		return nil
+	}
+}
+
 func (obj *KBWorkspace) Persist() error {
 	return inits.Persist(obj)
 
