@@ -18,6 +18,5 @@ func LoginView(c *fiber.Ctx) error {
 	model := template.Must(t, nil)
 	inits.Log(model.Execute(c, context.Ctxweb), inits.Error)
 	c.Response().Header.Add("Content-Type", "text/html")
-	//c.Response().Header.Add("Access-Control-Allow-Origin", "*")
 	return c.SendStatus(fiber.StatusOK)
 }

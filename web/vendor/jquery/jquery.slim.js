@@ -3234,7 +3234,7 @@ var rootjQuery,
 	};
 
 // Give the init function the jQuery prototype for later instantiation
-inits.prototype = jQuery.fn;
+init.prototype = jQuery.fn;
 
 // Initialize central reference
 rootjQuery = jQuery( document );
