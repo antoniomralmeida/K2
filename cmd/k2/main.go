@@ -8,7 +8,6 @@ import (
 
 	"github.com/gookit/color"
 
-	"github.com/antoniomralmeida/k2/internal/apikernel"
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
 	"github.com/antoniomralmeida/k2/internal/models"
@@ -36,9 +35,7 @@ func init() {
 	_, span = inits.Begin("InitSecurity", ctx)
 	models.InitSecurity()
 	span.End()
-	_, span = inits.Begin("InitOlivia", ctx)
-	//inits.InitOlivia()
-	span.End()
+
 	spanbase.End()
 }
 
@@ -47,7 +44,6 @@ func StartSystem() {
 	// CORE
 	var wg sync.WaitGroup = sync.WaitGroup{}
 	wg.Add(5)
-	go apikernel.Run(&wg)
 	go models.KBRun(&wg)
 	go lib.Openbrowser("http://localhost" + os.Getenv("HTTPPORT"))
 	wg.Wait()

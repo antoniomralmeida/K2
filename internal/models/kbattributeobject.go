@@ -52,6 +52,7 @@ func (ao *KBAttributeObject) ValueString() (string, float64, KBAttributeType) {
 	return value, t, tp
 }
 func (ao *KBAttributeObject) Value() (any, float64, KBAttributeType) {
+	ao.KbHistory.FindLast(bson.D{{Key: "attribute_id", Value: ao.Attribute}})
 	if ao.Validity() {
 		if KBDate == ao.KbAttribute.AType {
 			i, _ := strconv.ParseInt(fmt.Sprintf("%v", ao.KbHistory.Value), 10, 64)
@@ -141,7 +142,12 @@ func (attr *KBAttributeObject) SetValue(value any, source KBSource, trust float6
 	h := KBHistory{Attribute: attr.ID, When: time.Now().UnixNano(), Value: value, Source: source, Trust: trust}
 	inits.Log(h.Persist(), inits.Fatal)
 	attr.KbHistory = &h
-	KBAddStack(attr.KbAttribute.antecedentRules) //  forward chaining
+	if _kb_current == nil {
+
+		//TODO: FIND antecedentRules from mongodb
+	} else {
+		KBAddStack(attr.KbAttribute.antecedentRules) //  forward chaining
+	}
 
 	if attr.KbAttribute.KeepHistory != 0 {
 		go h.ClearingHistory(attr.KbAttribute.KeepHistory)

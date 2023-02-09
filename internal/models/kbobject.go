@@ -5,6 +5,7 @@ import (
 
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/kamva/mgm/v3"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -18,7 +19,7 @@ type KBObject struct {
 }
 
 func ObjectFactory(class string, name string) *KBObject {
-	p := _kb.FindClassByName(class, true)
+	p := _kb_current.FindClassByName(class, true)
 	if p == nil {
 		inits.Log("Class not found "+class, inits.Error)
 		return nil
@@ -27,11 +28,17 @@ func ObjectFactory(class string, name string) *KBObject {
 	for _, x := range FindAttributes(p) {
 		n := KBAttributeObject{Attribute: x.ID, KbAttribute: x, KbObject: &o}
 		o.Attributes = append(o.Attributes, n)
-		_kb.IdxAttributeObjects[n.getFullName()] = &n
+		//_kb.IdxAttributeObjects[n.getFullName()] = &n
 	}
 	inits.Log(o.Persist(), inits.Fatal)
-	_kb.IdxObjects[name] = &o
+	//_kb.IdxObjects[name] = &o
 	return &o
+}
+
+func FindObjectByName(name string) (ret *KBObject) {
+	r := mgm.Coll(ret).FindOne(mgm.Ctx(), bson.D{{"name", name}})
+	r.Decode(ret)
+	return
 }
 
 func ObjectFacroryByClass(name string, class *KBClass) *KBObject {
@@ -39,10 +46,10 @@ func ObjectFacroryByClass(name string, class *KBClass) *KBObject {
 	for _, x := range FindAttributes(class) {
 		n := KBAttributeObject{Attribute: x.ID, KbAttribute: x, KbObject: &o}
 		o.Attributes = append(o.Attributes, n)
-		_kb.IdxAttributeObjects[n.getFullName()] = &n
+		//_kb.IdxAttributeObjects[n.getFullName()] = &n
 	}
 	inits.Log(o.Persist(), inits.Fatal)
-	_kb.IdxObjects[name] = &o
+	//_kb.IdxObjects[name] = &o
 	return &o
 }
 

@@ -1,4 +1,4 @@
-package apikernel
+package controllers
 
 import (
 	"github.com/antoniomralmeida/k2/internal/inits"
@@ -6,8 +6,6 @@ import (
 )
 
 func GetChats(c *fiber.Ctx) error {
-	//application/x-www-form-urlencoded
-	c.Response().Header.Add("Access-Control-Allow-Origin", "*")
 
 	msg := c.Query("msg")
 	uid := c.Query("jwt")

@@ -30,7 +30,7 @@ func WorkspaceFactory(name string, image string) *KBWorkspace {
 	w := KBWorkspace{Workspace: name, BackgroundImage: copy}
 	err = w.Persist()
 	if err == nil {
-		_kb.Workspaces = append(_kb.Workspaces, w)
+		_kb_current.Workspaces = append(_kb_current.Workspaces, w)
 		return &w
 	} else {
 		inits.Log(err, inits.Fatal)

@@ -1,4 +1,4 @@
-package apikernel
+package controllers
 
 import (
 	"net/url"
@@ -10,13 +10,11 @@ import (
 
 func GetAttributes(c *fiber.Ctx) error {
 	objs := models.KBGetDataInput()
-	c.Response().Header.Add("Access-Control-Allow-Origin", "*")
 	return c.JSON(objs)
 }
 
 func PostAttributes(c *fiber.Ctx) error {
-	//application/x-www-form-urlencoded
-	c.Response().Header.Add("Access-Control-Allow-Origin", "*")
+
 	data, err := url.ParseQuery(string(c.Body()))
 	if inits.Log(err, inits.Error) != nil {
 		return c.SendStatus(fiber.ErrBadRequest.Code)

@@ -29,7 +29,7 @@ func ClassFactory(newclass_json string) *KBClass {
 		return nil
 	}
 	if class.Parent != "" {
-		p := _kb.FindClassByName(class.Parent, true)
+		p := _kb_current.FindClassByName(class.Parent, true)
 		if p == nil {
 			inits.Log("Class not found "+class.Parent, inits.Info)
 			return nil
@@ -46,8 +46,8 @@ func ClassFactory(newclass_json string) *KBClass {
 	}
 	err = class.Persist()
 	if err == nil {
-		_kb.Classes = append(_kb.Classes, class)
-		_kb.IdxClasses[class.ID] = &class
+		_kb_current.Classes = append(_kb_current.Classes, class)
+		//_kb.IdxClasses[class.ID] = &class
 		return &class
 	} else {
 		inits.Log(err, inits.Error)
@@ -118,4 +118,13 @@ func FindAttribute(c *KBClass, name string) *KBAttribute {
 		}
 	}
 	return nil
+}
+
+func (c *KBClass) UpdateClass() {
+	for i := range c.Attributes {
+		if c.Attributes[i].ID.IsZero() {
+			c.Attributes[i].ID = primitive.NewObjectID()
+		}
+	}
+	inits.Log(c.Persist(), inits.Fatal)
 }

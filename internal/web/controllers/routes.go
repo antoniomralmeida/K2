@@ -34,6 +34,12 @@ func Routes(app *fiber.App) {
 	app.Get("/signup", SignupForm)
 	app.Post("/signup", PostSignup)
 
+	api := app.Group("/api/v1")
+	api.Get("/attributes", GetAttributes)
+	api.Post("/attributes", PostAttributes)
+	api.Get("/workspaces", GetWorkspaces)
+	api.Get("/chats", GetChats)
+
 	// 404 Handler
 	app.Use(func(c *fiber.Ctx) error {
 		return views.NotFoundView(c)

@@ -1,4 +1,4 @@
-package apikernel
+package controllers
 
 import (
 	"github.com/antoniomralmeida/k2/internal/models"
@@ -7,7 +7,6 @@ import (
 
 func GetWorkspaces(c *fiber.Ctx) error {
 	objs := models.KBGetWorkspaces()
-	c.Response().Header.Add("Access-Control-Allow-Origin", "*")
 	c.Response().Header.SetContentType("application/json")
 	return c.Send([]byte(objs))
 }

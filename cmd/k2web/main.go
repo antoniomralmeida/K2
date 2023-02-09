@@ -20,6 +20,7 @@ func init() {
 	msg := fmt.Sprintf("Initializing Web Server from K2 KB System,  version: %v build: %v", version.GetVersion(), version.GetBuild())
 	inits.InitEnvVars()
 	inits.InitLangs()
+	inits.InitOlivia()
 	inits.LogInit("k2weblog")
 	if !fiber.IsChild() {
 		fmt.Println(msg)

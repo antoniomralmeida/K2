@@ -22,7 +22,7 @@ type KBRule struct {
 	Rule              string     `bson:"rule"`
 	Priority          byte       `bson:"priority"` //0..100
 	ExecutionInterval int        `bson:"interval"`
-	lastexecution     time.Time  `bson:"-"`
+	Lastexecution     time.Time  `bson:"lastexecution"`
 	consequent        int        `bson:"-"`
 	inRun             bool       `bson:"-"`
 	bkclasses         []*KBClass `bson:"-"`
@@ -30,14 +30,14 @@ type KBRule struct {
 }
 
 func RuleFactory(rule string, priority byte, interval int) *KBRule {
-	_, bin, err := _kb.ParsingCommand(rule)
+	_, bin, err := _kb_current.ParsingCommand(rule)
 	if inits.Log(err, inits.Info) != nil {
 		return nil
 	}
 	r := KBRule{Rule: rule, Priority: priority, ExecutionInterval: interval}
 	inits.Log(r.Persist(), inits.Fatal)
-	_kb.linkerRule(&r, bin)
-	_kb.Rules = append(_kb.Rules, r)
+	_kb_current.linkerRule(&r, bin)
+	_kb_current.Rules = append(_kb_current.Rules, r)
 	return &r
 }
 
@@ -80,13 +80,11 @@ func (r *KBRule) Run() (e error) {
 		trust float64
 		atype KBAttributeType
 	}
-	KBLock()
+
 	if r.inRun { //avoid non-parallel execution of the same rule
-		KBUnLock()
 		return
 	}
 	r.inRun = true
-	KBUnLock()
 	inits.Log("run..."+r.ID.Hex(), inits.Info)
 
 	attrs := make(map[string][]*KBAttributeObject)
@@ -258,10 +256,9 @@ oulter:
 	} else {
 		r.RunConsequent([]*KBObject{}, 100.0)
 	}
-	r.lastexecution = time.Now()
-	KBLock()
+	r.Lastexecution = time.Now()
+	r.Persist()
 	r.inRun = false
-	KBUnLock()
 	return nil
 }
 
