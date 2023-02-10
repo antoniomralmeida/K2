@@ -32,17 +32,12 @@ var (
 
 type KnowledgeBased struct {
 	mgm.DefaultModel `json:",inline" bson:",inline"`
-	Name             string    `bson:"name"`
-	Classes          []KBClass `bson:"-"`
-	//IdxClasses       map[primitive.ObjectID]*KBClass `bson:"-"`
-	Rules      []KBRule      `bson:"-"`
-	Workspaces []KBWorkspace `bson:"-"`
-	Objects    []KBObject    `bson:"-"`
-	//IdxObjects          map[string]*KBObject            `bson:"-"`
-	//IdxAttributeObjects map[string]*KBAttributeObject   `bson:"-"`
-	ebnf *EBNF `bson:"-"`
-	//mutex sync.Mutex `bson:"-"`
-	//halt bool `bson:"-"`
+	Name             string        `bson:"name"`
+	Classes          []KBClass     `bson:"-"`
+	Rules            []KBRule      `bson:"-"`
+	Workspaces       []KBWorkspace `bson:"-"`
+	Objects          []KBObject    `bson:"-"`
+	ebnf             *EBNF         `bson:"-"`
 }
 
 func (kb *KnowledgeBased) AddAttribute(c *KBClass, attrs ...*KBAttribute) {
@@ -131,16 +126,6 @@ func (kb *KnowledgeBased) LinkObjects(ws *KBWorkspace, obj *KBObject, left int, 
 	ows := KBObjectWS{Object: obj.ID, Left: left, Top: top, KBObject: obj}
 	ws.Objects = append(ws.Objects, ows)
 	kb.UpdateWorkspace(ws)
-}
-
-func (kb *KnowledgeBased) FindClassByName(nm string, mandatory bool) *KBClass {
-	ret := new(KBClass)
-	err := ret.FindOne(bson.D{{Key: "name", Value: nm}})
-	if err != nil && mandatory {
-		inits.Log(err, inits.Error)
-		return nil
-	}
-	return ret
 }
 
 func (kb *KnowledgeBased) FindAttributeObject(obj *KBObject, attr string) *KBAttributeObject {
@@ -337,7 +322,7 @@ func (kb *KnowledgeBased) ParsingCommand(cmd string) ([]*Token, []*BIN, error) {
 				(y.GetTokentype() == Text && (rune(x[0]) == '\'' || rune(x[0]) == '"') ||
 					(y.GetTokentype() == Constant && lib.IsNumber(x))) {
 				if y.GetTokentype() == Class {
-					if kb.FindClassByName(x, false) != nil {
+					if FindClassByName(x, false) != nil {
 						ok = true
 					}
 				} else if y.GetTokentype() == Object {
@@ -410,7 +395,7 @@ func (kb *KnowledgeBased) linkerRule(r *KBRule, bin []*BIN) error {
 			}
 		case Class:
 			if bin[j].class == nil {
-				c := kb.FindClassByName(x.GetToken(), true)
+				c := FindClassByName(x.GetToken(), true)
 				bin[j].class = c
 				objs := []KBObject{}
 				inits.Log(FindAllObjects(bson.M{"class_id": c.ID}, "_id", &objs), inits.Error)
@@ -446,7 +431,7 @@ func (kb *KnowledgeBased) linkerRule(r *KBRule, bin []*BIN) error {
 				} else if bin[ref].GetTokentype() == Class {
 					c := bin[ref].class
 					if c == nil {
-						c = kb.FindClassByName(x.GetToken(), true)
+						c = FindClassByName(x.GetToken(), true)
 						bin[ref].class = c
 					}
 					bin[j].class = c

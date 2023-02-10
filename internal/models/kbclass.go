@@ -1,10 +1,12 @@
 package models
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 
 	"github.com/antoniomralmeida/k2/internal/inits"
+	"github.com/asaskevich/govalidator"
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -13,7 +15,7 @@ import (
 
 type KBClass struct {
 	mgm.DefaultModel `json:",inline" bson:",inline"`
-	Name             string             `bson:"name"`
+	Name             string             `bson:"name" valid:"length(5|50)"`
 	Icon             string             `bson:"icon"`
 	ParentID         primitive.ObjectID `bson:"parent_id,omitempty"`
 	Parent           string             `bson:"-" json:"parent"`
@@ -21,43 +23,46 @@ type KBClass struct {
 	ParentClass      *KBClass           `bson:"-"`
 }
 
-func ClassFactory(newclass_json string) *KBClass {
-	class := KBClass{}
-	err := json.Unmarshal([]byte(newclass_json), &class)
-	if err != nil {
-		inits.Log(err, inits.Info)
-		return nil
+func (obj *KBClass) validateIndex() error {
+	cur, err := mgm.Coll(obj).Indexes().List(mgm.Ctx())
+	var result []bson.M
+	err = cur.All(context.TODO(), &result)
+	if len(result) == 1 {
+		inits.CreateUniqueIndex(mgm.Coll(obj), "name")
 	}
-	if class.Parent != "" {
-		p := _kb_current.FindClassByName(class.Parent, true)
-		if p == nil {
+	return err
+}
+
+func (obj *KBClass) valitade() (bool, error) {
+	return govalidator.ValidateStruct(obj)
+}
+
+func ClassFactory(name, icon, parent string) (class *KBClass) {
+	if parent != "" {
+		parentClass := FindClassByName(parent, true)
+		if parentClass == nil {
 			inits.Log("Class not found "+class.Parent, inits.Info)
 			return nil
 		}
-		class.ParentID = p.ID
-		class.ParentClass = p
-	}
-	for i := range class.Attributes {
-		class.Attributes[i].ID = primitive.NewObjectID()
-		for _, x := range class.Attributes[i].Sources {
-			class.Attributes[i].SourcesID = append(class.Attributes[i].SourcesID, KBSourceStr[x])
-		}
-		class.Attributes[i].SimulationID = KBSimulationStr[class.Attributes[i].Simulation]
-	}
-	err = class.Persist()
-	if err == nil {
-		_kb_current.Classes = append(_kb_current.Classes, class)
-		//_kb.IdxClasses[class.ID] = &class
-		return &class
+		class = &KBClass{Name: name, Icon: icon, ParentClass: parentClass, ParentID: parentClass.ID}
 	} else {
-		inits.Log(err, inits.Error)
+		class = &KBClass{Name: name, Icon: icon}
+	}
+	ok, err := class.valitade()
+	inits.Log(err, inits.Error)
+	if !ok {
 		return nil
 	}
+	err = class.Persist()
+	if err != nil {
+		return nil
+	}
+	return class
 }
 
 func (obj *KBClass) Persist() error {
+	obj.validateIndex()
 	return inits.Persist(obj)
-
 }
 
 func (obj *KBClass) GetPrimitiveUpdateAt() primitive.DateTime {
@@ -127,4 +132,14 @@ func (c *KBClass) UpdateClass() {
 		}
 	}
 	inits.Log(c.Persist(), inits.Fatal)
+}
+
+func FindClassByName(nm string, mandatory bool) *KBClass {
+	ret := new(KBClass)
+	err := ret.FindOne(bson.D{{Key: "name", Value: nm}})
+	if err != nil && mandatory {
+		inits.Log(err, inits.Error)
+		return nil
+	}
+	return ret
 }

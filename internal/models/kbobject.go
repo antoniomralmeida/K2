@@ -19,7 +19,7 @@ type KBObject struct {
 }
 
 func ObjectFactory(class string, name string) *KBObject {
-	p := _kb_current.FindClassByName(class, true)
+	p := FindClassByName(class, true)
 	if p == nil {
 		inits.Log("Class not found "+class, inits.Error)
 		return nil
