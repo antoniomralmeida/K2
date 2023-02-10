@@ -46,15 +46,15 @@ func KBAddStack(rules []*KBRule) error {
 }
 
 func StacktoRun() (list []KBRule) {
-	mgm.Coll(new(KBStack)).UpdateMany(mgm.Ctx(), bson.D{{"status", Pending}}, bson.D{{"status", Running}, {"update_at", time.Now().UTC()}})
+	mgm.Coll(new(KBStack)).UpdateMany(mgm.Ctx(), bson.D{{Key: "status", Value: Pending}}, bson.D{{"status", Running}, {"update_at", time.Now().UTC()}})
 	ret, err := mgm.Coll(new(KBStack)).Distinct(mgm.Ctx(), "rule_id", bson.D{{"status", Running}})
 	inits.Log(err, inits.Error)
 	oids := make([]primitive.ObjectID, len(ret))
 	for _, id := range ret {
 		oids = append(oids, id.(primitive.ObjectID))
 	}
-	opts := options.Find().SetSort(bson.D{{"priority", 1}, {"lastexecution", -1}})
-	mgm.Coll(new(KBRule)).SimpleFind(list, bson.D{{"$in", oids}}, opts)
+	opts := options.Find().SetSort(bson.D{{Key: "priority", Value: 1}, {Key: "lastexecution", Value: -1}})
+	mgm.Coll(new(KBRule)).SimpleFind(list, bson.D{{Key: "$in", Value: oids}}, opts)
 	return
 }
 

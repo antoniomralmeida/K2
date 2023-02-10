@@ -3,9 +3,9 @@ package models
 import (
 	"context"
 	"encoding/json"
-	"errors"
 
 	"github.com/antoniomralmeida/k2/internal/inits"
+	"github.com/antoniomralmeida/k2/internal/lib"
 	"github.com/asaskevich/govalidator"
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
@@ -15,7 +15,7 @@ import (
 
 type KBClass struct {
 	mgm.DefaultModel `json:",inline" bson:",inline"`
-	Name             string             `bson:"name" valid:"length(5|50)"`
+	Name             string             `bson:"name" valid:"length(5|50),required"`
 	Icon             string             `bson:"icon"`
 	ParentID         primitive.ObjectID `bson:"parent_id,omitempty"`
 	Parent           string             `bson:"-" json:"parent"`
@@ -25,6 +25,7 @@ type KBClass struct {
 
 func (obj *KBClass) validateIndex() error {
 	cur, err := mgm.Coll(obj).Indexes().List(mgm.Ctx())
+	inits.Log(err, inits.Error)
 	var result []bson.M
 	err = cur.All(context.TODO(), &result)
 	if len(result) == 1 {
@@ -37,12 +38,12 @@ func (obj *KBClass) valitade() (bool, error) {
 	return govalidator.ValidateStruct(obj)
 }
 
-func ClassFactory(name, icon, parent string) (class *KBClass) {
+func ClassFactory(name, icon, parent string) (class *KBClass, err error) {
 	if parent != "" {
 		parentClass := FindClassByName(parent, true)
 		if parentClass == nil {
-			inits.Log("Class not found "+class.Parent, inits.Info)
-			return nil
+			inits.Log(lib.ClassNotFoundError, inits.Info)
+			return nil, lib.ClassNotFoundError
 		}
 		class = &KBClass{Name: name, Icon: icon, ParentClass: parentClass, ParentID: parentClass.ID}
 	} else {
@@ -51,13 +52,13 @@ func ClassFactory(name, icon, parent string) (class *KBClass) {
 	ok, err := class.valitade()
 	inits.Log(err, inits.Error)
 	if !ok {
-		return nil
+		return nil, err
 	}
 	err = class.Persist()
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	return class
+	return class, nil
 }
 
 func (obj *KBClass) Persist() error {
@@ -75,7 +76,7 @@ func (class *KBClass) FindOne(p bson.D) error {
 		x.Decode(class)
 		return nil
 	} else {
-		return errors.New("Class not found!")
+		return lib.ClassNotFoundError
 	}
 }
 
@@ -86,9 +87,7 @@ func (class *KBClass) Delete() error {
 		if res.Err() == mongo.ErrNoDocuments {
 			err := mgm.Coll(class).Delete(class)
 			if err == nil {
-				// Restart KB
-				KBStop()
-				KBInit()
+				KBRestart()
 			}
 			return err
 		}

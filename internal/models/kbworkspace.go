@@ -5,6 +5,7 @@ import (
 
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
+	"github.com/antoniomralmeida/k2/pkg/queue"
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -18,7 +19,7 @@ type KBWorkspace struct {
 	Height           int          `bson:"height"`
 	BackgroundImage  string       `bson:"backgroundimage,omitempty"`
 	Objects          []KBObjectWS `bson:"objects"`
-	Posts            lib.Queue    `bson:"-"`
+	Posts            queue.Queue  `bson:"-"`
 }
 
 func WorkspaceFactory(name string, image string) *KBWorkspace {

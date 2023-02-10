@@ -53,16 +53,27 @@ func KBPause() {
 }
 
 func KBResume() {
-	scheduler.Unlock()
+	if scheduler != nil {
+		scheduler.Unlock()
+	}
 }
 
 func KBStop() {
-	scheduler.Stop()
+	if scheduler != nil {
+		scheduler.Stop()
+	}
+}
+
+func KBRestart() {
+	if scheduler != nil {
+		scheduler.Stop()
+		KBInit()
+	}
 }
 
 func KBCopyClass(name string, copy *KBClass) *KBClass {
 	if _kb_current != nil {
-		inits.Log(errors.New("Uninitialized KB!"), inits.Error)
+		inits.Log(lib.UninitializedKBError, inits.Error)
 		return nil
 	}
 	if copy == nil {
