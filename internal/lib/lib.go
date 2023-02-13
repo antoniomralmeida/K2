@@ -19,6 +19,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/antoniomralmeida/k2/pkg/dsn"
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 	"github.com/mattn/go-tty"
@@ -110,11 +111,8 @@ func copy(src, dst string) (int64, error) {
 
 func Ping(uri string) error {
 	if runtime.GOOS == "windows" {
-		u, err := url.Parse(uri)
-		if err != nil {
-			return err
-		}
-		_, err = net.Dial("tcp", u.Host)
+		parts := dsn.Decode(uri)
+		_, err := net.Dial("tcp", parts.Socket())
 		return err
 	} else {
 		return nil

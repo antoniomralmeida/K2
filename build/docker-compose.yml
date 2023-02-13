@@ -22,9 +22,12 @@ services:
   mosquitto:
     image: eclipse-mosquitto
     restart: always
+    volumes:
+      - ./config/:/mosquitto/config/:ro
+      - log:/mosquitto/log/
+      - data:/mosquitto/data/
     ports:
       - 1883:1883
-      - 9001:9001
   
   app-back:
     depends_on:
@@ -69,14 +72,6 @@ services:
     environment:
       ME_CONFIG_MONGODB_URL: mongodb://k2user:SOh3TbYhx8ypJPxmt1oOfL@mongodb
 
-  grafana:
-      image: grafana/grafana:7.5.7
-      ports:
-        - 3000:3000
-      restart: unless-stopped
-      volumes:
-        - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-        - grafana-data:/var/lib/grafana
-      
 volumes:
-  grafana-data:
+  data: ~
+  log: ~
