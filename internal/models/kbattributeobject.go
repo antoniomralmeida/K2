@@ -3,15 +3,16 @@ package models
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
 
+	"github.com/antoniomralmeida/k2/internal/fuzzy"
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
+	mqtt "github.com/eclipse/paho.mqtt.golang"
 
-	"github.com/gofiber/fiber/v2"
 	"github.com/kamva/mgm/v3"
 	"github.com/montanaflynn/stats"
 	p "github.com/rafaeljesus/parallel-fn"
@@ -20,6 +21,16 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"gonum.org/v1/gonum/stat"
 )
+
+const (
+	topinIn  = "/in"
+	topinOut = "/out"
+)
+
+type MTQQValue struct {
+	TopicPath string `json:"topicpath"`
+	Value     any    `json:"value"`
+}
 
 type KBAttributeObject struct {
 	mgm.DefaultModel `json:",inline" bson:",inline"`
@@ -115,6 +126,10 @@ func (attr *KBAttributeObject) String() string {
 	return string(j)
 }
 
+func (attr *KBAttributeObject) GetMtqqTopic(direction string) string {
+	return strings.ToLower(attr.KbObject.Name) + "/" + strings.ToLower(attr.KbAttribute.Name) + direction
+}
+
 func (attr *KBAttributeObject) SetValue(value any, source KBSource, trust float64) *KBHistory {
 	if attr == nil {
 		inits.Log("Invalid attribute!", inits.Error)
@@ -124,6 +139,13 @@ func (attr *KBAttributeObject) SetValue(value any, source KBSource, trust float6
 		inits.Log("Invalid attribute source!", inits.Error)
 		return nil
 	}
+	//if IOT is Source, pub MTQQ msg in topic of atrributte of object
+	if attr.KbAttribute.isSource(IOT) {
+		mtqqmsg := MTQQValue{Value: value, TopicPath: attr.GetMtqqTopic(topinOut)}
+		json, _ := json.Marshal(mtqqmsg)
+		inits.Publish(mtqqmsg.TopicPath, string(json))
+	}
+
 	if reflect.TypeOf(value).String() == "string" {
 		str := fmt.Sprintf("%v", value)
 		switch attr.KbAttribute.AType {
@@ -257,24 +279,15 @@ func (attr *KBAttributeObject) NormalDistribution() error {
 
 func (attr *KBAttributeObject) IOTParsing() error {
 	inits.Log("IOTParsing...", inits.Info)
-	if !attr.Validity() {
-		api := os.Getenv("IOTMIDWARE")
-		if attr.KbAttribute.isSource(KBSource(User)) && api != "" {
-			iotapi := api + "?" + attr.getFullName()
-			api := fiber.AcquireAgent()
-			req := api.Request()
-			req.Header.SetMethod("post")
-			req.SetRequestURI(iotapi)
-			if err := api.Parse(); err != nil {
-				inits.Log(err, inits.Error)
-			} else {
-				_, body, errs := api.Bytes()
-				if errs != nil {
-					attr.SetValue(string(body), IOT, 100.0)
-				}
-			}
+	var msgPubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
+		value := new(MTQQValue)
+		err := json.Unmarshal(msg.Payload(), value)
+		inits.Log(err, inits.Error)
+		if err == nil {
+			attr.SetValue(value.Value, IOT, fuzzy.TrustIOT)
 		}
 	}
+	inits.Subscribe(attr.GetMtqqTopic(topinIn), msgPubHandler)
 	return nil
 }
 

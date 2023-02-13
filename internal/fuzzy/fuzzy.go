@@ -14,6 +14,12 @@ AND(x,y)	MIN(x,y)	(x<y?x:y)
 OR(x,y)		MAX(x,y)	(x>y?x:y)
 NOT(x)		1 – x		** not implemented
 */
+
+const (
+	TrustIOT  = 100.0
+	TrustUser = 100.0
+)
+
 func SliceToString(slice []string) string {
 	ret := ""
 	for x := range slice {
