@@ -23,3 +23,42 @@ http://ec2-15-228-21-212.sa-east-1.compute.amazonaws.com/
 
 
 ### TODO List
+```
+└─ K2
+   ├─ internal
+   │  ├─ models
+   │  │  ├─ kbattributeobject.go
+   │  │  │  ├─ line 104: TODO : testar a execução paralela
+   │  │  │  └─ line 169: TODO : FIND antecedentRules from mongodb
+   │  │  ├─ kbrule.go
+   │  │  │  ├─ line 453: TODO : delete
+   │  │  │  ├─ line 454: TODO : insert
+   │  │  │  ├─ line 455: TODO : remove
+   │  │  │  ├─ line 456: TODO : change
+   │  │  │  ├─ line 457: TODO : move
+   │  │  │  ├─ line 458: TODO : rotate
+   │  │  │  ├─ line 459: TODO : show
+   │  │  │  ├─ line 460: TODO : hide
+   │  │  │  ├─ line 462: TODO : focus
+   │  │  │  └─ line 463: TODO : invoke
+   │  │  └─ knowledgebased.go
+   │  │     └─ line 222: TODO : From mongoDB
+   │  └─ web
+   │     └─ login.go
+   │        └─ line 25: TODO : Incluir reconhecimento facil no login
+   ├─ scripts
+   │  └─ cover.html
+   │     ├─ line 617: TODO : testar a execução paralela
+   │     ├─ line 671: TODO : FIND antecedentRules from mongodb
+   │     ├─ line 1578: TODO : delete
+   │     ├─ line 1579: TODO : insert
+   │     ├─ line 1580: TODO : remove
+   │     ├─ line 1581: TODO : change
+   │     ├─ line 1582: TODO : move
+   │     ├─ line 1583: TODO : rotate
+   │     ├─ line 1584: TODO : show
+   │     ├─ line 1585: TODO : hide
+   │     ├─ line 1587: TODO : focus
+   │     ├─ line 1588: TODO : invoke
+   │     └─ line 2025: TODO : From mongoDB
+   ```
