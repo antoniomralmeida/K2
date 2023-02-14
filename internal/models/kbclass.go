@@ -34,11 +34,11 @@ func (obj *KBClass) validateIndex() error {
 	return err
 }
 
-func (obj *KBClass) valitade() (bool, error) {
+func (obj *KBClass) valitate() (bool, error) {
 	return govalidator.ValidateStruct(obj)
 }
 
-func ClassFactory(name, icon, parent string) (class *KBClass, err error) {
+func KBClassFactory(name, icon, parent string) (class *KBClass, err error) {
 	if parent != "" {
 		parentClass := FindClassByName(parent, true)
 		if parentClass == nil {
@@ -49,7 +49,7 @@ func ClassFactory(name, icon, parent string) (class *KBClass, err error) {
 	} else {
 		class = &KBClass{Name: name, Icon: icon}
 	}
-	ok, err := class.valitade()
+	ok, err := class.valitate()
 	inits.Log(err, inits.Error)
 	if !ok {
 		return nil, err
@@ -59,6 +59,30 @@ func ClassFactory(name, icon, parent string) (class *KBClass, err error) {
 		return nil, err
 	}
 	return class, nil
+}
+
+func (obj *KBClass) AlterClassAddAttribute(name, atype, simulation string, options, sources []string, keephistory int, valitade int64) (attr *KBAttribute, err error) {
+	a := KBAttribute{ID: primitive.NewObjectID(),
+		Name:             name,
+		AType:            KBattributeTypeStr(atype),
+		Options:          options,
+		Sources:          sources,
+		SourcesID:        ToKBSources(sources),
+		KeepHistory:      keephistory,
+		ValidityInterval: valitade,
+		Simulation:       simulation,
+		SimulationID:     KBSimulationStr[simulation]}
+	ok, err := a.Valitate()
+	inits.Log(err, inits.Error)
+	if ok {
+		obj.Attributes = append(obj.Attributes, a)
+		err = obj.Persist()
+		if err == nil {
+			return &a, nil
+		}
+	}
+	inits.Log(err, inits.Fatal)
+	return nil, err
 }
 
 func (obj *KBClass) Persist() error {
@@ -122,15 +146,6 @@ func FindAttribute(c *KBClass, name string) *KBAttribute {
 		}
 	}
 	return nil
-}
-
-func (c *KBClass) UpdateClass() {
-	for i := range c.Attributes {
-		if c.Attributes[i].ID.IsZero() {
-			c.Attributes[i].ID = primitive.NewObjectID()
-		}
-	}
-	inits.Log(c.Persist(), inits.Fatal)
 }
 
 func FindClassByName(nm string, mandatory bool) *KBClass {

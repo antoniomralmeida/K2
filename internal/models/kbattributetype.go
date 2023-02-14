@@ -1,11 +1,24 @@
 package models
 
-type KBAttributeType string
+import "strings"
+
+type KBAttributeType int
 
 const (
-	NotDefined KBAttributeType = ""
-	KBString   KBAttributeType = "String"
-	KBDate     KBAttributeType = "Date"
-	KBNumber   KBAttributeType = "Number"
-	KBList     KBAttributeType = "List"
+	NotDefined KBAttributeType = iota
+	KBString
+	KBDate
+	KBNumber
+	KBList
 )
+
+func KBattributeTypeStr(str string) KBAttributeType {
+	return attributeTypeMap[strings.ToLower(str)]
+}
+
+var attributeTypeMap = map[string]KBAttributeType{
+	"string": KBString,
+	"date":   KBDate,
+	"number": KBNumber,
+	"list":   KBList,
+}

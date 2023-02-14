@@ -1,20 +1,27 @@
 package models
 
-import "github.com/kamva/mgm/v3"
+import (
+	"github.com/asaskevich/govalidator"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type KBAttribute struct {
-	mgm.DefaultModel `json:",inline" bson:",inline"`
-	Name             string          `bson:"name"`
-	AType            KBAttributeType `bson:"atype"`
-	KeepHistory      int             `bson:"keephistory"`      //Numero de historico a manter, 0- sempre
-	ValidityInterval int64           `bson:"validityinterval"` //validade do ultimo valor em microssegudos, 0- sempre
-	SimulationID     KBSimulation    `bson:"simulation,omitempty" json:"-"`
-	Simulation       string          `bson:"-" json:"simulation"`
-	SourcesID        []KBSource      `bson:"sources"`
-	Options          []string        `bson:"options,omitempty"`
-	Sources          []string        `bson:"-" json:"sources"`
-	antecedentRules  []*KBRule       `bson:"-"`
-	consequentRules  []*KBRule       `bson:"-"`
+	ID               primitive.ObjectID `bson:"id"`
+	Name             string             `bson:"name" valid:"length(2|50),required"`
+	AType            KBAttributeType    `bson:"atype" valid:"required"`
+	KeepHistory      int                `bson:"keephistory" valid:range(0|5000)`             //Numero de historico a manter, 0- manter todos
+	ValidityInterval int64              `bson:"validityinterval" valid:range(0|86400000000)` //validade do ultimo valor em microssegudos, 0- sempre
+	SimulationID     KBSimulation       `bson:"simulation,omitempty" json:"-"`
+	Simulation       string             `bson:"-" json:"simulation"`
+	SourcesID        []KBSource         `bson:"sources" valid:"required"`
+	Options          []string           `bson:"options,omitempty"`
+	Sources          []string           `bson:"-" json:"sources"`
+	antecedentRules  []*KBRule          `bson:"-"`
+	consequentRules  []*KBRule          `bson:"-"`
+}
+
+func (obj *KBAttribute) Valitate() (bool, error) {
+	return govalidator.ValidateStruct(obj)
 }
 
 func (a *KBAttribute) addAntecedentRules(r *KBRule) {

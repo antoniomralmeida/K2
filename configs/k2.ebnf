@@ -43,9 +43,9 @@ Create = create ( a Class [(by cloning Class| whose parent is Class)]| an instan
 
 Alter = alter Class { add Attribute}.
 
-Attribute = Text as (string|date|number|list "(" Text {"," Text} ")") from "(" Source {"," Source} ")" [validity Number] [keephistory Number].
+Attribute = Text as ("String"|"Date"|"Number"|"List" "(" Text {"," Text} ")") from "(" Source {"," Source} ")" [validity Constant] [keep history Constant] [simulation method (	"MonteCarlo"|"NormalDistribution"|"LinearRegression")].
 
-Source = (iot|user|simulation|inference).
+Source = ("IOT"|"User"|"Simulation"|"Inference").
 
 Halt = halt with Text if breakpoints are enabled.
 

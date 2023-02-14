@@ -65,7 +65,7 @@
 				
 				<option value="file4">github.com/antoniomralmeida/k2/internal/models/kbattributeobject.go (0.0%)</option>
 				
-				<option value="file5">github.com/antoniomralmeida/k2/internal/models/kbclass.go (30.8%)</option>
+				<option value="file5">github.com/antoniomralmeida/k2/internal/models/kbclass.go (42.3%)</option>
 				
 				<option value="file6">github.com/antoniomralmeida/k2/internal/models/kbhistory.go (0.0%)</option>
 				
@@ -73,21 +73,23 @@
 				
 				<option value="file8">github.com/antoniomralmeida/k2/internal/models/kbrule.go (0.0%)</option>
 				
-				<option value="file9">github.com/antoniomralmeida/k2/internal/models/kbstack.go (0.0%)</option>
+				<option value="file9">github.com/antoniomralmeida/k2/internal/models/kbsource.go (0.0%)</option>
 				
-				<option value="file10">github.com/antoniomralmeida/k2/internal/models/kbuser.go (0.0%)</option>
+				<option value="file10">github.com/antoniomralmeida/k2/internal/models/kbstack.go (0.0%)</option>
 				
-				<option value="file11">github.com/antoniomralmeida/k2/internal/models/kbworkspace.go (0.0%)</option>
+				<option value="file11">github.com/antoniomralmeida/k2/internal/models/kbuser.go (0.0%)</option>
 				
-				<option value="file12">github.com/antoniomralmeida/k2/internal/models/knowledgebased.go (0.0%)</option>
+				<option value="file12">github.com/antoniomralmeida/k2/internal/models/kbworkspace.go (0.0%)</option>
 				
-				<option value="file13">github.com/antoniomralmeida/k2/internal/models/literalbin.go (0.0%)</option>
+				<option value="file13">github.com/antoniomralmeida/k2/internal/models/knowledgebased.go (0.0%)</option>
 				
-				<option value="file14">github.com/antoniomralmeida/k2/internal/models/pair.go (0.0%)</option>
+				<option value="file14">github.com/antoniomralmeida/k2/internal/models/literalbin.go (0.0%)</option>
 				
-				<option value="file15">github.com/antoniomralmeida/k2/internal/models/token.go (0.0%)</option>
+				<option value="file15">github.com/antoniomralmeida/k2/internal/models/pair.go (0.0%)</option>
 				
-				<option value="file16">github.com/antoniomralmeida/k2/internal/models/tokentype.go (0.0%)</option>
+				<option value="file16">github.com/antoniomralmeida/k2/internal/models/token.go (0.0%)</option>
+				
+				<option value="file17">github.com/antoniomralmeida/k2/internal/models/tokentype.go (0.0%)</option>
 				
 				</select>
 			</div>
@@ -469,22 +471,29 @@ func (obj *KBAlert) Persist() error <span class="cov0" title="0">{
 		
 		<pre class="file" id="file3" style="display: none">package models
 
-import "github.com/kamva/mgm/v3"
+import (
+        "github.com/asaskevich/govalidator"
+        "go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type KBAttribute struct {
-        mgm.DefaultModel `json:",inline" bson:",inline"`
-        Name             string          `bson:"name"`
-        AType            KBAttributeType `bson:"atype"`
-        KeepHistory      int             `bson:"keephistory"`      //Numero de historico a manter, 0- sempre
-        ValidityInterval int64           `bson:"validityinterval"` //validade do ultimo valor em microssegudos, 0- sempre
-        SimulationID     KBSimulation    `bson:"simulation,omitempty" json:"-"`
-        Simulation       string          `bson:"-" json:"simulation"`
-        SourcesID        []KBSource      `bson:"sources"`
-        Options          []string        `bson:"options,omitempty"`
-        Sources          []string        `bson:"-" json:"sources"`
-        antecedentRules  []*KBRule       `bson:"-"`
-        consequentRules  []*KBRule       `bson:"-"`
+        ID               primitive.ObjectID `bson:"id"`
+        Name             string             `bson:"name" valid:"length(2|50),required"`
+        AType            KBAttributeType    `bson:"atype" valid:"required"`
+        KeepHistory      int                `bson:"keephistory" valid:range(0|5000)`             //Numero de historico a manter, 0- manter todos
+        ValidityInterval int64              `bson:"validityinterval" valid:range(0|86400000000)` //validade do ultimo valor em microssegudos, 0- sempre
+        SimulationID     KBSimulation       `bson:"simulation,omitempty" json:"-"`
+        Simulation       string             `bson:"-" json:"simulation"`
+        SourcesID        []KBSource         `bson:"sources" valid:"required"`
+        Options          []string           `bson:"options,omitempty"`
+        Sources          []string           `bson:"-" json:"sources"`
+        antecedentRules  []*KBRule          `bson:"-"`
+        consequentRules  []*KBRule          `bson:"-"`
 }
+
+func (obj *KBAttribute) Valitate() (bool, error) <span class="cov0" title="0">{
+        return govalidator.ValidateStruct(obj)
+}</span>
 
 func (a *KBAttribute) addAntecedentRules(r *KBRule) <span class="cov0" title="0">{
         found := false
@@ -527,15 +536,16 @@ func (a *KBAttribute) isSource(s KBSource) bool <span class="cov0" title="0">{
 import (
         "encoding/json"
         "fmt"
-        "os"
         "reflect"
         "strconv"
+        "strings"
         "time"
 
+        "github.com/antoniomralmeida/k2/internal/fuzzy"
         "github.com/antoniomralmeida/k2/internal/inits"
         "github.com/antoniomralmeida/k2/internal/lib"
+        mqtt "github.com/eclipse/paho.mqtt.golang"
 
-        "github.com/gofiber/fiber/v2"
         "github.com/kamva/mgm/v3"
         "github.com/montanaflynn/stats"
         p "github.com/rafaeljesus/parallel-fn"
@@ -544,6 +554,16 @@ import (
         "go.mongodb.org/mongo-driver/mongo"
         "gonum.org/v1/gonum/stat"
 )
+
+const (
+        topinIn  = "/in"
+        topinOut = "/out"
+)
+
+type MTQQValue struct {
+        TopicPath string `json:"topicpath"`
+        Value     any    `json:"value"`
+}
 
 type KBAttributeObject struct {
         mgm.DefaultModel `json:",inline" bson:",inline"`
@@ -639,6 +659,10 @@ func (attr *KBAttributeObject) String() string <span class="cov0" title="0">{
         return string(j)
 }</span>
 
+func (attr *KBAttributeObject) GetMtqqTopic(direction string) string <span class="cov0" title="0">{
+        return strings.ToLower(attr.KbObject.Name) + "/" + strings.ToLower(attr.KbAttribute.Name) + direction
+}</span>
+
 func (attr *KBAttributeObject) SetValue(value any, source KBSource, trust float64) *KBHistory <span class="cov0" title="0">{
         if attr == nil </span><span class="cov0" title="0">{
                 inits.Log("Invalid attribute!", inits.Error)
@@ -648,6 +672,13 @@ func (attr *KBAttributeObject) SetValue(value any, source KBSource, trust float6
                 inits.Log("Invalid attribute source!", inits.Error)
                 return nil
         }</span>
+        //if IOT is Source, pub MTQQ msg in topic of atrributte of object
+        <span class="cov0" title="0">if attr.KbAttribute.isSource(IOT) </span><span class="cov0" title="0">{
+                mtqqmsg := MTQQValue{Value: value, TopicPath: attr.GetMtqqTopic(topinOut)}
+                json, _ := json.Marshal(mtqqmsg)
+                inits.Publish(mtqqmsg.TopicPath, string(json))
+        }</span>
+
         <span class="cov0" title="0">if reflect.TypeOf(value).String() == "string" </span><span class="cov0" title="0">{
                 str := fmt.Sprintf("%v", value)
                 switch attr.KbAttribute.AType </span>{
@@ -781,25 +812,16 @@ func (attr *KBAttributeObject) NormalDistribution() error <span class="cov0" tit
 
 func (attr *KBAttributeObject) IOTParsing() error <span class="cov0" title="0">{
         inits.Log("IOTParsing...", inits.Info)
-        if !attr.Validity() </span><span class="cov0" title="0">{
-                api := os.Getenv("IOTMIDWARE")
-                if attr.KbAttribute.isSource(KBSource(User)) &amp;&amp; api != "" </span><span class="cov0" title="0">{
-                        iotapi := api + "?" + attr.getFullName()
-                        api := fiber.AcquireAgent()
-                        req := api.Request()
-                        req.Header.SetMethod("post")
-                        req.SetRequestURI(iotapi)
-                        if err := api.Parse(); err != nil </span><span class="cov0" title="0">{
-                                inits.Log(err, inits.Error)
-                        }</span> else<span class="cov0" title="0"> {
-                                _, body, errs := api.Bytes()
-                                if errs != nil </span><span class="cov0" title="0">{
-                                        attr.SetValue(string(body), IOT, 100.0)
-                                }</span>
-                        }
-                }
+        var msgPubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) </span><span class="cov0" title="0">{
+                value := new(MTQQValue)
+                err := json.Unmarshal(msg.Payload(), value)
+                inits.Log(err, inits.Error)
+                if err == nil </span><span class="cov0" title="0">{
+                        attr.SetValue(value.Value, IOT, fuzzy.TrustIOT)
+                }</span>
         }
-        <span class="cov0" title="0">return nil</span>
+        <span class="cov0" title="0">inits.Subscribe(attr.GetMtqqTopic(topinIn), msgPubHandler)
+        return nil</span>
 }
 
 func (a *KBAttributeObject) InObjects(objs []*KBObject) bool <span class="cov0" title="0">{
@@ -817,9 +839,9 @@ func (a *KBAttributeObject) InObjects(objs []*KBObject) bool <span class="cov0" 
 import (
         "context"
         "encoding/json"
-        "errors"
 
         "github.com/antoniomralmeida/k2/internal/inits"
+        "github.com/antoniomralmeida/k2/internal/lib"
         "github.com/asaskevich/govalidator"
         "github.com/kamva/mgm/v3"
         "go.mongodb.org/mongo-driver/bson"
@@ -829,7 +851,7 @@ import (
 
 type KBClass struct {
         mgm.DefaultModel `json:",inline" bson:",inline"`
-        Name             string             `bson:"name" valid:"length(5|50)"`
+        Name             string             `bson:"name" valid:"length(5|50),required"`
         Icon             string             `bson:"icon"`
         ParentID         primitive.ObjectID `bson:"parent_id,omitempty"`
         Parent           string             `bson:"-" json:"parent"`
@@ -839,6 +861,7 @@ type KBClass struct {
 
 func (obj *KBClass) validateIndex() error <span class="cov8" title="1">{
         cur, err := mgm.Coll(obj).Indexes().List(mgm.Ctx())
+        inits.Log(err, inits.Error)
         var result []bson.M
         err = cur.All(context.TODO(), &amp;result)
         if len(result) == 1 </span><span class="cov0" title="0">{
@@ -847,31 +870,55 @@ func (obj *KBClass) validateIndex() error <span class="cov8" title="1">{
         <span class="cov8" title="1">return err</span>
 }
 
-func (obj *KBClass) valitade() (bool, error) <span class="cov8" title="1">{
+func (obj *KBClass) valitate() (bool, error) <span class="cov8" title="1">{
         return govalidator.ValidateStruct(obj)
 }</span>
 
-func ClassFactory(name, icon, parent string) (class *KBClass) <span class="cov8" title="1">{
-        if parent != "" </span><span class="cov0" title="0">{
+func KBClassFactory(name, icon, parent string) (class *KBClass, err error) <span class="cov8" title="1">{
+        if parent != "" </span><span class="cov8" title="1">{
                 parentClass := FindClassByName(parent, true)
                 if parentClass == nil </span><span class="cov0" title="0">{
-                        inits.Log("Class not found "+class.Parent, inits.Info)
-                        return nil
+                        inits.Log(lib.ClassNotFoundError, inits.Info)
+                        return nil, lib.ClassNotFoundError
                 }</span>
-                <span class="cov0" title="0">class = &amp;KBClass{Name: name, Icon: icon, ParentClass: parentClass, ParentID: parentClass.ID}</span>
+                <span class="cov8" title="1">class = &amp;KBClass{Name: name, Icon: icon, ParentClass: parentClass, ParentID: parentClass.ID}</span>
         } else<span class="cov8" title="1"> {
                 class = &amp;KBClass{Name: name, Icon: icon}
         }</span>
-        <span class="cov8" title="1">ok, err := class.valitade()
+        <span class="cov8" title="1">ok, err := class.valitate()
         inits.Log(err, inits.Error)
         if !ok </span><span class="cov8" title="1">{
-                return nil
+                return nil, err
         }</span>
         <span class="cov8" title="1">err = class.Persist()
         if err != nil </span><span class="cov8" title="1">{
-                return nil
+                return nil, err
         }</span>
-        <span class="cov0" title="0">return class</span>
+        <span class="cov0" title="0">return class, nil</span>
+}
+
+func (obj *KBClass) AlterClassAddAttribute(name, atype, simulation string, options, sources []string, keephistory int, valitade int64) (attr *KBAttribute, err error) <span class="cov0" title="0">{
+        a := KBAttribute{ID: primitive.NewObjectID(),
+                Name:             name,
+                AType:            KBAttributeType(atype),
+                Options:          options,
+                Sources:          sources,
+                SourcesID:        ToKBSources(sources),
+                KeepHistory:      keephistory,
+                ValidityInterval: valitade,
+                Simulation:       simulation,
+                SimulationID:     KBSimulationStr[simulation]}
+        ok, err := a.Valitate()
+        inits.Log(err, inits.Error)
+        if ok </span><span class="cov0" title="0">{
+                obj.Attributes = append(obj.Attributes, a)
+                err = obj.Persist()
+                if err == nil </span><span class="cov0" title="0">{
+                        return &amp;a, nil
+                }</span>
+        }
+        <span class="cov0" title="0">inits.Log(err, inits.Fatal)
+        return nil, err</span>
 }
 
 func (obj *KBClass) Persist() error <span class="cov8" title="1">{
@@ -879,17 +926,17 @@ func (obj *KBClass) Persist() error <span class="cov8" title="1">{
         return inits.Persist(obj)
 }</span>
 
-func (obj *KBClass) GetPrimitiveUpdateAt() primitive.DateTime <span class="cov0" title="0">{
+func (obj *KBClass) GetPrimitiveUpdateAt() primitive.DateTime <span class="cov8" title="1">{
         return primitive.NewDateTimeFromTime(obj.UpdatedAt)
 }</span>
 
-func (class *KBClass) FindOne(p bson.D) error <span class="cov0" title="0">{
+func (class *KBClass) FindOne(p bson.D) error <span class="cov8" title="1">{
         x := mgm.Coll(class).FindOne(mgm.Ctx(), p)
-        if x != nil </span><span class="cov0" title="0">{
+        if x != nil </span><span class="cov8" title="1">{
                 x.Decode(class)
                 return nil
         }</span> else<span class="cov0" title="0"> {
-                return errors.New("Class not found!")
+                return lib.ClassNotFoundError
         }</span>
 }
 
@@ -900,9 +947,7 @@ func (class *KBClass) Delete() error <span class="cov0" title="0">{
                 if res.Err() == mongo.ErrNoDocuments </span><span class="cov0" title="0">{
                         err := mgm.Coll(class).Delete(class)
                         if err == nil </span><span class="cov0" title="0">{
-                                // Restart KB
-                                KBStop()
-                                KBInit()
+                                KBRestart()
                         }</span>
                         <span class="cov0" title="0">return err</span>
                 }
@@ -910,7 +955,7 @@ func (class *KBClass) Delete() error <span class="cov0" title="0">{
         <span class="cov0" title="0">return mongo.ErrMultipleIndexDrop</span>
 }
 
-func (class *KBClass) String() string <span class="cov8" title="1">{
+func (class *KBClass) String() string <span class="cov0" title="0">{
         j, err := json.MarshalIndent(*class, "", "\t")
         inits.Log(err, inits.Error)
         return string(j)
@@ -939,23 +984,14 @@ func FindAttribute(c *KBClass, name string) *KBAttribute <span class="cov0" titl
         <span class="cov0" title="0">return nil</span>
 }
 
-func (c *KBClass) UpdateClass() <span class="cov0" title="0">{
-        for i := range c.Attributes </span><span class="cov0" title="0">{
-                if c.Attributes[i].ID.IsZero() </span><span class="cov0" title="0">{
-                        c.Attributes[i].ID = primitive.NewObjectID()
-                }</span>
-        }
-        <span class="cov0" title="0">inits.Log(c.Persist(), inits.Fatal)</span>
-}
-
-func FindClassByName(nm string, mandatory bool) *KBClass <span class="cov0" title="0">{
+func FindClassByName(nm string, mandatory bool) *KBClass <span class="cov8" title="1">{
         ret := new(KBClass)
         err := ret.FindOne(bson.D{{Key: "name", Value: nm}})
         if err != nil &amp;&amp; mandatory </span><span class="cov0" title="0">{
                 inits.Log(err, inits.Error)
                 return nil
         }</span>
-        <span class="cov0" title="0">return ret</span>
+        <span class="cov8" title="1">return ret</span>
 }
 </pre>
 		
@@ -1594,6 +1630,34 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error <span clas
 		
 		<pre class="file" id="file9" style="display: none">package models
 
+type KBSource int8
+
+const (
+        Undefined KBSource = iota
+        FromUser
+        IOT
+        Simulation
+        Inference
+)
+
+var KBSourceStr = map[string]KBSource{
+        "":           Undefined,
+        "User":       FromUser,
+        "IOT":        IOT,
+        "Inference":  Inference,
+        "Simulation": Simulation,
+}
+
+func ToKBSources(sources []string) (ret []KBSource) <span class="cov0" title="0">{
+        for i := range sources </span><span class="cov0" title="0">{
+                ret = append(ret, KBSourceStr[sources[i]])
+        }</span>
+        <span class="cov0" title="0">return</span>
+}
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">package models
+
 import (
         "time"
 
@@ -1640,15 +1704,15 @@ func KBAddStack(rules []*KBRule) error <span class="cov0" title="0">{
 }
 
 func StacktoRun() (list []KBRule) <span class="cov0" title="0">{
-        mgm.Coll(new(KBStack)).UpdateMany(mgm.Ctx(), bson.D{{"status", Pending}}, bson.D{{"status", Running}, {"update_at", time.Now().UTC()}})
+        mgm.Coll(new(KBStack)).UpdateMany(mgm.Ctx(), bson.D{{Key: "status", Value: Pending}}, bson.D{{"status", Running}, {"update_at", time.Now().UTC()}})
         ret, err := mgm.Coll(new(KBStack)).Distinct(mgm.Ctx(), "rule_id", bson.D{{"status", Running}})
         inits.Log(err, inits.Error)
         oids := make([]primitive.ObjectID, len(ret))
         for _, id := range ret </span><span class="cov0" title="0">{
                 oids = append(oids, id.(primitive.ObjectID))
         }</span>
-        <span class="cov0" title="0">opts := options.Find().SetSort(bson.D{{"priority", 1}, {"lastexecution", -1}})
-        mgm.Coll(new(KBRule)).SimpleFind(list, bson.D{{"$in", oids}}, opts)
+        <span class="cov0" title="0">opts := options.Find().SetSort(bson.D{{Key: "priority", Value: 1}, {Key: "lastexecution", Value: -1}})
+        mgm.Coll(new(KBRule)).SimpleFind(list, bson.D{{Key: "$in", Value: oids}}, opts)
         return</span>
 }
 
@@ -1658,7 +1722,7 @@ func StackEndRun() error <span class="cov0" title="0">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file10" style="display: none">package models
+		<pre class="file" id="file11" style="display: none">package models
 
 import (
         "github.com/antoniomralmeida/k2/internal/inits"
@@ -1746,13 +1810,14 @@ func CheckIndexs() <span class="cov0" title="0">{
 }
 </pre>
 		
-		<pre class="file" id="file11" style="display: none">package models
+		<pre class="file" id="file12" style="display: none">package models
 
 import (
         "encoding/json"
 
         "github.com/antoniomralmeida/k2/internal/inits"
         "github.com/antoniomralmeida/k2/internal/lib"
+        "github.com/antoniomralmeida/k2/pkg/queue"
         "github.com/kamva/mgm/v3"
         "go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -1766,7 +1831,7 @@ type KBWorkspace struct {
         Height           int          `bson:"height"`
         BackgroundImage  string       `bson:"backgroundimage,omitempty"`
         Objects          []KBObjectWS `bson:"objects"`
-        Posts            lib.Queue    `bson:"-"`
+        Posts            queue.Queue  `bson:"-"`
 }
 
 func WorkspaceFactory(name string, image string) *KBWorkspace <span class="cov0" title="0">{
@@ -1812,7 +1877,7 @@ func (w *KBWorkspace) AddObject(obj *KBObject, left, top int) <span class="cov0"
 }</span>
 </pre>
 		
-		<pre class="file" id="file12" style="display: none">package models
+		<pre class="file" id="file13" style="display: none">package models
 
 import (
         "context"
@@ -1867,16 +1932,27 @@ func KBPause() <span class="cov0" title="0">{
 }</span>
 
 func KBResume() <span class="cov0" title="0">{
-        scheduler.Unlock()
-}</span>
+        if scheduler != nil </span><span class="cov0" title="0">{
+                scheduler.Unlock()
+        }</span>
+}
 
 func KBStop() <span class="cov0" title="0">{
-        scheduler.Stop()
-}</span>
+        if scheduler != nil </span><span class="cov0" title="0">{
+                scheduler.Stop()
+        }</span>
+}
+
+func KBRestart() <span class="cov0" title="0">{
+        if scheduler != nil </span><span class="cov0" title="0">{
+                scheduler.Stop()
+                KBInit()
+        }</span>
+}
 
 func KBCopyClass(name string, copy *KBClass) *KBClass <span class="cov0" title="0">{
         if _kb_current != nil </span><span class="cov0" title="0">{
-                inits.Log(errors.New("Uninitialized KB!"), inits.Error)
+                inits.Log(lib.UninitializedKBError, inits.Error)
                 return nil
         }</span>
         <span class="cov0" title="0">if copy == nil </span><span class="cov0" title="0">{
@@ -2542,7 +2618,7 @@ func KBRun(wg *sync.WaitGroup) <span class="cov0" title="0">{
 }
 </pre>
 		
-		<pre class="file" id="file13" style="display: none">package models
+		<pre class="file" id="file14" style="display: none">package models
 
 type LiteralBin byte
 
@@ -2550,10 +2626,13 @@ const (
         B_null LiteralBin = iota
         B_a
         B_activate
+        B_add
+        B_alter
         B_an
         B_and
         B_any
         B_are
+        B_as
         B_at
         B_blue
         B_breakpoints
@@ -2564,6 +2643,7 @@ const (
         B_comma
         B_conclude
         B_create
+        B_date
         B_deactivate
         B_degrees
         B_delete
@@ -2580,16 +2660,26 @@ const (
         B_green
         B_halt
         B_hide
+        B_history
         B_if
+        B_inference
         B_inform
         B_initially
         B_insert
         B_instance
         B_invoke
+        B_iot
         B_is
+        B_keep
         B_less
+        B_linearregression
+        B_list
+        B_method
+        B_montecarlo
         B_move
         B_named
+        B_normaldistribution
+        B_number
         B_of
         B_on
         B_open_par
@@ -2601,7 +2691,9 @@ const (
         B_rotate
         B_set
         B_show
+        B_simulation
         B_start
+        B_string
         B_task_queue
         B_than
         B_that
@@ -2610,6 +2702,8 @@ const (
         B_to
         B_transfer
         B_unconditionally
+        B_user
+        B_validity
         B_when
         B_whenever
         B_whose
@@ -2618,74 +2712,92 @@ const (
 )
 
 var LiteralBinStr = map[string]LiteralBin{
-        "":                B_null,
-        "a":               B_a,
-        "activate":        B_activate,
-        "an":              B_an,
-        "and":             B_and,
-        "any":             B_any,
-        "are":             B_are,
-        "at":              B_at,
-        "blue":            B_blue,
-        "breakpoints":     B_breakpoints,
-        "by":              B_by,
-        "change":          B_change,
-        "cloning":         B_cloning,
-        ")":               B_close_par,
-        ",":               B_comma,
-        "conclude":        B_conclude,
-        "create":          B_create,
-        "deactivate":      B_deactivate,
-        "degrees":         B_degrees,
-        "delete":          B_delete,
-        "different":       B_different,
-        "enabled":         B_enabled,
-        "end":             B_end,
-        "equal":           B_equal,
-        "=":               B_equal_sym,
-        "first-task":      B_first_task,
-        "focus":           B_focus,
-        "for":             B_for,
-        "from":            B_from,
-        "greater":         B_greater,
-        "green":           B_green,
-        "halt":            B_halt,
-        "hide":            B_hide,
-        "if":              B_if,
-        "inform":          B_inform,
-        "initially":       B_initially,
-        "insert":          B_insert,
-        "instance":        B_instance,
-        "invoke":          B_invoke,
-        "is":              B_is,
-        "less":            B_less,
-        "move":            B_move,
-        "named":           B_named,
-        "of":              B_of,
-        "on":              B_on,
-        "(":               B_open_par,
-        "operator":        B_operator,
-        "or":              B_or,
-        "parent":          B_parent,
-        "red":             B_red,
-        "remove":          B_remove,
-        "rotate":          B_rotate,
-        "set":             B_set,
-        "show":            B_show,
-        "start":           B_start,
-        "task-queue":      B_task_queue,
-        "than":            B_than,
-        "that":            B_that,
-        "the":             B_the,
-        "then":            B_then,
-        "to":              B_to,
-        "transfer":        B_transfer,
-        "unconditionally": B_unconditionally,
-        "when":            B_when,
-        "whenever":        B_whenever,
-        "whose":           B_whose,
-        "with":            B_with,
-        "yellow":          B_yellow,
+        "":                   B_null,
+        "a":                  B_a,
+        "activate":           B_activate,
+        "add":                B_add,
+        "alter":              B_alter,
+        "an":                 B_an,
+        "and":                B_and,
+        "any":                B_any,
+        "are":                B_are,
+        "as":                 B_as,
+        "at":                 B_at,
+        "blue":               B_blue,
+        "breakpoints":        B_breakpoints,
+        "by":                 B_by,
+        "change":             B_change,
+        "cloning":            B_cloning,
+        ")":                  B_close_par,
+        ",":                  B_comma,
+        "conclude":           B_conclude,
+        "create":             B_create,
+        "date":               B_date,
+        "deactivate":         B_deactivate,
+        "degrees":            B_degrees,
+        "delete":             B_delete,
+        "different":          B_different,
+        "enabled":            B_enabled,
+        "end":                B_end,
+        "equal":              B_equal,
+        "=":                  B_equal_sym,
+        "first-task":         B_first_task,
+        "focus":              B_focus,
+        "for":                B_for,
+        "from":               B_from,
+        "greater":            B_greater,
+        "green":              B_green,
+        "halt":               B_halt,
+        "hide":               B_hide,
+        "history":            B_history,
+        "if":                 B_if,
+        "Inference":          B_inference,
+        "inform":             B_inform,
+        "initially":          B_initially,
+        "insert":             B_insert,
+        "instance":           B_instance,
+        "invoke":             B_invoke,
+        "IOT":                B_iot,
+        "is":                 B_is,
+        "keep":               B_keep,
+        "less":               B_less,
+        "LinearRegression":   B_linearregression,
+        "list":               B_list,
+        "method":             B_method,
+        "MonteCarlo":         B_montecarlo,
+        "move":               B_move,
+        "named":              B_named,
+        "NormalDistribution": B_normaldistribution,
+        "number":             B_number,
+        "of":                 B_of,
+        "on":                 B_on,
+        "(":                  B_open_par,
+        "operator":           B_operator,
+        "or":                 B_or,
+        "parent":             B_parent,
+        "red":                B_red,
+        "remove":             B_remove,
+        "rotate":             B_rotate,
+        "set":                B_set,
+        "show":               B_show,
+        "Simulation":         B_simulation,
+        "start":              B_start,
+        "string":             B_string,
+        "task-queue":         B_task_queue,
+        "than":               B_than,
+        "that":               B_that,
+        "the":                B_the,
+        "then":               B_then,
+        "to":                 B_to,
+        "transfer":           B_transfer,
+        "unconditionally":    B_unconditionally,
+        "User":               B_user,
+        "validity":           B_validity,
+        "when":               B_when,
+        "whenever":           B_whenever,
+        "whose":              B_whose,
+        "with":               B_with,
+        "yellow":             B_yellow,
 }
 
 func (me LiteralBin) String() string <span class="cov0" title="0">{
@@ -2697,7 +2809,7 @@ func (me LiteralBin) Size() int <span class="cov0" title="0">{
 }</span>
 </pre>
 		
-		<pre class="file" id="file14" style="display: none">package models
+		<pre class="file" id="file15" style="display: none">package models
 
 type PAIR struct {
         begin int
@@ -2715,7 +2827,7 @@ func findPair(p []PAIR, i int) int <span class="cov0" title="0">{
 }
 </pre>
 		
-		<pre class="file" id="file15" style="display: none">package models
+		<pre class="file" id="file16" style="display: none">package models
 
 import (
         "encoding/json"
@@ -2769,7 +2881,7 @@ func isElementExist(s []*Token, str *Token) bool <span class="cov0" title="0">{
 }
 </pre>
 		
-		<pre class="file" id="file16" style="display: none">package models
+		<pre class="file" id="file17" style="display: none">package models
 
 type Tokentype byte
 

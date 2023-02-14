@@ -2,7 +2,6 @@ package inits
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"strings"
 	"time"
@@ -76,7 +75,8 @@ type ModelExt interface {
 }
 
 func Persist(model ModelExt) error {
-	if !primitive.IsValidObjectID(fmt.Sprint(model.GetID())) {
+	id := model.GetID().(primitive.ObjectID)
+	if id.IsZero() {
 		return mgm.Coll(model).Create(model)
 	} else {
 		res := mgm.Coll(model).FindOne(mgm.Ctx(), bson.D{{Key: "_id", Value: model.GetID()}, {Key: "updated_at", Value: model.GetPrimitiveUpdateAt()}})

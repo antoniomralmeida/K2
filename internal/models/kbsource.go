@@ -17,3 +17,10 @@ var KBSourceStr = map[string]KBSource{
 	"Inference":  Inference,
 	"Simulation": Simulation,
 }
+
+func ToKBSources(sources []string) (ret []KBSource) {
+	for i := range sources {
+		ret = append(ret, KBSourceStr[sources[i]])
+	}
+	return
+}
