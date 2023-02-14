@@ -54,7 +54,7 @@ func (t *Telemetry) initTracer(url string) (func(context.Context) error, error) 
 }
 
 func InitTelemetry() {
-	zipkin := os.Getenv("TELEMETRY")
+	zipkin := os.Getenv("TELEMETRY_SERVER")
 	Log(lib.Ping(zipkin), Fatal)
 
 	t = Telemetry{}

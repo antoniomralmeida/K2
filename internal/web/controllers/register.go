@@ -16,9 +16,8 @@ import (
 )
 
 func SignupForm(c *fiber.Ctx) error {
-	if len(c.Query("avatar")) == 0 && len(context.Ctxweb.Avatar) > 0 {
-		url := c.BaseURL() + "/signup?lang=" + c.Query("lang") + "&avatar=" + context.Ctxweb.Avatar
-		return c.Redirect(url)
+	if context.VerifyAvatar(c) {
+		return nil
 	}
 	//Context
 	context.SetContextInfo(c)

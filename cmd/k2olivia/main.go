@@ -12,6 +12,7 @@ import (
 	"github.com/antoniomralmeida/k2/internal/olivia/server"
 	"github.com/antoniomralmeida/k2/internal/olivia/training"
 	"github.com/antoniomralmeida/k2/internal/olivia/util"
+	"github.com/antoniomralmeida/k2/pkg/dsn"
 	"github.com/antoniomralmeida/k2/pkg/version"
 
 	"github.com/gookit/color"
@@ -48,7 +49,9 @@ func main() {
 	}
 
 	// Serves the server
-	server.Serve(neuralNetworks, os.Getenv("OLIVIA_SERVER_PORT"))
+	host := os.Getenv("OLIVIA_SERVER")
+	dsn := dsn.Decode(host)
+	server.Serve(neuralNetworks, dsn.Port())
 }
 
 // reTrainModels retrain the given locales

@@ -11,11 +11,24 @@ type DSN struct {
 	port     string
 	user     string
 	password string
+	path     string
 	query    url.Values
+}
+
+func (dsn *DSN) Host() string {
+	return dsn.host
+}
+
+func (dsn *DSN) Port() string {
+	return dsn.port
 }
 
 func (dsn *DSN) Short() string {
 	return dsn.scheme + "://" + dsn.host + ":" + dsn.port
+}
+
+func (dsn *DSN) Query(key string) string {
+	return dsn.query[key][0]
 }
 
 func (dsn *DSN) Socket() string {
@@ -86,6 +99,9 @@ func Decode(dsn string) (d DSN) {
 		} else {
 			d.host = parts[0]
 			d.port = parts[1]
+			if strings.Contains(d.port, "/") {
+				d.port, d.path, _ = strings.Cut(d.port, "/")
+			}
 		}
 	}
 	return

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/antoniomralmeida/k2/pkg/dsn"
 	"github.com/olivia-ai/olivia-kit-go/chat"
 )
 
@@ -20,7 +21,9 @@ type Configuration struct {
 
 func InitOlivia() {
 	//Init client Olivia
-	config := Configuration{Host: os.Getenv("HOSTOLIVIA"), Port: os.Getenv("OLIVIA_SERVER_PORT"), SSL: false, DebugLevel: "error", BotName: "Victor"}
+	server := os.Getenv("OLIVIA_SERVER")
+	dsn := dsn.Decode(server)
+	config := Configuration{Host: dsn.Host(), Port: dsn.Port(), SSL: false, DebugLevel: "error", BotName: dsn.Query("botname")}
 	var information map[string]interface{}
 	client, err := chat.NewClient(
 		fmt.Sprintf("%s:%s", config.Host, config.Port),

@@ -23,31 +23,3 @@ http://ec2-15-228-21-212.sa-east-1.compute.amazonaws.com/
 
 
 ### TODO List
-└─ K2
-   ├─ k2web
-   │  ├─ pub
-   │  │  └─ k2.js
-   │  │     └─ line 73: TODO : Submit LoadDataInput in home /
-   │  └─ web
-   │     └─ login.go
-   │        └─ line 24: TODO : Incluir reconhecimento facil no login
-   ├─ kb
-   │  ├─ kbattributeobject.go
-   │  │  └─ line 82: TODO : testar a execução paralela
-   │  └─ kbrule.go
-   │     ├─ line 419: TODO : Definir sintaxe EBNF do comandos abaixo
-   │     ├─ line 421: TODO : transfer
-   │     ├─ line 422: TODO : delete
-   │     ├─ line 423: TODO : insert
-   │     ├─ line 424: TODO : remove
-   │     ├─ line 425: TODO : change
-   │     ├─ line 426: TODO : move
-   │     ├─ line 427: TODO : rotate
-   │     ├─ line 428: TODO : show
-   │     ├─ line 429: TODO : hide
-   │     ├─ line 430: TODO : activate
-   │     ├─ line 431: TODO : deactivate
-   │     ├─ line 432: TODO : focus
-   │     └─ line 433: TODO : invoke
-   └─ readme.md
-      └─ line 25: TODO List

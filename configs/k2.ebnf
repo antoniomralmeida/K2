@@ -17,7 +17,8 @@ Expression =  { "("  } the Attribute [of ( DynamicReference | Object ) ]  \n
 
 Consequent =   ( Set  
 		| Inform
-		| Create 
+		| Create
+		| Alter
 		| Transfer 
 		| Delete 
 		| Insert 
@@ -39,6 +40,12 @@ Inform = inform to the operator that Text \n [ {the Attribute of ( the Object | 
 Conclude = conclude that the Attribute of Object is (ListType |Constant | Text).
 
 Create = create ( a Class [(by cloning Class| whose parent is Class)]| an instance of the Class) named by Text.
+
+Alter = alter Class { add Attribute}.
+
+Attribute = Text as (string|date|number|list "(" Text {"," Text} ")") from "(" Source {"," Source} ")" [validity Number] [keephistory Number].
+
+Source = (iot|user|simulation|inference).
 
 Halt = halt with Text if breakpoints are enabled.
 

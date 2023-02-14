@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/antoniomralmeida/k2/internal/lib"
+	"github.com/antoniomralmeida/k2/pkg/dsn"
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -23,13 +24,11 @@ func ConnectDB() {
 	}
 	Log("ConnectDB", Info)
 
-	dsn := os.Getenv("DSN")
-	dbName := os.Getenv("DB")
-	Log(dsn+" "+dbName, Info)
-
-	Log(lib.Ping(dsn), Fatal)
-
-	err := mgm.SetDefaultConfig(nil, dbName, options.Client().ApplyURI(dsn))
+	server := os.Getenv("MONGO_SERVER")
+	dsn := dsn.Decode(server)
+	Log(dsn, Info)
+	Log(lib.Ping(server), Fatal)
+	err := mgm.SetDefaultConfig(nil, dsn.Query("database"), options.Client().ApplyURI(server))
 	Log(err, Fatal)
 	client, err := mgm.NewClient()
 	Log(err, Fatal)
