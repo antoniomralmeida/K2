@@ -43,7 +43,7 @@ Create = create ( a Class [(by cloning Class| whose parent is Class)]| an instan
 
 Alter = alter Class { add Attribute}.
 
-Attribute = Text as ("String"|"Date"|"Number"|"List" "(" Text {"," Text} ")") from "(" Source {"," Source} ")" [validity Constant] [keep history Constant] [simulation method (	"MonteCarlo"|"NormalDistribution"|"LinearRegression")].
+Attribute = Text as ("String"|"Date"|"Number"|"List" "(" Text {"," Text} ")") from "(" Source {"," Source} ")" \n [validity Constant] [keep history Constant] [simulation method (	"MonteCarlo"|"NormalDistribution"|"LinearRegression")].
 
 Source = ("IOT"|"User"|"Simulation"|"Inference").
 

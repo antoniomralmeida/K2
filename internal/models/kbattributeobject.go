@@ -40,6 +40,18 @@ type KBAttributeObject struct {
 	KbAttribute      *KBAttribute       `bson:"-"  json:"Attrinute"`
 }
 
+func KBAttributeObjectFactory(obj *KBObject, attr *KBAttribute) *KBAttributeObject {
+	a := KBAttributeObject{Attribute: attr.ID}
+	obj.Attributes = append(obj.Attributes, a)
+	err := obj.Persist()
+	if err == nil {
+		return &a
+	} else {
+		inits.Log(err, inits.Fatal)
+		return nil
+	}
+}
+
 func (ao *KBAttributeObject) Validity() bool {
 	if ao.KbHistory != nil {
 		if ao.KbAttribute.ValidityInterval != 0 {
@@ -164,12 +176,7 @@ func (attr *KBAttributeObject) SetValue(value any, source KBSource, trust float6
 	h := KBHistory{Attribute: attr.ID, When: time.Now().UnixNano(), Value: value, Source: source, Trust: trust}
 	inits.Log(h.Persist(), inits.Fatal)
 	attr.KbHistory = &h
-	if _kb_current == nil {
-
-		//TODO: FIND antecedentRules from mongodb
-	} else {
-		KBAddStack(attr.KbAttribute.antecedentRules) //  forward chaining
-	}
+	KBAddStack(attr.KbAttribute.antecedentRules) //  forward chaining
 
 	if attr.KbAttribute.KeepHistory != 0 {
 		go h.ClearingHistory(attr.KbAttribute.KeepHistory)
@@ -298,4 +305,13 @@ func (a *KBAttributeObject) InObjects(objs []*KBObject) bool {
 		}
 	}
 	return false
+}
+
+func FindAttributeObject(obj *KBObject, attr string) *KBAttributeObject {
+	for i := range obj.Attributes {
+		if obj.Attributes[i].KbAttribute.Name == attr {
+			return &obj.Attributes[i]
+		}
+	}
+	return nil
 }

@@ -4,13 +4,15 @@ import "github.com/antoniomralmeida/k2/internal/inits"
 
 type BIN struct {
 	tokentype        Tokentype
+	pcNextCommand    int //TODO: para comando sem parametros dinâmicos deve-se saltar para o proxim comando na execução
 	literalbin       LiteralBin
 	token            string
 	class            *KBClass
+	newAttributes    []KBAttribute
 	attribute        *KBAttribute
 	workspace        *KBWorkspace
-	objects          []*KBObject
-	attributeObjects []*KBAttributeObject
+	objects          []*KBObject          //TODO: Poderia ser dinâmico? Tempo de execução?
+	attributeObjects []*KBAttributeObject //TODO: Poderia ser dinâmico? Tempo de execução?
 }
 
 func (b *BIN) GetToken() string {

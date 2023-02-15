@@ -45,7 +45,7 @@ func KBAddStack(rules []*KBRule) error {
 	return nil
 }
 
-func StacktoRun() (list []KBRule) {
+func RunFromStack() (list []KBRule) {
 	mgm.Coll(new(KBStack)).UpdateMany(mgm.Ctx(), bson.D{{Key: "status", Value: Pending}}, bson.D{{"status", Running}, {"update_at", time.Now().UTC()}})
 	ret, err := mgm.Coll(new(KBStack)).Distinct(mgm.Ctx(), "rule_id", bson.D{{"status", Running}})
 	inits.Log(err, inits.Error)

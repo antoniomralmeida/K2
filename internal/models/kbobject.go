@@ -1,12 +1,14 @@
 package models
 
 import (
+	"context"
 	"encoding/json"
 
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type KBObject struct {
@@ -35,13 +37,24 @@ func ObjectFactory(class string, name string) *KBObject {
 	return &o
 }
 
+func (obj *KBObject) validateIndex() error {
+	cur, err := mgm.Coll(obj).Indexes().List(mgm.Ctx())
+	inits.Log(err, inits.Error)
+	var result []bson.M
+	err = cur.All(context.TODO(), &result)
+	if len(result) == 1 {
+		inits.CreateUniqueIndex(mgm.Coll(obj), "name")
+	}
+	return err
+}
+
 func FindObjectByName(name string) (ret *KBObject) {
 	r := mgm.Coll(ret).FindOne(mgm.Ctx(), bson.D{{"name", name}})
 	r.Decode(ret)
 	return
 }
 
-func ObjectFacroryByClass(name string, class *KBClass) *KBObject {
+func ObjectFactoryByClass(name string, class *KBClass) *KBObject {
 	o := KBObject{Name: name, Class: class.ID, Bkclass: class}
 	for _, x := range FindAttributes(class) {
 		n := KBAttributeObject{Attribute: x.ID, KbAttribute: x, KbObject: &o}
@@ -76,4 +89,11 @@ func (o *KBObject) Delete() error {
 	KBStop()
 	KBInit()
 	return nil
+}
+
+func FindAllObjects(filter bson.M, sort string, objs *[]KBObject) error {
+	cursor, err := mgm.Coll(new(KBObject)).Find(mgm.Ctx(), filter, options.Find().SetSort(bson.D{{Key: sort, Value: 1}}))
+	inits.Log(err, inits.Fatal)
+	err = cursor.All(mgm.Ctx(), objs)
+	return err
 }
