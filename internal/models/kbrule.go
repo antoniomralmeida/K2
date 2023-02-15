@@ -35,13 +35,13 @@ type KBRule struct {
 }
 
 func RuleFactory(rule string, priority byte, interval int) *KBRule {
-	_, bin, err := _kb_current.ParsingCommand(rule)
+	_, bin, err := parsingRule(rule)
 	if inits.Log(err, inits.Info) != nil {
 		return nil
 	}
 	r := KBRule{Rule: rule, Priority: priority, ExecutionInterval: interval}
 	inits.Log(r.Persist(), inits.Fatal)
-	LinkerRule(&r, bin)
+	linkerRule(&r, bin)
 	return &r
 }
 
@@ -436,7 +436,7 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 			pc += 2
 			attributeObject.SetValue(r.bin[pc].GetToken(), Inference, trust)
 		case B_halt:
-			KBPause()
+			pauseKB()
 			NewAlert(inits.I18n_halt, "") //All users
 		case B_transfer:
 			pc++
@@ -455,11 +455,11 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 			if r.bin[pc].class == nil {
 				return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", inits.Error)
 			}
-			alterClass := r.bin[pc].class
+			//alterClass := r.bin[pc].class
 			pc++
 			for r.bin[pc].literalbin == B_add {
 				pc++
-				attributeName := r.bin[pc].token
+				//attributeName := r.bin[pc].token
 				options := []string{}
 				pc += 2
 				atype := r.bin[pc].token
@@ -502,7 +502,7 @@ func FindAllRules(sort string) error {
 	return err
 }
 
-func ParsingRule(cmd string) ([]*Token, []*BIN, error) {
+func parsingRule(cmd string) ([]*Token, []*BIN, error) {
 	cmd = strings.Replace(cmd, "\r\n", "", -1)
 	cmd = strings.Replace(cmd, "\\n", "", -1)
 	cmd = strings.Replace(cmd, "\t", " ", -1)
@@ -616,7 +616,7 @@ func ParsingRule(cmd string) ([]*Token, []*BIN, error) {
 func linkerRule(r *KBRule, bin []*BIN) error {
 	// Find references of objects in KB
 	inits.Log("Linking Prodution Rule: "+r.ID.Hex(), inits.Info)
-	KBPause()
+	pauseKB()
 
 	dr := make(map[string]*KBClass)
 	consequent := -1
@@ -670,7 +670,7 @@ func linkerRule(r *KBRule, bin []*BIN) error {
 					}
 					bin[j].attribute = FindAttribute(bin[ref].class, x.GetToken())
 					if len(bin[j].objects) > 0 {
-						atro := kb.FindAttributeObject(bin[ref].objects[0], x.GetToken())
+						atro := FindAttributeObject(bin[ref].objects[0], x.GetToken())
 						bin[j].attributeObjects = append(bin[j].attributeObjects, atro)
 					}
 					break
@@ -706,7 +706,7 @@ func linkerRule(r *KBRule, bin []*BIN) error {
 					for _, y := range objs {
 						obj := &y
 						bin[j].objects = append(bin[j].objects, obj)
-						atro := kb.FindAttributeObject(obj, x.GetToken())
+						atro := FindAttributeObject(obj, x.GetToken())
 						bin[j].attributeObjects = append(bin[j].attributeObjects, atro)
 					}
 					break
@@ -777,7 +777,7 @@ func linkerRule(r *KBRule, bin []*BIN) error {
 		}
 	}
 	r.bin = bin
-	KBResume()
+	resumeKB()
 	_rules = append(_rules, *r)
 	return nil
 }
@@ -789,9 +789,9 @@ func RefreshRules() error {
 			for j := range _rules {
 				for k := range _rules[j].bkclasses {
 					if _rules[j].bkclasses[k] == _objects[i].Bkclass {
-						_, bin, err := ParsingRule(_rules[j].Rule)
+						_, bin, err := parsingRule(_rules[j].Rule)
 						if inits.Log(err, inits.Error) != nil {
-							LinkerRule(&_rules[j], bin)
+							linkerRule(&_rules[j], bin)
 						}
 					}
 				}

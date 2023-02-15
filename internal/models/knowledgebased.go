@@ -5,7 +5,6 @@ import (
 	"os"
 	"runtime"
 	"sort"
-	"strings"
 	"sync"
 	"time"
 
@@ -37,7 +36,7 @@ type KnowledgeBased struct {
 
 func KnowledgeBasedFacotory() *KnowledgeBased {
 	kb := new(KnowledgeBased)
-	kb.FindOne()
+	kb.findOne()
 	if kb.Name == "" {
 		kb.Name = "K2 KnowledgeBase System "
 	}
@@ -45,40 +44,36 @@ func KnowledgeBasedFacotory() *KnowledgeBased {
 	return kb
 }
 
-func KBPause() {
+func pauseKB() {
 	scheduler.Lock()
 }
 
-func KBResume() {
+func resumeKB() {
 	if scheduler != nil {
 		scheduler.Unlock()
 	}
 }
 
-func KBStop() {
+func stopKB() {
 	if scheduler != nil {
 		scheduler.Stop()
 	}
 }
 
-func KBRestart() {
+func restartKB() {
 	if scheduler != nil {
 		scheduler.Stop()
-		KBInit()
+		InitKB()
 	}
 }
 
-func (kb *KnowledgeBased) UpdateWorkspace(w *KBWorkspace) {
-	inits.Log(w.Persist(), inits.Fatal)
-}
-
-func (kb *KnowledgeBased) LinkObjects(ws *KBWorkspace, obj *KBObject, left int, top int) {
+func (kb *KnowledgeBased) linkObjects(ws *KBWorkspace, obj *KBObject, left int, top int) {
 	ows := KBObjectWS{Object: obj.ID, Left: left, Top: top, KBObject: obj}
 	ws.Objects = append(ws.Objects, ows)
-	kb.UpdateWorkspace(ws)
+	inits.Log(ws.Persist(), inits.Fatal)
 }
 
-func (kb *KnowledgeBased) UpdateKB(name string) error {
+func (kb *KnowledgeBased) updateKB(name string) error {
 	kb.Name = name
 	return kb.Persist()
 }
@@ -92,21 +87,13 @@ func (obj *KnowledgeBased) GetPrimitiveUpdateAt() primitive.DateTime {
 	return primitive.NewDateTimeFromTime(obj.UpdatedAt)
 }
 
-func (kb *KnowledgeBased) FindOne() error {
+func (kb *KnowledgeBased) findOne() error {
 	ret := mgm.Coll(kb).FindOne(mgm.Ctx(), bson.D{})
 	ret.Decode(kb)
 	return nil
 }
 
-func KBFindAttributeObjectByName(key string) *KBAttributeObject {
-	keys := strings.Split(key, ".")
-	ao := new(KBObject)
-	r := mgm.Coll(ao).FindOne(mgm.Ctx(), bson.D{{"name", keys[0]}, {"attribute.name", key[1]}})
-	r.Decode(ao)
-	return &ao.Attributes[0]
-}
-
-func KBInit() {
+func InitKB() {
 	inits.Log("Init KB", inits.Info)
 	kb_current = KnowledgeBasedFacotory()
 
@@ -185,7 +172,7 @@ func KBInit() {
 	FindAllRules("_id")
 
 	for i := range _rules {
-		_, bin, err := ParsingRule(_rules[i].Rule)
+		_, bin, err := parsingRule(_rules[i].Rule)
 		inits.Log(err, inits.Fatal)
 		linkerRule(&_rules[i], bin)
 	}
@@ -224,7 +211,7 @@ func KBRun(wg *sync.WaitGroup) {
 	for {
 		if lib.KeyPress() == 27 {
 			fmt.Printf("Shutdown...")
-			KBStop()
+			stopKB()
 			wg.Done()
 			os.Exit(0)
 		}

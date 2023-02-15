@@ -86,8 +86,8 @@ func (o *KBObject) Delete() error {
 	mgm.Coll(o).Delete(o)
 
 	// Restart KB
-	KBStop()
-	KBInit()
+	stopKB()
+	InitKB()
 	return nil
 }
 

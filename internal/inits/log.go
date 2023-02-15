@@ -57,6 +57,9 @@ func Log(e any, level zapcore.Level) (er error) {
 	if e != nil {
 		if logger == nil {
 			fmt.Println(e)
+			if level == Fatal {
+				os.Exit(1)
+			}
 		} else {
 			switch level {
 			case Fatal:

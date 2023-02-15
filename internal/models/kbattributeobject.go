@@ -315,3 +315,11 @@ func FindAttributeObject(obj *KBObject, attr string) *KBAttributeObject {
 	}
 	return nil
 }
+
+func FindAttributeObjectByName(key string) *KBAttributeObject {
+	keys := strings.Split(key, ".")
+	ao := new(KBObject)
+	r := mgm.Coll(ao).FindOne(mgm.Ctx(), bson.D{{"name", keys[0]}, {"attribute.name", key[1]}})
+	r.Decode(ao)
+	return &ao.Attributes[0]
+}

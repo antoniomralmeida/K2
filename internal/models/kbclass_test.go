@@ -36,7 +36,7 @@ func FuzzClassFactory(f *testing.F) {
 
 func TestClassFactory(t *testing.T) {
 	mt1 := "Teste " + lib.GeneratePassword(25, 0, 5, 5)
-	parent, err := KBClassFactory("Teste "+lib.GeneratePassword(25, 0, 5, 5), "", "")
+	parent, err := KBClassFactory(mt1, "", "")
 	if err == nil {
 		result, err := KBClassFactory(mt1+"(1)", "", mt1)
 		if err != nil {
@@ -57,7 +57,7 @@ func TestClassFactory(t *testing.T) {
 	mt2 := "Teste " + lib.GeneratePassword(25, 0, 5, 5)
 	result, err := KBClassFactory(mt1, "", mt2)
 	if err == nil {
-		t.Errorf("ClassFactory(%v,%v,%v) => %v", mt1+"(1)", "", mt1, result)
+		t.Errorf("ClassFactory(%v,%v,%v) => %v", mt1, "", mt2, result)
 		result.Delete()
 	}
 }

@@ -146,7 +146,7 @@ func (class *KBClass) Delete() error {
 		if res.Err() == mongo.ErrNoDocuments {
 			err := mgm.Coll(class).Delete(class)
 			if err == nil {
-				KBRestart()
+				restartKB()
 			}
 			return err
 		}

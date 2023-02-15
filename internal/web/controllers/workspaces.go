@@ -6,7 +6,7 @@ import (
 )
 
 func GetWorkspaces(c *fiber.Ctx) error {
-	objs := models.KBGetWorkspaces()
+	objs := models.KBWorkspacesJson()
 	c.Response().Header.SetContentType("application/json")
 	return c.Send([]byte(objs))
 }

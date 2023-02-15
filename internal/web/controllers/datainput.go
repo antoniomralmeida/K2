@@ -21,7 +21,7 @@ func PostAttributes(c *fiber.Ctx) error {
 		return c.SendStatus(fiber.ErrBadRequest.Code)
 	}
 	for key := range data {
-		a := models.KBFindAttributeObjectByName(key)
+		a := models.FindAttributeObjectByName(key)
 		if a != nil {
 			a.SetValue(data[key][0], models.FromUser, fuzzy.TrustUser)
 		} else {
