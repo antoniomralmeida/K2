@@ -19,6 +19,9 @@ func init() {
 	//Clear collection kb_class before tests
 	mgm.Coll(new(KBClass)).DeleteMany(mgm.Ctx(), bson.D{{}})
 }
+func TestKBClassValidateIndex(t *testing.T) {
+	new(KBClass).validateIndex()
+}
 
 func FuzzClassFactory(f *testing.F) {
 
@@ -133,7 +136,6 @@ func TestFindAllClasses(t *testing.T) {
 
 func TestKBClassCopy(t *testing.T) {
 	parent, _ := KBClassFactory("Teste "+lib.GeneratePassword(25, 0, 5, 5), "teste.jpg", "")
-
 	c1 := "Teste " + lib.GeneratePassword(25, 0, 5, 5)
 	cl, err := KBClassFactoryParent(c1, "teste2.jpg", parent)
 	if err == nil {
@@ -157,7 +159,7 @@ func TestKBClassCopy(t *testing.T) {
 	}
 }
 
-func TestClear(t *testing.T) {
+func TestKBClassClear(t *testing.T) {
 	mgm.Coll(new(KBClass)).DeleteMany(mgm.Ctx(), bson.D{{}})
 	t.Log("all clean.")
 }

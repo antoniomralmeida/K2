@@ -65,4 +65,4 @@ http://ec2-15-228-21-212.sa-east-1.compute.amazonaws.com/
 
 
    ### Cover tests by packages
-   - [Models](test/models.html)
+   - [Models](https://github.com/antoniomralmeida/k2/test/models.html)

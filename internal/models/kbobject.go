@@ -8,6 +8,7 @@ import (
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -54,16 +55,19 @@ func FindObjectByName(name string) (ret *KBObject) {
 	return
 }
 
-func ObjectFactoryByClass(name string, class *KBClass) *KBObject {
+func ObjectFactoryByClass(name string, class *KBClass) (*KBObject, error) {
 	o := KBObject{Name: name, Class: class.ID, Bkclass: class}
 	for _, x := range class.FindAttributes() {
 		n := KBAttributeObject{Attribute: x.ID, KbAttribute: x, KbObject: &o}
 		o.Attributes = append(o.Attributes, n)
-		//_kb.IdxAttributeObjects[n.getFullName()] = &n
 	}
-	inits.Log(o.Persist(), inits.Fatal)
-	//_kb.IdxObjects[name] = &o
-	return &o
+	err := o.Persist()
+	if mongo.IsDuplicateKeyError(err) {
+		inits.Log(err, inits.Error)
+	} else {
+		inits.Log(err, inits.Fatal)
+	}
+	return &o, err
 }
 
 func (obj *KBObject) Persist() error {

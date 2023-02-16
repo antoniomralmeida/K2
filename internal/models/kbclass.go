@@ -51,10 +51,12 @@ func KBClassFactoryParent(name, icon string, parentClass *KBClass) (class *KBCla
 		return nil, err
 	}
 	err = class.Persist()
-	if err != nil {
-		return nil, err
+	if mongo.IsDuplicateKeyError(err) {
+		inits.Log(err, inits.Error)
+	} else {
+		inits.Log(err, inits.Fatal)
 	}
-	return class, nil
+	return class, err
 }
 
 func KBClassFactory(name, icon, parent string) (class *KBClass, err error) {
