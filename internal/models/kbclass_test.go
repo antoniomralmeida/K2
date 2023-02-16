@@ -117,6 +117,46 @@ func TestAlterClassAddAttributeParent(t *testing.T) {
 		}
 	}
 }
+
+func TestFindAllClasses(t *testing.T) {
+	_, err := KBClassFactory("Teste "+lib.GeneratePassword(25, 0, 5, 5), "", "")
+	if err == nil {
+		cls, err := FindAllClasses("name")
+		if err != nil {
+			t.Errorf("models.FindAllClasses(%v) => %v", "name", err)
+		}
+		if len(*cls) < 1 {
+			t.Errorf("models.FindAllClasses(%v) => %v", "name", len(*cls))
+		}
+	}
+}
+
+func TestKBClassCopy(t *testing.T) {
+	parent, _ := KBClassFactory("Teste "+lib.GeneratePassword(25, 0, 5, 5), "teste.jpg", "")
+
+	c1 := "Teste " + lib.GeneratePassword(25, 0, 5, 5)
+	cl, err := KBClassFactoryParent(c1, "teste2.jpg", parent)
+	if err == nil {
+		_, err := cl.AlterClassAddAttribute("nome", "string", "", []string{}, []string{"User"}, 5, 0)
+		if err == nil {
+			cl2, err := KBClassCopy(c1+"(copy)", cl)
+			if err != nil {
+				t.Errorf("models.KBClassCopy(%v,%v) => %v,%v", c1+"(copy)", cl.ID, cl2, err)
+			}
+			if cl2 == nil {
+				t.Errorf("models.KBClassCopy(%v,%v) => %v,%v", c1+"(copy)", cl.ID, cl2, err)
+			} else {
+				if cl.ParentID != cl2.ParentID {
+					t.Errorf("models.KBClassCopy(%v,%v) => %v,%v", c1+"(copy)", cl.ID, cl, cl2)
+				}
+				if cl.Icon != cl2.Icon {
+					t.Errorf("models.KBClassCopy(%v,%v) => %v,%v", c1+"(copy)", cl.ID, cl, cl2)
+				}
+			}
+		}
+	}
+}
+
 func TestClear(t *testing.T) {
 	mgm.Coll(new(KBClass)).DeleteMany(mgm.Ctx(), bson.D{{}})
 	t.Log("all clean.")

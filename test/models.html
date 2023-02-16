@@ -69,7 +69,7 @@
 				
 				<option value="file6">github.com/antoniomralmeida/k2/internal/models/kbattributetype.go (100.0%)</option>
 				
-				<option value="file7">github.com/antoniomralmeida/k2/internal/models/kbclass.go (73.9%)</option>
+				<option value="file7">github.com/antoniomralmeida/k2/internal/models/kbclass.go (89.4%)</option>
 				
 				<option value="file8">github.com/antoniomralmeida/k2/internal/models/kbhistory.go (0.0%)</option>
 				
@@ -926,7 +926,6 @@ var attributeTypeMap = map[string]KBAttributeType{
 import (
         "context"
         "encoding/json"
-        "errors"
 
         "github.com/antoniomralmeida/k2/internal/inits"
         "github.com/antoniomralmeida/k2/internal/lib"
@@ -962,30 +961,6 @@ func (obj *KBClass) validateIndex() error <span class="cov8" title="1">{
 func (obj *KBClass) valitate() (bool, error) <span class="cov8" title="1">{
         return govalidator.ValidateStruct(obj)
 }</span>
-
-/*
-func KBNewSimpleClass(name string, parent *KBClass) *KBClass {
-        if _kb_current != nil {
-                inits.Log(errors.New("Uninitialized KB!"), inits.Error)
-                return nil
-        }
-        class := KBClass{}
-        class.Name = name
-        if parent != nil {
-                class.ParentID = parent.ID
-                class.ParentClass = parent
-        }
-        err := class.Persist()
-        if err == nil {
-                _kb_current.Classes = append(_kb_current.Classes, class)
-                //_kb.IdxClasses[class.ID] = &amp;class
-                return &amp;class
-        } else {
-                inits.Log(err, inits.Error)
-                return nil
-        }
-}
-*/
 
 func KBClassFactoryParent(name, icon string, parentClass *KBClass) (class *KBClass, err error) <span class="cov8" title="1">{
         if parentClass != nil </span><span class="cov8" title="1">{
@@ -1114,45 +1089,36 @@ func FindClassByName(nm string, mandatory bool) *KBClass <span class="cov8" titl
         <span class="cov8" title="1">return ret</span>
 }
 
-func FindAllClasses(sort string) error <span class="cov0" title="0">{
+func FindAllClasses(sort string) (class *[]KBClass, err error) <span class="cov8" title="1">{
+        class = new([]KBClass)
         cursor, err := mgm.Coll(new(KBClass)).Find(mgm.Ctx(), bson.M{}, options.Find().SetSort(bson.D{{Key: sort, Value: 1}}))
         inits.Log(err, inits.Fatal)
-        err = cursor.All(mgm.Ctx(), _classes)
-        return err
-}</span>
-
-func KBClassCopy(name string, copy *KBClass) *KBClass <span class="cov0" title="0">{
-        if copy == nil </span><span class="cov0" title="0">{
-                inits.Log(errors.New("Invalid class!"), inits.Error)
-                return nil
+        if err == nil </span><span class="cov8" title="1">{
+                err = cursor.All(mgm.Ctx(), class)
         }</span>
-        <span class="cov0" title="0">class := KBClass{}
+        <span class="cov8" title="1">return</span>
+}
+
+func KBClassCopy(name string, copy *KBClass) (*KBClass, error) <span class="cov8" title="1">{
+        if copy == nil </span><span class="cov0" title="0">{
+                inits.Log(lib.InvalidClassError, inits.Error)
+                return nil, lib.InvalidClassError
+        }</span>
+        <span class="cov8" title="1">class := *copy
+        class.ID = primitive.NilObjectID
         class.Name = name
-        class.Attributes = copy.Attributes
-        for i := range class.Attributes </span><span class="cov0" title="0">{
+        for i := range class.Attributes </span><span class="cov8" title="1">{
                 class.Attributes[i].ID = primitive.NewObjectID()
         }</span>
-        <span class="cov0" title="0">err := class.Persist()
-        if err == nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">err := class.Persist()
+        if err == nil </span><span class="cov8" title="1">{
                 _classes = append(_classes, class)
-                //_kb.IdxClasses[class.ID] = &amp;class
-                return &amp;class
+                return &amp;class, nil
         }</span> else<span class="cov0" title="0"> {
                 inits.Log(err, inits.Error)
-                return nil
+                return nil, err
         }</span>
 }
-
-/*
-
-func AddAttribute(c *KBClass, attrs ...*KBAttribute) {
-        for i := range attrs {
-                attrs[i].ID = primitive.NewObjectID()
-                c.Attributes = append(c.Attributes, *attrs[i])
-        }
-        inits.Log(c.Persist(), inits.Fatal)
-}
-*/
 </pre>
 		
 		<pre class="file" id="file8" style="display: none">package models

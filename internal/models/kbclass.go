@@ -3,7 +3,6 @@ package models
 import (
 	"context"
 	"encoding/json"
-	"errors"
 
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
@@ -39,30 +38,6 @@ func (obj *KBClass) validateIndex() error {
 func (obj *KBClass) valitate() (bool, error) {
 	return govalidator.ValidateStruct(obj)
 }
-
-/*
-func KBNewSimpleClass(name string, parent *KBClass) *KBClass {
-	if _kb_current != nil {
-		inits.Log(errors.New("Uninitialized KB!"), inits.Error)
-		return nil
-	}
-	class := KBClass{}
-	class.Name = name
-	if parent != nil {
-		class.ParentID = parent.ID
-		class.ParentClass = parent
-	}
-	err := class.Persist()
-	if err == nil {
-		_kb_current.Classes = append(_kb_current.Classes, class)
-		//_kb.IdxClasses[class.ID] = &class
-		return &class
-	} else {
-		inits.Log(err, inits.Error)
-		return nil
-	}
-}
-*/
 
 func KBClassFactoryParent(name, icon string, parentClass *KBClass) (class *KBClass, err error) {
 	if parentClass != nil {
@@ -191,42 +166,33 @@ func FindClassByName(nm string, mandatory bool) *KBClass {
 	return ret
 }
 
-func FindAllClasses(sort string) error {
+func FindAllClasses(sort string) (class *[]KBClass, err error) {
+	class = new([]KBClass)
 	cursor, err := mgm.Coll(new(KBClass)).Find(mgm.Ctx(), bson.M{}, options.Find().SetSort(bson.D{{Key: sort, Value: 1}}))
 	inits.Log(err, inits.Fatal)
-	err = cursor.All(mgm.Ctx(), _classes)
-	return err
+	if err == nil {
+		err = cursor.All(mgm.Ctx(), class)
+	}
+	return
 }
 
-func KBClassCopy(name string, copy *KBClass) *KBClass {
+func KBClassCopy(name string, copy *KBClass) (*KBClass, error) {
 	if copy == nil {
-		inits.Log(errors.New("Invalid class!"), inits.Error)
-		return nil
+		inits.Log(lib.InvalidClassError, inits.Error)
+		return nil, lib.InvalidClassError
 	}
-	class := KBClass{}
+	class := *copy
+	class.ID = primitive.NilObjectID
 	class.Name = name
-	class.Attributes = copy.Attributes
 	for i := range class.Attributes {
 		class.Attributes[i].ID = primitive.NewObjectID()
 	}
 	err := class.Persist()
 	if err == nil {
 		_classes = append(_classes, class)
-		//_kb.IdxClasses[class.ID] = &class
-		return &class
+		return &class, nil
 	} else {
 		inits.Log(err, inits.Error)
-		return nil
+		return nil, err
 	}
 }
-
-/*
-
-func AddAttribute(c *KBClass, attrs ...*KBAttribute) {
-	for i := range attrs {
-		attrs[i].ID = primitive.NewObjectID()
-		c.Attributes = append(c.Attributes, *attrs[i])
-	}
-	inits.Log(c.Persist(), inits.Fatal)
-}
-*/

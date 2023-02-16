@@ -10,13 +10,17 @@ AType: non zero value required
 --- PASS: TestAlterClassAddAttribute (0.01s)
 === RUN   TestAlterClassAddAttributeParent
 --- PASS: TestAlterClassAddAttributeParent (0.01s)
+=== RUN   TestFindAllClasses
+--- PASS: TestFindAllClasses (0.00s)
+=== RUN   TestKBClassCopy
+--- PASS: TestKBClassCopy (0.01s)
 === RUN   TestClear
-    kbclass_test.go:122: all clean.
+    kbclass_test.go:162: all clean.
 --- PASS: TestClear (0.00s)
 === RUN   FuzzClassFactory
 === RUN   FuzzClassFactory/seed#0
 --- PASS: FuzzClassFactory (0.01s)
     --- PASS: FuzzClassFactory/seed#0 (0.01s)
 PASS
-	github.com/antoniomralmeida/k2/internal/models	coverage: 5.8% of statements
-ok  	github.com/antoniomralmeida/k2/internal/models	0.376s	coverage: 5.8% of statements
+	github.com/antoniomralmeida/k2/internal/models	coverage: 7.1% of statements
+ok  	github.com/antoniomralmeida/k2/internal/models	0.214s	coverage: 7.1% of statements
