@@ -1,0 +1,22 @@
+ConnectDB
+{mongodb localhost 27017 k2user SOh3TbYhx8ypJPxmt1oOfL  map[database:[K2]]}
+=== RUN   TestClassFactory
+Class not found!
+Class not found!
+--- PASS: TestClassFactory (0.01s)
+=== RUN   TestAlterClassAddAttribute
+Name: X does not validate as length(2|50)
+AType: non zero value required
+--- PASS: TestAlterClassAddAttribute (0.01s)
+=== RUN   TestAlterClassAddAttributeParent
+--- PASS: TestAlterClassAddAttributeParent (0.01s)
+=== RUN   TestClear
+    kbclass_test.go:122: all clean.
+--- PASS: TestClear (0.00s)
+=== RUN   FuzzClassFactory
+=== RUN   FuzzClassFactory/seed#0
+--- PASS: FuzzClassFactory (0.01s)
+    --- PASS: FuzzClassFactory/seed#0 (0.01s)
+PASS
+	github.com/antoniomralmeida/k2/internal/models	coverage: 5.8% of statements
+ok  	github.com/antoniomralmeida/k2/internal/models	0.376s	coverage: 5.8% of statements

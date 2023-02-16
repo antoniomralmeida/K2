@@ -85,7 +85,7 @@ func KBClassFactoryParent(name, icon string, parentClass *KBClass) (class *KBCla
 func KBClassFactory(name, icon, parent string) (class *KBClass, err error) {
 	var parentClass *KBClass
 	if parent != "" {
-		parentClass := FindClassByName(parent, true)
+		parentClass = FindClassByName(parent, true)
 		if parentClass == nil {
 			inits.Log(lib.ClassNotFoundError, inits.Info)
 			return nil, lib.ClassNotFoundError
@@ -107,7 +107,7 @@ func (obj *KBClass) AlterClassAddAttribute(name, atype, simulation string, optio
 		ValidityInterval: valitade,
 		Simulation:       simulation,
 		SimulationID:     KBSimulationStr[simulation]}
-	ok, err := a.Valitate()
+	ok, err := a.validate()
 	inits.Log(err, inits.Error)
 	if ok {
 		obj.Attributes = append(obj.Attributes, a)
@@ -115,8 +115,8 @@ func (obj *KBClass) AlterClassAddAttribute(name, atype, simulation string, optio
 		if err == nil {
 			return &a, nil
 		}
+		inits.Log(err, inits.Error)
 	}
-	inits.Log(err, inits.Fatal)
 	return nil, err
 }
 
@@ -130,9 +130,9 @@ func (obj *KBClass) GetPrimitiveUpdateAt() primitive.DateTime {
 }
 
 func (class *KBClass) FindOne(p bson.D) error {
-	x := mgm.Coll(class).FindOne(mgm.Ctx(), p)
-	if x != nil {
-		x.Decode(class)
+	ret := mgm.Coll(class).FindOne(mgm.Ctx(), p)
+	if ret.Err() == nil {
+		ret.Decode(class)
 		return nil
 	} else {
 		return lib.ClassNotFoundError
@@ -160,21 +160,19 @@ func (class *KBClass) String() string {
 	return string(j)
 }
 
-func FindAttributes(c *KBClass) []*KBAttribute {
+func (c *KBClass) FindAttributes() []*KBAttribute {
 	var ret []*KBAttribute
-	if c != nil {
-		if c.ParentClass != nil {
-			ret = append(ret, FindAttributes(c.ParentClass)...)
-		}
-		for i := range c.Attributes {
-			ret = append(ret, &c.Attributes[i])
-		}
+	if c.ParentClass != nil {
+		ret = append(ret, c.ParentClass.FindAttributes()...)
+	}
+	for i := range c.Attributes {
+		ret = append(ret, &c.Attributes[i])
 	}
 	return ret
 }
 
-func FindAttribute(c *KBClass, name string) *KBAttribute {
-	attrs := FindAttributes(c)
+func (c *KBClass) FindAttribute(name string) *KBAttribute {
+	attrs := c.FindAttributes()
 	for i, x := range attrs {
 		if x.Name == name {
 			return attrs[i]

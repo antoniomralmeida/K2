@@ -17,7 +17,10 @@ import (
 )
 
 func ConnectDB() {
+	ConnectDatabase("")
+}
 
+func ConnectDatabase(db string) {
 	type Ping struct {
 		mgm.DefaultModel `json:",inline" bson:",inline"`
 	}
@@ -27,11 +30,11 @@ func ConnectDB() {
 	dsn := dsn.Decode(server)
 	Log(dsn, Info)
 	Log(lib.Ping(server), Fatal)
-	err := mgm.SetDefaultConfig(nil, dsn.Query("database"), options.Client().ApplyURI(server))
+	if db == "" {
+		db = dsn.Query("database")
+	}
+	err := mgm.SetDefaultConfig(nil, db, options.Client().ApplyURI(server))
 	Log(err, Fatal)
-	client, err := mgm.NewClient()
-	Log(err, Fatal)
-	defer client.Disconnect(mgm.Ctx())
 	//ping db
 	ping := new(Ping)
 	err = mgm.Coll(ping).FindByID(0, ping)

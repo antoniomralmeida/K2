@@ -668,7 +668,7 @@ func linkerRule(r *KBRule, bin []*BIN) error {
 						bin[j].objects = append(bin[j].objects, obj)
 						bin[j].class = obj.Bkclass
 					}
-					bin[j].attribute = FindAttribute(bin[ref].class, x.GetToken())
+					bin[j].attribute = bin[ref].class.FindAttribute(x.GetToken())
 					if len(bin[j].objects) > 0 {
 						atro := FindAttributeObject(bin[ref].objects[0], x.GetToken())
 						bin[j].attributeObjects = append(bin[j].attributeObjects, atro)
@@ -681,7 +681,7 @@ func linkerRule(r *KBRule, bin []*BIN) error {
 						bin[ref].class = c
 					}
 					bin[j].class = c
-					bin[j].attribute = FindAttribute(c, x.GetToken())
+					bin[j].attribute = c.FindAttribute(x.GetToken())
 					objs := []KBObject{}
 					inits.Log(FindAllObjects(bson.M{"class_id": c.ID}, "_id", &objs), inits.Fatal)
 					for _, y := range objs {
@@ -700,7 +700,7 @@ func linkerRule(r *KBRule, bin []*BIN) error {
 					if c == nil {
 						return inits.Log("Attribute class not found in KB! "+x.GetToken(), inits.Error)
 					}
-					bin[j].attribute = FindAttribute(c, x.GetToken())
+					bin[j].attribute = c.FindAttribute(x.GetToken())
 					objs := []KBObject{}
 					inits.Log(FindAllObjects(bson.M{"class_id": c.ID}, "_id", &objs), inits.Fatal)
 					for _, y := range objs {

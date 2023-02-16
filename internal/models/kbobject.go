@@ -27,7 +27,7 @@ func ObjectFactory(class string, name string) *KBObject {
 		return nil
 	}
 	o := KBObject{Name: name, Class: p.ID, Bkclass: p}
-	for _, x := range FindAttributes(p) {
+	for _, x := range p.FindAttributes() {
 		n := KBAttributeObject{Attribute: x.ID, KbAttribute: x, KbObject: &o}
 		o.Attributes = append(o.Attributes, n)
 		//_kb.IdxAttributeObjects[n.getFullName()] = &n
@@ -56,7 +56,7 @@ func FindObjectByName(name string) (ret *KBObject) {
 
 func ObjectFactoryByClass(name string, class *KBClass) *KBObject {
 	o := KBObject{Name: name, Class: class.ID, Bkclass: class}
-	for _, x := range FindAttributes(class) {
+	for _, x := range class.FindAttributes() {
 		n := KBAttributeObject{Attribute: x.ID, KbAttribute: x, KbObject: &o}
 		o.Attributes = append(o.Attributes, n)
 		//_kb.IdxAttributeObjects[n.getFullName()] = &n

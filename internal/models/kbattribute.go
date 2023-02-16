@@ -20,7 +20,7 @@ type KBAttribute struct {
 	consequentRules  []*KBRule          `bson:"-"`
 }
 
-func (obj *KBAttribute) Valitate() (bool, error) {
+func (obj *KBAttribute) validate() (bool, error) {
 	return govalidator.ValidateStruct(obj)
 }
 

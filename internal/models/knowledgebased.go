@@ -130,7 +130,7 @@ func InitKB() {
 		c := _idxClasses[o.Class]
 		if c != nil {
 			_objects[j].Bkclass = c
-			attrs := FindAttributes(c)
+			attrs := c.FindAttributes()
 			sort.Slice(attrs, func(i, j int) bool {
 				return attrs[i].ID.Hex() < attrs[j].ID.Hex()
 			})
