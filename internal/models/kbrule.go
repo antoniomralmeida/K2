@@ -34,15 +34,15 @@ type KBRule struct {
 	bin               []*BIN     `bson:"-"`
 }
 
-func RuleFactory(rule string, priority byte, interval int) *KBRule {
+func RuleFactory(rule string, priority byte, interval int) (*KBRule, error) {
 	_, bin, err := parsingRule(rule)
 	if inits.Log(err, inits.Info) != nil {
-		return nil
+		return nil, err
 	}
 	r := KBRule{Rule: rule, Priority: priority, ExecutionInterval: interval}
 	inits.Log(r.Persist(), inits.Fatal)
 	linkerRule(&r, bin)
-	return &r
+	return &r, nil
 }
 
 func (r *KBRule) String() string {
@@ -643,8 +643,8 @@ func linkerRule(r *KBRule, bin []*BIN) error {
 			if bin[j].class == nil {
 				c := FindClassByName(x.GetToken(), true)
 				bin[j].class = c
-				objs := []KBObject{}
-				inits.Log(FindAllObjects(bson.M{"class_id": c.ID}, "_id", &objs), inits.Error)
+				objs, err := FindAllObjects(bson.M{"class_id": c.ID}, "_id")
+				inits.Log(err, inits.Error)
 				for _, y := range objs {
 					bin[j].objects = append(bin[j].objects, &y)
 				}
@@ -682,8 +682,8 @@ func linkerRule(r *KBRule, bin []*BIN) error {
 					}
 					bin[j].class = c
 					bin[j].attribute = c.FindAttribute(x.GetToken())
-					objs := []KBObject{}
-					inits.Log(FindAllObjects(bson.M{"class_id": c.ID}, "_id", &objs), inits.Fatal)
+					objs, err := FindAllObjects(bson.M{"class_id": c.ID}, "_id")
+					inits.Log(err, inits.Fatal)
 					for _, y := range objs {
 						obj := &y
 						bin[j].objects = append(bin[j].objects, obj)
@@ -701,8 +701,8 @@ func linkerRule(r *KBRule, bin []*BIN) error {
 						return inits.Log("Attribute class not found in KB! "+x.GetToken(), inits.Error)
 					}
 					bin[j].attribute = c.FindAttribute(x.GetToken())
-					objs := []KBObject{}
-					inits.Log(FindAllObjects(bson.M{"class_id": c.ID}, "_id", &objs), inits.Fatal)
+					objs, err := FindAllObjects(bson.M{"class_id": c.ID}, "_id")
+					inits.Log(err, inits.Fatal)
 					for _, y := range objs {
 						obj := &y
 						bin[j].objects = append(bin[j].objects, obj)

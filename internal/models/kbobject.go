@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/antoniomralmeida/k2/internal/inits"
+	"github.com/antoniomralmeida/k2/internal/lib"
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -21,21 +22,13 @@ type KBObject struct {
 	parsed           bool                `bson:"-"`
 }
 
-func ObjectFactory(class string, name string) *KBObject {
-	p := FindClassByName(class, true)
-	if p == nil {
-		inits.Log("Class not found "+class, inits.Error)
-		return nil
+func ObjectFactory(name, className string) (*KBObject, error) {
+	class := FindClassByName(className, true)
+	if class == nil {
+		inits.Log(lib.ClassNotFoundError, inits.Error)
+		return nil, lib.ClassNotFoundError
 	}
-	o := KBObject{Name: name, Class: p.ID, Bkclass: p}
-	for _, x := range p.FindAttributes() {
-		n := KBAttributeObject{Attribute: x.ID, KbAttribute: x, KbObject: &o}
-		o.Attributes = append(o.Attributes, n)
-		//_kb.IdxAttributeObjects[n.getFullName()] = &n
-	}
-	inits.Log(o.Persist(), inits.Fatal)
-	//_kb.IdxObjects[name] = &o
-	return &o
+	return ObjectFactoryByClass(name, class)
 }
 
 func (obj *KBObject) validateIndex() error {
@@ -50,15 +43,20 @@ func (obj *KBObject) validateIndex() error {
 }
 
 func FindObjectByName(name string) (ret *KBObject) {
-	r := mgm.Coll(ret).FindOne(mgm.Ctx(), bson.D{{"name", name}})
-	r.Decode(ret)
+
+	cur := mgm.Coll(ret).FindOne(mgm.Ctx(), bson.D{{"name", name}})
+	inits.Log(cur.Err(), inits.Error)
+	if cur.Err() == nil {
+		ret = new(KBObject)
+		cur.Decode(ret)
+	}
 	return
 }
 
 func ObjectFactoryByClass(name string, class *KBClass) (*KBObject, error) {
 	o := KBObject{Name: name, Class: class.ID, Bkclass: class}
 	for _, x := range class.FindAttributes() {
-		n := KBAttributeObject{Attribute: x.ID, KbAttribute: x, KbObject: &o}
+		n := KBAttributeObject{ID: primitive.NewObjectID(), Attribute: x.ID, KbAttribute: x, KbObject: &o}
 		o.Attributes = append(o.Attributes, n)
 	}
 	err := o.Persist()
@@ -86,18 +84,20 @@ func (o *KBObject) String() string {
 }
 
 func (o *KBObject) Delete() error {
-
 	mgm.Coll(o).Delete(o)
-
-	// Restart KB
-	stopKB()
-	InitKB()
+	if kb_current != nil {
+		// Restart KB
+		kb_current.RestartFlag = true
+	}
 	return nil
 }
 
-func FindAllObjects(filter bson.M, sort string, objs *[]KBObject) error {
+func FindAllObjects(filter bson.M, sort string) (objs []KBObject, err error) {
+	objs = []KBObject{}
 	cursor, err := mgm.Coll(new(KBObject)).Find(mgm.Ctx(), filter, options.Find().SetSort(bson.D{{Key: sort, Value: 1}}))
 	inits.Log(err, inits.Fatal)
-	err = cursor.All(mgm.Ctx(), objs)
-	return err
+	if err == nil {
+		err = cursor.All(mgm.Ctx(), &objs)
+	}
+	return
 }

@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"strings"
+	"time"
 	"unicode"
 
 	"github.com/antoniomralmeida/k2/internal/inits"
+	"github.com/antoniomralmeida/k2/internal/lib"
 )
 
 type EBNF struct {
@@ -17,6 +20,11 @@ type EBNF struct {
 	Base  *Token       `json:"-"`
 }
 
+func EBNFFactory(ebnfFile string) *EBNF {
+	ebnf := new(EBNF)
+	ebnf.grammarLoad(ebnfFile)
+	return ebnf
+}
 func (e *EBNF) GetBase() *Token {
 	return e.Base
 }
@@ -89,9 +97,9 @@ func (e *EBNF) newJump(node *Token, nexts ...*Token) {
 	}
 }
 
-func (e *EBNF) ReadToken(Tokenfile string) int {
+func (e *EBNF) grammarLoad(ebnfFile string) int {
 
-	file, err := ioutil.ReadFile(Tokenfile)
+	file, err := ioutil.ReadFile(ebnfFile)
 	if err != nil {
 		inits.Log("Could not read the file due to this %s error \n"+err.Error(), inits.Fatal)
 	}
@@ -195,7 +203,7 @@ func (e *EBNF) ReadToken(Tokenfile string) int {
 
 	}
 	e.Base = e.Rules[0].Tokens[0]
-	data, err := os.Create(Tokenfile + ".json")
+	data, err := os.Create(ebnfFile + ".json")
 	if err != nil {
 		inits.Log(err, inits.Error)
 	} else {
@@ -271,4 +279,31 @@ func (e *EBNF) String() string {
 	ret, err := json.MarshalIndent(e.Rules, "", "    ")
 	inits.Log(err, inits.Error)
 	return string(ret)
+}
+
+func (e *EBNF) GrammarSample() string {
+
+	return e.grammarSampleToken(e.Base)
+}
+
+func (e *EBNF) grammarSampleToken(t *Token) string {
+	var token string
+	rand.Seed(time.Now().UnixNano())
+	switch t.Tokentype {
+	case Literal, Text, Constant, DynamicReference, ListType:
+		token = t.Token + " "
+	case Class, Object, Attribute, Workspace:
+		token = t.Token + lib.GeneratePassword(25, 0, 5, 5) + " "
+	case Jump:
+		//TODO: JUMP?
+	}
+	if len(t.Nexts) == 0 {
+		return token
+	} else {
+		i := 0
+		if len(t.Nexts) > 1 {
+			i = rand.Intn(len(t.Nexts))
+		}
+		return token + e.grammarSampleToken(t.Nexts[i])
+	}
 }

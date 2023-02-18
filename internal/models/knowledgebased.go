@@ -32,6 +32,7 @@ var (
 type KnowledgeBased struct {
 	mgm.DefaultModel `json:",inline" bson:",inline"`
 	Name             string `bson:"name"`
+	RestartFlag      bool   `bson:"-"`
 }
 
 func KnowledgeBasedFacotory() *KnowledgeBased {
@@ -64,6 +65,7 @@ func restartKB() {
 	if scheduler != nil {
 		scheduler.Stop()
 		InitKB()
+		kb_current.RestartFlag = false
 	}
 }
 
@@ -102,8 +104,7 @@ func InitKB() {
 	new(KBWorkspace).validateIndex()
 	new(KBObject).validateIndex()
 
-	_ebnf := EBNF{}
-	_ebnf.ReadToken("./configs/k2.ebnf")
+	_ebnf = EBNFFactory("./configs/k2.ebnf")
 
 	FindAllClasses("_id")
 
@@ -124,9 +125,8 @@ func InitKB() {
 		}
 	}
 
-	FindAllObjects(bson.M{}, "name", &_objects)
+	_objects, _ := FindAllObjects(bson.M{}, "name")
 	for j, o := range _objects {
-		//_kb.IdxObjects[o.Name] = &_kb.Objects[j]
 		c := _idxClasses[o.Class]
 		if c != nil {
 			_objects[j].Bkclass = c
@@ -214,6 +214,9 @@ func KBRun(wg *sync.WaitGroup) {
 			stopKB()
 			wg.Done()
 			os.Exit(0)
+		}
+		if kb_current.RestartFlag {
+			restartKB()
 		}
 	}
 

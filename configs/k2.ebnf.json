@@ -1869,7 +1869,7 @@
             },
             {
                 "Id": "4",
-                "Nexts": "[#5, token: string, type:Literal #7, token: date, type:Literal #9, token: number, type:Literal #11, token: list, type:Literal]",
+                "Nexts": "[#5, token: String, type:Literal #7, token: Date, type:Literal #9, token: Number, type:Literal #11, token: List, type:Literal]",
                 "Rule_id": "9",
                 "Rule_jump": "0",
                 "Token": "(",
@@ -1880,7 +1880,7 @@
                 "Nexts": "[#6, token: |, type:Jump]",
                 "Rule_id": "9",
                 "Rule_jump": "0",
-                "Token": "string",
+                "Token": "String",
                 "Tokentype": "Literal"
             },
             {
@@ -1896,7 +1896,7 @@
                 "Nexts": "[#8, token: |, type:Jump]",
                 "Rule_id": "9",
                 "Rule_jump": "0",
-                "Token": "date",
+                "Token": "Date",
                 "Tokentype": "Literal"
             },
             {
@@ -1912,7 +1912,7 @@
                 "Nexts": "[#10, token: |, type:Jump]",
                 "Rule_id": "9",
                 "Rule_jump": "0",
-                "Token": "number",
+                "Token": "Number",
                 "Tokentype": "Literal"
             },
             {
@@ -1928,7 +1928,7 @@
                 "Nexts": "[#12, token: (, type:Literal]",
                 "Rule_id": "9",
                 "Rule_jump": "0",
-                "Token": "list",
+                "Token": "List",
                 "Tokentype": "Literal"
             },
             {
@@ -2133,7 +2133,7 @@
             },
             {
                 "Id": "37",
-                "Nexts": "[#38, token: simulation, type:Literal #47, token: ], type:Control]",
+                "Nexts": "[#38, token: method, type:Literal #46, token: ], type:Control]",
                 "Rule_id": "9",
                 "Rule_jump": "0",
                 "Token": "[",
@@ -2141,86 +2141,78 @@
             },
             {
                 "Id": "38",
-                "Nexts": "[#39, token: method, type:Literal]",
-                "Rule_id": "9",
-                "Rule_jump": "0",
-                "Token": "simulation",
-                "Tokentype": "Literal"
-            },
-            {
-                "Id": "39",
-                "Nexts": "[#40, token: (, type:Control]",
+                "Nexts": "[#39, token: (, type:Control]",
                 "Rule_id": "9",
                 "Rule_jump": "0",
                 "Token": "method",
                 "Tokentype": "Literal"
             },
             {
-                "Id": "40",
-                "Nexts": "[#41, token: MonteCarlo, type:Literal #43, token: NormalDistribution, type:Literal #45, token: LinearRegression, type:Literal]",
+                "Id": "39",
+                "Nexts": "[#40, token: MonteCarlo, type:Literal #42, token: NormalDistribution, type:Literal #44, token: LinearRegression, type:Literal]",
                 "Rule_id": "9",
                 "Rule_jump": "0",
                 "Token": "(",
                 "Tokentype": "Control"
             },
             {
-                "Id": "41",
-                "Nexts": "[#42, token: |, type:Jump]",
+                "Id": "40",
+                "Nexts": "[#41, token: |, type:Jump]",
                 "Rule_id": "9",
                 "Rule_jump": "0",
                 "Token": "MonteCarlo",
                 "Tokentype": "Literal"
             },
             {
-                "Id": "42",
-                "Nexts": "[#46, token: ), type:Control]",
+                "Id": "41",
+                "Nexts": "[#45, token: ), type:Control]",
                 "Rule_id": "9",
                 "Rule_jump": "0",
                 "Token": "|",
                 "Tokentype": "Jump"
             },
             {
-                "Id": "43",
-                "Nexts": "[#44, token: |, type:Jump]",
+                "Id": "42",
+                "Nexts": "[#43, token: |, type:Jump]",
                 "Rule_id": "9",
                 "Rule_jump": "0",
                 "Token": "NormalDistribution",
                 "Tokentype": "Literal"
             },
             {
-                "Id": "44",
-                "Nexts": "[#46, token: ), type:Control]",
+                "Id": "43",
+                "Nexts": "[#45, token: ), type:Control]",
                 "Rule_id": "9",
                 "Rule_jump": "0",
                 "Token": "|",
                 "Tokentype": "Jump"
             },
             {
-                "Id": "45",
-                "Nexts": "[#46, token: ), type:Control]",
+                "Id": "44",
+                "Nexts": "[#45, token: ), type:Control]",
                 "Rule_id": "9",
                 "Rule_jump": "0",
                 "Token": "LinearRegression",
                 "Tokentype": "Literal"
             },
             {
-                "Id": "46",
-                "Nexts": "[#47, token: ], type:Control]",
+                "Id": "45",
+                "Nexts": "[#46, token: ], type:Control]",
                 "Rule_id": "9",
                 "Rule_jump": "0",
                 "Token": ")",
                 "Tokentype": "Control"
             },
             {
-                "Id": "47",
-                "Nexts": "[#48, token: ., type:Control]",
+                "Id": "46",
+                "Nexts": "[#47, token: ., type:Control]",
                 "Rule_id": "9",
                 "Rule_jump": "0",
                 "Token": "]",
                 "Tokentype": "Control"
             },
             {
-                "Id": "48",
+                "Id": "47",
                 "Nexts": "[]",
                 "Rule_id": "9",
                 "Rule_jump": "0",
@@ -2243,7 +2235,7 @@
             },
             {
                 "Id": "2",
-                "Nexts": "[#3, token: iot, type:Literal #5, token: user, type:Literal #7, token: simulation, type:Literal #9, token: inference, type:Literal]",
+                "Nexts": "[#3, token: IOT, type:Literal #5, token: User, type:Literal #7, token: Simulation, type:Literal #9, token: Inference, type:Literal]",
                 "Rule_id": "10",
                 "Rule_jump": "0",
                 "Token": "(",
@@ -2254,7 +2246,7 @@
                 "Nexts": "[#4, token: |, type:Jump]",
                 "Rule_id": "10",
                 "Rule_jump": "0",
-                "Token": "iot",
+                "Token": "IOT",
                 "Tokentype": "Literal"
             },
             {
@@ -2270,7 +2262,7 @@
                 "Nexts": "[#6, token: |, type:Jump]",
                 "Rule_id": "10",
                 "Rule_jump": "0",
-                "Token": "user",
+                "Token": "User",
                 "Tokentype": "Literal"
             },
             {
@@ -2286,7 +2278,7 @@
                 "Nexts": "[#8, token: |, type:Jump]",
                 "Rule_id": "10",
                 "Rule_jump": "0",
-                "Token": "simulation",
+                "Token": "Simulation",
                 "Tokentype": "Literal"
             },
             {
@@ -2302,7 +2294,7 @@
                 "Nexts": "[#10, token: ), type:Control]",
                 "Rule_id": "10",
                 "Rule_jump": "0",
-                "Token": "inference",
+                "Token": "Inference",
                 "Tokentype": "Literal"
             },
             {

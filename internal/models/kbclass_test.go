@@ -16,7 +16,7 @@ import (
 func init() {
 	gotenv.Load("../../configs/.env")
 	inits.ConnectDatabase("K2-TESTS")
-	//Clear collection kb_class before tests
+	//Clear collections before tests
 	mgm.Coll(new(KBClass)).DeleteMany(mgm.Ctx(), bson.D{{}})
 }
 func TestKBClassValidateIndex(t *testing.T) {

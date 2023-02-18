@@ -30,7 +30,7 @@ func init() {
 	inits.ConnectDB()
 	span.End()
 	_, span = inits.Begin("models.KBInit()", ctx)
-	models.KBInit()
+	models.InitKB()
 	span.End()
 	_, span = inits.Begin("inits.InitMQTT()", ctx)
 	inits.InitMQTT()

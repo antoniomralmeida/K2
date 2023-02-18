@@ -33,11 +33,11 @@ type MTQQValue struct {
 }
 
 type KBAttributeObject struct {
-	mgm.DefaultModel `json:",inline" bson:",inline"`
-	Attribute        primitive.ObjectID `bson:"attribute_id"  json:"AttributeId"`
-	KbObject         *KBObject          `bson:"-" json:"-"`
-	KbHistory        *KBHistory         `bson:"-" json:"History"`
-	KbAttribute      *KBAttribute       `bson:"-"  json:"Attrinute"`
+	ID          primitive.ObjectID ` bson:"id"`
+	Attribute   primitive.ObjectID `bson:"attribute_id"  json:"AttributeId"`
+	KbObject    *KBObject          `bson:"-" json:"-"`
+	KbHistory   *KBHistory         `bson:"-" json:"History"`
+	KbAttribute *KBAttribute       `bson:"-"  json:"Attrinute"`
 }
 
 func KBAttributeObjectFactory(obj *KBObject, attr *KBAttribute) *KBAttributeObject {
