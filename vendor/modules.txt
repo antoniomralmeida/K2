@@ -170,6 +170,9 @@ github.com/tdewolff/parse/strconv
 # github.com/tinylib/msgp v1.1.8
 ## explicit; go 1.15
 github.com/tinylib/msgp/msgp
+# github.com/tjarratt/babble v0.0.0-20210505082055-cbca2a4833c1
+## explicit
+github.com/tjarratt/babble
 # github.com/valyala/bytebufferpool v1.0.0
 ## explicit
 github.com/valyala/bytebufferpool

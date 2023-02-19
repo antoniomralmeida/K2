@@ -41,9 +41,9 @@ Conclude = conclude that the Attribute of Object is (ListType |Constant | Text).
 
 Create = create ( a Class [(by cloning Class| whose parent is Class)]| an instance of the Class) named by Text.
 
-Alter = alter Class { add Attribute}.
+Alter = alter Class { add NewAttribute}.
 
-Attribute = Text as ("String"|"Date"|"Number"|"List" "(" Text {"," Text} ")") from "(" Source {"," Source} ")" \n [validity Constant] [keep history Constant] [method (	"MonteCarlo"|"NormalDistribution"|"LinearRegression")].
+NewAttribute = Text as ("String"|"Date"|"Number"|"List" "(" Text {"," Text} ")") from "(" Source {"," Source} ")" \n [validity Constant] [keep history Constant] [method (	"MonteCarlo"|"NormalDistribution"|"LinearRegression")].
 
 Source = ("IOT"|"User"|"Simulation"|"Inference").
 

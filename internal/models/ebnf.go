@@ -7,17 +7,19 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"os"
+	"strconv"
 	"strings"
-	"time"
 	"unicode"
 
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
+	"github.com/tjarratt/babble"
 )
 
 type EBNF struct {
 	Rules []*Statement `json:"rules"`
 	Base  *Token       `json:"-"`
+	last  int          `json:"-"`
 }
 
 func EBNFFactory(ebnfFile string) *EBNF {
@@ -84,7 +86,9 @@ func (e *EBNF) newStatement(str string) *Statement {
 }
 
 func (e *EBNF) newToken(rule *Statement, str string, tokentype Tokentype, nexts ...*Token) {
-	Token := Token{Id: len(rule.Tokens) + 1, Token: strings.Trim(str, " "), Rule_id: rule.Id, Tokentype: tokentype}
+	//Token := Token{Id: len(rule.Tokens) + 1, Token: strings.Trim(str, " "), Rule_id: rule.Id, Tokentype: tokentype}
+	e.last++
+	Token := Token{Id: e.last, Token: strings.Trim(str, " "), Rule_id: rule.Id, Tokentype: tokentype}
 	for _, jump := range nexts {
 		Token.Nexts = append(Token.Nexts, jump)
 	}
@@ -282,28 +286,54 @@ func (e *EBNF) String() string {
 }
 
 func (e *EBNF) GrammarSample() string {
-
-	return e.grammarSampleToken(e.Base)
+	stack := new([]*Token)
+	visited := make(map[int]bool)
+	return e.grammarSampleToken(e.Base, stack, 0, &visited, 0)
 }
 
-func (e *EBNF) grammarSampleToken(t *Token) string {
+func (e *EBNF) grammarSampleToken(t *Token, stack *[]*Token, level int, visited *map[int]bool, npar int) string {
+	(*visited)[t.Id] = true
+	if t.Token == ")" && npar == 0 {
+		return ""
+	}
 	var token string
-	rand.Seed(time.Now().UnixNano())
 	switch t.Tokentype {
-	case Literal, Text, Constant, DynamicReference, ListType:
+	case Constant:
+		token = strconv.Itoa(rand.Int()) + " "
+	case Text:
+		babbler := babble.NewBabbler()
+		babbler.Separator = " "
+		babbler.Count = rand.Intn(5) + 1
+		token = "'" + babbler.Babble() + "' "
+	case DynamicReference:
+		token = lib.GeneratePassword(2, 0, 0, 2) + " "
+	case ListType:
+		n := rand.Intn(5) + 1
+		babbler := babble.NewBabbler()
+		babbler.Separator = " "
+		babbler.Count = 1
+		token = "('" + babbler.Babble() + "'"
+		for i := 1; i < n; i++ {
+			token += ",'" + babbler.Babble() + "'"
+		}
+		token += ") "
+	case Literal:
 		token = t.Token + " "
 	case Class, Object, Attribute, Workspace:
 		token = t.Token + lib.GeneratePassword(25, 0, 5, 5) + " "
-	case Jump:
-		//TODO: JUMP?
-	}
-	if len(t.Nexts) == 0 {
-		return token
-	} else {
-		i := 0
-		if len(t.Nexts) > 1 {
-			i = rand.Intn(len(t.Nexts))
+	case Control:
+		if token == "(" {
+			npar++
+		} else if token == ")" {
+			npar--
 		}
-		return token + e.grammarSampleToken(t.Nexts[i])
 	}
+	opts := e.FindOptions(t, stack, 0)
+	for n := 0; n < len(opts)*2; n++ {
+		i := rand.Intn(len(opts))
+		if !(*visited)[opts[i].Id] || opts[i].Token == "(" || opts[i].Token == ")" {
+			return token + e.grammarSampleToken(opts[i], stack, level+1, visited, npar)
+		}
+	}
+	return token
 }
