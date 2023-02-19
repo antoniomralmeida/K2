@@ -267,7 +267,7 @@
             },
             {
                 "Id": "33",
-                "Nexts": "[#34, token: (, type:Literal #35, token: }, type:Control]",
+                "Nexts": "[#35, token: }, type:Control #34, token: (, type:Literal]",
                 "Rule_id": "2",
                 "Rule_jump": "0",
                 "Token": "{",
@@ -595,7 +595,7 @@
             },
             {
                 "Id": "74",
-                "Nexts": "[#75, token: ), type:Literal #76, token: }, type:Control]",
+                "Nexts": "[#76, token: }, type:Control #75, token: ), type:Literal]",
                 "Rule_id": "2",
                 "Rule_jump": "0",
                 "Token": "{",
@@ -619,7 +619,7 @@
             },
             {
                 "Id": "77",
-                "Nexts": "[#78, token: [, type:Control #86, token: }, type:Control]",
+                "Nexts": "[#86, token: }, type:Control #78, token: [, type:Control]",
                 "Rule_id": "2",
                 "Rule_jump": "0",
                 "Token": "{",
@@ -985,7 +985,7 @@
             },
             {
                 "Id": "122",
-                "Nexts": "[#123, token: and, type:Literal #125, token: }, type:Control]",
+                "Nexts": "[#125, token: }, type:Control #123, token: and, type:Literal]",
                 "Rule_id": "3",
                 "Rule_jump": "0",
                 "Token": "{",
@@ -1277,7 +1277,7 @@
             },
             {
                 "Id": "157",
-                "Nexts": "[#158, token: the, type:Literal #170, token: }, type:Control]",
+                "Nexts": "[#170, token: }, type:Control #158, token: the, type:Literal]",
                 "Rule_id": "5",
                 "Rule_jump": "0",
                 "Token": "{",
@@ -1799,7 +1799,7 @@
             },
             {
                 "Id": "220",
-                "Nexts": "[#221, token: add, type:Literal #223, token: }, type:Control]",
+                "Nexts": "[#223, token: }, type:Control #221, token: add, type:Literal]",
                 "Rule_id": "8",
                 "Rule_jump": "0",
                 "Token": "{",
@@ -1949,7 +1949,7 @@
             },
             {
                 "Id": "238",
-                "Nexts": "[#239, token: ,, type:Literal #241, token: }, type:Control]",
+                "Nexts": "[#241, token: }, type:Control #239, token: ,, type:Literal]",
                 "Rule_id": "9",
                 "Rule_jump": "0",
                 "Token": "{",
@@ -2021,7 +2021,7 @@
             },
             {
                 "Id": "247",
-                "Nexts": "[#248, token: ,, type:Literal #250, token: }, type:Control]",
+                "Nexts": "[#250, token: }, type:Control #248, token: ,, type:Literal]",
                 "Rule_id": "9",
                 "Rule_jump": "0",
                 "Token": "{",

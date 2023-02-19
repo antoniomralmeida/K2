@@ -119,10 +119,10 @@ func Ping(uri string) error {
 	}
 }
 
-func GeneratePassword(passwordLength, minSpecialChar, minNum, minUpperCase int, alfaNumeric bool) string {
+func GeneratePassword(passwordLength, minSpecialChar, minNum, minUpperCase int) string {
 	var password strings.Builder
 	var (
-		lowerCharSet   = "abcdedfghijklmnopqrst"
+		lowerCharSet   = "abcdedfghijklmnopqrstuvwxyz"
 		upperCharSet   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 		specialCharSet = "!@#$%&*"
 		numberSet      = "0123456789"
@@ -130,7 +130,7 @@ func GeneratePassword(passwordLength, minSpecialChar, minNum, minUpperCase int, 
 	)
 	time.Sleep(time.Microsecond)
 	//Set special character
-	for i := 0; i < minSpecialChar && !alfaNumeric; i++ {
+	for i := 0; i < minSpecialChar; i++ {
 		random := rand.Intn(len(specialCharSet))
 		password.WriteString(string(specialCharSet[random]))
 	}

@@ -5,15 +5,18 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math"
 	"math/rand"
 	"os"
 	"strconv"
 	"strings"
-	"time"
 	"unicode"
 
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
+	"github.com/antoniomralmeida/k2/pkg/randnonlinear"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"github.com/tjarratt/babble"
 )
 
@@ -90,15 +93,15 @@ func (e *EBNF) newToken(rule *Statement, str string, tokentype Tokentype, nexts 
 	//Token := Token{Id: len(rule.Tokens) + 1, Token: strings.Trim(str, " "), Rule_id: rule.Id, Tokentype: tokentype}
 	e.last++
 	Token := Token{Id: e.last, Token: strings.Trim(str, " "), Rule_id: rule.Id, Tokentype: tokentype}
-	for _, jump := range nexts {
-		Token.Nexts = append(Token.Nexts, jump)
-	}
+	Token.Nexts = append(Token.Nexts, nexts...)
 	rule.Tokens = append(rule.Tokens, &Token)
 }
 
-func (e *EBNF) newJump(node *Token, nexts ...*Token) {
-	for _, jump := range nexts {
-		node.Nexts = append(node.Nexts, jump)
+func (e *EBNF) newJump(node *Token, before bool, nexts ...*Token) {
+	if before {
+		node.Nexts = append(nexts, node.Nexts...)
+	} else {
+		node.Nexts = append(node.Nexts, nexts...)
 	}
 }
 
@@ -203,9 +206,8 @@ func (e *EBNF) grammarLoad(ebnfFile string) int {
 			}
 		}
 	}
-	if errorFatal == true {
+	if errorFatal {
 		inits.Log("Fatal error(s) in EBNF parsing!", inits.Fatal)
-
 	}
 	e.Base = e.Rules[0].Tokens[0]
 	data, err := os.Create(ebnfFile + ".json")
@@ -214,6 +216,7 @@ func (e *EBNF) grammarLoad(ebnfFile string) int {
 	} else {
 		io.Copy(data, strings.NewReader(e.String()))
 	}
+	data.Close()
 	return 1
 }
 
@@ -236,13 +239,14 @@ func (e *EBNF) findClose(rule *Statement, symb int, Token string, i int, level i
 func (e *EBNF) parsingStatement(rule *Statement) {
 	var pairs []PAIR
 	inits.Log("Parsing ebnf rule "+rule.Name, inits.Info)
+	//Finding Pair of Symbols
 	for i := 0; i < len(rule.Tokens); i++ {
 		if rule.Tokens[i].GetTokentype() == Control {
 			s := e.FindSymbols(rule.Tokens[i].Token, false)
 			if s != -1 {
 				c := e.findClose(rule, s, rule.Tokens[i].Token, i, 0)
 				if c == -1 {
-					msg := fmt.Sprint("Parssing erro in Token ", rule.Tokens[i].Token, " #", rule.Tokens[i].Id, s, i)
+					msg := fmt.Sprint("Parsing error in Token ", rule.Tokens[i].Token, " #", rule.Tokens[i].Id, s, i)
 					inits.Log(msg, inits.Fatal)
 					return
 				}
@@ -256,17 +260,17 @@ func (e *EBNF) parsingStatement(rule *Statement) {
 	for i := 0; i < len(rule.Tokens)-1; i++ {
 		var p = findPair(pairs, i)
 		if rule.Tokens[i].GetTokentype() != Jump {
-			e.newJump(rule.Tokens[i], rule.Tokens[i+1])
+			e.newJump(rule.Tokens[i], false, rule.Tokens[i+1])
 		} else {
-			e.newJump(rule.Tokens[i], rule.Tokens[pairs[p].end])
-			e.newJump(rule.Tokens[pairs[p].begin], rule.Tokens[i+1])
+			e.newJump(rule.Tokens[i], false, rule.Tokens[pairs[p].end])
+			e.newJump(rule.Tokens[pairs[p].begin], false, rule.Tokens[i+1])
 		}
 		if rule.Tokens[i].Token == "{" {
-			e.newJump(rule.Tokens[pairs[p].begin], rule.Tokens[pairs[p].end])
-			e.newJump(rule.Tokens[pairs[p].end], rule.Tokens[pairs[p].begin])
+			e.newJump(rule.Tokens[pairs[p].begin], true, rule.Tokens[pairs[p].end])
+			e.newJump(rule.Tokens[pairs[p].end], false, rule.Tokens[pairs[p].begin])
 		}
 		if rule.Tokens[i].Token == "[" {
-			e.newJump(rule.Tokens[pairs[p].begin], rule.Tokens[pairs[p].end])
+			e.newJump(rule.Tokens[pairs[p].begin], false, rule.Tokens[pairs[p].end])
 		}
 	}
 }
@@ -302,7 +306,7 @@ func (e *EBNF) grammarSampleToken(t *Token, stack *[]*Token, npar int) string {
 		babbler.Count = rand.Intn(5) + 1
 		token = "'" + babbler.Babble() + "' "
 	case DynamicReference:
-		token = lib.GeneratePassword(2, 0, 0, 2, false) + " "
+		token = lib.GeneratePassword(2, 0, 0, 2) + " "
 	case ListType:
 		n := rand.Intn(5) + 1
 		babbler := babble.NewBabbler()
@@ -316,7 +320,7 @@ func (e *EBNF) grammarSampleToken(t *Token, stack *[]*Token, npar int) string {
 	case Literal:
 		token = t.Token + " "
 	case Class, Object, Attribute, Workspace:
-		token = t.Token + lib.GeneratePassword(25, 0, 5, 5, true) + " "
+		token = t.Token + primitive.NewObjectID().Hex() + " "
 	case Control:
 		if token == "(" {
 			npar++
@@ -325,9 +329,11 @@ func (e *EBNF) grammarSampleToken(t *Token, stack *[]*Token, npar int) string {
 		}
 	}
 	opts := e.FindOptions(t, stack, 0)
-	for n := 0; n < len(opts)*2; n++ {
-		time.Sleep(time.Microsecond)
-		i := rand.Intn(len(opts))
+	max := len(opts)
+	for n := 0; n < max*2; n++ {
+		i := randnonlinear.IntnNL(max, func(idx int) int {
+			return int(math.Pow(2, float64(max-idx)))
+		})
 		if opts[i].Token == ")" && npar == 0 {
 			continue
 		}

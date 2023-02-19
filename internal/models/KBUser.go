@@ -61,7 +61,7 @@ func InitSecurity() {
 	CheckIndexs()
 	err := user.FindOne(bson.D{{Key: "profile", Value: Admin}})
 	if err == mongo.ErrNoDocuments {
-		pwd := lib.GeneratePassword(12, 1, 3, 2, false)
+		pwd := lib.GeneratePassword(12, 3, 3, 3)
 		hash, err := bcrypt.GenerateFromPassword([]byte(pwd), bcrypt.DefaultCost)
 		inits.Log(err, inits.Fatal)
 		user = KBUser{Name: "Default Admin", Email: "admin@k2.com", Hash: hash, Profile: Admin}

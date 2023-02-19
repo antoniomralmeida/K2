@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"math/rand"
 	"testing"
 	"time"
@@ -31,6 +32,7 @@ func FuzzRuleFactory(f *testing.F) {
 
 	f.Fuzz(func(t *testing.T, a string) {
 		sampleRule := _ebnf.GrammarSample()
+		fmt.Println(sampleRule)
 		time.Sleep(time.Microsecond)
 		priority := byte(rand.Intn(100))
 		interval := rand.Intn(5000)
@@ -38,11 +40,11 @@ func FuzzRuleFactory(f *testing.F) {
 		if err != nil {
 			t.Errorf("RuleFactory(%v) => %v, %v", sampleRule, result, err)
 		}
+
 	})
 }
 
 func TestRuleFactory(t *testing.T) {
-	//r1 := "Teste " + lib.GeneratePassword(25, 0, 5, 5)
 
 }
 
