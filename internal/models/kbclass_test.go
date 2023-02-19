@@ -44,7 +44,7 @@ func FuzzClassFactory(f *testing.F) {
 }
 
 func TestClassFactory(t *testing.T) {
-	mt1 := "Teste " + lib.GeneratePassword(25, 0, 5, 5)
+	mt1 := "Teste " + lib.GeneratePassword(25, 0, 5, 5, true)
 	parent, err := KBClassFactory(mt1, "", "")
 	if err == nil {
 		result, err := KBClassFactory(mt1+"(1)", "", mt1)
@@ -63,7 +63,7 @@ func TestClassFactory(t *testing.T) {
 		}
 		parent.Delete()
 	}
-	mt2 := "Teste " + lib.GeneratePassword(25, 0, 5, 5)
+	mt2 := "Teste " + lib.GeneratePassword(25, 0, 5, 5, true)
 	result, err := KBClassFactory(mt1, "", mt2)
 	if err == nil {
 		t.Errorf("ClassFactory(%v,%v,%v) => %v", mt1, "", mt2, result)
@@ -72,7 +72,7 @@ func TestClassFactory(t *testing.T) {
 }
 
 func TestAlterClassAddAttribute(t *testing.T) {
-	class, err := KBClassFactory("Teste "+lib.GeneratePassword(25, 0, 5, 5), "", "")
+	class, err := KBClassFactory("Teste "+lib.GeneratePassword(25, 0, 5, 5, true), "", "")
 	if err == nil {
 		result, err := class.AlterClassAddAttribute("nome", "string", "", []string{}, []string{"User"}, 5, 0)
 		if err != nil {
@@ -102,7 +102,7 @@ func TestAlterClassAddAttribute(t *testing.T) {
 }
 
 func TestAlterClassAddAttributeParent(t *testing.T) {
-	c1 := "Teste " + lib.GeneratePassword(25, 0, 5, 5)
+	c1 := "Teste " + lib.GeneratePassword(25, 0, 5, 5, true)
 	parent, _ := KBClassFactory(c1, "", "")
 	if parent != nil {
 		child, _ := KBClassFactoryParent(c1+"=child", "", parent)
@@ -122,7 +122,7 @@ func TestAlterClassAddAttributeParent(t *testing.T) {
 }
 
 func TestFindAllClasses(t *testing.T) {
-	_, err := KBClassFactory("Teste "+lib.GeneratePassword(25, 0, 5, 5), "", "")
+	_, err := KBClassFactory("Teste "+lib.GeneratePassword(25, 0, 5, 5, true), "", "")
 	if err == nil {
 		cls, err := FindAllClasses("name")
 		if err != nil {
@@ -135,8 +135,8 @@ func TestFindAllClasses(t *testing.T) {
 }
 
 func TestKBClassCopy(t *testing.T) {
-	parent, _ := KBClassFactory("Teste "+lib.GeneratePassword(25, 0, 5, 5), "teste.jpg", "")
-	c1 := "Teste " + lib.GeneratePassword(25, 0, 5, 5)
+	parent, _ := KBClassFactory("Teste "+lib.GeneratePassword(25, 0, 5, 5, true), "teste.jpg", "")
+	c1 := "Teste " + lib.GeneratePassword(25, 0, 5, 5, true)
 	cl, err := KBClassFactoryParent(c1, "teste2.jpg", parent)
 	if err == nil {
 		_, err := cl.AlterClassAddAttribute("nome", "string", "", []string{}, []string{"User"}, 5, 0)

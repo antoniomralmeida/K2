@@ -1,9 +1,9 @@
 package models
 
 import (
-	"fmt"
 	"math/rand"
 	"testing"
+	"time"
 
 	"github.com/kamva/mgm/v3"
 
@@ -11,10 +11,6 @@ import (
 
 	"github.com/subosito/gotenv"
 	"go.mongodb.org/mongo-driver/bson"
-)
-
-var (
-	ebnf *EBNF
 )
 
 func init() {
@@ -25,7 +21,7 @@ func init() {
 	mgm.Coll(new(KBObject)).DeleteMany(mgm.Ctx(), bson.D{{}})
 	mgm.Coll(new(KBClass)).DeleteMany(mgm.Ctx(), bson.D{{}})
 
-	ebnf = EBNFFactory("../../configs/k2.ebnf")
+	_ebnf = EBNFFactory("../../configs/k2.ebnf")
 
 }
 
@@ -34,16 +30,14 @@ func FuzzRuleFactory(f *testing.F) {
 	f.Add("initially Rule")
 
 	f.Fuzz(func(t *testing.T, a string) {
-		sampleRule := ebnf.GrammarSample()
-		fmt.Println("RULE: " + sampleRule)
+		sampleRule := _ebnf.GrammarSample()
+		time.Sleep(time.Microsecond)
 		priority := byte(rand.Intn(100))
 		interval := rand.Intn(5000)
 		result, err := RuleFactory(sampleRule, priority, interval)
 		if err != nil {
 			t.Errorf("RuleFactory(%v) => %v, %v", sampleRule, result, err)
-
 		}
-
 	})
 }
 

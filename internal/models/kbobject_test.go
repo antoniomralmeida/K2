@@ -26,7 +26,7 @@ func TestKBObjectValidateIndex(t *testing.T) {
 }
 
 func TestObjectFactory(t *testing.T) {
-	c1 := "Teste " + lib.GeneratePassword(25, 0, 5, 5)
+	c1 := "Teste " + lib.GeneratePassword(25, 0, 5, 5, true)
 	parent, _ := KBClassFactory(c1, "", "")
 	if parent != nil {
 		child, _ := KBClassFactoryParent(c1+"=child", "", parent)
@@ -64,7 +64,7 @@ func TestObjectFactory(t *testing.T) {
 						}
 						obj3.Delete()
 					}
-					c1 := "Teste " + lib.GeneratePassword(25, 0, 5, 5)
+					c1 := "Teste " + lib.GeneratePassword(25, 0, 5, 5, true)
 					obj4, err := ObjectFactory("Object4", c1)
 					if err == nil {
 						t.Errorf("models.ObjectFactory(%v,%v) => %v, %v", "Object4", c1, obj4, err)
@@ -76,9 +76,9 @@ func TestObjectFactory(t *testing.T) {
 }
 
 func TestFindObject(t *testing.T) {
-	class, _ := KBClassFactory("Teste "+lib.GeneratePassword(25, 0, 5, 5), "", "")
+	class, _ := KBClassFactory("Teste "+lib.GeneratePassword(25, 0, 5, 5, true), "", "")
 	class.AlterClassAddAttribute("nome", "string", "", []string{}, []string{"User"}, 5, 0)
-	name := "Teste " + lib.GeneratePassword(25, 0, 5, 5)
+	name := "Teste " + lib.GeneratePassword(25, 0, 5, 5, true)
 	obj, err := ObjectFactoryByClass(name, class)
 	if err == nil {
 		obj2 := FindObjectByName(name)

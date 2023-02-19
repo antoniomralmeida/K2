@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 	"unicode"
 
 	"github.com/antoniomralmeida/k2/internal/inits"
@@ -287,15 +288,10 @@ func (e *EBNF) String() string {
 
 func (e *EBNF) GrammarSample() string {
 	stack := new([]*Token)
-	visited := make(map[int]bool)
-	return e.grammarSampleToken(e.Base, stack, 0, &visited, 0)
+	return e.grammarSampleToken(e.Base, stack, 0)
 }
 
-func (e *EBNF) grammarSampleToken(t *Token, stack *[]*Token, level int, visited *map[int]bool, npar int) string {
-	(*visited)[t.Id] = true
-	if t.Token == ")" && npar == 0 {
-		return ""
-	}
+func (e *EBNF) grammarSampleToken(t *Token, stack *[]*Token, npar int) string {
 	var token string
 	switch t.Tokentype {
 	case Constant:
@@ -306,7 +302,7 @@ func (e *EBNF) grammarSampleToken(t *Token, stack *[]*Token, level int, visited 
 		babbler.Count = rand.Intn(5) + 1
 		token = "'" + babbler.Babble() + "' "
 	case DynamicReference:
-		token = lib.GeneratePassword(2, 0, 0, 2) + " "
+		token = lib.GeneratePassword(2, 0, 0, 2, false) + " "
 	case ListType:
 		n := rand.Intn(5) + 1
 		babbler := babble.NewBabbler()
@@ -320,7 +316,7 @@ func (e *EBNF) grammarSampleToken(t *Token, stack *[]*Token, level int, visited 
 	case Literal:
 		token = t.Token + " "
 	case Class, Object, Attribute, Workspace:
-		token = t.Token + lib.GeneratePassword(25, 0, 5, 5) + " "
+		token = t.Token + lib.GeneratePassword(25, 0, 5, 5, true) + " "
 	case Control:
 		if token == "(" {
 			npar++
@@ -330,10 +326,16 @@ func (e *EBNF) grammarSampleToken(t *Token, stack *[]*Token, level int, visited 
 	}
 	opts := e.FindOptions(t, stack, 0)
 	for n := 0; n < len(opts)*2; n++ {
+		time.Sleep(time.Microsecond)
 		i := rand.Intn(len(opts))
-		if !(*visited)[opts[i].Id] || opts[i].Token == "(" || opts[i].Token == ")" {
-			return token + e.grammarSampleToken(opts[i], stack, level+1, visited, npar)
+		if opts[i].Token == ")" && npar == 0 {
+			continue
 		}
+		return token + e.grammarSampleToken(opts[i], stack, npar)
+	}
+	for npar > 0 {
+		npar--
+		token += token + ")"
 	}
 	return token
 }
