@@ -118,9 +118,9 @@ github.com/antoniomralmeida/k2/internal/models/ebnf.go:298.79,300.21 2 1
 github.com/antoniomralmeida/k2/internal/models/ebnf.go:301.16,302.41 1 1
 github.com/antoniomralmeida/k2/internal/models/ebnf.go:303.12,307.40 4 1
 github.com/antoniomralmeida/k2/internal/models/ebnf.go:308.24,309.49 1 1
-github.com/antoniomralmeida/k2/internal/models/ebnf.go:310.16,316.26 6 1
-github.com/antoniomralmeida/k2/internal/models/ebnf.go:316.26,318.4 1 1
-github.com/antoniomralmeida/k2/internal/models/ebnf.go:319.3,319.16 1 1
+github.com/antoniomralmeida/k2/internal/models/ebnf.go:310.16,316.26 6 0
+github.com/antoniomralmeida/k2/internal/models/ebnf.go:316.26,318.4 1 0
+github.com/antoniomralmeida/k2/internal/models/ebnf.go:319.3,319.16 1 0
 github.com/antoniomralmeida/k2/internal/models/ebnf.go:320.15,321.24 1 1
 github.com/antoniomralmeida/k2/internal/models/ebnf.go:322.43,323.56 1 1
 github.com/antoniomralmeida/k2/internal/models/ebnf.go:324.15,325.19 1 1
@@ -527,7 +527,7 @@ github.com/antoniomralmeida/k2/internal/models/kbrule.go:569.57,570.34 1 1
 github.com/antoniomralmeida/k2/internal/models/kbrule.go:570.34,571.42 1 0
 github.com/antoniomralmeida/k2/internal/models/kbrule.go:571.42,573.7 1 0
 github.com/antoniomralmeida/k2/internal/models/kbrule.go:574.11,574.42 1 1
-github.com/antoniomralmeida/k2/internal/models/kbrule.go:574.42,575.36 1 1
+github.com/antoniomralmeida/k2/internal/models/kbrule.go:574.42,575.36 1 0
 github.com/antoniomralmeida/k2/internal/models/kbrule.go:575.36,577.7 1 0
 github.com/antoniomralmeida/k2/internal/models/kbrule.go:578.11,580.6 1 1
 github.com/antoniomralmeida/k2/internal/models/kbrule.go:581.5,581.11 1 1

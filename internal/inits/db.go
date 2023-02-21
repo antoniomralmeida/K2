@@ -28,11 +28,12 @@ func ConnectDatabase(db string) {
 
 	server := os.Getenv("MONGO_SERVER")
 	dsn := dsn.Decode(server)
-	Log(dsn, Info)
-	Log(lib.Ping(server), Fatal)
 	if db == "" {
 		db = dsn.Query("database")
 	}
+	dsn.SetQuery("database", db)
+	Log(dsn, Info)
+	Log(lib.Ping(server), Fatal)
 	err := mgm.SetDefaultConfig(nil, db, options.Client().ApplyURI(server))
 	Log(err, Fatal)
 	//ping db

@@ -59,7 +59,7 @@
 				
 				<option value="file1">github.com/antoniomralmeida/k2/internal/models/datainput.go (0.0%)</option>
 				
-				<option value="file2">github.com/antoniomralmeida/k2/internal/models/ebnf.go (91.8%)</option>
+				<option value="file2">github.com/antoniomralmeida/k2/internal/models/ebnf.go (87.8%)</option>
 				
 				<option value="file3">github.com/antoniomralmeida/k2/internal/models/kbalert.go (0.0%)</option>
 				
@@ -75,7 +75,7 @@
 				
 				<option value="file9">github.com/antoniomralmeida/k2/internal/models/kbobject.go (92.9%)</option>
 				
-				<option value="file10">github.com/antoniomralmeida/k2/internal/models/kbrule.go (13.3%)</option>
+				<option value="file10">github.com/antoniomralmeida/k2/internal/models/kbrule.go (13.1%)</option>
 				
 				<option value="file11">github.com/antoniomralmeida/k2/internal/models/kbsource.go (100.0%)</option>
 				
@@ -488,16 +488,16 @@ func (e *EBNF) grammarSampleToken(t *Token, stack *[]*Token, npar int) string <s
                 token = "'" + babbler.Babble() + "' "</span>
         case DynamicReference:<span class="cov8" title="1">
                 token = lib.GeneratePassword(2, 0, 0, 2) + " "</span>
-        case ListType:<span class="cov8" title="1">
+        case ListType:<span class="cov0" title="0">
                 n := rand.Intn(5) + 1
                 babbler := babble.NewBabbler()
                 babbler.Separator = " "
                 babbler.Count = 1
                 token = "('" + babbler.Babble() + "'"
-                for i := 1; i &lt; n; i++ </span><span class="cov8" title="1">{
+                for i := 1; i &lt; n; i++ </span><span class="cov0" title="0">{
                         token += ",'" + babbler.Babble() + "'"
                 }</span>
-                <span class="cov8" title="1">token += ") "</span>
+                <span class="cov0" title="0">token += ") "</span>
         case Literal:<span class="cov8" title="1">
                 token = t.Token + " "</span>
         case Class, Object, Attribute, Workspace:<span class="cov8" title="1">
@@ -1959,7 +1959,7 @@ func parsingRule(cmd string) ([]*Token, []*BIN, error) <span class="cov8" title=
                                         if FindClassByName(x, false) != nil </span><span class="cov0" title="0">{
                                                 ok = true
                                         }</span>
-                                } else<span class="cov8" title="1"> if y.GetTokentype() == Object </span><span class="cov8" title="1">{
+                                } else<span class="cov8" title="1"> if y.GetTokentype() == Object </span><span class="cov0" title="0">{
                                         if FindObjectByName(x) != nil </span><span class="cov0" title="0">{
                                                 ok = true
                                         }</span>

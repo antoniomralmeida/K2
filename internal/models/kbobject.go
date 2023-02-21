@@ -43,7 +43,7 @@ func (obj *KBObject) validateIndex() error {
 }
 
 func FindObjectByName(name string) (ret *KBObject) {
-
+	ret = nil
 	cur := mgm.Coll(ret).FindOne(mgm.Ctx(), bson.D{{"name", name}})
 	inits.Log(cur.Err(), inits.Error)
 	if cur.Err() == nil {

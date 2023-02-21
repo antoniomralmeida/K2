@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -19,6 +18,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -34,15 +34,30 @@ type KBRule struct {
 	bin               []*BIN     `bson:"-"`
 }
 
-func RuleFactory(rule string, priority byte, interval int) (*KBRule, error) {
-	_, bin, err := parsingRule(rule)
-	if inits.Log(err, inits.Info) != nil {
+func RuleFactory(statement string, priority byte, interval int) (*KBRule, error) {
+
+	bin, err, detail := parsingRule(statement)
+	if err != nil {
+		inits.Log(fmt.Sprintf("%v %v", err, detail.String()), inits.Error)
 		return nil, err
 	}
-	r := KBRule{Rule: rule, Priority: priority, ExecutionInterval: interval}
-	inits.Log(r.Persist(), inits.Fatal)
-	linkerRule(&r, bin)
-	return &r, nil
+	rule := KBRule{Rule: statement, Priority: priority, ExecutionInterval: interval}
+	err = linkerRule(&rule, bin)
+	if err != nil {
+		inits.Log(err, inits.Error)
+		return nil, err
+	}
+	err = rule.Persist()
+	if mongo.IsDuplicateKeyError(err) {
+		inits.Log(err, inits.Error)
+	} else {
+		inits.Log(err, inits.Fatal)
+	}
+	if err == nil {
+		return &rule, nil
+	} else {
+		return nil, err
+	}
 }
 
 func (r *KBRule) String() string {
@@ -266,6 +281,8 @@ oulter:
 	return nil
 }
 
+//TODO: ALTERAR COMAND SET
+
 func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 	//Program counter [pc] – It stores the counter which contains the address of the next instruction that is to be executed for the process.
 
@@ -343,20 +360,14 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 				return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
 			}
 			attrs := r.bin[pc].attributeObjects
-			if r.bin[pc+3].tokentype != Literal && r.bin[pc+4].tokentype != Literal {
+			pc += 4
+			if r.bin[pc].tokentype != Constant && r.bin[pc+1].tokentype != Constant {
 				return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
 			}
-			if r.bin[pc+4].tokentype != Constant && r.bin[pc+5].tokentype != Constant {
-				return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
+			if r.bin[pc+1].tokentype == Constant {
+				pc++
 			}
-			var v string
-			if r.bin[pc+4].tokentype == Constant {
-				pc += 4
-				v = r.bin[pc].token
-			} else {
-				pc += 5
-				v = r.bin[pc].token
-			}
+			v := r.bin[pc].token
 			for _, a := range attrs {
 				for _, o := range objs {
 					if a.KbObject == o {
@@ -502,14 +513,14 @@ func FindAllRules(sort string) error {
 	return err
 }
 
-func parsingRule(cmd string) ([]*Token, []*BIN, error) {
+func tokeningStatement(cmd string) []string {
 	cmd = strings.Replace(cmd, "\r\n", "", -1)
 	cmd = strings.Replace(cmd, "\\n", "", -1)
 	cmd = strings.Replace(cmd, "\t", " ", -1)
 	for strings.Contains(cmd, "  ") {
 		cmd = strings.Replace(cmd, "  ", " ", -1)
 	}
-	inits.Log("Parsing Prodution Rule: "+cmd, inits.Info)
+	inits.Log("Parsing Production Rule: "+cmd, inits.Info)
 	var inWord = false
 	var inString = false
 	var inNumber = false
@@ -551,71 +562,85 @@ func parsingRule(cmd string) ([]*Token, []*BIN, error) {
 		default:
 		}
 	}
-	var pt = _ebnf.GetBase()
-	var stack []*Token
-	var opts []*Token
-	var bin []*BIN
-	for _, x := range tokens {
+	return tokens
+}
+
+type compilingDetail struct {
+	Token string
+	Nexts map[string]*Token
+}
+
+func (cd *compilingDetail) String() string {
+	expected := "( "
+	for _, t := range cd.Nexts {
+		expected += t.Token + " "
+	}
+	expected += ")"
+	return fmt.Sprintf("near %v expected %v", cd.Token, expected)
+}
+
+func compilingStatement(tokens []string) ([]*BIN, error, compilingDetail) {
+	pt := _ebnf.GetBase()
+	jumps := []*Token{}
+	nexts := make(map[string]*Token)
+	bin := []*BIN{}
+	for _, token := range tokens {
 		var ok = false
-		opts = _ebnf.FindOptions(pt, &stack, 0)
-		for _, y := range opts {
-			//fmt.Println(x, y)
-			if (y.GetToken() == x) ||
-				(y.GetTokentype() == DynamicReference && len(x) == 1) ||
-				((y.GetTokentype() == Object || y.GetTokentype() == Class ||
-					y.GetTokentype() == Attribute || y.GetTokentype() == Constant ||
-					y.GetTokentype() == Reference) && unicode.IsUpper(rune(x[0]))) ||
-				(y.GetTokentype() == Text && (rune(x[0]) == '\'' || rune(x[0]) == '"') ||
-					(y.GetTokentype() == Constant && lib.IsNumber(x))) {
-				if y.GetTokentype() == Class {
-					if FindClassByName(x, false) != nil {
+		nexts = _ebnf.FindOptions(pt, &jumps, 0)
+		for _, next := range nexts {
+			if (next.GetToken() == token) ||
+				(next.GetTokenType() == DynamicReference && len(token) == 1) ||
+				((next.GetTokenType() == Object || next.GetTokenType() == Class ||
+					next.GetTokenType() == Attribute || next.GetTokenType() == Constant ||
+					next.GetTokenType() == Reference) && unicode.IsUpper(rune(token[0]))) ||
+				(next.GetTokenType() == Text && (rune(token[0]) == '\'' || rune(token[0]) == '"') ||
+					(next.GetTokenType() == Constant && lib.IsNumber(token))) {
+				if next.GetTokenType() == Class {
+					if FindClassByName(token, false) != nil {
 						ok = true
 					}
-				} else if y.GetTokentype() == Object {
-					if FindObjectByName(x) != nil {
+				} else if next.GetTokenType() == Object {
+					if FindObjectByName(token) != nil {
 						ok = true
 					}
 				} else {
 					ok = true
 				}
 				if ok {
-					pt = y
+					if pt.Rule_id != next.Rule_id {
+						jumps = append(jumps, pt.Nexts...)
+					}
+					pt = next
 					break
-
 				}
 			}
 		}
-		if !ok || len(opts) == 0 {
-			str := "Compiler error in " + x + " when the expected was: "
-			for _, y := range opts {
-				str = str + "... " + y.GetToken()
-			}
-			return opts, nil, errors.New(str)
+		if !ok || len(nexts) == 0 {
+			return nil, lib.CompilerError, compilingDetail{Token: token, Nexts: nexts}
 		}
-		code := BIN{tokentype: pt.GetTokentype(), token: x}
+		code := BIN{tokentype: pt.GetTokenType(), token: token}
 		code.setTokenBin()
 		if code.tokentype == Literal && code.literalbin == B_null {
-			inits.Log("Literal not found!", inits.Fatal)
+			inits.Log(lib.LiteralNotFoundError, inits.Fatal)
 		}
 		bin = append(bin, &code)
 	}
-	for _, y := range pt.GetNexts() {
-		if y.GetToken() == "." && y.GetTokentype() == Control {
-			inits.Log(", compilation successfully!", inits.Info)
-			return nil, bin, nil
+	nexts = _ebnf.FindOptions(pt, &jumps, 0)
+	for _, y := range nexts {
+		if y.GetToken() == "." && y.GetTokenType() == Control {
+			return bin, nil, compilingDetail{}
 		}
 	}
-	opts = _ebnf.FindOptions(pt, &stack, 0)
-	str := "Incomplete sentence when the expected was: "
-	for _, y := range opts {
-		str = str + "... " + y.GetToken()
-	}
-	return opts, nil, errors.New(str)
+	return nil, lib.CompilerError, compilingDetail{Token: "<end>"}
+}
+
+func parsingRule(cmd string) ([]*BIN, error, compilingDetail) {
+	return compilingStatement(tokeningStatement(cmd))
 }
 
 func linkerRule(r *KBRule, bin []*BIN) error {
 	// Find references of objects in KB
-	inits.Log("Linking Prodution Rule: "+r.ID.Hex(), inits.Info)
+	inits.Log("Linking Production Rule: "+r.ID.Hex(), inits.Info)
 	pauseKB()
 
 	dr := make(map[string]*KBClass)
@@ -636,12 +661,17 @@ func linkerRule(r *KBRule, bin []*BIN) error {
 			}
 		case Object:
 			if len(bin[j].objects) == 0 {
-				obj := FindObjectByName(r.bin[j].token)
-				bin[j].objects = append(bin[j].objects, obj)
+				obj := FindObjectByName(bin[j].token)
+				if obj != nil {
+					bin[j].objects = append(bin[j].objects, obj)
+				}
 			}
 		case Class:
 			if bin[j].class == nil {
 				c := FindClassByName(x.GetToken(), true)
+				if c == nil {
+					return lib.ClassNotFoundError
+				}
 				bin[j].class = c
 				objs, err := FindAllObjects(bson.M{"class_id": c.ID}, "_id")
 				inits.Log(err, inits.Error)
@@ -789,7 +819,7 @@ func RefreshRules() error {
 			for j := range _rules {
 				for k := range _rules[j].bkclasses {
 					if _rules[j].bkclasses[k] == _objects[i].Bkclass {
-						_, bin, err := parsingRule(_rules[j].Rule)
+						bin, err, _ := parsingRule(_rules[j].Rule)
 						if inits.Log(err, inits.Error) != nil {
 							linkerRule(&_rules[j], bin)
 						}

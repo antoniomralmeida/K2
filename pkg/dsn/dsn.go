@@ -31,6 +31,10 @@ func (dsn *DSN) Query(key string) string {
 	return dsn.query[key][0]
 }
 
+func (dsn *DSN) SetQuery(key, value string) {
+	dsn.query.Set(key, value)
+}
+
 func (dsn *DSN) Socket() string {
 	return dsn.host + ":" + dsn.port
 }

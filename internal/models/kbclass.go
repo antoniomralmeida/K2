@@ -165,7 +165,10 @@ func FindClassByName(nm string, mandatory bool) *KBClass {
 		inits.Log(err, inits.Error)
 		return nil
 	}
-	return ret
+	if err == nil {
+		return ret
+	}
+	return nil
 }
 
 func FindAllClasses(sort string) (class *[]KBClass, err error) {

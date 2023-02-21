@@ -46,7 +46,9 @@ func KnowledgeBasedFacotory() *KnowledgeBased {
 }
 
 func pauseKB() {
-	scheduler.Lock()
+	if scheduler != nil {
+		scheduler.Lock()
+	}
 }
 
 func resumeKB() {
@@ -172,9 +174,11 @@ func InitKB() {
 	FindAllRules("_id")
 
 	for i := range _rules {
-		_, bin, err := parsingRule(_rules[i].Rule)
+		bin, err, _ := parsingRule(_rules[i].Rule)
 		inits.Log(err, inits.Fatal)
-		linkerRule(&_rules[i], bin)
+		if err == nil {
+			linkerRule(&_rules[i], bin)
+		}
 	}
 }
 

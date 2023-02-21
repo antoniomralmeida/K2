@@ -19,7 +19,7 @@ func (t *Token) GetToken() string {
 	return t.Token
 }
 
-func (t *Token) GetTokentype() Tokentype {
+func (t *Token) GetTokenType() Tokentype {
 	return t.Tokentype
 }
 
@@ -40,13 +40,4 @@ func (t *Token) MarshalJSON() ([]byte, error) {
 	result["Token"] = t.Token
 	result["Nexts"] = fmt.Sprintf("%v", t.Nexts)
 	return json.Marshal(&result)
-}
-
-func isElementExist(s []*Token, str *Token) bool {
-	for _, v := range s {
-		if v == str {
-			return true
-		}
-	}
-	return false
 }

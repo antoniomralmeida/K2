@@ -5,19 +5,11 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"math"
-	"math/rand"
 	"os"
-	"strconv"
 	"strings"
 	"unicode"
 
 	"github.com/antoniomralmeida/k2/internal/inits"
-	"github.com/antoniomralmeida/k2/internal/lib"
-	"github.com/antoniomralmeida/k2/pkg/randnonlinear"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-
-	"github.com/tjarratt/babble"
 )
 
 type EBNF struct {
@@ -47,34 +39,34 @@ func (e *EBNF) FindSymbols(str string, both bool) int {
 	return -1
 }
 
-func (e *EBNF) FindOptions(pt *Token, stack *[]*Token, level int) []*Token {
-	var ret []*Token
+func (e *EBNF) FindOptions(pt *Token, jumps *[]*Token, level int) map[string]*Token {
+	ret := make(map[string]*Token)
 	if level < 10 {
-		if pt.GetTokentype() == Control && pt.Token == "." && len(*stack) > 0 {
-			pt = (*stack)[len(*stack)-1]
-			x := (*stack)[:len(*stack)-1]
-			stack = &x
+		if pt.GetTokenType() == Control && pt.Token == "." {
+			if len(*jumps) > 0 {
+				pt = (*jumps)[len(*jumps)-1]
+				tmp := (*jumps)[:len(*jumps)-1]
+				jumps = &tmp
+			} else {
+				ret[pt.Token] = pt
+			}
 		}
 
 		for _, x := range pt.Nexts {
-			if x.GetTokentype() == Control || x.GetTokentype() == Jump {
-				for _, k := range e.FindOptions(x, stack, level+1) {
-					if !isElementExist(ret, k) {
-						ret = append(ret, k)
-					}
+			if x.GetTokenType() == Control || x.GetTokenType() == Jump {
+				if x.Token == "." {
+					ret[x.Token] = x
 				}
-			} else if x.GetTokentype() == Reference {
-				*stack = append(*stack, x)
+				for _, k := range e.FindOptions(x, jumps, level+1) {
+					ret[k.Token] = k
+				}
+			} else if x.GetTokenType() == Reference {
 				n := e.Rules[x.Rule_jump].Tokens[0]
-				for _, k := range e.FindOptions(n, stack, level+1) {
-					if !isElementExist(ret, k) {
-						ret = append(ret, k)
-					}
+				for _, k := range e.FindOptions(n, jumps, level+1) {
+					ret[k.Token] = k
 				}
 			} else {
-				if !isElementExist(ret, x) {
-					ret = append(ret, x)
-				}
+				ret[x.Token] = x
 			}
 		}
 	}
@@ -182,16 +174,16 @@ func (e *EBNF) grammarLoad(ebnfFile string) int {
 	errorFatal := false
 	for _, r := range e.Rules {
 		for _, t := range r.Tokens {
-			if t.GetTokentype() == Reference {
+			if t.GetTokenType() == Reference {
 				t.Rule_jump = e.findRule(t.Token)
 				if t.Rule_jump == -1 {
-					for z := 1; z < t.GetTokentype().Size(); z++ {
+					for z := 1; z < t.GetTokenType().Size(); z++ {
 						if t.Token == Tokentype(z).String() {
 							t.Tokentype = Tokentype(z)
 							break
 						}
 					}
-					if t.GetTokentype() == Reference {
+					if t.GetTokenType() == Reference {
 						errorFatal = true
 						inits.Log("Reference not found! "+t.Token, inits.Error)
 					}
@@ -222,7 +214,7 @@ func (e *EBNF) grammarLoad(ebnfFile string) int {
 
 func (e *EBNF) findClose(rule *Statement, symb int, Token string, i int, level int) int {
 	for j := i + 1; j < len(rule.Tokens); j++ {
-		if rule.Tokens[j].GetTokentype() == Control {
+		if rule.Tokens[j].GetTokenType() == Control {
 			s := symbols[symb]
 			if rule.Tokens[j].Token == s.end && level == 0 {
 				return j
@@ -241,7 +233,7 @@ func (e *EBNF) parsingStatement(rule *Statement) {
 	inits.Log("Parsing ebnf rule "+rule.Name, inits.Info)
 	//Finding Pair of Symbols
 	for i := 0; i < len(rule.Tokens); i++ {
-		if rule.Tokens[i].GetTokentype() == Control {
+		if rule.Tokens[i].GetTokenType() == Control {
 			s := e.FindSymbols(rule.Tokens[i].Token, false)
 			if s != -1 {
 				c := e.findClose(rule, s, rule.Tokens[i].Token, i, 0)
@@ -259,7 +251,7 @@ func (e *EBNF) parsingStatement(rule *Statement) {
 	}
 	for i := 0; i < len(rule.Tokens)-1; i++ {
 		var p = findPair(pairs, i)
-		if rule.Tokens[i].GetTokentype() != Jump {
+		if rule.Tokens[i].GetTokenType() != Jump {
 			e.newJump(rule.Tokens[i], false, rule.Tokens[i+1])
 		} else {
 			e.newJump(rule.Tokens[i], false, rule.Tokens[pairs[p].end])
@@ -288,60 +280,4 @@ func (e *EBNF) String() string {
 	ret, err := json.MarshalIndent(e.Rules, "", "    ")
 	inits.Log(err, inits.Error)
 	return string(ret)
-}
-
-func (e *EBNF) GrammarSample() string {
-	stack := new([]*Token)
-	return e.grammarSampleToken(e.Base, stack, 0)
-}
-
-func (e *EBNF) grammarSampleToken(t *Token, stack *[]*Token, npar int) string {
-	var token string
-	switch t.Tokentype {
-	case Constant:
-		token = strconv.Itoa(rand.Int()) + " "
-	case Text:
-		babbler := babble.NewBabbler()
-		babbler.Separator = " "
-		babbler.Count = rand.Intn(5) + 1
-		token = "'" + babbler.Babble() + "' "
-	case DynamicReference:
-		token = lib.GeneratePassword(2, 0, 0, 2) + " "
-	case ListType:
-		n := rand.Intn(5) + 1
-		babbler := babble.NewBabbler()
-		babbler.Separator = " "
-		babbler.Count = 1
-		token = "('" + babbler.Babble() + "'"
-		for i := 1; i < n; i++ {
-			token += ",'" + babbler.Babble() + "'"
-		}
-		token += ") "
-	case Literal:
-		token = t.Token + " "
-	case Class, Object, Attribute, Workspace:
-		token = t.Token + primitive.NewObjectID().Hex() + " "
-	case Control:
-		if token == "(" {
-			npar++
-		} else if token == ")" {
-			npar--
-		}
-	}
-	opts := e.FindOptions(t, stack, 0)
-	max := len(opts)
-	for n := 0; n < max*2; n++ {
-		i := randnonlinear.IntnNL(max, func(idx int) int {
-			return int(math.Pow(2, float64(max-idx)))
-		})
-		if opts[i].Token == ")" && npar == 0 {
-			continue
-		}
-		return token + e.grammarSampleToken(opts[i], stack, npar)
-	}
-	for npar > 0 {
-		npar--
-		token += token + ")"
-	}
-	return token
 }

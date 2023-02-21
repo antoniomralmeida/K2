@@ -18,6 +18,7 @@ const (
 	B_breakpoints
 	B_by
 	B_change
+	B_class
 	B_cloning
 	B_close_par
 	B_comma
@@ -107,6 +108,7 @@ var LiteralBinStr = map[string]LiteralBin{
 	"breakpoints":        B_breakpoints,
 	"by":                 B_by,
 	"change":             B_change,
+	"class":              B_class,
 	"cloning":            B_cloning,
 	")":                  B_close_par,
 	",":                  B_comma,

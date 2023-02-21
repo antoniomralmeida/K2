@@ -44,6 +44,7 @@ func FuzzClassFactory(f *testing.F) {
 }
 
 func TestClassFactory(t *testing.T) {
+	KBClassFactory("Class63f35136f8a767c202687dc8", "", "")
 	mt1 := "Teste" + primitive.NewObjectID().Hex()
 	parent, err := KBClassFactory(mt1, "", "")
 	if err == nil {
