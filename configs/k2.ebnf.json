@@ -1,7 +1,7 @@
 [
     {
         "id": 1,
-        "name": "Rule",
+        "name": "Statement",
         "tokens": [
             {
                 "Id": "1",
@@ -221,7 +221,7 @@
             },
             {
                 "Id": "28",
-                "Nexts": "[#29, token: Rule, type:Reference]",
+                "Nexts": "[#29, token: Rule, type:Rule]",
                 "Rule_id": "1",
                 "Rule_jump": "0",
                 "Token": "initially",
@@ -231,9 +231,9 @@
                 "Id": "29",
                 "Nexts": "[#30, token: ], type:Control]",
                 "Rule_id": "1",
-                "Rule_jump": "0",
+                "Rule_jump": "-1",
                 "Token": "Rule",
-                "Tokentype": "Reference"
+                "Tokentype": "Rule"
             },
             {
                 "Id": "30",
@@ -2515,7 +2515,7 @@
             },
             {
                 "Id": "305",
-                "Nexts": "[#306, token: Rule, type:Reference]",
+                "Nexts": "[#306, token: Rule, type:Rule]",
                 "Rule_id": "14",
                 "Rule_jump": "0",
                 "Token": "insert",
@@ -2525,9 +2525,9 @@
                 "Id": "306",
                 "Nexts": "[#307, token: at, type:Literal]",
                 "Rule_id": "14",
-                "Rule_jump": "0",
+                "Rule_jump": "-1",
                 "Token": "Rule",
-                "Tokentype": "Reference"
+                "Tokentype": "Rule"
             },
             {
                 "Id": "307",

@@ -1,4 +1,4 @@
-Rule =  [  unconditionally then Consequent
+Statement =  [  unconditionally then Consequent
 		|  for any Class [ DynamicReference ] if Expression then Consequent 
 		|  when Expression then Consequent
 		|  whenever Expression then Consequent

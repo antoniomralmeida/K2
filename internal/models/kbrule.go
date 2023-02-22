@@ -9,6 +9,7 @@ import (
 	"unicode"
 
 	"github.com/PaesslerAG/gval"
+	"github.com/asaskevich/govalidator"
 	"github.com/kamva/mgm/v3"
 
 	"github.com/antoniomralmeida/k2/internal/fuzzy"
@@ -24,7 +25,8 @@ import (
 
 type KBRule struct {
 	mgm.DefaultModel  `json:",inline" bson:",inline"`
-	Rule              string     `bson:"rule"`
+	Name              string     `bson:"name" valid:"length(5|50),required"`
+	Statement         string     `bson:"statement" valid:"required"`
 	Priority          byte       `bson:"priority"` //0..100
 	ExecutionInterval int        `bson:"interval"`
 	Lastexecution     time.Time  `bson:"lastexecution"`
@@ -34,14 +36,35 @@ type KBRule struct {
 	bin               []*BIN     `bson:"-"`
 }
 
-func RuleFactory(statement string, priority byte, interval int) (*KBRule, error) {
+func (obj *KBRule) validateIndex() error {
+	cur, err := mgm.Coll(obj).Indexes().List(mgm.Ctx())
+	inits.Log(err, inits.Error)
+	var result []bson.M
+	err = cur.All(mgm.Ctx(), &result)
+	if len(result) == 1 {
+		inits.CreateUniqueIndex(mgm.Coll(obj), "name")
+	}
+	return err
+}
+
+func (obj *KBRule) validate() (bool, error) {
+	return govalidator.ValidateStruct(obj)
+}
+
+func RuleFactory(name, statement string, priority byte, interval int) (*KBRule, error) {
 
 	bin, err, detail := parsingRule(statement)
 	if err != nil {
 		inits.Log(fmt.Sprintf("%v %v", err, detail.String()), inits.Error)
 		return nil, err
 	}
-	rule := KBRule{Rule: statement, Priority: priority, ExecutionInterval: interval}
+	rule := KBRule{Name: name, Statement: statement, Priority: priority, ExecutionInterval: interval}
+
+	ok, err := rule.validate()
+	inits.Log(err, inits.Error)
+	if !ok {
+		return nil, err
+	}
 	err = linkerRule(&rule, bin)
 	if err != nil {
 		inits.Log(err, inits.Error)
@@ -68,7 +91,16 @@ func (r *KBRule) String() string {
 
 func (obj *KBRule) Persist() error {
 	return inits.Persist(obj)
-
+}
+func FindRuleByName(name string) (ret *KBRule) {
+	ret = nil
+	cur := mgm.Coll(ret).FindOne(mgm.Ctx(), bson.D{{"name", name}})
+	inits.Log(cur.Err(), inits.Error)
+	if cur.Err() == nil {
+		ret = new(KBRule)
+		cur.Decode(ret)
+	}
+	return
 }
 
 func (obj *KBRule) GetPrimitiveUpdateAt() primitive.DateTime {
@@ -104,7 +136,7 @@ func (r *KBRule) Run() (e error) {
 		return
 	}
 	r.inRun = true
-	inits.Log("run..."+r.ID.Hex(), inits.Info)
+	inits.Log("run..."+r.Name, inits.Info)
 
 	attrs := make(map[string][]*KBAttributeObject)
 	objs := make(map[string][]*KBObject)
@@ -603,6 +635,10 @@ func compilingStatement(tokens []string) ([]*BIN, error, compilingDetail) {
 					if FindObjectByName(token) != nil {
 						ok = true
 					}
+				} else if next.GetTokenType() == Rule {
+					if FindRuleByName(token) != nil {
+						ok = true
+					}
 				} else {
 					ok = true
 				}
@@ -696,7 +732,7 @@ func linkerRule(r *KBRule, bin []*BIN) error {
 					if len(bin[j].objects) == 0 {
 						obj := FindObjectByName(r.bin[j].token)
 						bin[j].objects = append(bin[j].objects, obj)
-						bin[j].class = obj.Bkclass
+						bin[j].class = obj.ClassPtr
 					}
 					bin[j].attribute = bin[ref].class.FindAttribute(x.GetToken())
 					if len(bin[j].objects) > 0 {
@@ -803,7 +839,7 @@ func linkerRule(r *KBRule, bin []*BIN) error {
 			r.addClass(cl)
 		}
 		for z := range bin[j].objects {
-			bin[j].objects[z].parsed = true
+			bin[j].objects[z].Parsed = true
 		}
 	}
 	r.bin = bin
@@ -815,18 +851,18 @@ func linkerRule(r *KBRule, bin []*BIN) error {
 func RefreshRules() error {
 	inits.Log("RefreshRules...", inits.Info)
 	for i := range _objects {
-		if !_objects[i].parsed {
+		if !_objects[i].Parsed {
 			for j := range _rules {
 				for k := range _rules[j].bkclasses {
-					if _rules[j].bkclasses[k] == _objects[i].Bkclass {
-						bin, err, _ := parsingRule(_rules[j].Rule)
+					if _rules[j].bkclasses[k] == _objects[i].ClassPtr {
+						bin, err, _ := parsingRule(_rules[j].Statement)
 						if inits.Log(err, inits.Error) != nil {
 							linkerRule(&_rules[j], bin)
 						}
 					}
 				}
 			}
-			_objects[i].parsed = true
+			_objects[i].Parsed = true
 		}
 	}
 	return nil

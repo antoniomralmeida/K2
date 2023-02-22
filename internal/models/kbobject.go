@@ -1,11 +1,11 @@
 package models
 
 import (
-	"context"
 	"encoding/json"
 
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
+	"github.com/asaskevich/govalidator"
 	"github.com/kamva/mgm/v3"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -15,11 +15,15 @@ import (
 
 type KBObject struct {
 	mgm.DefaultModel `json:",inline" bson:",inline"`
-	Name             string              `bson:"name"`
+	Name             string              `bson:"name" valid:"length(5|50),required"`
 	Class            primitive.ObjectID  `bson:"class_id"`
 	Attributes       []KBAttributeObject `bson:"attributes"`
-	Bkclass          *KBClass            `bson:"-" json:"Class"`
-	parsed           bool                `bson:"-"`
+	ClassPtr         *KBClass            `bson:"-"`
+	Parsed           bool                `bson:"-"`
+}
+
+func (obj *KBObject) validate() (bool, error) {
+	return govalidator.ValidateStruct(obj)
 }
 
 func ObjectFactory(name, className string) (*KBObject, error) {
@@ -35,7 +39,7 @@ func (obj *KBObject) validateIndex() error {
 	cur, err := mgm.Coll(obj).Indexes().List(mgm.Ctx())
 	inits.Log(err, inits.Error)
 	var result []bson.M
-	err = cur.All(context.TODO(), &result)
+	err = cur.All(mgm.Ctx(), &result)
 	if len(result) == 1 {
 		inits.CreateUniqueIndex(mgm.Coll(obj), "name")
 	}
@@ -54,23 +58,27 @@ func FindObjectByName(name string) (ret *KBObject) {
 }
 
 func ObjectFactoryByClass(name string, class *KBClass) (*KBObject, error) {
-	o := KBObject{Name: name, Class: class.ID, Bkclass: class}
+	obj := KBObject{Name: name, Class: class.ID, ClassPtr: class}
 	for _, x := range class.FindAttributes() {
-		n := KBAttributeObject{ID: primitive.NewObjectID(), Attribute: x.ID, KbAttribute: x, KbObject: &o}
-		o.Attributes = append(o.Attributes, n)
+		n := KBAttributeObject{ID: primitive.NewObjectID(), Attribute: x.ID, KbAttribute: x, KbObject: &obj}
+		obj.Attributes = append(obj.Attributes, n)
 	}
-	err := o.Persist()
+	ok, err := obj.validate()
+	if !ok {
+		inits.Log(err, inits.Error)
+		return nil, err
+	}
+	err = obj.Persist()
 	if mongo.IsDuplicateKeyError(err) {
 		inits.Log(err, inits.Error)
 	} else {
 		inits.Log(err, inits.Fatal)
 	}
-	return &o, err
+	return &obj, err
 }
 
 func (obj *KBObject) Persist() error {
 	return inits.Persist(obj)
-
 }
 
 func (obj *KBObject) GetPrimitiveUpdateAt() primitive.DateTime {

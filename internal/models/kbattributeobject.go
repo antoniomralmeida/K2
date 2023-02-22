@@ -35,7 +35,7 @@ type MTQQValue struct {
 type KBAttributeObject struct {
 	ID          primitive.ObjectID ` bson:"id"`
 	Attribute   primitive.ObjectID `bson:"attribute_id"  json:"AttributeId"`
-	KbObject    *KBObject          `bson:"-" json:"-"`
+	KbObject    *KBObject          `bson:"-" json:"-" valid:"-"`
 	KbHistory   *KBHistory         `bson:"-" json:"History"`
 	KbAttribute *KBAttribute       `bson:"-"  json:"Attrinute"`
 }

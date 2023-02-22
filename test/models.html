@@ -55,11 +55,11 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/antoniomralmeida/k2/internal/models/bin.go (57.1%)</option>
+				<option value="file0">github.com/antoniomralmeida/k2/internal/models/bin.go (71.4%)</option>
 				
 				<option value="file1">github.com/antoniomralmeida/k2/internal/models/datainput.go (0.0%)</option>
 				
-				<option value="file2">github.com/antoniomralmeida/k2/internal/models/ebnf.go (87.8%)</option>
+				<option value="file2">github.com/antoniomralmeida/k2/internal/models/ebnf.go (92.5%)</option>
 				
 				<option value="file3">github.com/antoniomralmeida/k2/internal/models/kbalert.go (0.0%)</option>
 				
@@ -69,13 +69,13 @@
 				
 				<option value="file6">github.com/antoniomralmeida/k2/internal/models/kbattributetype.go (100.0%)</option>
 				
-				<option value="file7">github.com/antoniomralmeida/k2/internal/models/kbclass.go (89.5%)</option>
+				<option value="file7">github.com/antoniomralmeida/k2/internal/models/kbclass.go (88.5%)</option>
 				
 				<option value="file8">github.com/antoniomralmeida/k2/internal/models/kbhistory.go (0.0%)</option>
 				
-				<option value="file9">github.com/antoniomralmeida/k2/internal/models/kbobject.go (92.9%)</option>
+				<option value="file9">github.com/antoniomralmeida/k2/internal/models/kbobject.go (89.6%)</option>
 				
-				<option value="file10">github.com/antoniomralmeida/k2/internal/models/kbrule.go (13.1%)</option>
+				<option value="file10">github.com/antoniomralmeida/k2/internal/models/kbrule.go (26.9%)</option>
 				
 				<option value="file11">github.com/antoniomralmeida/k2/internal/models/kbsource.go (100.0%)</option>
 				
@@ -85,7 +85,7 @@
 				
 				<option value="file14">github.com/antoniomralmeida/k2/internal/models/kbworkspace.go (0.0%)</option>
 				
-				<option value="file15">github.com/antoniomralmeida/k2/internal/models/knowledgebased.go (1.0%)</option>
+				<option value="file15">github.com/antoniomralmeida/k2/internal/models/knowledgebased.go (3.1%)</option>
 				
 				<option value="file16">github.com/antoniomralmeida/k2/internal/models/literalbin.go (0.0%)</option>
 				
@@ -93,7 +93,7 @@
 				
 				<option value="file18">github.com/antoniomralmeida/k2/internal/models/statment.go (0.0%)</option>
 				
-				<option value="file19">github.com/antoniomralmeida/k2/internal/models/token.go (93.8%)</option>
+				<option value="file19">github.com/antoniomralmeida/k2/internal/models/token.go (91.7%)</option>
 				
 				<option value="file20">github.com/antoniomralmeida/k2/internal/models/tokentype.go (100.0%)</option>
 				
@@ -126,7 +126,7 @@ type BIN struct {
         attributeObjects []*KBAttributeObject //TODO: Poderia ser dinâmico? Tempo de execução?
 }
 
-func (b *BIN) GetToken() string <span class="cov0" title="0">{
+func (b *BIN) GetToken() string <span class="cov8" title="1">{
         return b.token
 }</span>
 
@@ -186,19 +186,11 @@ import (
         "fmt"
         "io"
         "io/ioutil"
-        "math"
-        "math/rand"
         "os"
-        "strconv"
         "strings"
         "unicode"
 
         "github.com/antoniomralmeida/k2/internal/inits"
-        "github.com/antoniomralmeida/k2/internal/lib"
-        "github.com/antoniomralmeida/k2/pkg/randnonlinear"
-        "go.mongodb.org/mongo-driver/bson/primitive"
-
-        "github.com/tjarratt/babble"
 )
 
 type EBNF struct {
@@ -228,35 +220,35 @@ func (e *EBNF) FindSymbols(str string, both bool) int <span class="cov8" title="
         <span class="cov8" title="1">return -1</span>
 }
 
-func (e *EBNF) FindOptions(pt *Token, stack *[]*Token, level int) []*Token <span class="cov8" title="1">{
-        var ret []*Token
+func (e *EBNF) FindOptions(pt *Token, jumps *[]*Token, level int) map[string]*Token <span class="cov8" title="1">{
+        ret := make(map[string]*Token)
         if level &lt; 10 </span><span class="cov8" title="1">{
-                if pt.GetTokentype() == Control &amp;&amp; pt.Token == "." &amp;&amp; len(*stack) &gt; 0 </span><span class="cov8" title="1">{
-                        pt = (*stack)[len(*stack)-1]
-                        x := (*stack)[:len(*stack)-1]
-                        stack = &amp;x
-                }</span>
+                if pt.GetTokenType() == Control &amp;&amp; pt.Token == "." </span><span class="cov8" title="1">{
+                        if len(*jumps) &gt; 0 </span><span class="cov8" title="1">{
+                                pt = (*jumps)[len(*jumps)-1]
+                                tmp := (*jumps)[:len(*jumps)-1]
+                                jumps = &amp;tmp
+                        }</span> else<span class="cov8" title="1"> {
+                                ret[pt.Token] = pt
+                        }</span>
+                }
 
                 <span class="cov8" title="1">for _, x := range pt.Nexts </span><span class="cov8" title="1">{
-                        if x.GetTokentype() == Control || x.GetTokentype() == Jump </span><span class="cov8" title="1">{
-                                for _, k := range e.FindOptions(x, stack, level+1) </span><span class="cov8" title="1">{
-                                        if !isElementExist(ret, k) </span><span class="cov8" title="1">{
-                                                ret = append(ret, k)
-                                        }</span>
-                                }
-                        } else<span class="cov8" title="1"> if x.GetTokentype() == Reference </span><span class="cov8" title="1">{
-                                *stack = append(*stack, x)
-                                n := e.Rules[x.Rule_jump].Tokens[0]
-                                for _, k := range e.FindOptions(n, stack, level+1) </span><span class="cov8" title="1">{
-                                        if !isElementExist(ret, k) </span><span class="cov8" title="1">{
-                                                ret = append(ret, k)
-                                        }</span>
-                                }
-                        } else<span class="cov8" title="1"> {
-                                if !isElementExist(ret, x) </span><span class="cov8" title="1">{
-                                        ret = append(ret, x)
+                        if x.GetTokenType() == Control || x.GetTokenType() == Jump </span><span class="cov8" title="1">{
+                                if x.Token == "." </span><span class="cov8" title="1">{
+                                        ret[x.Token] = x
                                 }</span>
-                        }
+                                <span class="cov8" title="1">for _, k := range e.FindOptions(x, jumps, level+1) </span><span class="cov8" title="1">{
+                                        ret[k.Token] = k
+                                }</span>
+                        } else<span class="cov8" title="1"> if x.GetTokenType() == Reference </span><span class="cov8" title="1">{
+                                n := e.Rules[x.Rule_jump].Tokens[0]
+                                for _, k := range e.FindOptions(n, jumps, level+1) </span><span class="cov8" title="1">{
+                                        ret[k.Token] = k
+                                }</span>
+                        } else<span class="cov8" title="1"> {
+                                ret[x.Token] = x
+                        }</span>
                 }
         }
         <span class="cov8" title="1">return ret</span>
@@ -363,16 +355,16 @@ func (e *EBNF) grammarLoad(ebnfFile string) int <span class="cov8" title="1">{
         <span class="cov8" title="1">errorFatal := false
         for _, r := range e.Rules </span><span class="cov8" title="1">{
                 for _, t := range r.Tokens </span><span class="cov8" title="1">{
-                        if t.GetTokentype() == Reference </span><span class="cov8" title="1">{
+                        if t.GetTokenType() == Reference </span><span class="cov8" title="1">{
                                 t.Rule_jump = e.findRule(t.Token)
                                 if t.Rule_jump == -1 </span><span class="cov8" title="1">{
-                                        for z := 1; z &lt; t.GetTokentype().Size(); z++ </span><span class="cov8" title="1">{
+                                        for z := 1; z &lt; t.GetTokenType().Size(); z++ </span><span class="cov8" title="1">{
                                                 if t.Token == Tokentype(z).String() </span><span class="cov8" title="1">{
                                                         t.Tokentype = Tokentype(z)
                                                         break</span>
                                                 }
                                         }
-                                        <span class="cov8" title="1">if t.GetTokentype() == Reference </span><span class="cov0" title="0">{
+                                        <span class="cov8" title="1">if t.GetTokenType() == Reference </span><span class="cov0" title="0">{
                                                 errorFatal = true
                                                 inits.Log("Reference not found! "+t.Token, inits.Error)
                                         }</span>
@@ -403,7 +395,7 @@ func (e *EBNF) grammarLoad(ebnfFile string) int <span class="cov8" title="1">{
 
 func (e *EBNF) findClose(rule *Statement, symb int, Token string, i int, level int) int <span class="cov8" title="1">{
         for j := i + 1; j &lt; len(rule.Tokens); j++ </span><span class="cov8" title="1">{
-                if rule.Tokens[j].GetTokentype() == Control </span><span class="cov8" title="1">{
+                if rule.Tokens[j].GetTokenType() == Control </span><span class="cov8" title="1">{
                         s := symbols[symb]
                         if rule.Tokens[j].Token == s.end &amp;&amp; level == 0 </span><span class="cov8" title="1">{
                                 return j
@@ -422,7 +414,7 @@ func (e *EBNF) parsingStatement(rule *Statement) <span class="cov8" title="1">{
         inits.Log("Parsing ebnf rule "+rule.Name, inits.Info)
         //Finding Pair of Symbols
         for i := 0; i &lt; len(rule.Tokens); i++ </span><span class="cov8" title="1">{
-                if rule.Tokens[i].GetTokentype() == Control </span><span class="cov8" title="1">{
+                if rule.Tokens[i].GetTokenType() == Control </span><span class="cov8" title="1">{
                         s := e.FindSymbols(rule.Tokens[i].Token, false)
                         if s != -1 </span><span class="cov8" title="1">{
                                 c := e.findClose(rule, s, rule.Tokens[i].Token, i, 0)
@@ -440,7 +432,7 @@ func (e *EBNF) parsingStatement(rule *Statement) <span class="cov8" title="1">{
         }
         <span class="cov8" title="1">for i := 0; i &lt; len(rule.Tokens)-1; i++ </span><span class="cov8" title="1">{
                 var p = findPair(pairs, i)
-                if rule.Tokens[i].GetTokentype() != Jump </span><span class="cov8" title="1">{
+                if rule.Tokens[i].GetTokenType() != Jump </span><span class="cov8" title="1">{
                         e.newJump(rule.Tokens[i], false, rule.Tokens[i+1])
                 }</span> else<span class="cov8" title="1"> {
                         e.newJump(rule.Tokens[i], false, rule.Tokens[pairs[p].end])
@@ -470,62 +462,6 @@ func (e *EBNF) String() string <span class="cov8" title="1">{
         inits.Log(err, inits.Error)
         return string(ret)
 }</span>
-
-func (e *EBNF) GrammarSample() string <span class="cov8" title="1">{
-        stack := new([]*Token)
-        return e.grammarSampleToken(e.Base, stack, 0)
-}</span>
-
-func (e *EBNF) grammarSampleToken(t *Token, stack *[]*Token, npar int) string <span class="cov8" title="1">{
-        var token string
-        switch t.Tokentype </span>{
-        case Constant:<span class="cov8" title="1">
-                token = strconv.Itoa(rand.Int()) + " "</span>
-        case Text:<span class="cov8" title="1">
-                babbler := babble.NewBabbler()
-                babbler.Separator = " "
-                babbler.Count = rand.Intn(5) + 1
-                token = "'" + babbler.Babble() + "' "</span>
-        case DynamicReference:<span class="cov8" title="1">
-                token = lib.GeneratePassword(2, 0, 0, 2) + " "</span>
-        case ListType:<span class="cov0" title="0">
-                n := rand.Intn(5) + 1
-                babbler := babble.NewBabbler()
-                babbler.Separator = " "
-                babbler.Count = 1
-                token = "('" + babbler.Babble() + "'"
-                for i := 1; i &lt; n; i++ </span><span class="cov0" title="0">{
-                        token += ",'" + babbler.Babble() + "'"
-                }</span>
-                <span class="cov0" title="0">token += ") "</span>
-        case Literal:<span class="cov8" title="1">
-                token = t.Token + " "</span>
-        case Class, Object, Attribute, Workspace:<span class="cov8" title="1">
-                token = t.Token + primitive.NewObjectID().Hex() + " "</span>
-        case Control:<span class="cov8" title="1">
-                if token == "(" </span><span class="cov0" title="0">{
-                        npar++
-                }</span> else<span class="cov8" title="1"> if token == ")" </span><span class="cov0" title="0">{
-                        npar--
-                }</span>
-        }
-        <span class="cov8" title="1">opts := e.FindOptions(t, stack, 0)
-        max := len(opts)
-        for n := 0; n &lt; max*2; n++ </span><span class="cov8" title="1">{
-                i := randnonlinear.IntnNL(max, func(idx int) int </span><span class="cov8" title="1">{
-                        return int(math.Pow(2, float64(max-idx)))
-                }</span>)
-                <span class="cov8" title="1">if opts[i].Token == ")" &amp;&amp; npar == 0 </span><span class="cov8" title="1">{
-                        continue</span>
-                }
-                <span class="cov8" title="1">return token + e.grammarSampleToken(opts[i], stack, npar)</span>
-        }
-        <span class="cov8" title="1">for npar &gt; 0 </span><span class="cov0" title="0">{
-                npar--
-                token += token + ")"
-        }</span>
-        <span class="cov8" title="1">return token</span>
-}
 </pre>
 		
 		<pre class="file" id="file3" style="display: none">package models
@@ -680,7 +616,7 @@ type MTQQValue struct {
 type KBAttributeObject struct {
         ID          primitive.ObjectID ` bson:"id"`
         Attribute   primitive.ObjectID `bson:"attribute_id"  json:"AttributeId"`
-        KbObject    *KBObject          `bson:"-" json:"-"`
+        KbObject    *KBObject          `bson:"-" json:"-" valid:"-"`
         KbHistory   *KBHistory         `bson:"-" json:"History"`
         KbAttribute *KBAttribute       `bson:"-"  json:"Attrinute"`
 }
@@ -999,7 +935,6 @@ var attributeTypeMap = map[string]KBAttributeType{
 		<pre class="file" id="file7" style="display: none">package models
 
 import (
-        "context"
         "encoding/json"
 
         "github.com/antoniomralmeida/k2/internal/inits"
@@ -1026,14 +961,14 @@ func (obj *KBClass) validateIndex() error <span class="cov8" title="1">{
         cur, err := mgm.Coll(obj).Indexes().List(mgm.Ctx())
         inits.Log(err, inits.Error)
         var result []bson.M
-        err = cur.All(context.TODO(), &amp;result)
+        err = cur.All(mgm.Ctx(), &amp;result)
         if len(result) == 1 </span><span class="cov0" title="0">{
                 inits.CreateUniqueIndex(mgm.Coll(obj), "name")
         }</span>
         <span class="cov8" title="1">return err</span>
 }
 
-func (obj *KBClass) valitate() (bool, error) <span class="cov8" title="1">{
+func (obj *KBClass) validate() (bool, error) <span class="cov8" title="1">{
         return govalidator.ValidateStruct(obj)
 }</span>
 
@@ -1043,7 +978,7 @@ func KBClassFactoryParent(name, icon string, parentClass *KBClass) (class *KBCla
         }</span> else<span class="cov8" title="1"> {
                 class = &amp;KBClass{Name: name, Icon: icon}
         }</span>
-        <span class="cov8" title="1">ok, err := class.valitate()
+        <span class="cov8" title="1">ok, err := class.validate()
         inits.Log(err, inits.Error)
         if !ok </span><span class="cov0" title="0">{
                 return nil, err
@@ -1096,7 +1031,6 @@ func (obj *KBClass) AlterClassAddAttribute(name, atype, simulation string, optio
 }
 
 func (obj *KBClass) Persist() error <span class="cov8" title="1">{
-        obj.validateIndex()
         return inits.Persist(obj)
 }</span>
 
@@ -1163,7 +1097,10 @@ func FindClassByName(nm string, mandatory bool) *KBClass <span class="cov8" titl
                 inits.Log(err, inits.Error)
                 return nil
         }</span>
-        <span class="cov8" title="1">return ret</span>
+        <span class="cov8" title="1">if err == nil </span><span class="cov8" title="1">{
+                return ret
+        }</span>
+        <span class="cov0" title="0">return nil</span>
 }
 
 func FindAllClasses(sort string) (class *[]KBClass, err error) <span class="cov8" title="1">{
@@ -1284,11 +1221,11 @@ func (h *KBHistory) String() string <span class="cov0" title="0">{
 		<pre class="file" id="file9" style="display: none">package models
 
 import (
-        "context"
         "encoding/json"
 
         "github.com/antoniomralmeida/k2/internal/inits"
         "github.com/antoniomralmeida/k2/internal/lib"
+        "github.com/asaskevich/govalidator"
         "github.com/kamva/mgm/v3"
         "go.mongodb.org/mongo-driver/bson"
         "go.mongodb.org/mongo-driver/bson/primitive"
@@ -1298,12 +1235,16 @@ import (
 
 type KBObject struct {
         mgm.DefaultModel `json:",inline" bson:",inline"`
-        Name             string              `bson:"name"`
+        Name             string              `bson:"name" valid:"length(5|50),required"`
         Class            primitive.ObjectID  `bson:"class_id"`
         Attributes       []KBAttributeObject `bson:"attributes"`
-        Bkclass          *KBClass            `bson:"-" json:"Class"`
-        parsed           bool                `bson:"-"`
+        ClassPtr         *KBClass            `bson:"-"`
+        Parsed           bool                `bson:"-"`
 }
+
+func (obj *KBObject) validate() (bool, error) <span class="cov8" title="1">{
+        return govalidator.ValidateStruct(obj)
+}</span>
 
 func ObjectFactory(name, className string) (*KBObject, error) <span class="cov8" title="1">{
         class := FindClassByName(className, true)
@@ -1318,7 +1259,7 @@ func (obj *KBObject) validateIndex() error <span class="cov8" title="1">{
         cur, err := mgm.Coll(obj).Indexes().List(mgm.Ctx())
         inits.Log(err, inits.Error)
         var result []bson.M
-        err = cur.All(context.TODO(), &amp;result)
+        err = cur.All(mgm.Ctx(), &amp;result)
         if len(result) == 1 </span><span class="cov0" title="0">{
                 inits.CreateUniqueIndex(mgm.Coll(obj), "name")
         }</span>
@@ -1326,7 +1267,7 @@ func (obj *KBObject) validateIndex() error <span class="cov8" title="1">{
 }
 
 func FindObjectByName(name string) (ret *KBObject) <span class="cov8" title="1">{
-
+        ret = nil
         cur := mgm.Coll(ret).FindOne(mgm.Ctx(), bson.D{{"name", name}})
         inits.Log(cur.Err(), inits.Error)
         if cur.Err() == nil </span><span class="cov8" title="1">{
@@ -1337,23 +1278,27 @@ func FindObjectByName(name string) (ret *KBObject) <span class="cov8" title="1">
 }
 
 func ObjectFactoryByClass(name string, class *KBClass) (*KBObject, error) <span class="cov8" title="1">{
-        o := KBObject{Name: name, Class: class.ID, Bkclass: class}
+        obj := KBObject{Name: name, Class: class.ID, ClassPtr: class}
         for _, x := range class.FindAttributes() </span><span class="cov8" title="1">{
-                n := KBAttributeObject{ID: primitive.NewObjectID(), Attribute: x.ID, KbAttribute: x, KbObject: &amp;o}
-                o.Attributes = append(o.Attributes, n)
+                n := KBAttributeObject{ID: primitive.NewObjectID(), Attribute: x.ID, KbAttribute: x, KbObject: &amp;obj}
+                obj.Attributes = append(obj.Attributes, n)
         }</span>
-        <span class="cov8" title="1">err := o.Persist()
+        <span class="cov8" title="1">ok, err := obj.validate()
+        if !ok </span><span class="cov0" title="0">{
+                inits.Log(err, inits.Error)
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">err = obj.Persist()
         if mongo.IsDuplicateKeyError(err) </span><span class="cov8" title="1">{
                 inits.Log(err, inits.Error)
         }</span> else<span class="cov8" title="1"> {
                 inits.Log(err, inits.Fatal)
         }</span>
-        <span class="cov8" title="1">return &amp;o, err</span>
+        <span class="cov8" title="1">return &amp;obj, err</span>
 }
 
 func (obj *KBObject) Persist() error <span class="cov8" title="1">{
         return inits.Persist(obj)
-
 }</span>
 
 func (obj *KBObject) GetPrimitiveUpdateAt() primitive.DateTime <span class="cov0" title="0">{
@@ -1390,7 +1335,6 @@ func FindAllObjects(filter bson.M, sort string) (objs []KBObject, err error) <sp
 
 import (
         "encoding/json"
-        "errors"
         "fmt"
         "strconv"
         "strings"
@@ -1398,6 +1342,7 @@ import (
         "unicode"
 
         "github.com/PaesslerAG/gval"
+        "github.com/asaskevich/govalidator"
         "github.com/kamva/mgm/v3"
 
         "github.com/antoniomralmeida/k2/internal/fuzzy"
@@ -1407,12 +1352,14 @@ import (
 
         "go.mongodb.org/mongo-driver/bson"
         "go.mongodb.org/mongo-driver/bson/primitive"
+        "go.mongodb.org/mongo-driver/mongo"
         "go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type KBRule struct {
         mgm.DefaultModel  `json:",inline" bson:",inline"`
-        Rule              string     `bson:"rule"`
+        Name              string     `bson:"name" valid:"length(5|50),required"`
+        Statement         string     `bson:"statement" valid:"required"`
         Priority          byte       `bson:"priority"` //0..100
         ExecutionInterval int        `bson:"interval"`
         Lastexecution     time.Time  `bson:"lastexecution"`
@@ -1422,33 +1369,78 @@ type KBRule struct {
         bin               []*BIN     `bson:"-"`
 }
 
-func RuleFactory(rule string, priority byte, interval int) (*KBRule, error) <span class="cov8" title="1">{
-        _, bin, err := parsingRule(rule)
-        if inits.Log(err, inits.Info) != nil </span><span class="cov8" title="1">{
-                return nil, err
+func (obj *KBRule) validateIndex() error <span class="cov8" title="1">{
+        cur, err := mgm.Coll(obj).Indexes().List(mgm.Ctx())
+        inits.Log(err, inits.Error)
+        var result []bson.M
+        err = cur.All(mgm.Ctx(), &amp;result)
+        if len(result) == 1 </span><span class="cov0" title="0">{
+                inits.CreateUniqueIndex(mgm.Coll(obj), "name")
         }</span>
-        <span class="cov0" title="0">r := KBRule{Rule: rule, Priority: priority, ExecutionInterval: interval}
-        inits.Log(r.Persist(), inits.Fatal)
-        linkerRule(&amp;r, bin)
-        return &amp;r, nil</span>
+        <span class="cov8" title="1">return err</span>
 }
 
-func (r *KBRule) String() string <span class="cov8" title="1">{
+func (obj *KBRule) validate() (bool, error) <span class="cov8" title="1">{
+        return govalidator.ValidateStruct(obj)
+}</span>
+
+func RuleFactory(name, statement string, priority byte, interval int) (*KBRule, error) <span class="cov8" title="1">{
+
+        bin, err, detail := parsingRule(statement)
+        if err != nil </span><span class="cov8" title="1">{
+                inits.Log(fmt.Sprintf("%v %v", err, detail.String()), inits.Error)
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">rule := KBRule{Name: name, Statement: statement, Priority: priority, ExecutionInterval: interval}
+
+        ok, err := rule.validate()
+        inits.Log(err, inits.Error)
+        if !ok </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">err = linkerRule(&amp;rule, bin)
+        if err != nil </span><span class="cov0" title="0">{
+                inits.Log(err, inits.Error)
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">err = rule.Persist()
+        if mongo.IsDuplicateKeyError(err) </span><span class="cov0" title="0">{
+                inits.Log(err, inits.Error)
+        }</span> else<span class="cov8" title="1"> {
+                inits.Log(err, inits.Fatal)
+        }</span>
+        <span class="cov8" title="1">if err == nil </span><span class="cov8" title="1">{
+                return &amp;rule, nil
+        }</span> else<span class="cov0" title="0"> {
+                return nil, err
+        }</span>
+}
+
+func (r *KBRule) String() string <span class="cov0" title="0">{
         j, err := json.MarshalIndent(*r, "", "\t")
         inits.Log(err, inits.Error)
         return string(j)
 }</span>
 
-func (obj *KBRule) Persist() error <span class="cov0" title="0">{
+func (obj *KBRule) Persist() error <span class="cov8" title="1">{
         return inits.Persist(obj)
-
 }</span>
+func FindRuleByName(name string) (ret *KBRule) <span class="cov0" title="0">{
+        ret = nil
+        cur := mgm.Coll(ret).FindOne(mgm.Ctx(), bson.D{{"name", name}})
+        inits.Log(cur.Err(), inits.Error)
+        if cur.Err() == nil </span><span class="cov0" title="0">{
+                ret = new(KBRule)
+                cur.Decode(ret)
+        }</span>
+        <span class="cov0" title="0">return</span>
+}
 
 func (obj *KBRule) GetPrimitiveUpdateAt() primitive.DateTime <span class="cov0" title="0">{
         return primitive.NewDateTimeFromTime(obj.UpdatedAt)
 }</span>
 
-func (r *KBRule) addClass(c *KBClass) <span class="cov0" title="0">{
+func (r *KBRule) addClass(c *KBClass) <span class="cov8" title="1">{
         found := false
         for i := range r.bkclasses </span><span class="cov0" title="0">{
                 if r.bkclasses[i] == c </span><span class="cov0" title="0">{
@@ -1456,7 +1448,7 @@ func (r *KBRule) addClass(c *KBClass) <span class="cov0" title="0">{
                         break</span>
                 }
         }
-        <span class="cov0" title="0">if !found </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if !found </span><span class="cov8" title="1">{
                 r.bkclasses = append(r.bkclasses, c)
         }</span>
 }
@@ -1477,7 +1469,7 @@ func (r *KBRule) Run() (e error) <span class="cov0" title="0">{
                 return
         }</span>
         <span class="cov0" title="0">r.inRun = true
-        inits.Log("run..."+r.ID.Hex(), inits.Info)
+        inits.Log("run..."+r.Name, inits.Info)
 
         attrs := make(map[string][]*KBAttributeObject)
         objs := make(map[string][]*KBObject)
@@ -1654,6 +1646,8 @@ oulter:
         return nil</span>
 }
 
+//TODO: ALTERAR COMAND SET
+
 func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error <span class="cov0" title="0">{
         //Program counter [pc] – It stores the counter which contains the address of the next instruction that is to be executed for the process.
 
@@ -1731,21 +1725,15 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error <span clas
                                 return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
                         }</span>
                         <span class="cov0" title="0">attrs := r.bin[pc].attributeObjects
-                        if r.bin[pc+3].tokentype != Literal &amp;&amp; r.bin[pc+4].tokentype != Literal </span><span class="cov0" title="0">{
+                        pc += 4
+                        if r.bin[pc].tokentype != Constant &amp;&amp; r.bin[pc+1].tokentype != Constant </span><span class="cov0" title="0">{
                                 return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
                         }</span>
-                        <span class="cov0" title="0">if r.bin[pc+4].tokentype != Constant &amp;&amp; r.bin[pc+5].tokentype != Constant </span><span class="cov0" title="0">{
-                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
+                        <span class="cov0" title="0">if r.bin[pc+1].tokentype == Constant </span><span class="cov0" title="0">{
+                                pc++
                         }</span>
-                        <span class="cov0" title="0">var v string
-                        if r.bin[pc+4].tokentype == Constant </span><span class="cov0" title="0">{
-                                pc += 4
-                                v = r.bin[pc].token
-                        }</span> else<span class="cov0" title="0"> {
-                                pc += 5
-                                v = r.bin[pc].token
-                        }</span>
-                        <span class="cov0" title="0">for _, a := range attrs </span><span class="cov0" title="0">{
+                        <span class="cov0" title="0">v := r.bin[pc].token
+                        for _, a := range attrs </span><span class="cov0" title="0">{
                                 for _, o := range objs </span><span class="cov0" title="0">{
                                         if a.KbObject == o </span><span class="cov0" title="0">{
                                                 a.SetValue(v, Inference, trust)
@@ -1890,14 +1878,14 @@ func FindAllRules(sort string) error <span class="cov0" title="0">{
         return err
 }</span>
 
-func parsingRule(cmd string) ([]*Token, []*BIN, error) <span class="cov8" title="1">{
+func tokeningStatement(cmd string) []string <span class="cov8" title="1">{
         cmd = strings.Replace(cmd, "\r\n", "", -1)
         cmd = strings.Replace(cmd, "\\n", "", -1)
         cmd = strings.Replace(cmd, "\t", " ", -1)
         for strings.Contains(cmd, "  ") </span><span class="cov0" title="0">{
                 cmd = strings.Replace(cmd, "  ", " ", -1)
         }</span>
-        <span class="cov8" title="1">inits.Log("Parsing Prodution Rule: "+cmd, inits.Info)
+        <span class="cov8" title="1">inits.Log("Parsing Production Rule: "+cmd, inits.Info)
         var inWord = false
         var inString = false
         var inNumber = false
@@ -1939,107 +1927,130 @@ func parsingRule(cmd string) ([]*Token, []*BIN, error) <span class="cov8" title=
                 default:<span class="cov8" title="1"></span>
                 }
         }
-        <span class="cov8" title="1">var pt = _ebnf.GetBase()
-        var stack []*Token
-        var opts []*Token
-        var bin []*BIN
-        for _, x := range tokens </span><span class="cov8" title="1">{
+        <span class="cov8" title="1">return tokens</span>
+}
+
+type compilingDetail struct {
+        Token string
+        Nexts map[string]*Token
+}
+
+func (cd *compilingDetail) String() string <span class="cov8" title="1">{
+        expected := "( "
+        for _, t := range cd.Nexts </span><span class="cov8" title="1">{
+                expected += t.Token + " "
+        }</span>
+        <span class="cov8" title="1">expected += ")"
+        return fmt.Sprintf("near %v expected %v", cd.Token, expected)</span>
+}
+
+func compilingStatement(tokens []string) ([]*BIN, error, compilingDetail) <span class="cov8" title="1">{
+        pt := _ebnf.GetBase()
+        jumps := []*Token{}
+        nexts := make(map[string]*Token)
+        bin := []*BIN{}
+        for _, token := range tokens </span><span class="cov8" title="1">{
                 var ok = false
-                opts = _ebnf.FindOptions(pt, &amp;stack, 0)
-                for _, y := range opts </span><span class="cov8" title="1">{
-                        //fmt.Println(x, y)
-                        if (y.GetToken() == x) ||
-                                (y.GetTokentype() == DynamicReference &amp;&amp; len(x) == 1) ||
-                                ((y.GetTokentype() == Object || y.GetTokentype() == Class ||
-                                        y.GetTokentype() == Attribute || y.GetTokentype() == Constant ||
-                                        y.GetTokentype() == Reference) &amp;&amp; unicode.IsUpper(rune(x[0]))) ||
-                                (y.GetTokentype() == Text &amp;&amp; (rune(x[0]) == '\'' || rune(x[0]) == '"') ||
-                                        (y.GetTokentype() == Constant &amp;&amp; lib.IsNumber(x))) </span><span class="cov8" title="1">{
-                                if y.GetTokentype() == Class </span><span class="cov0" title="0">{
-                                        if FindClassByName(x, false) != nil </span><span class="cov0" title="0">{
+                nexts = _ebnf.FindOptions(pt, &amp;jumps, 0)
+                for _, next := range nexts </span><span class="cov8" title="1">{
+                        if (next.GetToken() == token) ||
+                                (next.GetTokenType() == DynamicReference &amp;&amp; len(token) == 1) ||
+                                ((next.GetTokenType() == Object || next.GetTokenType() == Class ||
+                                        next.GetTokenType() == Attribute || next.GetTokenType() == Constant ||
+                                        next.GetTokenType() == Reference) &amp;&amp; unicode.IsUpper(rune(token[0]))) ||
+                                (next.GetTokenType() == Text &amp;&amp; (rune(token[0]) == '\'' || rune(token[0]) == '"') ||
+                                        (next.GetTokenType() == Constant &amp;&amp; lib.IsNumber(token))) </span><span class="cov8" title="1">{
+                                if next.GetTokenType() == Class </span><span class="cov8" title="1">{
+                                        if FindClassByName(token, false) != nil </span><span class="cov8" title="1">{
                                                 ok = true
                                         }</span>
-                                } else<span class="cov8" title="1"> if y.GetTokentype() == Object </span><span class="cov0" title="0">{
-                                        if FindObjectByName(x) != nil </span><span class="cov0" title="0">{
+                                } else<span class="cov8" title="1"> if next.GetTokenType() == Object </span><span class="cov8" title="1">{
+                                        if FindObjectByName(token) != nil </span><span class="cov8" title="1">{
+                                                ok = true
+                                        }</span>
+                                } else<span class="cov8" title="1"> if next.GetTokenType() == Rule </span><span class="cov0" title="0">{
+                                        if FindRuleByName(token) != nil </span><span class="cov0" title="0">{
                                                 ok = true
                                         }</span>
                                 } else<span class="cov8" title="1"> {
                                         ok = true
                                 }</span>
                                 <span class="cov8" title="1">if ok </span><span class="cov8" title="1">{
-                                        pt = y
+                                        if pt.Rule_id != next.Rule_id </span><span class="cov8" title="1">{
+                                                jumps = append(jumps, pt.Nexts...)
+                                        }</span>
+                                        <span class="cov8" title="1">pt = next
                                         break</span>
-
                                 }
                         }
                 }
-                <span class="cov8" title="1">if !ok || len(opts) == 0 </span><span class="cov8" title="1">{
-                        str := "Compiler error in " + x + " when the expected was: "
-                        for _, y := range opts </span><span class="cov8" title="1">{
-                                str = str + "... " + y.GetToken()
-                        }</span>
-                        <span class="cov8" title="1">return opts, nil, errors.New(str)</span>
-                }
-                <span class="cov8" title="1">code := BIN{tokentype: pt.GetTokentype(), token: x}
+                <span class="cov8" title="1">if !ok || len(nexts) == 0 </span><span class="cov8" title="1">{
+                        return nil, lib.CompilerError, compilingDetail{Token: token, Nexts: nexts}
+                }</span>
+                <span class="cov8" title="1">code := BIN{tokentype: pt.GetTokenType(), token: token}
                 code.setTokenBin()
                 if code.tokentype == Literal &amp;&amp; code.literalbin == B_null </span><span class="cov0" title="0">{
-                        inits.Log("Literal not found!", inits.Fatal)
+                        inits.Log(lib.LiteralNotFoundError, inits.Fatal)
                 }</span>
                 <span class="cov8" title="1">bin = append(bin, &amp;code)</span>
         }
-        <span class="cov0" title="0">for _, y := range pt.GetNexts() </span><span class="cov0" title="0">{
-                if y.GetToken() == "." &amp;&amp; y.GetTokentype() == Control </span><span class="cov0" title="0">{
-                        inits.Log(", compilation successfully!", inits.Info)
-                        return nil, bin, nil
+        <span class="cov8" title="1">nexts = _ebnf.FindOptions(pt, &amp;jumps, 0)
+        for _, y := range nexts </span><span class="cov8" title="1">{
+                if y.GetToken() == "." &amp;&amp; y.GetTokenType() == Control </span><span class="cov8" title="1">{
+                        return bin, nil, compilingDetail{}
                 }</span>
         }
-        <span class="cov0" title="0">opts = _ebnf.FindOptions(pt, &amp;stack, 0)
-        str := "Incomplete sentence when the expected was: "
-        for _, y := range opts </span><span class="cov0" title="0">{
-                str = str + "... " + y.GetToken()
-        }</span>
-        <span class="cov0" title="0">return opts, nil, errors.New(str)</span>
+        <span class="cov0" title="0">return nil, lib.CompilerError, compilingDetail{Token: "&lt;end&gt;"}</span>
 }
 
-func linkerRule(r *KBRule, bin []*BIN) error <span class="cov0" title="0">{
+func parsingRule(cmd string) ([]*BIN, error, compilingDetail) <span class="cov8" title="1">{
+        return compilingStatement(tokeningStatement(cmd))
+}</span>
+
+func linkerRule(r *KBRule, bin []*BIN) error <span class="cov8" title="1">{
         // Find references of objects in KB
-        inits.Log("Linking Prodution Rule: "+r.ID.Hex(), inits.Info)
+        inits.Log("Linking Production Rule: "+r.ID.Hex(), inits.Info)
         pauseKB()
 
         dr := make(map[string]*KBClass)
         consequent := -1
-        for j, x := range bin </span><span class="cov0" title="0">{
+        for j, x := range bin </span><span class="cov8" title="1">{
                 switch x.literalbin </span>{
                 case B_initially:<span class="cov0" title="0">
                         stack := KBStack{RuleID: r.ID}
                         stack.Persist()</span>
-                case B_then:<span class="cov0" title="0">
+                case B_then:<span class="cov8" title="1">
                         consequent = j
                         r.consequent = j + 1</span>
                 }
-                <span class="cov0" title="0">switch x.GetTokentype() </span>{
+                <span class="cov8" title="1">switch x.GetTokentype() </span>{
                 case Workspace:<span class="cov0" title="0">
                         if bin[j].workspace == nil </span><span class="cov0" title="0">{
                                 bin[j].workspace = FindWorkspaceByName(r.bin[j].token)
                         }</span>
-                case Object:<span class="cov0" title="0">
-                        if len(bin[j].objects) == 0 </span><span class="cov0" title="0">{
-                                obj := FindObjectByName(r.bin[j].token)
-                                bin[j].objects = append(bin[j].objects, obj)
-                        }</span>
-                case Class:<span class="cov0" title="0">
-                        if bin[j].class == nil </span><span class="cov0" title="0">{
+                case Object:<span class="cov8" title="1">
+                        if len(bin[j].objects) == 0 </span><span class="cov8" title="1">{
+                                obj := FindObjectByName(bin[j].token)
+                                if obj != nil </span><span class="cov8" title="1">{
+                                        bin[j].objects = append(bin[j].objects, obj)
+                                }</span>
+                        }
+                case Class:<span class="cov8" title="1">
+                        if bin[j].class == nil </span><span class="cov8" title="1">{
                                 c := FindClassByName(x.GetToken(), true)
-                                bin[j].class = c
+                                if c == nil </span><span class="cov0" title="0">{
+                                        return lib.ClassNotFoundError
+                                }</span>
+                                <span class="cov8" title="1">bin[j].class = c
                                 objs, err := FindAllObjects(bson.M{"class_id": c.ID}, "_id")
                                 inits.Log(err, inits.Error)
-                                for _, y := range objs </span><span class="cov0" title="0">{
+                                for _, y := range objs </span><span class="cov8" title="1">{
                                         bin[j].objects = append(bin[j].objects, &amp;y)
                                 }</span>
                         }
-                case Attribute:<span class="cov0" title="0">
+                case Attribute:<span class="cov8" title="1">
                         ref := -1
-                        if bin[j+1].literalbin == B_of </span><span class="cov0" title="0">{
+                        if bin[j+1].literalbin == B_of </span><span class="cov8" title="1">{
                                 ref = j + 2
                         }</span> else<span class="cov0" title="0"> {
                                 for z := j - 1; z &gt;= 0; z-- </span><span class="cov0" title="0">{
@@ -2049,12 +2060,12 @@ func linkerRule(r *KBRule, bin []*BIN) error <span class="cov0" title="0">{
                                         }
                                 }
                         }
-                        <span class="cov0" title="0">if ref != -1 </span><span class="cov0" title="0">{
+                        <span class="cov8" title="1">if ref != -1 </span><span class="cov8" title="1">{
                                 if bin[ref].GetTokentype() == Object </span><span class="cov0" title="0">{
                                         if len(bin[j].objects) == 0 </span><span class="cov0" title="0">{
                                                 obj := FindObjectByName(r.bin[j].token)
                                                 bin[j].objects = append(bin[j].objects, obj)
-                                                bin[j].class = obj.Bkclass
+                                                bin[j].class = obj.ClassPtr
                                         }</span>
                                         <span class="cov0" title="0">bin[j].attribute = bin[ref].class.FindAttribute(x.GetToken())
                                         if len(bin[j].objects) &gt; 0 </span><span class="cov0" title="0">{
@@ -2062,7 +2073,7 @@ func linkerRule(r *KBRule, bin []*BIN) error <span class="cov0" title="0">{
                                                 bin[j].attributeObjects = append(bin[j].attributeObjects, atro)
                                         }</span>
                                         <span class="cov0" title="0">break</span>
-                                } else<span class="cov0" title="0"> if bin[ref].GetTokentype() == Class </span><span class="cov0" title="0">{
+                                } else<span class="cov8" title="1"> if bin[ref].GetTokentype() == Class </span><span class="cov0" title="0">{
                                         c := bin[ref].class
                                         if c == nil </span><span class="cov0" title="0">{
                                                 c = FindClassByName(x.GetToken(), true)
@@ -2079,7 +2090,7 @@ func linkerRule(r *KBRule, bin []*BIN) error <span class="cov0" title="0">{
                                                 bin[j].attributeObjects = append(bin[j].attributeObjects, atro)
                                         }</span>
                                         <span class="cov0" title="0">break</span>
-                                } else<span class="cov0" title="0"> if bin[ref].GetTokentype() == DynamicReference </span><span class="cov0" title="0">{
+                                } else<span class="cov8" title="1"> if bin[ref].GetTokentype() == DynamicReference </span><span class="cov0" title="0">{
                                         c := bin[ref].class
                                         if c == nil </span><span class="cov0" title="0">{
                                                 c = dr[bin[ref].token]
@@ -2125,8 +2136,8 @@ func linkerRule(r *KBRule, bin []*BIN) error <span class="cov0" title="0">{
                                 }
                         }
 
-                case Constant:<span class="cov0" title="0">
-                        </span><span class="cov0" title="0">{
+                case Constant:<span class="cov8" title="1">
+                        </span><span class="cov8" title="1">{
                                 if !lib.IsNumber(x.GetToken()) </span><span class="cov0" title="0">{
                                         ok := false
                                         for z := j - 1; z &gt;= 0; z-- </span><span class="cov0" title="0">{
@@ -2148,7 +2159,7 @@ func linkerRule(r *KBRule, bin []*BIN) error <span class="cov0" title="0">{
                                 }
                         }
                 }
-                <span class="cov0" title="0">a := bin[j].attribute
+                <span class="cov8" title="1">a := bin[j].attribute
                 if a != nil </span><span class="cov0" title="0">{
                         if consequent != -1 </span><span class="cov0" title="0">{
                                 a.addConsequentRules(r)
@@ -2156,15 +2167,15 @@ func linkerRule(r *KBRule, bin []*BIN) error <span class="cov0" title="0">{
                                 a.addAntecedentRules(r)
                         }</span>
                 }
-                <span class="cov0" title="0">cl := bin[j].class
-                if cl != nil </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">cl := bin[j].class
+                if cl != nil </span><span class="cov8" title="1">{
                         r.addClass(cl)
                 }</span>
-                <span class="cov0" title="0">for z := range bin[j].objects </span><span class="cov0" title="0">{
-                        bin[j].objects[z].parsed = true
+                <span class="cov8" title="1">for z := range bin[j].objects </span><span class="cov8" title="1">{
+                        bin[j].objects[z].Parsed = true
                 }</span>
         }
-        <span class="cov0" title="0">r.bin = bin
+        <span class="cov8" title="1">r.bin = bin
         resumeKB()
         _rules = append(_rules, *r)
         return nil</span>
@@ -2173,18 +2184,18 @@ func linkerRule(r *KBRule, bin []*BIN) error <span class="cov0" title="0">{
 func RefreshRules() error <span class="cov0" title="0">{
         inits.Log("RefreshRules...", inits.Info)
         for i := range _objects </span><span class="cov0" title="0">{
-                if !_objects[i].parsed </span><span class="cov0" title="0">{
+                if !_objects[i].Parsed </span><span class="cov0" title="0">{
                         for j := range _rules </span><span class="cov0" title="0">{
                                 for k := range _rules[j].bkclasses </span><span class="cov0" title="0">{
-                                        if _rules[j].bkclasses[k] == _objects[i].Bkclass </span><span class="cov0" title="0">{
-                                                _, bin, err := parsingRule(_rules[j].Rule)
+                                        if _rules[j].bkclasses[k] == _objects[i].ClassPtr </span><span class="cov0" title="0">{
+                                                bin, err, _ := parsingRule(_rules[j].Statement)
                                                 if inits.Log(err, inits.Error) != nil </span><span class="cov0" title="0">{
                                                         linkerRule(&amp;_rules[j], bin)
                                                 }</span>
                                         }
                                 }
                         }
-                        <span class="cov0" title="0">_objects[i].parsed = true</span>
+                        <span class="cov0" title="0">_objects[i].Parsed = true</span>
                 }
         }
         <span class="cov0" title="0">return nil</span>
@@ -2560,11 +2571,13 @@ func KnowledgeBasedFacotory() *KnowledgeBased <span class="cov0" title="0">{
         return kb</span>
 }
 
-func pauseKB() <span class="cov0" title="0">{
-        scheduler.Lock()
-}</span>
+func pauseKB() <span class="cov8" title="1">{
+        if scheduler != nil </span><span class="cov0" title="0">{
+                scheduler.Lock()
+        }</span>
+}
 
-func resumeKB() <span class="cov0" title="0">{
+func resumeKB() <span class="cov8" title="1">{
         if scheduler != nil </span><span class="cov0" title="0">{
                 scheduler.Unlock()
         }</span>
@@ -2644,7 +2657,7 @@ func InitKB() <span class="cov0" title="0">{
         for j, o := range _objects </span><span class="cov0" title="0">{
                 c := _idxClasses[o.Class]
                 if c != nil </span><span class="cov0" title="0">{
-                        _objects[j].Bkclass = c
+                        _objects[j].ClassPtr = c
                         attrs := c.FindAttributes()
                         sort.Slice(attrs, func(i, j int) bool </span><span class="cov0" title="0">{
                                 return attrs[i].ID.Hex() &lt; attrs[j].ID.Hex()
@@ -2687,10 +2700,12 @@ func InitKB() <span class="cov0" title="0">{
         FindAllRules("_id")
 
         for i := range _rules </span><span class="cov0" title="0">{
-                _, bin, err := parsingRule(_rules[i].Rule)
+                bin, err, _ := parsingRule(_rules[i].Statement)
                 inits.Log(err, inits.Fatal)
-                linkerRule(&amp;_rules[i], bin)
-        }</span>
+                if err == nil </span><span class="cov0" title="0">{
+                        linkerRule(&amp;_rules[i], bin)
+                }</span>
+        }
 }
 
 func KBRun(wg *sync.WaitGroup) <span class="cov0" title="0">{
@@ -2758,6 +2773,7 @@ const (
         B_breakpoints
         B_by
         B_change
+        B_class
         B_cloning
         B_close_par
         B_comma
@@ -2847,6 +2863,7 @@ var LiteralBinStr = map[string]LiteralBin{
         "breakpoints":        B_breakpoints,
         "by":                 B_by,
         "change":             B_change,
+        "class":              B_class,
         "cloning":            B_cloning,
         ")":                  B_close_par,
         ",":                  B_comma,
@@ -2989,7 +3006,7 @@ func (t *Token) GetToken() string <span class="cov8" title="1">{
         return t.Token
 }</span>
 
-func (t *Token) GetTokentype() Tokentype <span class="cov8" title="1">{
+func (t *Token) GetTokenType() Tokentype <span class="cov8" title="1">{
         return t.Tokentype
 }</span>
 
@@ -3011,15 +3028,6 @@ func (t *Token) MarshalJSON() ([]byte, error) <span class="cov8" title="1">{
         result["Nexts"] = fmt.Sprintf("%v", t.Nexts)
         return json.Marshal(&amp;result)
 }</span>
-
-func isElementExist(s []*Token, str *Token) bool <span class="cov8" title="1">{
-        for _, v := range s </span><span class="cov8" title="1">{
-                if v == str </span><span class="cov8" title="1">{
-                        return true
-                }</span>
-        }
-        <span class="cov8" title="1">return false</span>
-}
 </pre>
 		
 		<pre class="file" id="file20" style="display: none">package models
@@ -3040,9 +3048,10 @@ const (
         Class
         ListType
         Workspace
+        Rule
 )
 
-var TokentypeStr = []string{"", "Reference", "Literal", "Text", "Control", "Jump", "Object", "DynamicReference", "Attribute", "Constant", "Class", "ListType", "Workspace"}
+var TokentypeStr = []string{"", "Reference", "Literal", "Text", "Control", "Jump", "Object", "DynamicReference", "Attribute", "Constant", "Class", "ListType", "Workspace", "Rule"}
 
 func (me Tokentype) String() string <span class="cov8" title="1">{
         return TokentypeStr[me]

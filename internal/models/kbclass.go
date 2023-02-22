@@ -1,7 +1,6 @@
 package models
 
 import (
-	"context"
 	"encoding/json"
 
 	"github.com/antoniomralmeida/k2/internal/inits"
@@ -28,14 +27,14 @@ func (obj *KBClass) validateIndex() error {
 	cur, err := mgm.Coll(obj).Indexes().List(mgm.Ctx())
 	inits.Log(err, inits.Error)
 	var result []bson.M
-	err = cur.All(context.TODO(), &result)
+	err = cur.All(mgm.Ctx(), &result)
 	if len(result) == 1 {
 		inits.CreateUniqueIndex(mgm.Coll(obj), "name")
 	}
 	return err
 }
 
-func (obj *KBClass) valitate() (bool, error) {
+func (obj *KBClass) validate() (bool, error) {
 	return govalidator.ValidateStruct(obj)
 }
 
@@ -45,7 +44,7 @@ func KBClassFactoryParent(name, icon string, parentClass *KBClass) (class *KBCla
 	} else {
 		class = &KBClass{Name: name, Icon: icon}
 	}
-	ok, err := class.valitate()
+	ok, err := class.validate()
 	inits.Log(err, inits.Error)
 	if !ok {
 		return nil, err
@@ -98,7 +97,6 @@ func (obj *KBClass) AlterClassAddAttribute(name, atype, simulation string, optio
 }
 
 func (obj *KBClass) Persist() error {
-	obj.validateIndex()
 	return inits.Persist(obj)
 }
 

@@ -131,7 +131,7 @@ func InitKB() {
 	for j, o := range _objects {
 		c := _idxClasses[o.Class]
 		if c != nil {
-			_objects[j].Bkclass = c
+			_objects[j].ClassPtr = c
 			attrs := c.FindAttributes()
 			sort.Slice(attrs, func(i, j int) bool {
 				return attrs[i].ID.Hex() < attrs[j].ID.Hex()
@@ -174,7 +174,7 @@ func InitKB() {
 	FindAllRules("_id")
 
 	for i := range _rules {
-		bin, err, _ := parsingRule(_rules[i].Rule)
+		bin, err, _ := parsingRule(_rules[i].Statement)
 		inits.Log(err, inits.Fatal)
 		if err == nil {
 			linkerRule(&_rules[i], bin)
