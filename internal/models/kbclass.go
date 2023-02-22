@@ -104,7 +104,7 @@ func (obj *KBClass) GetPrimitiveUpdateAt() primitive.DateTime {
 	return primitive.NewDateTimeFromTime(obj.UpdatedAt)
 }
 
-func (class *KBClass) FindOne(p bson.D) error {
+func (class *KBClass) FindOne(p bson.M) error {
 	ret := mgm.Coll(class).FindOne(mgm.Ctx(), p)
 	if ret.Err() == nil {
 		ret.Decode(class)
@@ -158,7 +158,7 @@ func (c *KBClass) FindAttribute(name string) *KBAttribute {
 
 func FindClassByName(nm string, mandatory bool) *KBClass {
 	ret := new(KBClass)
-	err := ret.FindOne(bson.D{{Key: "name", Value: nm}})
+	err := ret.FindOne(bson.M{"name": nm})
 	if err != nil && mandatory {
 		inits.Log(err, inits.Error)
 		return nil

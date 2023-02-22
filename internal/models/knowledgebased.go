@@ -171,7 +171,7 @@ func InitKB() {
 
 	FindAllWorkspaces("name")
 
-	FindAllRules("_id")
+	FindAllRules("_id", &_rules)
 
 	for i := range _rules {
 		bin, err, _ := parsingRule(_rules[i].Statement)

@@ -119,6 +119,13 @@ func Ping(uri string) error {
 	}
 }
 
+func Identify(name string) string {
+	var specialCharSet = "'\"!@#$%&*+-/ "
+	for _, c := range specialCharSet {
+		name = strings.ReplaceAll(name, string(c), "")
+	}
+	return name
+}
 func GeneratePassword(passwordLength, minSpecialChar, minNum, minUpperCase int) string {
 	var password strings.Builder
 	var (

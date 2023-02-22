@@ -75,7 +75,7 @@
 				
 				<option value="file9">github.com/antoniomralmeida/k2/internal/models/kbobject.go (89.6%)</option>
 				
-				<option value="file10">github.com/antoniomralmeida/k2/internal/models/kbrule.go (26.9%)</option>
+				<option value="file10">github.com/antoniomralmeida/k2/internal/models/kbrule.go (37.1%)</option>
 				
 				<option value="file11">github.com/antoniomralmeida/k2/internal/models/kbsource.go (100.0%)</option>
 				
@@ -1038,7 +1038,7 @@ func (obj *KBClass) GetPrimitiveUpdateAt() primitive.DateTime <span class="cov8"
         return primitive.NewDateTimeFromTime(obj.UpdatedAt)
 }</span>
 
-func (class *KBClass) FindOne(p bson.D) error <span class="cov8" title="1">{
+func (class *KBClass) FindOne(p bson.M) error <span class="cov8" title="1">{
         ret := mgm.Coll(class).FindOne(mgm.Ctx(), p)
         if ret.Err() == nil </span><span class="cov8" title="1">{
                 ret.Decode(class)
@@ -1092,7 +1092,7 @@ func (c *KBClass) FindAttribute(name string) *KBAttribute <span class="cov8" tit
 
 func FindClassByName(nm string, mandatory bool) *KBClass <span class="cov8" title="1">{
         ret := new(KBClass)
-        err := ret.FindOne(bson.D{{Key: "name", Value: nm}})
+        err := ret.FindOne(bson.M{"name": nm})
         if err != nil &amp;&amp; mandatory </span><span class="cov8" title="1">{
                 inits.Log(err, inits.Error)
                 return nil
@@ -1335,6 +1335,7 @@ func FindAllObjects(filter bson.M, sort string) (objs []KBObject, err error) <sp
 
 import (
         "encoding/json"
+        "errors"
         "fmt"
         "strconv"
         "strings"
@@ -1416,7 +1417,7 @@ func RuleFactory(name, statement string, priority byte, interval int) (*KBRule, 
         }</span>
 }
 
-func (r *KBRule) String() string <span class="cov0" title="0">{
+func (r *KBRule) String() string <span class="cov8" title="1">{
         j, err := json.MarshalIndent(*r, "", "\t")
         inits.Log(err, inits.Error)
         return string(j)
@@ -1425,18 +1426,18 @@ func (r *KBRule) String() string <span class="cov0" title="0">{
 func (obj *KBRule) Persist() error <span class="cov8" title="1">{
         return inits.Persist(obj)
 }</span>
-func FindRuleByName(name string) (ret *KBRule) <span class="cov0" title="0">{
+func FindRuleByName(name string) (ret *KBRule) <span class="cov8" title="1">{
         ret = nil
         cur := mgm.Coll(ret).FindOne(mgm.Ctx(), bson.D{{"name", name}})
         inits.Log(cur.Err(), inits.Error)
-        if cur.Err() == nil </span><span class="cov0" title="0">{
+        if cur.Err() == nil </span><span class="cov8" title="1">{
                 ret = new(KBRule)
                 cur.Decode(ret)
         }</span>
-        <span class="cov0" title="0">return</span>
+        <span class="cov8" title="1">return</span>
 }
 
-func (obj *KBRule) GetPrimitiveUpdateAt() primitive.DateTime <span class="cov0" title="0">{
+func (obj *KBRule) GetPrimitiveUpdateAt() primitive.DateTime <span class="cov8" title="1">{
         return primitive.NewDateTimeFromTime(obj.UpdatedAt)
 }</span>
 
@@ -1457,424 +1458,11 @@ func (r *KBRule) GetBins() []*BIN <span class="cov0" title="0">{
         return r.bin
 }</span>
 
-func (r *KBRule) Run() (e error) <span class="cov0" title="0">{
-
-        type Value struct {
-                value string
-                trust float64
-                atype KBAttributeType
-        }
-
-        if r.inRun </span><span class="cov0" title="0">{ //avoid non-parallel execution of the same rule
-                return
-        }</span>
-        <span class="cov0" title="0">r.inRun = true
-        inits.Log("run..."+r.Name, inits.Info)
-
-        attrs := make(map[string][]*KBAttributeObject)
-        objs := make(map[string][]*KBObject)
-
-        conditionally := false
-        expression := ""
-        fuzzyexp := ""
-
-oulter:
-        //Program counter [pc] – It stores the counter which contains the address of the next instruction that is to be executed for the process.
-        for pc := 0; pc &lt; len(r.bin); </span><span class="cov0" title="0">{
-                switch r.bin[pc].literalbin </span>{
-                case B_unconditionally:<span class="cov0" title="0">
-                        conditionally = true</span>
-                case B_then:<span class="cov0" title="0">
-                        if !conditionally </span><span class="cov0" title="0">{
-                                break oulter</span>
-                        }
-                case B_for:<span class="cov0" title="0">
-                        pc++
-                        if r.bin[pc].literalbin != B_any </span><span class="cov0" title="0">{
-                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-                        }</span>
-                        <span class="cov0" title="0">pc++
-                        if r.bin[pc].tokentype != Class </span><span class="cov0" title="0">{
-                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-                        }</span>
-                        <span class="cov0" title="0">if r.bin[pc].class == nil </span><span class="cov0" title="0">{
-                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", inits.Error)
-                        }</span>
-
-                        <span class="cov0" title="0">if len(r.bin[pc].objects) == 0 </span><span class="cov0" title="0">{
-                                return inits.Log("Warning in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" no object found!", inits.Info)
-                        }</span>
-
-                        <span class="cov0" title="0">if r.bin[pc+1].tokentype == DynamicReference </span><span class="cov0" title="0">{
-                                pc++
-                        }</span>
-                case B_if:<span class="cov0" title="0">
-
-                inner:
-                        for </span><span class="cov0" title="0">{
-
-                                pc++
-                                for ; r.bin[pc].literalbin == B_open_par; pc++ </span><span class="cov0" title="0">{
-                                        expression = expression + r.bin[pc].token
-                                        fuzzyexp = fuzzyexp + r.bin[pc].token
-                                }</span>
-                                <span class="cov0" title="0">if r.bin[pc].literalbin != B_the </span><span class="cov0" title="0">{
-                                        return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-                                }</span>
-                                <span class="cov0" title="0">pc++
-                                if r.bin[pc].tokentype != Attribute </span><span class="cov0" title="0">{
-                                        return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-                                }</span>
-
-                                <span class="cov0" title="0">if r.bin[pc].class == nil </span><span class="cov0" title="0">{
-                                        return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-                                }</span>
-                                <span class="cov0" title="0">key := "{{" + r.bin[pc].class.Name + "." + r.bin[pc].token + "}}"
-                                expression = expression + key
-                                fuzzyexp = fuzzyexp + key
-                                attrs[key] = r.bin[pc].attributeObjects
-                                objs[key] = r.bin[pc].objects
-
-                                pc++
-                                if r.bin[pc].literalbin == B_of </span><span class="cov0" title="0">{
-                                        pc++
-                                        if r.bin[pc].tokentype != DynamicReference &amp;&amp; r.bin[pc].tokentype != Object </span><span class="cov0" title="0">{
-                                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-                                        }</span>
-                                        <span class="cov0" title="0">pc++</span>
-                                }
-                                <span class="cov0" title="0">switch r.bin[pc].literalbin </span>{
-                                case B_is:<span class="cov0" title="0">
-                                        expression = expression + "=="</span>
-                                case B_equal:<span class="cov0" title="0">
-                                        expression = expression + "=="</span>
-                                case B_different:<span class="cov0" title="0">
-                                        expression = expression + "!="</span>
-                                case B_less:<span class="cov0" title="0">
-                                        expression = expression + "&lt;"
-                                        pc += 2
-                                        if r.bin[pc].literalbin == B_or </span><span class="cov0" title="0">{
-                                                expression = expression + "="
-                                                pc += 2
-                                        }</span>
-                                case B_greater:<span class="cov0" title="0">
-                                        expression = expression + "&gt;"
-                                        pc += 2
-                                        if r.bin[pc].literalbin == B_or </span><span class="cov0" title="0">{
-                                                expression = expression + "="
-                                                pc += 2
-                                        }</span>
-                                }
-                                <span class="cov0" title="0">pc++
-                                if r.bin[pc].tokentype == Constant || r.bin[pc].tokentype == Text || r.bin[pc].tokentype == ListType </span><span class="cov0" title="0">{
-                                        expression = expression + r.bin[pc].token
-                                }</span>
-                                <span class="cov0" title="0">pc++
-                                for ; r.bin[pc].literalbin == B_close_par; pc++ </span><span class="cov0" title="0">{
-                                        expression = expression + r.bin[pc].token
-                                        fuzzyexp = fuzzyexp + r.bin[pc].token
-                                }</span>
-
-                                <span class="cov0" title="0">switch r.bin[pc].literalbin </span>{
-                                case B_then:<span class="cov0" title="0">
-                                        break inner</span>
-                                case B_and:<span class="cov0" title="0">
-                                        pc++
-                                        expression = expression + " " + r.bin[pc].token + " "
-                                        fuzzyexp = fuzzyexp + " " + r.bin[pc].token + " "</span>
-                                case B_or:<span class="cov0" title="0">
-                                        pc++
-                                        fuzzyexp = fuzzyexp + " " + r.bin[pc].token + " "</span>
-                                }
-                        }
-                default:<span class="cov0" title="0">
-                        pc++</span>
-                }
-        }
-
-        <span class="cov0" title="0">if !conditionally </span><span class="cov0" title="0">{
-                cart := cartesian.Cartesian{}
-                values := make(map[string][]Value)
-                idx2 := []string{}
-                for ix := range attrs </span><span class="cov0" title="0">{
-                        vls := []Value{}
-                        cart.AddItem(ix, len(attrs[ix])-1)
-                        for iy := range attrs[ix] </span><span class="cov0" title="0">{
-                                v, t, at := attrs[ix][iy].ValueString()
-                                vls = append(vls, Value{v, t, at})
-                        }</span>
-                        <span class="cov0" title="0">values[ix] = vls
-                        idx2 = append(idx2, ix)</span>
-                }
-
-                <span class="cov0" title="0">for </span><span class="cov0" title="0">{
-                        exp := expression
-                        fuzzy := fuzzy.FuzzyLogicalInference(fuzzyexp)
-                        found, idxs := cart.GetCombination()
-                        obs := []*KBObject{}
-                        ok := true
-                        for key := range attrs </span><span class="cov0" title="0">{
-                                if values[key][idxs[key]].value != "" </span><span class="cov0" title="0">{
-                                        ok = false
-                                        break</span>
-                                }
-                                <span class="cov0" title="0">exp = strings.Replace(exp, key, string(values[key][idxs[key]].value), -1)
-                                trust := fmt.Sprint(values[key][idxs[key]].trust)
-                                fuzzy = strings.Replace(fuzzy, key, trust, -1)
-                                obs = append(obs, objs[key][idxs[key]])</span>
-                        }
-                        <span class="cov0" title="0">if ok </span><span class="cov0" title="0">{
-                                result, err := gval.Evaluate(exp, nil)
-                                inits.Log(err, inits.Error)
-                                trust, err := gval.Evaluate(fuzzy, nil)
-                                inits.Log(err, inits.Error)
-                                t, _ := strconv.ParseFloat(fmt.Sprintf("%v", trust), 64)
-                                if result == true </span><span class="cov0" title="0">{
-                                        r.RunConsequent(obs, t)
-                                }</span>
-                        }
-                        <span class="cov0" title="0">if !found </span><span class="cov0" title="0">{
-                                break</span>
-                        }
-                }
-        } else<span class="cov0" title="0"> {
-                r.RunConsequent([]*KBObject{}, 100.0)
-        }</span>
-        <span class="cov0" title="0">r.Lastexecution = time.Now()
-        r.Persist()
-        r.inRun = false
-        return nil</span>
-}
-
-//TODO: ALTERAR COMAND SET
-
-func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error <span class="cov0" title="0">{
-        //Program counter [pc] – It stores the counter which contains the address of the next instruction that is to be executed for the process.
-
-        for pc := r.consequent; pc &lt; len(r.bin); pc++ </span><span class="cov0" title="0">{
-                switch r.bin[pc].literalbin </span>{
-                case B_inform:<span class="cov0" title="0">
-                        attrs := make(map[string][]*KBAttributeObject)
-                        cart := cartesian.Cartesian{}
-                        pc += 5
-                        if r.bin[pc].tokentype != Text </span><span class="cov0" title="0">{
-                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-                        }</span>
-                        <span class="cov0" title="0">txt := ""
-                        ok := true
-                        for </span><span class="cov0" title="0">{
-                                txt = txt + r.bin[pc].token
-                                pc++
-                                if r.bin[pc].literalbin != B_the </span><span class="cov0" title="0">{
-                                        break</span>
-                                }
-                                <span class="cov0" title="0">if r.bin[pc].tokentype != Attribute </span><span class="cov0" title="0">{
-                                        return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-                                }</span>
-                                <span class="cov0" title="0">if r.bin[pc].attributeObjects == nil </span><span class="cov0" title="0">{
-                                        return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-                                }</span>
-                                <span class="cov0" title="0">key := "{{" + r.bin[pc].class.Name + "." + r.bin[pc].token + "}}"
-                                txt = txt + " " + key + " "
-                                attrs[key] = r.bin[pc].attributeObjects
-                                cart.AddItem(key, len(attrs[key])-1)
-
-                                pc += 2
-                                if r.bin[pc].literalbin == B_the </span><span class="cov0" title="0">{
-                                        pc += 2
-                                }</span> else<span class="cov0" title="0"> if r.bin[pc].tokentype != DynamicReference </span><span class="cov0" title="0">{
-                                        return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-                                }</span> else<span class="cov0" title="0"> {
-                                        if !attrs[key][pc].InObjects(objs) </span><span class="cov0" title="0">{
-                                                ok = false
-                                        }</span>
-                                        <span class="cov0" title="0">pc++</span>
-                                }
-                                <span class="cov0" title="0">if r.bin[pc].tokentype == Text </span><span class="cov0" title="0">{
-                                        txt = txt + " " + r.bin[pc].token
-                                        pc++
-                                }</span>
-                        }
-                        <span class="cov0" title="0">if ok </span><span class="cov0" title="0">{
-                                txtout := txt
-                                found, idxs := cart.GetCombination()
-                                wks := make(map[primitive.ObjectID]*KBWorkspace)
-                                for key := range attrs </span><span class="cov0" title="0">{
-                                        ao := attrs[key][idxs[key]]
-                                        value, _, _ := ao.ValueString()
-                                        txtout = strings.Replace(txtout, key, value, -1)
-                                        ws := KBGetWorkspacesFromObject(ao.KbObject)
-                                        for w := range ws </span><span class="cov0" title="0">{
-                                                wks[ws[w].ID] = ws[w]
-                                        }</span>
-                                }
-                                <span class="cov0" title="0">for k := range wks </span><span class="cov0" title="0">{
-                                        wks[k].Posts.Enqueue(txtout)
-                                }</span>
-                                <span class="cov0" title="0">if !found </span><span class="cov0" title="0">{
-                                        break</span>
-                                }
-                        }
-
-                case B_set:<span class="cov0" title="0">
-                        pc += 2
-                        if r.bin[pc].tokentype != Attribute </span><span class="cov0" title="0">{
-                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-                        }</span>
-                        <span class="cov0" title="0">if r.bin[pc].attributeObjects == nil </span><span class="cov0" title="0">{
-                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-                        }</span>
-                        <span class="cov0" title="0">attrs := r.bin[pc].attributeObjects
-                        pc += 4
-                        if r.bin[pc].tokentype != Constant &amp;&amp; r.bin[pc+1].tokentype != Constant </span><span class="cov0" title="0">{
-                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-                        }</span>
-                        <span class="cov0" title="0">if r.bin[pc+1].tokentype == Constant </span><span class="cov0" title="0">{
-                                pc++
-                        }</span>
-                        <span class="cov0" title="0">v := r.bin[pc].token
-                        for _, a := range attrs </span><span class="cov0" title="0">{
-                                for _, o := range objs </span><span class="cov0" title="0">{
-                                        if a.KbObject == o </span><span class="cov0" title="0">{
-                                                a.SetValue(v, Inference, trust)
-                                        }</span>
-                                }
-                        }
-                case B_create:<span class="cov0" title="0">
-                        var baseClass *KBClass
-                        var parentClass *KBClass
-                        createClass := false
-
-                        pc++
-                        if r.bin[pc].tokentype != Literal </span><span class="cov0" title="0">{
-                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-                        }</span>
-                        <span class="cov0" title="0">switch r.bin[pc].literalbin </span>{
-                        case B_a:<span class="cov0" title="0"> //Class
-                                pc++
-                                createClass = true
-                                if r.bin[pc].class == nil </span><span class="cov0" title="0">{
-                                        return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", inits.Error)
-                                }</span>
-                                <span class="cov0" title="0">pc++
-                                if r.bin[pc].tokentype != Literal </span><span class="cov0" title="0">{
-                                        return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-                                }</span>
-                                <span class="cov0" title="0">switch r.bin[pc].literalbin </span>{
-                                case B_by:<span class="cov0" title="0">
-                                        pc += 2
-                                        if r.bin[pc].class == nil </span><span class="cov0" title="0">{
-                                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", inits.Error)
-                                        }</span>
-                                        <span class="cov0" title="0">baseClass = r.bin[pc].class
-                                        pc++</span>
-                                case B_whose:<span class="cov0" title="0">
-                                        pc += 3
-                                        if r.bin[pc].class == nil </span><span class="cov0" title="0">{
-                                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", inits.Error)
-                                        }</span>
-                                        <span class="cov0" title="0">parentClass = r.bin[pc].class
-                                        pc++</span>
-                                case B_named:<span class="cov0" title="0"></span>
-                                default:<span class="cov0" title="0">
-                                        return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)</span>
-                                }
-
-                        case B_an:<span class="cov0" title="0"> //Instance
-                                pc += 4
-                                if r.bin[pc].class == nil </span><span class="cov0" title="0">{
-                                        return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", inits.Error)
-                                }</span>
-                                <span class="cov0" title="0">baseClass = r.bin[pc].class</span>
-                        default:<span class="cov0" title="0">
-                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)</span>
-                        }
-                        <span class="cov0" title="0">if r.bin[pc].literalbin == B_named </span><span class="cov0" title="0">{
-                                pc += 2
-                                if createClass </span><span class="cov0" title="0">{
-                                        className := r.bin[pc].GetToken()
-                                        if baseClass != nil </span><span class="cov0" title="0">{
-                                                KBClassCopy(className, baseClass)
-                                        }</span> else<span class="cov0" title="0"> {
-                                                KBClassFactoryParent(className, "", parentClass)
-                                        }</span>
-                                } else<span class="cov0" title="0"> {
-                                        objectName := r.bin[pc].GetToken()
-                                        ObjectFactoryByClass(objectName, baseClass)
-                                }</span>
-                        }
-                case B_conclude:<span class="cov0" title="0">
-                        pc += 6
-                        if len(r.bin[pc].attributeObjects) != 1 </span><span class="cov0" title="0">{
-                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-                        }</span>
-                        <span class="cov0" title="0">attributeObject := r.bin[pc].attributeObjects[0]
-                        pc += 2
-                        attributeObject.SetValue(r.bin[pc].GetToken(), Inference, trust)</span>
-                case B_halt:<span class="cov0" title="0">
-                        pauseKB()
-                        NewAlert(inits.I18n_halt, "")</span> //All users
-                case B_transfer:<span class="cov0" title="0">
-                        pc++
-                        if len(r.bin[pc].objects) == 0 </span><span class="cov0" title="0">{
-                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", inits.Error)
-                        }</span>
-                        <span class="cov0" title="0">obj := r.bin[pc].objects[0]
-                        pc += 2
-                        if r.bin[pc].workspace == nil </span><span class="cov0" title="0">{
-                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", inits.Error)
-                        }</span>
-                        <span class="cov0" title="0">w := r.bin[pc].workspace
-                        w.AddObject(obj, 0, 0)</span>
-                case B_alter:<span class="cov0" title="0">
-                        pc++
-                        if r.bin[pc].class == nil </span><span class="cov0" title="0">{
-                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", inits.Error)
-                        }</span>
-                        //alterClass := r.bin[pc].class
-                        <span class="cov0" title="0">pc++
-                        for r.bin[pc].literalbin == B_add </span><span class="cov0" title="0">{
-                                pc++
-                                //attributeName := r.bin[pc].token
-                                options := []string{}
-                                pc += 2
-                                atype := r.bin[pc].token
-                                if KBattributeTypeStr(atype) == KBList </span><span class="cov0" title="0">{
-                                        pc++
-                                        for r.bin[pc].literalbin != B_close_par </span><span class="cov0" title="0">{
-                                                pc++
-                                                options = append(options, r.bin[pc].token)
-                                                pc++
-                                        }</span>
-                                }
-
-                        }
-
-                default:<span class="cov0" title="0">
-                        return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)</span>
-                }
-
-                //TODO: delete
-                //TODO: insert
-                //TODO: remove
-                //TODO: change
-                //TODO: move
-                //TODO: rotate
-                //TODO: show
-                //TODO: hide
-                //TODO: alter
-                //TODO: focus
-                //TODO: invoke
-
-        }
-        <span class="cov0" title="0">return nil</span>
-}
-
-func FindAllRules(sort string) error <span class="cov0" title="0">{
+func FindAllRules(sort string, rules *[]KBRule) error <span class="cov8" title="1">{
         collection := mgm.Coll(new(KBRule))
         cursor, err := collection.Find(mgm.Ctx(), bson.M{}, options.Find().SetSort(bson.D{{Key: sort, Value: 1}}))
         inits.Log(err, inits.Fatal)
-        err = cursor.All(mgm.Ctx(), _rules)
+        err = cursor.All(mgm.Ctx(), rules)
         return err
 }</span>
 
@@ -1885,7 +1473,7 @@ func tokeningStatement(cmd string) []string <span class="cov8" title="1">{
         for strings.Contains(cmd, "  ") </span><span class="cov0" title="0">{
                 cmd = strings.Replace(cmd, "  ", " ", -1)
         }</span>
-        <span class="cov8" title="1">inits.Log("Parsing Production Rule: "+cmd, inits.Info)
+        <span class="cov8" title="1">inits.Log("Parsing Statement: "+cmd, inits.Info)
         var inWord = false
         var inString = false
         var inNumber = false
@@ -2009,7 +1597,7 @@ func parsingRule(cmd string) ([]*BIN, error, compilingDetail) <span class="cov8"
 
 func linkerRule(r *KBRule, bin []*BIN) error <span class="cov8" title="1">{
         // Find references of objects in KB
-        inits.Log("Linking Production Rule: "+r.ID.Hex(), inits.Info)
+        inits.Log("Linking Production Rule: "+r.Name, inits.Info)
         pauseKB()
 
         dr := make(map[string]*KBClass)
@@ -2216,6 +1804,431 @@ func runStackRules() error <span class="cov0" title="0">{
         }</span>
 
         <span class="cov0" title="0">return nil</span>
+}
+
+func (r *KBRule) Run() (e error) <span class="cov8" title="1">{
+
+        type Value struct {
+                value string
+                trust float64
+                atype KBAttributeType
+        }
+
+        if r.inRun </span><span class="cov0" title="0">{ //avoid non-parallel execution of the same rule
+                return
+        }</span>
+        <span class="cov8" title="1">r.inRun = true
+        inits.Log("run..."+r.Name, inits.Info)
+
+        attrs := make(map[string][]*KBAttributeObject)
+        objs := make(map[string][]*KBObject)
+
+        trueAntecedent := false
+        expression := ""
+        fuzzyexp := ""
+
+oulter:
+        //Program counter [pc] – It stores the counter which contains the address of the next instruction that is to be executed for the process.
+        for pc := 0; pc &lt; len(r.bin); </span><span class="cov8" title="1">{
+                switch r.bin[pc].literalbin </span>{
+                case B_unconditionally:<span class="cov8" title="1">
+                        trueAntecedent = true
+                        pc++</span>
+                case B_then:<span class="cov8" title="1">
+                        if trueAntecedent </span><span class="cov8" title="1">{
+                                break oulter</span>
+                        }
+                case B_for:<span class="cov0" title="0">
+                        pc++
+                        if r.bin[pc].literalbin != B_any </span><span class="cov0" title="0">{
+                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
+                        }</span>
+                        <span class="cov0" title="0">pc++
+                        if r.bin[pc].tokentype != Class </span><span class="cov0" title="0">{
+                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
+                        }</span>
+                        <span class="cov0" title="0">if r.bin[pc].class == nil </span><span class="cov0" title="0">{
+                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", inits.Error)
+                        }</span>
+
+                        <span class="cov0" title="0">if len(r.bin[pc].objects) == 0 </span><span class="cov0" title="0">{
+                                return inits.Log("Warning in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" no object found!", inits.Info)
+                        }</span>
+
+                        <span class="cov0" title="0">if r.bin[pc+1].tokentype == DynamicReference </span><span class="cov0" title="0">{
+                                pc++
+                        }</span>
+                case B_if:<span class="cov0" title="0">
+
+                inner:
+                        for </span><span class="cov0" title="0">{
+
+                                pc++
+                                for ; r.bin[pc].literalbin == B_open_par; pc++ </span><span class="cov0" title="0">{
+                                        expression = expression + r.bin[pc].token
+                                        fuzzyexp = fuzzyexp + r.bin[pc].token
+                                }</span>
+                                <span class="cov0" title="0">if r.bin[pc].literalbin != B_the </span><span class="cov0" title="0">{
+                                        return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
+                                }</span>
+                                <span class="cov0" title="0">pc++
+                                if r.bin[pc].tokentype != Attribute </span><span class="cov0" title="0">{
+                                        return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
+                                }</span>
+
+                                <span class="cov0" title="0">if r.bin[pc].class == nil </span><span class="cov0" title="0">{
+                                        return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
+                                }</span>
+                                <span class="cov0" title="0">key := "{{" + r.bin[pc].class.Name + "." + r.bin[pc].token + "}}"
+                                expression = expression + key
+                                fuzzyexp = fuzzyexp + key
+                                attrs[key] = r.bin[pc].attributeObjects
+                                objs[key] = r.bin[pc].objects
+
+                                pc++
+                                if r.bin[pc].literalbin == B_of </span><span class="cov0" title="0">{
+                                        pc++
+                                        if r.bin[pc].tokentype != DynamicReference &amp;&amp; r.bin[pc].tokentype != Object </span><span class="cov0" title="0">{
+                                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
+                                        }</span>
+                                        <span class="cov0" title="0">pc++</span>
+                                }
+                                <span class="cov0" title="0">switch r.bin[pc].literalbin </span>{
+                                case B_is:<span class="cov0" title="0">
+                                        expression = expression + "=="</span>
+                                case B_equal:<span class="cov0" title="0">
+                                        expression = expression + "=="</span>
+                                case B_different:<span class="cov0" title="0">
+                                        expression = expression + "!="</span>
+                                case B_less:<span class="cov0" title="0">
+                                        expression = expression + "&lt;"
+                                        pc += 2
+                                        if r.bin[pc].literalbin == B_or </span><span class="cov0" title="0">{
+                                                expression = expression + "="
+                                                pc += 2
+                                        }</span>
+                                case B_greater:<span class="cov0" title="0">
+                                        expression = expression + "&gt;"
+                                        pc += 2
+                                        if r.bin[pc].literalbin == B_or </span><span class="cov0" title="0">{
+                                                expression = expression + "="
+                                                pc += 2
+                                        }</span>
+                                }
+                                <span class="cov0" title="0">pc++
+                                if r.bin[pc].tokentype == Constant || r.bin[pc].tokentype == Text || r.bin[pc].tokentype == ListType </span><span class="cov0" title="0">{
+                                        expression = expression + r.bin[pc].token
+                                }</span>
+                                <span class="cov0" title="0">pc++
+                                for ; r.bin[pc].literalbin == B_close_par; pc++ </span><span class="cov0" title="0">{
+                                        expression = expression + r.bin[pc].token
+                                        fuzzyexp = fuzzyexp + r.bin[pc].token
+                                }</span>
+
+                                <span class="cov0" title="0">switch r.bin[pc].literalbin </span>{
+                                case B_then:<span class="cov0" title="0">
+                                        break inner</span>
+                                case B_and:<span class="cov0" title="0">
+                                        pc++
+                                        expression = expression + " " + r.bin[pc].token + " "
+                                        fuzzyexp = fuzzyexp + " " + r.bin[pc].token + " "</span>
+                                case B_or:<span class="cov0" title="0">
+                                        pc++
+                                        fuzzyexp = fuzzyexp + " " + r.bin[pc].token + " "</span>
+                                }
+                        }
+                default:<span class="cov0" title="0">
+                        pc++</span>
+                }
+        }
+
+        <span class="cov8" title="1">if !trueAntecedent </span><span class="cov0" title="0">{
+                cart := cartesian.Cartesian{}
+                values := make(map[string][]Value)
+                idx2 := []string{}
+                for ix := range attrs </span><span class="cov0" title="0">{
+                        vls := []Value{}
+                        cart.AddItem(ix, len(attrs[ix])-1)
+                        for iy := range attrs[ix] </span><span class="cov0" title="0">{
+                                v, t, at := attrs[ix][iy].ValueString()
+                                vls = append(vls, Value{v, t, at})
+                        }</span>
+                        <span class="cov0" title="0">values[ix] = vls
+                        idx2 = append(idx2, ix)</span>
+                }
+
+                <span class="cov0" title="0">for </span><span class="cov0" title="0">{
+                        exp := expression
+                        fuzzy := fuzzy.FuzzyLogicalInference(fuzzyexp)
+                        found, idxs := cart.GetCombination()
+                        obs := []*KBObject{}
+                        ok := true
+                        for key := range attrs </span><span class="cov0" title="0">{
+                                if values[key][idxs[key]].value != "" </span><span class="cov0" title="0">{
+                                        ok = false
+                                        break</span>
+                                }
+                                <span class="cov0" title="0">exp = strings.Replace(exp, key, string(values[key][idxs[key]].value), -1)
+                                trust := fmt.Sprint(values[key][idxs[key]].trust)
+                                fuzzy = strings.Replace(fuzzy, key, trust, -1)
+                                obs = append(obs, objs[key][idxs[key]])</span>
+                        }
+                        <span class="cov0" title="0">if ok </span><span class="cov0" title="0">{
+                                result, err := gval.Evaluate(exp, nil)
+                                inits.Log(err, inits.Error)
+                                trust, err := gval.Evaluate(fuzzy, nil)
+                                inits.Log(err, inits.Error)
+                                t, _ := strconv.ParseFloat(fmt.Sprintf("%v", trust), 64)
+                                if result == true </span><span class="cov0" title="0">{
+                                        r.RunConsequent(obs, t)
+                                }</span>
+                        }
+                        <span class="cov0" title="0">if !found </span><span class="cov0" title="0">{
+                                break</span>
+                        }
+                }
+        } else<span class="cov8" title="1"> {
+                r.RunConsequent([]*KBObject{}, 100.0)
+        }</span>
+        <span class="cov8" title="1">r.Lastexecution = time.Now()
+        r.Persist()
+        r.inRun = false
+        return nil</span>
+}
+
+type CreateType byte
+
+const (
+        NewClass CreateType = iota
+        CopyClass
+        InheritClass
+        NewInstance
+)
+
+// TODO: ALTERAR COMAND SET
+func RunDetailError(rule string, bin *BIN, pc int) error <span class="cov0" title="0">{
+        return errors.New("Error in run rule " + rule + " near " + bin.token + "[" + strconv.Itoa(pc) + "]!")
+}</span>
+
+func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error <span class="cov8" title="1">{
+        //Program counter [pc] – It stores the counter which contains the address of the next instruction that is to be executed for the process.
+
+        for pc := r.consequent; pc &lt; len(r.bin); pc++ </span><span class="cov8" title="1">{
+                switch r.bin[pc].literalbin </span>{
+                case B_inform:<span class="cov0" title="0">
+                        attrs := make(map[string][]*KBAttributeObject)
+                        cart := cartesian.Cartesian{}
+                        pc += 5
+                        if r.bin[pc].tokentype != Text </span><span class="cov0" title="0">{
+                                return RunDetailError(r.Name, r.bin[pc], pc)
+                        }</span>
+                        <span class="cov0" title="0">txt := ""
+                        ok := true
+                        for </span><span class="cov0" title="0">{
+                                txt = txt + r.bin[pc].token
+                                pc++
+                                if r.bin[pc].literalbin != B_the </span><span class="cov0" title="0">{
+                                        break</span>
+                                }
+                                <span class="cov0" title="0">if r.bin[pc].tokentype != Attribute </span><span class="cov0" title="0">{
+                                        return RunDetailError(r.Name, r.bin[pc], pc)
+                                }</span>
+                                <span class="cov0" title="0">if r.bin[pc].attributeObjects == nil </span><span class="cov0" title="0">{
+                                        return RunDetailError(r.Name, r.bin[pc], pc)
+                                }</span>
+                                <span class="cov0" title="0">key := "{{" + r.bin[pc].class.Name + "." + r.bin[pc].token + "}}"
+                                txt = txt + " " + key + " "
+                                attrs[key] = r.bin[pc].attributeObjects
+                                cart.AddItem(key, len(attrs[key])-1)
+
+                                pc += 2
+                                if r.bin[pc].literalbin == B_the </span><span class="cov0" title="0">{
+                                        pc += 2
+                                }</span> else<span class="cov0" title="0"> if r.bin[pc].tokentype != DynamicReference </span><span class="cov0" title="0">{
+                                        return RunDetailError(r.Name, r.bin[pc], pc)
+                                }</span> else<span class="cov0" title="0"> {
+                                        if !attrs[key][pc].InObjects(objs) </span><span class="cov0" title="0">{
+                                                ok = false
+                                        }</span>
+                                        <span class="cov0" title="0">pc++</span>
+                                }
+                                <span class="cov0" title="0">if r.bin[pc].tokentype == Text </span><span class="cov0" title="0">{
+                                        txt = txt + " " + r.bin[pc].token
+                                        pc++
+                                }</span>
+                        }
+                        <span class="cov0" title="0">if ok </span><span class="cov0" title="0">{
+                                txtout := txt
+                                found, idxs := cart.GetCombination()
+                                wks := make(map[primitive.ObjectID]*KBWorkspace)
+                                for key := range attrs </span><span class="cov0" title="0">{
+                                        ao := attrs[key][idxs[key]]
+                                        value, _, _ := ao.ValueString()
+                                        txtout = strings.Replace(txtout, key, value, -1)
+                                        ws := KBGetWorkspacesFromObject(ao.KbObject)
+                                        for w := range ws </span><span class="cov0" title="0">{
+                                                wks[ws[w].ID] = ws[w]
+                                        }</span>
+                                }
+                                <span class="cov0" title="0">for k := range wks </span><span class="cov0" title="0">{
+                                        wks[k].Posts.Enqueue(txtout)
+                                }</span>
+                                <span class="cov0" title="0">if !found </span><span class="cov0" title="0">{
+                                        break</span>
+                                }
+                        }
+
+                case B_set:<span class="cov0" title="0">
+                        pc += 2
+                        if r.bin[pc].tokentype != Attribute </span><span class="cov0" title="0">{
+                                return RunDetailError(r.Name, r.bin[pc], pc)
+                        }</span>
+                        <span class="cov0" title="0">if r.bin[pc].attributeObjects == nil </span><span class="cov0" title="0">{
+                                return RunDetailError(r.Name, r.bin[pc], pc)
+                        }</span>
+                        <span class="cov0" title="0">attrs := r.bin[pc].attributeObjects
+                        pc += 4
+                        if r.bin[pc].tokentype != Constant &amp;&amp; r.bin[pc+1].tokentype != Constant </span><span class="cov0" title="0">{
+                                return RunDetailError(r.Name, r.bin[pc], pc)
+                        }</span>
+                        <span class="cov0" title="0">if r.bin[pc+1].tokentype == Constant </span><span class="cov0" title="0">{
+                                pc++
+                        }</span>
+                        <span class="cov0" title="0">v := r.bin[pc].token
+                        for _, a := range attrs </span><span class="cov0" title="0">{
+                                for _, o := range objs </span><span class="cov0" title="0">{
+                                        if a.KbObject == o </span><span class="cov0" title="0">{
+                                                a.SetValue(v, Inference, trust)
+                                        }</span>
+                                }
+                        }
+                case B_create:<span class="cov8" title="1">
+                        var baseClass *KBClass
+                        var parentClass *KBClass
+                        var createType CreateType
+                        pc++
+                        if r.bin[pc].tokentype != Literal </span><span class="cov0" title="0">{
+                                return RunDetailError(r.Name, r.bin[pc], pc)
+                        }</span>
+                        <span class="cov8" title="1">switch r.bin[pc].literalbin </span>{
+                        case B_a:<span class="cov8" title="1"> //Class
+                                pc += 2
+                                switch r.bin[pc].literalbin </span>{
+                                case B_by:<span class="cov0" title="0">
+                                        pc += 2
+                                        if r.bin[pc].class == nil </span><span class="cov0" title="0">{
+                                                return RunDetailError(r.Name, r.bin[pc], pc)
+                                        }</span>
+                                        <span class="cov0" title="0">createType = CopyClass
+                                        baseClass = r.bin[pc].class
+                                        pc++</span>
+                                case B_whose:<span class="cov0" title="0">
+                                        pc += 3
+                                        if r.bin[pc].class == nil </span><span class="cov0" title="0">{
+                                                return RunDetailError(r.Name, r.bin[pc], pc)
+                                        }</span>
+                                        <span class="cov0" title="0">createType = InheritClass
+                                        baseClass = r.bin[pc].class
+                                        pc++</span>
+                                }
+                        case B_an:<span class="cov0" title="0"> //Instance
+                                pc += 4
+                                if r.bin[pc].class == nil </span><span class="cov0" title="0">{
+                                        return RunDetailError(r.Name, r.bin[pc], pc)
+                                }</span>
+                                <span class="cov0" title="0">createType = NewInstance
+                                baseClass = r.bin[pc].class</span>
+                        default:<span class="cov0" title="0">
+                                return RunDetailError(r.Name, r.bin[pc], pc)</span>
+                        }
+                        <span class="cov8" title="1">if r.bin[pc].literalbin == B_named </span><span class="cov8" title="1">{
+                                pc += 2
+                                name := lib.Identify(r.bin[pc].token)
+                                switch createType </span>{
+                                case NewClass:<span class="cov8" title="1">
+                                        if _, err := KBClassFactory(name, "", ""); err != nil </span><span class="cov0" title="0">{
+                                                return RunDetailError(r.Name, r.bin[pc], pc)
+                                        }</span>
+                                case CopyClass:<span class="cov0" title="0">
+                                        if _, err := KBClassCopy(name, baseClass); err != nil </span><span class="cov0" title="0">{
+                                                return RunDetailError(r.Name, r.bin[pc], pc)
+                                        }</span>
+                                case InheritClass:<span class="cov0" title="0">
+                                        if _, err := KBClassFactoryParent(name, "", parentClass); err != nil </span><span class="cov0" title="0">{
+                                                return RunDetailError(r.Name, r.bin[pc], pc)
+                                        }</span>
+                                case NewInstance:<span class="cov0" title="0">
+                                        if _, err := ObjectFactoryByClass(name, baseClass); err != nil </span><span class="cov0" title="0">{
+                                                return RunDetailError(r.Name, r.bin[pc], pc)
+                                        }</span>
+                                }
+                        }
+                        <span class="cov8" title="1">pc++</span>
+                case B_conclude:<span class="cov0" title="0">
+                        pc += 6
+                        if len(r.bin[pc].attributeObjects) != 1 </span><span class="cov0" title="0">{
+                                return RunDetailError(r.Name, r.bin[pc], pc)
+                        }</span>
+                        <span class="cov0" title="0">attributeObject := r.bin[pc].attributeObjects[0]
+                        pc += 2
+                        attributeObject.SetValue(r.bin[pc].GetToken(), Inference, trust)</span>
+                case B_halt:<span class="cov0" title="0">
+                        pauseKB()
+                        NewAlert(inits.I18n_halt, "")</span> //All users
+                case B_transfer:<span class="cov0" title="0">
+                        pc++
+                        if len(r.bin[pc].objects) == 0 </span><span class="cov0" title="0">{
+                                return RunDetailError(r.Name, r.bin[pc], pc)
+                        }</span>
+                        <span class="cov0" title="0">obj := r.bin[pc].objects[0]
+                        pc += 2
+                        if r.bin[pc].workspace == nil </span><span class="cov0" title="0">{
+                                return RunDetailError(r.Name, r.bin[pc], pc)
+                        }</span>
+                        <span class="cov0" title="0">w := r.bin[pc].workspace
+                        w.AddObject(obj, 0, 0)</span>
+                case B_alter:<span class="cov0" title="0">
+                        pc++
+                        if r.bin[pc].class == nil </span><span class="cov0" title="0">{
+                                return RunDetailError(r.Name, r.bin[pc], pc)
+                        }</span>
+                        //alterClass := r.bin[pc].class
+                        <span class="cov0" title="0">pc++
+                        for r.bin[pc].literalbin == B_add </span><span class="cov0" title="0">{
+                                pc++
+                                //attributeName := r.bin[pc].token
+                                options := []string{}
+                                pc += 2
+                                atype := r.bin[pc].token
+                                if KBattributeTypeStr(atype) == KBList </span><span class="cov0" title="0">{
+                                        pc++
+                                        for r.bin[pc].literalbin != B_close_par </span><span class="cov0" title="0">{
+                                                pc++
+                                                options = append(options, r.bin[pc].token)
+                                                pc++
+                                        }</span>
+                                }
+
+                        }
+
+                default:<span class="cov0" title="0">
+                        return RunDetailError(r.Name, r.bin[pc], pc)</span>
+                }
+
+                //TODO: delete
+                //TODO: insert
+                //TODO: remove
+                //TODO: change
+                //TODO: move
+                //TODO: rotate
+                //TODO: show
+                //TODO: hide
+                //TODO: alter
+                //TODO: focus
+                //TODO: invoke
+
+        }
+        <span class="cov8" title="1">return nil</span>
 }
 </pre>
 		
@@ -2697,7 +2710,7 @@ func InitKB() <span class="cov0" title="0">{
 
         <span class="cov0" title="0">FindAllWorkspaces("name")
 
-        FindAllRules("_id")
+        FindAllRules("_id", &amp;_rules)
 
         for i := range _rules </span><span class="cov0" title="0">{
                 bin, err, _ := parsingRule(_rules[i].Statement)

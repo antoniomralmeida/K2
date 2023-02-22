@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -124,424 +125,11 @@ func (r *KBRule) GetBins() []*BIN {
 	return r.bin
 }
 
-func (r *KBRule) Run() (e error) {
-
-	type Value struct {
-		value string
-		trust float64
-		atype KBAttributeType
-	}
-
-	if r.inRun { //avoid non-parallel execution of the same rule
-		return
-	}
-	r.inRun = true
-	inits.Log("run..."+r.Name, inits.Info)
-
-	attrs := make(map[string][]*KBAttributeObject)
-	objs := make(map[string][]*KBObject)
-
-	conditionally := false
-	expression := ""
-	fuzzyexp := ""
-
-oulter:
-	//Program counter [pc] – It stores the counter which contains the address of the next instruction that is to be executed for the process.
-	for pc := 0; pc < len(r.bin); {
-		switch r.bin[pc].literalbin {
-		case B_unconditionally:
-			conditionally = true
-		case B_then:
-			if !conditionally {
-				break oulter
-			}
-		case B_for:
-			pc++
-			if r.bin[pc].literalbin != B_any {
-				return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-			}
-			pc++
-			if r.bin[pc].tokentype != Class {
-				return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-			}
-			if r.bin[pc].class == nil {
-				return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", inits.Error)
-			}
-
-			if len(r.bin[pc].objects) == 0 {
-				return inits.Log("Warning in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" no object found!", inits.Info)
-			}
-
-			if r.bin[pc+1].tokentype == DynamicReference {
-				pc++
-			}
-		case B_if:
-
-		inner:
-			for {
-
-				pc++
-				for ; r.bin[pc].literalbin == B_open_par; pc++ {
-					expression = expression + r.bin[pc].token
-					fuzzyexp = fuzzyexp + r.bin[pc].token
-				}
-				if r.bin[pc].literalbin != B_the {
-					return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-				}
-				pc++
-				if r.bin[pc].tokentype != Attribute {
-					return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-				}
-
-				if r.bin[pc].class == nil {
-					return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-				}
-				key := "{{" + r.bin[pc].class.Name + "." + r.bin[pc].token + "}}"
-				expression = expression + key
-				fuzzyexp = fuzzyexp + key
-				attrs[key] = r.bin[pc].attributeObjects
-				objs[key] = r.bin[pc].objects
-
-				pc++
-				if r.bin[pc].literalbin == B_of {
-					pc++
-					if r.bin[pc].tokentype != DynamicReference && r.bin[pc].tokentype != Object {
-						return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-					}
-					pc++
-				}
-				switch r.bin[pc].literalbin {
-				case B_is:
-					expression = expression + "=="
-				case B_equal:
-					expression = expression + "=="
-				case B_different:
-					expression = expression + "!="
-				case B_less:
-					expression = expression + "<"
-					pc += 2
-					if r.bin[pc].literalbin == B_or {
-						expression = expression + "="
-						pc += 2
-					}
-				case B_greater:
-					expression = expression + ">"
-					pc += 2
-					if r.bin[pc].literalbin == B_or {
-						expression = expression + "="
-						pc += 2
-					}
-				}
-				pc++
-				if r.bin[pc].tokentype == Constant || r.bin[pc].tokentype == Text || r.bin[pc].tokentype == ListType {
-					expression = expression + r.bin[pc].token
-				}
-				pc++
-				for ; r.bin[pc].literalbin == B_close_par; pc++ {
-					expression = expression + r.bin[pc].token
-					fuzzyexp = fuzzyexp + r.bin[pc].token
-				}
-
-				switch r.bin[pc].literalbin {
-				case B_then:
-					break inner
-				case B_and:
-					pc++
-					expression = expression + " " + r.bin[pc].token + " "
-					fuzzyexp = fuzzyexp + " " + r.bin[pc].token + " "
-				case B_or:
-					pc++
-					fuzzyexp = fuzzyexp + " " + r.bin[pc].token + " "
-				}
-			}
-		default:
-			pc++
-		}
-	}
-
-	if !conditionally {
-		cart := cartesian.Cartesian{}
-		values := make(map[string][]Value)
-		idx2 := []string{}
-		for ix := range attrs {
-			vls := []Value{}
-			cart.AddItem(ix, len(attrs[ix])-1)
-			for iy := range attrs[ix] {
-				v, t, at := attrs[ix][iy].ValueString()
-				vls = append(vls, Value{v, t, at})
-			}
-			values[ix] = vls
-			idx2 = append(idx2, ix)
-		}
-
-		for {
-			exp := expression
-			fuzzy := fuzzy.FuzzyLogicalInference(fuzzyexp)
-			found, idxs := cart.GetCombination()
-			obs := []*KBObject{}
-			ok := true
-			for key := range attrs {
-				if values[key][idxs[key]].value != "" {
-					ok = false
-					break
-				}
-				exp = strings.Replace(exp, key, string(values[key][idxs[key]].value), -1)
-				trust := fmt.Sprint(values[key][idxs[key]].trust)
-				fuzzy = strings.Replace(fuzzy, key, trust, -1)
-				obs = append(obs, objs[key][idxs[key]])
-			}
-			if ok {
-				result, err := gval.Evaluate(exp, nil)
-				inits.Log(err, inits.Error)
-				trust, err := gval.Evaluate(fuzzy, nil)
-				inits.Log(err, inits.Error)
-				t, _ := strconv.ParseFloat(fmt.Sprintf("%v", trust), 64)
-				if result == true {
-					r.RunConsequent(obs, t)
-				}
-			}
-			if !found {
-				break
-			}
-		}
-	} else {
-		r.RunConsequent([]*KBObject{}, 100.0)
-	}
-	r.Lastexecution = time.Now()
-	r.Persist()
-	r.inRun = false
-	return nil
-}
-
-//TODO: ALTERAR COMAND SET
-
-func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
-	//Program counter [pc] – It stores the counter which contains the address of the next instruction that is to be executed for the process.
-
-	for pc := r.consequent; pc < len(r.bin); pc++ {
-		switch r.bin[pc].literalbin {
-		case B_inform:
-			attrs := make(map[string][]*KBAttributeObject)
-			cart := cartesian.Cartesian{}
-			pc += 5
-			if r.bin[pc].tokentype != Text {
-				return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-			}
-			txt := ""
-			ok := true
-			for {
-				txt = txt + r.bin[pc].token
-				pc++
-				if r.bin[pc].literalbin != B_the {
-					break
-				}
-				if r.bin[pc].tokentype != Attribute {
-					return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-				}
-				if r.bin[pc].attributeObjects == nil {
-					return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-				}
-				key := "{{" + r.bin[pc].class.Name + "." + r.bin[pc].token + "}}"
-				txt = txt + " " + key + " "
-				attrs[key] = r.bin[pc].attributeObjects
-				cart.AddItem(key, len(attrs[key])-1)
-
-				pc += 2
-				if r.bin[pc].literalbin == B_the {
-					pc += 2
-				} else if r.bin[pc].tokentype != DynamicReference {
-					return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-				} else {
-					if !attrs[key][pc].InObjects(objs) {
-						ok = false
-					}
-					pc++
-				}
-				if r.bin[pc].tokentype == Text {
-					txt = txt + " " + r.bin[pc].token
-					pc++
-				}
-			}
-			if ok {
-				txtout := txt
-				found, idxs := cart.GetCombination()
-				wks := make(map[primitive.ObjectID]*KBWorkspace)
-				for key := range attrs {
-					ao := attrs[key][idxs[key]]
-					value, _, _ := ao.ValueString()
-					txtout = strings.Replace(txtout, key, value, -1)
-					ws := KBGetWorkspacesFromObject(ao.KbObject)
-					for w := range ws {
-						wks[ws[w].ID] = ws[w]
-					}
-				}
-				for k := range wks {
-					wks[k].Posts.Enqueue(txtout)
-				}
-				if !found {
-					break
-				}
-			}
-
-		case B_set:
-			pc += 2
-			if r.bin[pc].tokentype != Attribute {
-				return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-			}
-			if r.bin[pc].attributeObjects == nil {
-				return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-			}
-			attrs := r.bin[pc].attributeObjects
-			pc += 4
-			if r.bin[pc].tokentype != Constant && r.bin[pc+1].tokentype != Constant {
-				return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-			}
-			if r.bin[pc+1].tokentype == Constant {
-				pc++
-			}
-			v := r.bin[pc].token
-			for _, a := range attrs {
-				for _, o := range objs {
-					if a.KbObject == o {
-						a.SetValue(v, Inference, trust)
-					}
-				}
-			}
-		case B_create:
-			var baseClass *KBClass
-			var parentClass *KBClass
-			createClass := false
-
-			pc++
-			if r.bin[pc].tokentype != Literal {
-				return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-			}
-			switch r.bin[pc].literalbin {
-			case B_a: //Class
-				pc++
-				createClass = true
-				if r.bin[pc].class == nil {
-					return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", inits.Error)
-				}
-				pc++
-				if r.bin[pc].tokentype != Literal {
-					return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-				}
-				switch r.bin[pc].literalbin {
-				case B_by:
-					pc += 2
-					if r.bin[pc].class == nil {
-						return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", inits.Error)
-					}
-					baseClass = r.bin[pc].class
-					pc++
-				case B_whose:
-					pc += 3
-					if r.bin[pc].class == nil {
-						return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", inits.Error)
-					}
-					parentClass = r.bin[pc].class
-					pc++
-				case B_named:
-				default:
-					return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-				}
-
-			case B_an: //Instance
-				pc += 4
-				if r.bin[pc].class == nil {
-					return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", inits.Error)
-				}
-				baseClass = r.bin[pc].class
-			default:
-				return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-			}
-			if r.bin[pc].literalbin == B_named {
-				pc += 2
-				if createClass {
-					className := r.bin[pc].GetToken()
-					if baseClass != nil {
-						KBClassCopy(className, baseClass)
-					} else {
-						KBClassFactoryParent(className, "", parentClass)
-					}
-				} else {
-					objectName := r.bin[pc].GetToken()
-					ObjectFactoryByClass(objectName, baseClass)
-				}
-			}
-		case B_conclude:
-			pc += 6
-			if len(r.bin[pc].attributeObjects) != 1 {
-				return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-			}
-			attributeObject := r.bin[pc].attributeObjects[0]
-			pc += 2
-			attributeObject.SetValue(r.bin[pc].GetToken(), Inference, trust)
-		case B_halt:
-			pauseKB()
-			NewAlert(inits.I18n_halt, "") //All users
-		case B_transfer:
-			pc++
-			if len(r.bin[pc].objects) == 0 {
-				return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", inits.Error)
-			}
-			obj := r.bin[pc].objects[0]
-			pc += 2
-			if r.bin[pc].workspace == nil {
-				return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", inits.Error)
-			}
-			w := r.bin[pc].workspace
-			w.AddObject(obj, 0, 0)
-		case B_alter:
-			pc++
-			if r.bin[pc].class == nil {
-				return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", inits.Error)
-			}
-			//alterClass := r.bin[pc].class
-			pc++
-			for r.bin[pc].literalbin == B_add {
-				pc++
-				//attributeName := r.bin[pc].token
-				options := []string{}
-				pc += 2
-				atype := r.bin[pc].token
-				if KBattributeTypeStr(atype) == KBList {
-					pc++
-					for r.bin[pc].literalbin != B_close_par {
-						pc++
-						options = append(options, r.bin[pc].token)
-						pc++
-					}
-				}
-
-			}
-
-		default:
-			return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
-		}
-
-		//TODO: delete
-		//TODO: insert
-		//TODO: remove
-		//TODO: change
-		//TODO: move
-		//TODO: rotate
-		//TODO: show
-		//TODO: hide
-		//TODO: alter
-		//TODO: focus
-		//TODO: invoke
-
-	}
-	return nil
-}
-
-func FindAllRules(sort string) error {
+func FindAllRules(sort string, rules *[]KBRule) error {
 	collection := mgm.Coll(new(KBRule))
 	cursor, err := collection.Find(mgm.Ctx(), bson.M{}, options.Find().SetSort(bson.D{{Key: sort, Value: 1}}))
 	inits.Log(err, inits.Fatal)
-	err = cursor.All(mgm.Ctx(), _rules)
+	err = cursor.All(mgm.Ctx(), rules)
 	return err
 }
 
@@ -552,7 +140,7 @@ func tokeningStatement(cmd string) []string {
 	for strings.Contains(cmd, "  ") {
 		cmd = strings.Replace(cmd, "  ", " ", -1)
 	}
-	inits.Log("Parsing Production Rule: "+cmd, inits.Info)
+	inits.Log("Parsing Statement: "+cmd, inits.Info)
 	var inWord = false
 	var inString = false
 	var inNumber = false
@@ -676,7 +264,7 @@ func parsingRule(cmd string) ([]*BIN, error, compilingDetail) {
 
 func linkerRule(r *KBRule, bin []*BIN) error {
 	// Find references of objects in KB
-	inits.Log("Linking Production Rule: "+r.ID.Hex(), inits.Info)
+	inits.Log("Linking Production Rule: "+r.Name, inits.Info)
 	pauseKB()
 
 	dr := make(map[string]*KBClass)
@@ -882,5 +470,430 @@ func runStackRules() error {
 		r.Run()
 	}
 
+	return nil
+}
+
+func (r *KBRule) Run() (e error) {
+
+	type Value struct {
+		value string
+		trust float64
+		atype KBAttributeType
+	}
+
+	if r.inRun { //avoid non-parallel execution of the same rule
+		return
+	}
+	r.inRun = true
+	inits.Log("run..."+r.Name, inits.Info)
+
+	attrs := make(map[string][]*KBAttributeObject)
+	objs := make(map[string][]*KBObject)
+
+	trueAntecedent := false
+	expression := ""
+	fuzzyexp := ""
+
+oulter:
+	//Program counter [pc] – It stores the counter which contains the address of the next instruction that is to be executed for the process.
+	for pc := 0; pc < len(r.bin); {
+		switch r.bin[pc].literalbin {
+		case B_unconditionally:
+			trueAntecedent = true
+			pc++
+		case B_then:
+			if trueAntecedent {
+				break oulter
+			}
+		case B_for:
+			pc++
+			if r.bin[pc].literalbin != B_any {
+				return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
+			}
+			pc++
+			if r.bin[pc].tokentype != Class {
+				return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
+			}
+			if r.bin[pc].class == nil {
+				return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", inits.Error)
+			}
+
+			if len(r.bin[pc].objects) == 0 {
+				return inits.Log("Warning in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" no object found!", inits.Info)
+			}
+
+			if r.bin[pc+1].tokentype == DynamicReference {
+				pc++
+			}
+		case B_if:
+
+		inner:
+			for {
+
+				pc++
+				for ; r.bin[pc].literalbin == B_open_par; pc++ {
+					expression = expression + r.bin[pc].token
+					fuzzyexp = fuzzyexp + r.bin[pc].token
+				}
+				if r.bin[pc].literalbin != B_the {
+					return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
+				}
+				pc++
+				if r.bin[pc].tokentype != Attribute {
+					return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
+				}
+
+				if r.bin[pc].class == nil {
+					return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
+				}
+				key := "{{" + r.bin[pc].class.Name + "." + r.bin[pc].token + "}}"
+				expression = expression + key
+				fuzzyexp = fuzzyexp + key
+				attrs[key] = r.bin[pc].attributeObjects
+				objs[key] = r.bin[pc].objects
+
+				pc++
+				if r.bin[pc].literalbin == B_of {
+					pc++
+					if r.bin[pc].tokentype != DynamicReference && r.bin[pc].tokentype != Object {
+						return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
+					}
+					pc++
+				}
+				switch r.bin[pc].literalbin {
+				case B_is:
+					expression = expression + "=="
+				case B_equal:
+					expression = expression + "=="
+				case B_different:
+					expression = expression + "!="
+				case B_less:
+					expression = expression + "<"
+					pc += 2
+					if r.bin[pc].literalbin == B_or {
+						expression = expression + "="
+						pc += 2
+					}
+				case B_greater:
+					expression = expression + ">"
+					pc += 2
+					if r.bin[pc].literalbin == B_or {
+						expression = expression + "="
+						pc += 2
+					}
+				}
+				pc++
+				if r.bin[pc].tokentype == Constant || r.bin[pc].tokentype == Text || r.bin[pc].tokentype == ListType {
+					expression = expression + r.bin[pc].token
+				}
+				pc++
+				for ; r.bin[pc].literalbin == B_close_par; pc++ {
+					expression = expression + r.bin[pc].token
+					fuzzyexp = fuzzyexp + r.bin[pc].token
+				}
+
+				switch r.bin[pc].literalbin {
+				case B_then:
+					break inner
+				case B_and:
+					pc++
+					expression = expression + " " + r.bin[pc].token + " "
+					fuzzyexp = fuzzyexp + " " + r.bin[pc].token + " "
+				case B_or:
+					pc++
+					fuzzyexp = fuzzyexp + " " + r.bin[pc].token + " "
+				}
+			}
+		default:
+			pc++
+		}
+	}
+
+	if !trueAntecedent {
+		cart := cartesian.Cartesian{}
+		values := make(map[string][]Value)
+		idx2 := []string{}
+		for ix := range attrs {
+			vls := []Value{}
+			cart.AddItem(ix, len(attrs[ix])-1)
+			for iy := range attrs[ix] {
+				v, t, at := attrs[ix][iy].ValueString()
+				vls = append(vls, Value{v, t, at})
+			}
+			values[ix] = vls
+			idx2 = append(idx2, ix)
+		}
+
+		for {
+			exp := expression
+			fuzzy := fuzzy.FuzzyLogicalInference(fuzzyexp)
+			found, idxs := cart.GetCombination()
+			obs := []*KBObject{}
+			ok := true
+			for key := range attrs {
+				if values[key][idxs[key]].value != "" {
+					ok = false
+					break
+				}
+				exp = strings.Replace(exp, key, string(values[key][idxs[key]].value), -1)
+				trust := fmt.Sprint(values[key][idxs[key]].trust)
+				fuzzy = strings.Replace(fuzzy, key, trust, -1)
+				obs = append(obs, objs[key][idxs[key]])
+			}
+			if ok {
+				result, err := gval.Evaluate(exp, nil)
+				inits.Log(err, inits.Error)
+				trust, err := gval.Evaluate(fuzzy, nil)
+				inits.Log(err, inits.Error)
+				t, _ := strconv.ParseFloat(fmt.Sprintf("%v", trust), 64)
+				if result == true {
+					r.RunConsequent(obs, t)
+				}
+			}
+			if !found {
+				break
+			}
+		}
+	} else {
+		r.RunConsequent([]*KBObject{}, 100.0)
+	}
+	r.Lastexecution = time.Now()
+	r.Persist()
+	r.inRun = false
+	return nil
+}
+
+type CreateType byte
+
+const (
+	NewClass CreateType = iota
+	CopyClass
+	InheritClass
+	NewInstance
+)
+
+// TODO: ALTERAR COMAND SET
+func RunDetailError(rule string, bin *BIN, pc int) error {
+	return errors.New("Error in run rule " + rule + " near " + bin.token + "[" + strconv.Itoa(pc) + "]!")
+}
+
+func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
+	//Program counter [pc] – It stores the counter which contains the address of the next instruction that is to be executed for the process.
+
+	for pc := r.consequent; pc < len(r.bin); pc++ {
+		switch r.bin[pc].literalbin {
+		case B_inform:
+			attrs := make(map[string][]*KBAttributeObject)
+			cart := cartesian.Cartesian{}
+			pc += 5
+			if r.bin[pc].tokentype != Text {
+				return RunDetailError(r.Name, r.bin[pc], pc)
+			}
+			txt := ""
+			ok := true
+			for {
+				txt = txt + r.bin[pc].token
+				pc++
+				if r.bin[pc].literalbin != B_the {
+					break
+				}
+				if r.bin[pc].tokentype != Attribute {
+					return RunDetailError(r.Name, r.bin[pc], pc)
+				}
+				if r.bin[pc].attributeObjects == nil {
+					return RunDetailError(r.Name, r.bin[pc], pc)
+				}
+				key := "{{" + r.bin[pc].class.Name + "." + r.bin[pc].token + "}}"
+				txt = txt + " " + key + " "
+				attrs[key] = r.bin[pc].attributeObjects
+				cart.AddItem(key, len(attrs[key])-1)
+
+				pc += 2
+				if r.bin[pc].literalbin == B_the {
+					pc += 2
+				} else if r.bin[pc].tokentype != DynamicReference {
+					return RunDetailError(r.Name, r.bin[pc], pc)
+				} else {
+					if !attrs[key][pc].InObjects(objs) {
+						ok = false
+					}
+					pc++
+				}
+				if r.bin[pc].tokentype == Text {
+					txt = txt + " " + r.bin[pc].token
+					pc++
+				}
+			}
+			if ok {
+				txtout := txt
+				found, idxs := cart.GetCombination()
+				wks := make(map[primitive.ObjectID]*KBWorkspace)
+				for key := range attrs {
+					ao := attrs[key][idxs[key]]
+					value, _, _ := ao.ValueString()
+					txtout = strings.Replace(txtout, key, value, -1)
+					ws := KBGetWorkspacesFromObject(ao.KbObject)
+					for w := range ws {
+						wks[ws[w].ID] = ws[w]
+					}
+				}
+				for k := range wks {
+					wks[k].Posts.Enqueue(txtout)
+				}
+				if !found {
+					break
+				}
+			}
+
+		case B_set:
+			pc += 2
+			if r.bin[pc].tokentype != Attribute {
+				return RunDetailError(r.Name, r.bin[pc], pc)
+			}
+			if r.bin[pc].attributeObjects == nil {
+				return RunDetailError(r.Name, r.bin[pc], pc)
+			}
+			attrs := r.bin[pc].attributeObjects
+			pc += 4
+			if r.bin[pc].tokentype != Constant && r.bin[pc+1].tokentype != Constant {
+				return RunDetailError(r.Name, r.bin[pc], pc)
+			}
+			if r.bin[pc+1].tokentype == Constant {
+				pc++
+			}
+			v := r.bin[pc].token
+			for _, a := range attrs {
+				for _, o := range objs {
+					if a.KbObject == o {
+						a.SetValue(v, Inference, trust)
+					}
+				}
+			}
+		case B_create:
+			var baseClass *KBClass
+			var parentClass *KBClass
+			var createType CreateType
+			pc++
+			if r.bin[pc].tokentype != Literal {
+				return RunDetailError(r.Name, r.bin[pc], pc)
+			}
+			switch r.bin[pc].literalbin {
+			case B_a: //Class
+				pc += 2
+				switch r.bin[pc].literalbin {
+				case B_by:
+					pc += 2
+					if r.bin[pc].class == nil {
+						return RunDetailError(r.Name, r.bin[pc], pc)
+					}
+					createType = CopyClass
+					baseClass = r.bin[pc].class
+					pc++
+				case B_whose:
+					pc += 3
+					if r.bin[pc].class == nil {
+						return RunDetailError(r.Name, r.bin[pc], pc)
+					}
+					createType = InheritClass
+					baseClass = r.bin[pc].class
+					pc++
+				}
+			case B_an: //Instance
+				pc += 4
+				if r.bin[pc].class == nil {
+					return RunDetailError(r.Name, r.bin[pc], pc)
+				}
+				createType = NewInstance
+				baseClass = r.bin[pc].class
+			default:
+				return RunDetailError(r.Name, r.bin[pc], pc)
+			}
+			if r.bin[pc].literalbin == B_named {
+				pc += 2
+				name := lib.Identify(r.bin[pc].token)
+				switch createType {
+				case NewClass:
+					if _, err := KBClassFactory(name, "", ""); err != nil {
+						return RunDetailError(r.Name, r.bin[pc], pc)
+					}
+				case CopyClass:
+					if _, err := KBClassCopy(name, baseClass); err != nil {
+						return RunDetailError(r.Name, r.bin[pc], pc)
+					}
+				case InheritClass:
+					if _, err := KBClassFactoryParent(name, "", parentClass); err != nil {
+						return RunDetailError(r.Name, r.bin[pc], pc)
+					}
+				case NewInstance:
+					if _, err := ObjectFactoryByClass(name, baseClass); err != nil {
+						return RunDetailError(r.Name, r.bin[pc], pc)
+					}
+				}
+			}
+			pc++
+		case B_conclude:
+			pc += 6
+			if len(r.bin[pc].attributeObjects) != 1 {
+				return RunDetailError(r.Name, r.bin[pc], pc)
+			}
+			attributeObject := r.bin[pc].attributeObjects[0]
+			pc += 2
+			attributeObject.SetValue(r.bin[pc].GetToken(), Inference, trust)
+		case B_halt:
+			pauseKB()
+			NewAlert(inits.I18n_halt, "") //All users
+		case B_transfer:
+			pc++
+			if len(r.bin[pc].objects) == 0 {
+				return RunDetailError(r.Name, r.bin[pc], pc)
+			}
+			obj := r.bin[pc].objects[0]
+			pc += 2
+			if r.bin[pc].workspace == nil {
+				return RunDetailError(r.Name, r.bin[pc], pc)
+			}
+			w := r.bin[pc].workspace
+			w.AddObject(obj, 0, 0)
+		case B_alter:
+			pc++
+			if r.bin[pc].class == nil {
+				return RunDetailError(r.Name, r.bin[pc], pc)
+			}
+			//alterClass := r.bin[pc].class
+			pc++
+			for r.bin[pc].literalbin == B_add {
+				pc++
+				//attributeName := r.bin[pc].token
+				options := []string{}
+				pc += 2
+				atype := r.bin[pc].token
+				if KBattributeTypeStr(atype) == KBList {
+					pc++
+					for r.bin[pc].literalbin != B_close_par {
+						pc++
+						options = append(options, r.bin[pc].token)
+						pc++
+					}
+				}
+
+			}
+
+		default:
+			return RunDetailError(r.Name, r.bin[pc], pc)
+		}
+
+		//TODO: delete
+		//TODO: insert
+		//TODO: remove
+		//TODO: change
+		//TODO: move
+		//TODO: rotate
+		//TODO: show
+		//TODO: hide
+		//TODO: alter
+		//TODO: focus
+		//TODO: invoke
+
+	}
 	return nil
 }
