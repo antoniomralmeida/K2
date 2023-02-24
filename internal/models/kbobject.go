@@ -35,7 +35,7 @@ func ObjectFactory(name, className string) (*KBObject, error) {
 	return ObjectFactoryByClass(name, class)
 }
 
-func (obj *KBObject) validateIndex() error {
+func (obj *KBObject) ValidateIndex() error {
 	cur, err := mgm.Coll(obj).Indexes().List(mgm.Ctx())
 	inits.Log(err, inits.Error)
 	var result []bson.M

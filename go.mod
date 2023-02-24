@@ -65,7 +65,6 @@ require (
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/tdewolff/test v1.0.7 // indirect
 	github.com/tinylib/msgp v1.1.8 // indirect
-	github.com/tjarratt/babble v0.0.0-20210505082055-cbca2a4833c1
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.44.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect

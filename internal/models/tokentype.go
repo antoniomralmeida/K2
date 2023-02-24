@@ -1,9 +1,9 @@
 package models
 
-type Tokentype byte
+type TokenType byte
 
 const (
-	Null Tokentype = iota
+	Null TokenType = iota
 	Reference
 	Literal
 	Text
@@ -21,10 +21,10 @@ const (
 
 var TokentypeStr = []string{"", "Reference", "Literal", "Text", "Control", "Jump", "Object", "DynamicReference", "Attribute", "Constant", "Class", "ListType", "Workspace", "Rule"}
 
-func (me Tokentype) String() string {
+func (me TokenType) String() string {
 	return TokentypeStr[me]
 }
 
-func (me Tokentype) Size() int {
+func (me TokenType) Size() int {
 	return len(TokentypeStr)
 }

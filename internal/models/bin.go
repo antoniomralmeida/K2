@@ -1,37 +1,45 @@
 package models
 
-import "github.com/antoniomralmeida/k2/internal/inits"
+import (
+	"encoding/json"
+
+	"github.com/antoniomralmeida/k2/internal/inits"
+	"github.com/antoniomralmeida/k2/internal/lib"
+)
 
 type BIN struct {
-	tokentype        Tokentype
-	pcNextCommand    int //TODO: para comando sem parametros dinâmicos deve-se saltar para o proxim comando na execução
-	literalbin       LiteralBin
-	token            string
-	class            *KBClass
-	newAttributes    []KBAttribute
-	attribute        *KBAttribute
-	workspace        *KBWorkspace
-	objects          []*KBObject          //TODO: Poderia ser dinâmico? Tempo de execução?
-	attributeObjects []*KBAttributeObject //TODO: Poderia ser dinâmico? Tempo de execução?
+	TokenType TokenType `json:"tokentype"`
+	//pcNextCommand int        `json:"-"`
+	LiteralBin LiteralBin `json:"literalbin"`
+	Token      string     `json:"token"`
+	class      *KBClass   `json:"-"`
+	//newAttributes    []KBAttribute        `json:"-"`
+	attribute        *KBAttribute         `json:"-"`
+	workspace        *KBWorkspace         `json:"-"`
+	objects          []*KBObject          `json:"-"` //TODO: Poderia ser dinâmico? Tempo de execução?
+	attributeObjects []*KBAttributeObject `json:"-"` //TODO: Poderia ser dinâmico? Tempo de execução?
 }
 
 func (b *BIN) GetToken() string {
-	return b.token
+	return b.Token
 }
 
-func (b *BIN) GetTokentype() Tokentype {
-	return b.tokentype
+func (b *BIN) GetTokentype() TokenType {
+	return b.TokenType
 }
 
-func (b *BIN) setTokenBin() {
+func (b *BIN) CheckLiteralBin() error {
 	if b.GetTokentype() == Literal {
 		var ok bool
-		if b.literalbin, ok = LiteralBinStr[b.token]; !ok {
-			inits.Log("Literal unknown!"+b.GetToken(), inits.Fatal)
+		if b.LiteralBin, ok = LiteralBinStr[b.Token]; !ok {
+			return lib.LiteralNotFoundError
 		}
 	}
+	return nil
 }
 
 func (b *BIN) String() string {
-	return "token: " + b.token + ", type:" + b.tokentype.String() + ", bin:" + b.literalbin.String()
+	j, err := json.Marshal(*b)
+	inits.Log(err, inits.Error)
+	return string(j)
 }

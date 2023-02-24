@@ -55,7 +55,7 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/antoniomralmeida/k2/internal/models/bin.go (71.4%)</option>
+				<option value="file0">github.com/antoniomralmeida/k2/internal/models/bin.go (100.0%)</option>
 				
 				<option value="file1">github.com/antoniomralmeida/k2/internal/models/datainput.go (0.0%)</option>
 				
@@ -75,11 +75,11 @@
 				
 				<option value="file9">github.com/antoniomralmeida/k2/internal/models/kbobject.go (89.6%)</option>
 				
-				<option value="file10">github.com/antoniomralmeida/k2/internal/models/kbrule.go (37.1%)</option>
+				<option value="file10">github.com/antoniomralmeida/k2/internal/models/kbrule.go (37.8%)</option>
 				
 				<option value="file11">github.com/antoniomralmeida/k2/internal/models/kbsource.go (100.0%)</option>
 				
-				<option value="file12">github.com/antoniomralmeida/k2/internal/models/kbstack.go (0.0%)</option>
+				<option value="file12">github.com/antoniomralmeida/k2/internal/models/kbstack.go (5.0%)</option>
 				
 				<option value="file13">github.com/antoniomralmeida/k2/internal/models/kbuser.go (0.0%)</option>
 				
@@ -97,6 +97,24 @@
 				
 				<option value="file20">github.com/antoniomralmeida/k2/internal/models/tokentype.go (100.0%)</option>
 				
+				<option value="file21">github.com/antoniomralmeida/k2/internal/olivia/language/date/date.go (37.5%)</option>
+				
+				<option value="file22">github.com/antoniomralmeida/k2/internal/olivia/language/date/register.go (100.0%)</option>
+				
+				<option value="file23">github.com/antoniomralmeida/k2/internal/olivia/language/date/rules.go (76.1%)</option>
+				
+				<option value="file24">github.com/antoniomralmeida/k2/internal/olivia/locales/locales.go (27.8%)</option>
+				
+				<option value="file25">github.com/antoniomralmeida/k2/internal/olivia/network/derivative.go (0.0%)</option>
+				
+				<option value="file26">github.com/antoniomralmeida/k2/internal/olivia/network/math.go (100.0%)</option>
+				
+				<option value="file27">github.com/antoniomralmeida/k2/internal/olivia/network/matrix.go (95.7%)</option>
+				
+				<option value="file28">github.com/antoniomralmeida/k2/internal/olivia/network/network.go (0.0%)</option>
+				
+				<option value="file29">github.com/antoniomralmeida/k2/internal/olivia/user/information.go (100.0%)</option>
+				
 				</select>
 			</div>
 			<div id="legend">
@@ -111,40 +129,48 @@
 		
 		<pre class="file" id="file0" style="display: none">package models
 
-import "github.com/antoniomralmeida/k2/internal/inits"
+import (
+        "encoding/json"
+
+        "github.com/antoniomralmeida/k2/internal/inits"
+        "github.com/antoniomralmeida/k2/internal/lib"
+)
 
 type BIN struct {
-        tokentype        Tokentype
-        pcNextCommand    int //TODO: para comando sem parametros dinâmicos deve-se saltar para o proxim comando na execução
-        literalbin       LiteralBin
-        token            string
-        class            *KBClass
-        newAttributes    []KBAttribute
-        attribute        *KBAttribute
-        workspace        *KBWorkspace
-        objects          []*KBObject          //TODO: Poderia ser dinâmico? Tempo de execução?
-        attributeObjects []*KBAttributeObject //TODO: Poderia ser dinâmico? Tempo de execução?
+        TokenType TokenType `json:"tokentype"`
+        //pcNextCommand int        `json:"-"`
+        LiteralBin LiteralBin `json:"literalbin"`
+        Token      string     `json:"token"`
+        class      *KBClass   `json:"-"`
+        //newAttributes    []KBAttribute        `json:"-"`
+        attribute        *KBAttribute         `json:"-"`
+        workspace        *KBWorkspace         `json:"-"`
+        objects          []*KBObject          `json:"-"` //TODO: Poderia ser dinâmico? Tempo de execução?
+        attributeObjects []*KBAttributeObject `json:"-"` //TODO: Poderia ser dinâmico? Tempo de execução?
 }
 
 func (b *BIN) GetToken() string <span class="cov8" title="1">{
-        return b.token
+        return b.Token
 }</span>
 
-func (b *BIN) GetTokentype() Tokentype <span class="cov8" title="1">{
-        return b.tokentype
+func (b *BIN) GetTokentype() TokenType <span class="cov8" title="1">{
+        return b.TokenType
 }</span>
 
-func (b *BIN) setTokenBin() <span class="cov8" title="1">{
+func (b *BIN) CheckLiteralBin() error <span class="cov8" title="1">{
         if b.GetTokentype() == Literal </span><span class="cov8" title="1">{
                 var ok bool
-                if b.literalbin, ok = LiteralBinStr[b.token]; !ok </span><span class="cov0" title="0">{
-                        inits.Log("Literal unknown!"+b.GetToken(), inits.Fatal)
+                if b.LiteralBin, ok = LiteralBinStr[b.Token]; !ok </span><span class="cov8" title="1">{
+                        return lib.LiteralNotFoundError
                 }</span>
         }
+        <span class="cov8" title="1">return nil</span>
 }
 
-func (b *BIN) String() string <span class="cov0" title="0">{
-        return "token: " + b.token + ", type:" + b.tokentype.String() + ", bin:" + b.literalbin.String()
+func (b *BIN) String() string <span class="cov8" title="1">{
+        j, err := json.Marshal(*b)
+        inits.Log(err, inits.Error)
+        return string(j)
 }</span>
 </pre>
 		
@@ -200,9 +226,9 @@ type EBNF struct {
 }
 
 func EBNFFactory(ebnfFile string) *EBNF <span class="cov8" title="1">{
-        ebnf := new(EBNF)
-        ebnf.grammarLoad(ebnfFile)
-        return ebnf
+        _ebnf = new(EBNF)
+        _ebnf.grammarLoad(ebnfFile)
+        return _ebnf
 }</span>
 func (e *EBNF) GetBase() *Token <span class="cov8" title="1">{
         return e.Base
@@ -262,7 +288,7 @@ func (e *EBNF) newStatement(str string) *Statement <span class="cov8" title="1">
         return &amp;rule
 }</span>
 
-func (e *EBNF) newToken(rule *Statement, str string, tokentype Tokentype, nexts ...*Token) <span class="cov8" title="1">{
+func (e *EBNF) newToken(rule *Statement, str string, tokentype TokenType, nexts ...*Token) <span class="cov8" title="1">{
         //Token := Token{Id: len(rule.Tokens) + 1, Token: strings.Trim(str, " "), Rule_id: rule.Id, Tokentype: tokentype}
         e.last++
         Token := Token{Id: e.last, Token: strings.Trim(str, " "), Rule_id: rule.Id, Tokentype: tokentype}
@@ -359,8 +385,8 @@ func (e *EBNF) grammarLoad(ebnfFile string) int <span class="cov8" title="1">{
                                 t.Rule_jump = e.findRule(t.Token)
                                 if t.Rule_jump == -1 </span><span class="cov8" title="1">{
                                         for z := 1; z &lt; t.GetTokenType().Size(); z++ </span><span class="cov8" title="1">{
-                                                if t.Token == Tokentype(z).String() </span><span class="cov8" title="1">{
-                                                        t.Tokentype = Tokentype(z)
+                                                if t.Token == TokenType(z).String() </span><span class="cov8" title="1">{
+                                                        t.Tokentype = TokenType(z)
                                                         break</span>
                                                 }
                                         }
@@ -957,7 +983,7 @@ type KBClass struct {
         ParentClass      *KBClass           `bson:"-"`
 }
 
-func (obj *KBClass) validateIndex() error <span class="cov8" title="1">{
+func (obj *KBClass) ValidateIndex() error <span class="cov8" title="1">{
         cur, err := mgm.Coll(obj).Indexes().List(mgm.Ctx())
         inits.Log(err, inits.Error)
         var result []bson.M
@@ -1255,7 +1281,7 @@ func ObjectFactory(name, className string) (*KBObject, error) <span class="cov8"
         <span class="cov8" title="1">return ObjectFactoryByClass(name, class)</span>
 }
 
-func (obj *KBObject) validateIndex() error <span class="cov8" title="1">{
+func (obj *KBObject) ValidateIndex() error <span class="cov8" title="1">{
         cur, err := mgm.Coll(obj).Indexes().List(mgm.Ctx())
         inits.Log(err, inits.Error)
         var result []bson.M
@@ -1370,7 +1396,7 @@ type KBRule struct {
         bin               []*BIN     `bson:"-"`
 }
 
-func (obj *KBRule) validateIndex() error <span class="cov8" title="1">{
+func (obj *KBRule) ValidateIndex() error <span class="cov8" title="1">{
         cur, err := mgm.Coll(obj).Indexes().List(mgm.Ctx())
         inits.Log(err, inits.Error)
         var result []bson.M
@@ -1543,7 +1569,7 @@ func compilingStatement(tokens []string) ([]*BIN, error, compilingDetail) <span 
                 for _, next := range nexts </span><span class="cov8" title="1">{
                         if (next.GetToken() == token) ||
                                 (next.GetTokenType() == DynamicReference &amp;&amp; len(token) == 1) ||
-                                ((next.GetTokenType() == Object || next.GetTokenType() == Class ||
+                                ((next.GetTokenType() == Object || next.GetTokenType() == Class || next.GetTokenType() == Rule ||
                                         next.GetTokenType() == Attribute || next.GetTokenType() == Constant ||
                                         next.GetTokenType() == Reference) &amp;&amp; unicode.IsUpper(rune(token[0]))) ||
                                 (next.GetTokenType() == Text &amp;&amp; (rune(token[0]) == '\'' || rune(token[0]) == '"') ||
@@ -1556,8 +1582,8 @@ func compilingStatement(tokens []string) ([]*BIN, error, compilingDetail) <span 
                                         if FindObjectByName(token) != nil </span><span class="cov8" title="1">{
                                                 ok = true
                                         }</span>
-                                } else<span class="cov8" title="1"> if next.GetTokenType() == Rule </span><span class="cov0" title="0">{
-                                        if FindRuleByName(token) != nil </span><span class="cov0" title="0">{
+                                } else<span class="cov8" title="1"> if next.GetTokenType() == Rule </span><span class="cov8" title="1">{
+                                        if FindRuleByName(token) != nil </span><span class="cov8" title="1">{
                                                 ok = true
                                         }</span>
                                 } else<span class="cov8" title="1"> {
@@ -1575,10 +1601,10 @@ func compilingStatement(tokens []string) ([]*BIN, error, compilingDetail) <span 
                 <span class="cov8" title="1">if !ok || len(nexts) == 0 </span><span class="cov8" title="1">{
                         return nil, lib.CompilerError, compilingDetail{Token: token, Nexts: nexts}
                 }</span>
-                <span class="cov8" title="1">code := BIN{tokentype: pt.GetTokenType(), token: token}
-                code.setTokenBin()
-                if code.tokentype == Literal &amp;&amp; code.literalbin == B_null </span><span class="cov0" title="0">{
-                        inits.Log(lib.LiteralNotFoundError, inits.Fatal)
+                <span class="cov8" title="1">code := BIN{TokenType: pt.GetTokenType(), Token: token}
+                err := code.CheckLiteralBin()
+                if err != nil </span><span class="cov0" title="0">{
+                        return nil, inits.Log(err, inits.Error), compilingDetail{}
                 }</span>
                 <span class="cov8" title="1">bin = append(bin, &amp;code)</span>
         }
@@ -1603,8 +1629,8 @@ func linkerRule(r *KBRule, bin []*BIN) error <span class="cov8" title="1">{
         dr := make(map[string]*KBClass)
         consequent := -1
         for j, x := range bin </span><span class="cov8" title="1">{
-                switch x.literalbin </span>{
-                case B_initially:<span class="cov0" title="0">
+                switch x.LiteralBin </span>{
+                case B_initially:<span class="cov8" title="1">
                         stack := KBStack{RuleID: r.ID}
                         stack.Persist()</span>
                 case B_then:<span class="cov8" title="1">
@@ -1614,11 +1640,11 @@ func linkerRule(r *KBRule, bin []*BIN) error <span class="cov8" title="1">{
                 <span class="cov8" title="1">switch x.GetTokentype() </span>{
                 case Workspace:<span class="cov0" title="0">
                         if bin[j].workspace == nil </span><span class="cov0" title="0">{
-                                bin[j].workspace = FindWorkspaceByName(r.bin[j].token)
+                                bin[j].workspace = FindWorkspaceByName(r.bin[j].Token)
                         }</span>
                 case Object:<span class="cov8" title="1">
                         if len(bin[j].objects) == 0 </span><span class="cov8" title="1">{
-                                obj := FindObjectByName(bin[j].token)
+                                obj := FindObjectByName(bin[j].Token)
                                 if obj != nil </span><span class="cov8" title="1">{
                                         bin[j].objects = append(bin[j].objects, obj)
                                 }</span>
@@ -1638,7 +1664,7 @@ func linkerRule(r *KBRule, bin []*BIN) error <span class="cov8" title="1">{
                         }
                 case Attribute:<span class="cov8" title="1">
                         ref := -1
-                        if bin[j+1].literalbin == B_of </span><span class="cov8" title="1">{
+                        if bin[j+1].LiteralBin == B_of </span><span class="cov8" title="1">{
                                 ref = j + 2
                         }</span> else<span class="cov0" title="0"> {
                                 for z := j - 1; z &gt;= 0; z-- </span><span class="cov0" title="0">{
@@ -1651,7 +1677,7 @@ func linkerRule(r *KBRule, bin []*BIN) error <span class="cov8" title="1">{
                         <span class="cov8" title="1">if ref != -1 </span><span class="cov8" title="1">{
                                 if bin[ref].GetTokentype() == Object </span><span class="cov0" title="0">{
                                         if len(bin[j].objects) == 0 </span><span class="cov0" title="0">{
-                                                obj := FindObjectByName(r.bin[j].token)
+                                                obj := FindObjectByName(r.bin[j].Token)
                                                 bin[j].objects = append(bin[j].objects, obj)
                                                 bin[j].class = obj.ClassPtr
                                         }</span>
@@ -1681,7 +1707,7 @@ func linkerRule(r *KBRule, bin []*BIN) error <span class="cov8" title="1">{
                                 } else<span class="cov8" title="1"> if bin[ref].GetTokentype() == DynamicReference </span><span class="cov0" title="0">{
                                         c := bin[ref].class
                                         if c == nil </span><span class="cov0" title="0">{
-                                                c = dr[bin[ref].token]
+                                                c = dr[bin[ref].Token]
                                                 bin[ref].class = c
                                         }</span>
                                         <span class="cov0" title="0">if c == nil </span><span class="cov0" title="0">{
@@ -1708,7 +1734,7 @@ func linkerRule(r *KBRule, bin []*BIN) error <span class="cov8" title="1">{
                                                 if bin[z].GetTokentype() == Object || bin[z].GetTokentype() == Class </span><span class="cov0" title="0">{
                                                         bin[j].class = bin[z].class
                                                         bin[j].objects = bin[z].objects
-                                                        dr[x.token] = bin[j].class
+                                                        dr[x.Token] = bin[j].class
                                                         break</span>
                                                 }
                                         }
@@ -1717,7 +1743,7 @@ func linkerRule(r *KBRule, bin []*BIN) error <span class="cov8" title="1">{
                                                 if bin[z].GetTokentype() == DynamicReference &amp;&amp; bin[z].GetToken() == x.GetToken() </span><span class="cov0" title="0">{
                                                         bin[j].objects = bin[z].objects
                                                         bin[j].class = bin[z].class
-                                                        dr[x.token] = bin[j].class
+                                                        dr[x.Token] = bin[j].class
                                                         break</span>
                                                 }
                                         }
@@ -1733,7 +1759,7 @@ func linkerRule(r *KBRule, bin []*BIN) error <span class="cov8" title="1">{
                                                         if bin[z].attribute != nil </span><span class="cov0" title="0">{
                                                                 for _, o := range bin[z].attribute.Options </span><span class="cov0" title="0">{
                                                                         if x.GetToken() == o </span><span class="cov0" title="0">{
-                                                                                bin[j].token = "\"" + bin[j].token + "\""
+                                                                                bin[j].Token = "\"" + bin[j].Token + "\""
                                                                                 ok = true
                                                                                 break</span>
                                                                         }
@@ -1830,7 +1856,7 @@ func (r *KBRule) Run() (e error) <span class="cov8" title="1">{
 oulter:
         //Program counter [pc] – It stores the counter which contains the address of the next instruction that is to be executed for the process.
         for pc := 0; pc &lt; len(r.bin); </span><span class="cov8" title="1">{
-                switch r.bin[pc].literalbin </span>{
+                switch r.bin[pc].LiteralBin </span>{
                 case B_unconditionally:<span class="cov8" title="1">
                         trueAntecedent = true
                         pc++</span>
@@ -1840,22 +1866,22 @@ oulter:
                         }
                 case B_for:<span class="cov0" title="0">
                         pc++
-                        if r.bin[pc].literalbin != B_any </span><span class="cov0" title="0">{
-                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
+                        if r.bin[pc].LiteralBin != B_any </span><span class="cov0" title="0">{
+                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].Token, inits.Error)
                         }</span>
                         <span class="cov0" title="0">pc++
-                        if r.bin[pc].tokentype != Class </span><span class="cov0" title="0">{
-                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
+                        if r.bin[pc].TokenType != Class </span><span class="cov0" title="0">{
+                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].Token, inits.Error)
                         }</span>
                         <span class="cov0" title="0">if r.bin[pc].class == nil </span><span class="cov0" title="0">{
-                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" KB Class not found!", inits.Error)
+                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].Token+" KB Class not found!", inits.Error)
                         }</span>
 
                         <span class="cov0" title="0">if len(r.bin[pc].objects) == 0 </span><span class="cov0" title="0">{
-                                return inits.Log("Warning in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token+" no object found!", inits.Info)
+                                return inits.Log("Warning in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].Token+" no object found!", inits.Info)
                         }</span>
 
-                        <span class="cov0" title="0">if r.bin[pc+1].tokentype == DynamicReference </span><span class="cov0" title="0">{
+                        <span class="cov0" title="0">if r.bin[pc+1].TokenType == DynamicReference </span><span class="cov0" title="0">{
                                 pc++
                         }</span>
                 case B_if:<span class="cov0" title="0">
@@ -1864,36 +1890,36 @@ oulter:
                         for </span><span class="cov0" title="0">{
 
                                 pc++
-                                for ; r.bin[pc].literalbin == B_open_par; pc++ </span><span class="cov0" title="0">{
-                                        expression = expression + r.bin[pc].token
-                                        fuzzyexp = fuzzyexp + r.bin[pc].token
+                                for ; r.bin[pc].LiteralBin == B_open_par; pc++ </span><span class="cov0" title="0">{
+                                        expression = expression + r.bin[pc].Token
+                                        fuzzyexp = fuzzyexp + r.bin[pc].Token
                                 }</span>
-                                <span class="cov0" title="0">if r.bin[pc].literalbin != B_the </span><span class="cov0" title="0">{
-                                        return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
+                                <span class="cov0" title="0">if r.bin[pc].LiteralBin != B_the </span><span class="cov0" title="0">{
+                                        return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].Token, inits.Error)
                                 }</span>
                                 <span class="cov0" title="0">pc++
-                                if r.bin[pc].tokentype != Attribute </span><span class="cov0" title="0">{
-                                        return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
+                                if r.bin[pc].TokenType != Attribute </span><span class="cov0" title="0">{
+                                        return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].Token, inits.Error)
                                 }</span>
 
                                 <span class="cov0" title="0">if r.bin[pc].class == nil </span><span class="cov0" title="0">{
-                                        return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
+                                        return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].Token, inits.Error)
                                 }</span>
-                                <span class="cov0" title="0">key := "{{" + r.bin[pc].class.Name + "." + r.bin[pc].token + "}}"
+                                <span class="cov0" title="0">key := "{{" + r.bin[pc].class.Name + "." + r.bin[pc].Token + "}}"
                                 expression = expression + key
                                 fuzzyexp = fuzzyexp + key
                                 attrs[key] = r.bin[pc].attributeObjects
                                 objs[key] = r.bin[pc].objects
 
                                 pc++
-                                if r.bin[pc].literalbin == B_of </span><span class="cov0" title="0">{
+                                if r.bin[pc].LiteralBin == B_of </span><span class="cov0" title="0">{
                                         pc++
-                                        if r.bin[pc].tokentype != DynamicReference &amp;&amp; r.bin[pc].tokentype != Object </span><span class="cov0" title="0">{
-                                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].token, inits.Error)
+                                        if r.bin[pc].TokenType != DynamicReference &amp;&amp; r.bin[pc].TokenType != Object </span><span class="cov0" title="0">{
+                                                return inits.Log("Error in KB Rule "+r.ID.Hex()+" near "+r.bin[pc].Token, inits.Error)
                                         }</span>
                                         <span class="cov0" title="0">pc++</span>
                                 }
-                                <span class="cov0" title="0">switch r.bin[pc].literalbin </span>{
+                                <span class="cov0" title="0">switch r.bin[pc].LiteralBin </span>{
                                 case B_is:<span class="cov0" title="0">
                                         expression = expression + "=="</span>
                                 case B_equal:<span class="cov0" title="0">
@@ -1903,38 +1929,38 @@ oulter:
                                 case B_less:<span class="cov0" title="0">
                                         expression = expression + "&lt;"
                                         pc += 2
-                                        if r.bin[pc].literalbin == B_or </span><span class="cov0" title="0">{
+                                        if r.bin[pc].LiteralBin == B_or </span><span class="cov0" title="0">{
                                                 expression = expression + "="
                                                 pc += 2
                                         }</span>
                                 case B_greater:<span class="cov0" title="0">
                                         expression = expression + "&gt;"
                                         pc += 2
-                                        if r.bin[pc].literalbin == B_or </span><span class="cov0" title="0">{
+                                        if r.bin[pc].LiteralBin == B_or </span><span class="cov0" title="0">{
                                                 expression = expression + "="
                                                 pc += 2
                                         }</span>
                                 }
                                 <span class="cov0" title="0">pc++
-                                if r.bin[pc].tokentype == Constant || r.bin[pc].tokentype == Text || r.bin[pc].tokentype == ListType </span><span class="cov0" title="0">{
-                                        expression = expression + r.bin[pc].token
+                                if r.bin[pc].TokenType == Constant || r.bin[pc].TokenType == Text || r.bin[pc].TokenType == ListType </span><span class="cov0" title="0">{
+                                        expression = expression + r.bin[pc].Token
                                 }</span>
                                 <span class="cov0" title="0">pc++
-                                for ; r.bin[pc].literalbin == B_close_par; pc++ </span><span class="cov0" title="0">{
-                                        expression = expression + r.bin[pc].token
-                                        fuzzyexp = fuzzyexp + r.bin[pc].token
+                                for ; r.bin[pc].LiteralBin == B_close_par; pc++ </span><span class="cov0" title="0">{
+                                        expression = expression + r.bin[pc].Token
+                                        fuzzyexp = fuzzyexp + r.bin[pc].Token
                                 }</span>
 
-                                <span class="cov0" title="0">switch r.bin[pc].literalbin </span>{
+                                <span class="cov0" title="0">switch r.bin[pc].LiteralBin </span>{
                                 case B_then:<span class="cov0" title="0">
                                         break inner</span>
                                 case B_and:<span class="cov0" title="0">
                                         pc++
-                                        expression = expression + " " + r.bin[pc].token + " "
-                                        fuzzyexp = fuzzyexp + " " + r.bin[pc].token + " "</span>
+                                        expression = expression + " " + r.bin[pc].Token + " "
+                                        fuzzyexp = fuzzyexp + " " + r.bin[pc].Token + " "</span>
                                 case B_or:<span class="cov0" title="0">
                                         pc++
-                                        fuzzyexp = fuzzyexp + " " + r.bin[pc].token + " "</span>
+                                        fuzzyexp = fuzzyexp + " " + r.bin[pc].Token + " "</span>
                                 }
                         }
                 default:<span class="cov0" title="0">
@@ -2007,44 +2033,44 @@ const (
 
 // TODO: ALTERAR COMAND SET
 func RunDetailError(rule string, bin *BIN, pc int) error <span class="cov0" title="0">{
-        return errors.New("Error in run rule " + rule + " near " + bin.token + "[" + strconv.Itoa(pc) + "]!")
+        return errors.New("Error in run rule " + rule + " near " + bin.Token + "[" + strconv.Itoa(pc) + "]!")
 }</span>
 
 func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error <span class="cov8" title="1">{
         //Program counter [pc] – It stores the counter which contains the address of the next instruction that is to be executed for the process.
 
         for pc := r.consequent; pc &lt; len(r.bin); pc++ </span><span class="cov8" title="1">{
-                switch r.bin[pc].literalbin </span>{
+                switch r.bin[pc].LiteralBin </span>{
                 case B_inform:<span class="cov0" title="0">
                         attrs := make(map[string][]*KBAttributeObject)
                         cart := cartesian.Cartesian{}
                         pc += 5
-                        if r.bin[pc].tokentype != Text </span><span class="cov0" title="0">{
+                        if r.bin[pc].TokenType != Text </span><span class="cov0" title="0">{
                                 return RunDetailError(r.Name, r.bin[pc], pc)
                         }</span>
                         <span class="cov0" title="0">txt := ""
                         ok := true
                         for </span><span class="cov0" title="0">{
-                                txt = txt + r.bin[pc].token
+                                txt = txt + r.bin[pc].Token
                                 pc++
-                                if r.bin[pc].literalbin != B_the </span><span class="cov0" title="0">{
+                                if r.bin[pc].LiteralBin != B_the </span><span class="cov0" title="0">{
                                         break</span>
                                 }
-                                <span class="cov0" title="0">if r.bin[pc].tokentype != Attribute </span><span class="cov0" title="0">{
+                                <span class="cov0" title="0">if r.bin[pc].TokenType != Attribute </span><span class="cov0" title="0">{
                                         return RunDetailError(r.Name, r.bin[pc], pc)
                                 }</span>
                                 <span class="cov0" title="0">if r.bin[pc].attributeObjects == nil </span><span class="cov0" title="0">{
                                         return RunDetailError(r.Name, r.bin[pc], pc)
                                 }</span>
-                                <span class="cov0" title="0">key := "{{" + r.bin[pc].class.Name + "." + r.bin[pc].token + "}}"
+                                <span class="cov0" title="0">key := "{{" + r.bin[pc].class.Name + "." + r.bin[pc].Token + "}}"
                                 txt = txt + " " + key + " "
                                 attrs[key] = r.bin[pc].attributeObjects
                                 cart.AddItem(key, len(attrs[key])-1)
 
                                 pc += 2
-                                if r.bin[pc].literalbin == B_the </span><span class="cov0" title="0">{
+                                if r.bin[pc].LiteralBin == B_the </span><span class="cov0" title="0">{
                                         pc += 2
-                                }</span> else<span class="cov0" title="0"> if r.bin[pc].tokentype != DynamicReference </span><span class="cov0" title="0">{
+                                }</span> else<span class="cov0" title="0"> if r.bin[pc].TokenType != DynamicReference </span><span class="cov0" title="0">{
                                         return RunDetailError(r.Name, r.bin[pc], pc)
                                 }</span> else<span class="cov0" title="0"> {
                                         if !attrs[key][pc].InObjects(objs) </span><span class="cov0" title="0">{
@@ -2052,8 +2078,8 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error <span clas
                                         }</span>
                                         <span class="cov0" title="0">pc++</span>
                                 }
-                                <span class="cov0" title="0">if r.bin[pc].tokentype == Text </span><span class="cov0" title="0">{
-                                        txt = txt + " " + r.bin[pc].token
+                                <span class="cov0" title="0">if r.bin[pc].TokenType == Text </span><span class="cov0" title="0">{
+                                        txt = txt + " " + r.bin[pc].Token
                                         pc++
                                 }</span>
                         }
@@ -2080,7 +2106,7 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error <span clas
 
                 case B_set:<span class="cov0" title="0">
                         pc += 2
-                        if r.bin[pc].tokentype != Attribute </span><span class="cov0" title="0">{
+                        if r.bin[pc].TokenType != Attribute </span><span class="cov0" title="0">{
                                 return RunDetailError(r.Name, r.bin[pc], pc)
                         }</span>
                         <span class="cov0" title="0">if r.bin[pc].attributeObjects == nil </span><span class="cov0" title="0">{
@@ -2088,13 +2114,13 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error <span clas
                         }</span>
                         <span class="cov0" title="0">attrs := r.bin[pc].attributeObjects
                         pc += 4
-                        if r.bin[pc].tokentype != Constant &amp;&amp; r.bin[pc+1].tokentype != Constant </span><span class="cov0" title="0">{
+                        if r.bin[pc].TokenType != Constant &amp;&amp; r.bin[pc+1].TokenType != Constant </span><span class="cov0" title="0">{
                                 return RunDetailError(r.Name, r.bin[pc], pc)
                         }</span>
-                        <span class="cov0" title="0">if r.bin[pc+1].tokentype == Constant </span><span class="cov0" title="0">{
+                        <span class="cov0" title="0">if r.bin[pc+1].TokenType == Constant </span><span class="cov0" title="0">{
                                 pc++
                         }</span>
-                        <span class="cov0" title="0">v := r.bin[pc].token
+                        <span class="cov0" title="0">v := r.bin[pc].Token
                         for _, a := range attrs </span><span class="cov0" title="0">{
                                 for _, o := range objs </span><span class="cov0" title="0">{
                                         if a.KbObject == o </span><span class="cov0" title="0">{
@@ -2107,13 +2133,13 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error <span clas
                         var parentClass *KBClass
                         var createType CreateType
                         pc++
-                        if r.bin[pc].tokentype != Literal </span><span class="cov0" title="0">{
+                        if r.bin[pc].TokenType != Literal </span><span class="cov0" title="0">{
                                 return RunDetailError(r.Name, r.bin[pc], pc)
                         }</span>
-                        <span class="cov8" title="1">switch r.bin[pc].literalbin </span>{
+                        <span class="cov8" title="1">switch r.bin[pc].LiteralBin </span>{
                         case B_a:<span class="cov8" title="1"> //Class
                                 pc += 2
-                                switch r.bin[pc].literalbin </span>{
+                                switch r.bin[pc].LiteralBin </span>{
                                 case B_by:<span class="cov0" title="0">
                                         pc += 2
                                         if r.bin[pc].class == nil </span><span class="cov0" title="0">{
@@ -2141,9 +2167,9 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error <span clas
                         default:<span class="cov0" title="0">
                                 return RunDetailError(r.Name, r.bin[pc], pc)</span>
                         }
-                        <span class="cov8" title="1">if r.bin[pc].literalbin == B_named </span><span class="cov8" title="1">{
+                        <span class="cov8" title="1">if r.bin[pc].LiteralBin == B_named </span><span class="cov8" title="1">{
                                 pc += 2
-                                name := lib.Identify(r.bin[pc].token)
+                                name := lib.Identify(r.bin[pc].Token)
                                 switch createType </span>{
                                 case NewClass:<span class="cov8" title="1">
                                         if _, err := KBClassFactory(name, "", ""); err != nil </span><span class="cov0" title="0">{
@@ -2194,17 +2220,17 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error <span clas
                         }</span>
                         //alterClass := r.bin[pc].class
                         <span class="cov0" title="0">pc++
-                        for r.bin[pc].literalbin == B_add </span><span class="cov0" title="0">{
+                        for r.bin[pc].LiteralBin == B_add </span><span class="cov0" title="0">{
                                 pc++
                                 //attributeName := r.bin[pc].token
                                 options := []string{}
                                 pc += 2
-                                atype := r.bin[pc].token
+                                atype := r.bin[pc].Token
                                 if KBattributeTypeStr(atype) == KBList </span><span class="cov0" title="0">{
                                         pc++
-                                        for r.bin[pc].literalbin != B_close_par </span><span class="cov0" title="0">{
+                                        for r.bin[pc].LiteralBin != B_close_par </span><span class="cov0" title="0">{
                                                 pc++
-                                                options = append(options, r.bin[pc].token)
+                                                options = append(options, r.bin[pc].Token)
                                                 pc++
                                         }</span>
                                 }
@@ -2286,7 +2312,7 @@ type KBStack struct {
         Status           StackStatus        `bson:"status"`
 }
 
-func (obj *KBStack) Persist() error <span class="cov0" title="0">{
+func (obj *KBStack) Persist() error <span class="cov8" title="1">{
         return inits.Persist(obj)
 }</span>
 func (obj *KBStack) GetPrimitiveUpdateAt() primitive.DateTime <span class="cov0" title="0">{
@@ -2458,7 +2484,7 @@ func WorkspaceFactory(name string, image string) *KBWorkspace <span class="cov0"
         }</span>
 }
 
-func (obj *KBWorkspace) validateIndex() error <span class="cov0" title="0">{
+func (obj *KBWorkspace) ValidateIndex() error <span class="cov0" title="0">{
         cur, err := mgm.Coll(obj).Indexes().List(mgm.Ctx())
         inits.Log(err, inits.Error)
         var result []bson.M
@@ -2641,11 +2667,11 @@ func InitKB() <span class="cov0" title="0">{
         kb_current = KnowledgeBasedFacotory()
 
         //Check unique index from database collections
-        new(KBClass).validateIndex()
-        new(KBWorkspace).validateIndex()
-        new(KBObject).validateIndex()
+        new(KBClass).ValidateIndex()
+        new(KBWorkspace).ValidateIndex()
+        new(KBObject).ValidateIndex()
 
-        _ebnf = EBNFFactory("./configs/k2.ebnf")
+        EBNFFactory("./configs/k2.ebnf")
 
         FindAllClasses("_id")
 
@@ -3008,7 +3034,7 @@ import (
 
 type Token struct {
         Id        int       `json:"id"`
-        Tokentype Tokentype `json:"tokentype"`
+        Tokentype TokenType `json:"tokentype"`
         Rule_id   int       `json:"rule_id"`
         Rule_jump int       `json:"rule_jump"`
         Token     string    `json:"token"`
@@ -3019,7 +3045,7 @@ func (t *Token) GetToken() string <span class="cov8" title="1">{
         return t.Token
 }</span>
 
-func (t *Token) GetTokenType() Tokentype <span class="cov8" title="1">{
+func (t *Token) GetTokenType() TokenType <span class="cov8" title="1">{
         return t.Tokentype
 }</span>
 
@@ -3045,10 +3071,10 @@ func (t *Token) MarshalJSON() ([]byte, error) <span class="cov8" title="1">{
 		
 		<pre class="file" id="file20" style="display: none">package models
 
-type Tokentype byte
+type TokenType byte
 
 const (
-        Null Tokentype = iota
+        Null TokenType = iota
         Reference
         Literal
         Text
@@ -3066,12 +3092,1014 @@ const (
 
 var TokentypeStr = []string{"", "Reference", "Literal", "Text", "Control", "Jump", "Object", "DynamicReference", "Attribute", "Constant", "Class", "ListType", "Workspace", "Rule"}
 
-func (me Tokentype) String() string <span class="cov8" title="1">{
+func (me TokenType) String() string <span class="cov8" title="1">{
         return TokentypeStr[me]
 }</span>
 
-func (me Tokentype) Size() int <span class="cov8" title="1">{
+func (me TokenType) Size() int <span class="cov8" title="1">{
         return len(TokentypeStr)
+}</span>
+</pre>
+		
+		<pre class="file" id="file21" style="display: none">package date
+
+import (
+        "regexp"
+        "strings"
+        "time"
+)
+
+// PatternTranslation are the map of regexs in different languages
+var PatternTranslation = map[string]PatternTranslations{
+        "en": {
+                DateRegex: `(of )?(the )?((after )?tomorrow|((today|tonight)|(next )?(monday|tuesday|wednesday|thursday|friday|saturday|sunday))|(\d{2}|\d)(th|rd|st|nd)? (of )?(january|february|march|april|may|june|july|august|september|october|november|december)|((\d{2}|\d)/(\d{2}|\d)))`,
+                TimeRegex: `(at )?(\d{2}|\d)(:\d{2}|\d)?( )?(pm|am|p\.m|a\.m)`,
+        },
+        "de": {
+                DateRegex: `(von )?(das )?((nach )?morgen|((heute|abends)|(nächsten )?(montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag))|(\d{2}|\d)(th|rd|st|nd)? (of )?(januar|februar|märz|april|mai|juli|juli|august|september|oktober|november|dezember)|((\d{2}|\d)/(\d{2}|\d)))`,
+                TimeRegex: `(um )?(\d{2}|\d)(:\d{2}|\d)?( )?(pm|am|p\.m|a\.m)`,
+        },
+        "fr": {
+                DateRegex: `(le )?(après )?demain|((aujourd'hui'|ce soir)|(lundi|mardi|mecredi|jeudi|vendredi|samedi|dimanche)( prochain)?|(\d{2}|\d) (janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)|((\d{2}|\d)/(\d{2}|\d)))`,
+                TimeRegex: `(à )?(\d{2}|\d)(:\d{2}|\d)?( )?(pm|am|p\.m|a\.m)`,
+        },
+        "es": {
+                DateRegex: `(el )?((pasado )?mañana|((hoy|esta noche)|(el )?(proximo )?(lunes|martes|miercoles|jueves|viernes|sabado|domingo))|(\d{2}|\d) (de )?(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)|((\d{2}|\d)/(\d{2}|\d)))`,
+                TimeRegex: `(a )?(las )?(\d{2}|\d)(:\d{2}|\d)?( )?(de )?(la )?(pm|am|p\.m|a\.m|tarde|mañana)`,
+        },
+        "ca": {
+                DateRegex: `(el )?((després )?(de )?demà|((avui|aquesta nit)|(el )?(proper )?(dilluns|dimarts|dimecres|dijous|divendres|dissabte|diumenge))|(\d{2}|\d) (de )?(gener|febrer|març|abril|maig|juny|juliol|agost|setembre|octubre|novembre|desembre)|((\d{2}|\d)/(\d{2}|\d)))`,
+                TimeRegex: `(a )?(les )?(\d{2}|\d)(:\d{2}|\d)?( )?(pm|am|p\.m|a\.m)`,
+        },
+        "nl": {
+                DateRegex: `(van )?(de )?((na )?morgen|((vandaag|vanavond)|(volgende )?(maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag))|(\d{2}|\d)(te|de)? (vab )?(januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)|((\d{2}|\d)/(\d{2}|\d)))`,
+                TimeRegex: `(om )?(\d{2}|\d)(:\d{2}|\d)?( )?(pm|am|p\.m|a\.m)`,
+        },
+        "el": {
+                DateRegex: `(από )?(το )?((μεθ )?αύριο|((σήμερα|απόψε)|(επόμενη )?(δευτέρα|τρίτη|τετάρτη|πέμπτη|παρασκευή|σάββατο|κυριακή))|(\d{2}|\d)(η)? (of )?(ιανουάριος|φεβρουάριος|μάρτιος|απρίλιος|μάιος|ιούνιος|ιούλιος|αύγουστος|σεπτέμβριος|οκτώβριος|νοέμβριος|δεκέμβριος)|((\d{2}|\d)/(\d{2}|\d)))`,
+                TimeRegex: `(at )?(\d{2}|\d)(:\d{2}|\d)?( )?(μμ|πμ|μ\.μ|π\.μ)`,
+        },
+}
+
+// PatternTranslations are the translations of the regexs for dates
+type PatternTranslations struct {
+        DateRegex string
+        TimeRegex string
+}
+
+// SearchTime returns the found date in the given sentence and the sentence without the date, if no date has
+// been found, it returns an empty date and the given sentence.
+func SearchTime(locale, sentence string) (string, time.Time) <span class="cov0" title="0">{
+        _time := RuleTime(sentence)
+        // Set the time to 12am if no time has been found
+        if _time == (time.Time{}) </span><span class="cov0" title="0">{
+                _time = time.Date(0, 0, 0, 12, 0, 0, 0, time.UTC)
+        }</span>
+
+        <span class="cov0" title="0">for _, rule := range rules </span><span class="cov0" title="0">{
+                date := rule(locale, sentence)
+
+                // If the current rule found a date
+                if date != (time.Time{}) </span><span class="cov0" title="0">{
+                        date = time.Date(date.Year(), date.Month(), date.Day(), _time.Hour(), _time.Minute(), 0, 0, time.UTC)
+
+                        sentence = DeleteTimes(locale, sentence)
+                        return DeleteDates(locale, sentence), date
+                }</span>
+        }
+
+        <span class="cov0" title="0">return sentence, time.Now().Add(time.Hour * 24)</span>
+}
+
+// DeleteDates removes the dates of the given sentence and returns it
+func DeleteDates(locale, sentence string) string <span class="cov8" title="1">{
+        // Create a regex to match the patterns of dates to remove them.
+        datePatterns := regexp.MustCompile(PatternTranslation[locale].DateRegex)
+
+        // Replace the dates by empty string
+        sentence = datePatterns.ReplaceAllString(sentence, "")
+        // Trim the spaces and return
+        return strings.TrimSpace(sentence)
+}</span>
+
+// DeleteTimes removes the times of the given sentence and returns it
+func DeleteTimes(locale, sentence string) string <span class="cov8" title="1">{
+        // Create a regex to match the patterns of times to remove them.
+        timePatterns := regexp.MustCompile(PatternTranslation[locale].TimeRegex)
+
+        // Replace the times by empty string
+        sentence = timePatterns.ReplaceAllString(sentence, "")
+        // Trim the spaces and return
+        return strings.TrimSpace(sentence)
+}</span>
+</pre>
+		
+		<pre class="file" id="file22" style="display: none">package date
+
+import "time"
+
+// A Rule is a function that takes the given sentence and tries to parse a specific
+// rule to return a date, if not, the date is empty.
+type Rule func(string, string) time.Time
+
+var rules []Rule
+
+// RegisterRule takes a rule in parameter and register it to the array of rules
+func RegisterRule(rule Rule) <span class="cov8" title="1">{
+        rules = append(rules, rule)
+}</span>
+</pre>
+		
+		<pre class="file" id="file23" style="display: none">package date
+
+import (
+        "fmt"
+        "regexp"
+        "strconv"
+        "strings"
+        "time"
+
+        "github.com/antoniomralmeida/k2/internal/olivia/util"
+)
+
+const day = time.Hour * 24
+
+// RuleTranslations are the translations of the rules in different languages
+var RuleTranslations = map[string]RuleTranslation{
+        "en": {
+                DaysOfWeek: []string{
+                        "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
+                },
+                Months: []string{
+                        "january", "february", "march", "april", "may", "june", "july",
+                        "august", "september", "october", "november", "december",
+                },
+                RuleToday:         `today|tonight`,
+                RuleTomorrow:      `(after )?tomorrow`,
+                RuleAfterTomorrow: "after",
+                RuleDayOfWeek:     `(next )?(monday|tuesday|wednesday|thursday|friday|saturday|sunday)`,
+                RuleNextDayOfWeek: "next",
+                RuleNaturalDate:   `january|february|march|april|may|june|july|august|september|october|november|december`,
+        },
+        "de": {
+                DaysOfWeek: []string{
+                        "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag",
+                },
+                Months: []string{
+                        "Januar", "Februar", "Marsch", "April", "Mai", "Juni", "Juli",
+                        "August", "September", "Oktober", "November", "Dezember",
+                },
+                RuleToday:         `heute|abends`,
+                RuleTomorrow:      `(nach )?tomorrow`,
+                RuleAfterTomorrow: "nach",
+                RuleDayOfWeek:     `(nächsten )?(Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)`,
+                RuleNextDayOfWeek: "nächste",
+                RuleNaturalDate:   `Januar|Februar|März|April|Mai|Juli|Juli|August|September|Oktober|November|Dezember`,
+        },
+        "fr": {
+                DaysOfWeek: []string{
+                        "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche",
+                },
+                Months: []string{
+                        "janvier", "février", "mars", "avril", "mai", "juin", "juillet",
+                        "août", "septembre", "octobre", "novembre", "décembre",
+                },
+                RuleToday:         `aujourd'hui|ce soir`,
+                RuleTomorrow:      `(après )?demain`,
+                RuleAfterTomorrow: "après",
+                RuleDayOfWeek:     `(lundi|mardi|mecredi|jeudi|vendredi|samedi|dimanche)( prochain)?`,
+                RuleNextDayOfWeek: "prochain",
+                RuleNaturalDate:   `janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre`,
+        },
+        "es": {
+                DaysOfWeek: []string{
+                        "lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo",
+                },
+                Months: []string{
+                        "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio",
+                        "agosto", "septiembre", "octubre", "noviembre", "diciembre",
+                },
+                RuleToday:         `hoy|esta noche`,
+                RuleTomorrow:      `(pasado )?mañana`,
+                RuleAfterTomorrow: "pasado",
+                RuleDayOfWeek:     `(el )?(proximo )?(lunes|martes|miercoles|jueves|viernes|sabado|domingo))`,
+                RuleNextDayOfWeek: "proximo",
+                RuleNaturalDate:   `enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre`,
+        },
+        "ca": {
+                DaysOfWeek: []string{
+                        "dilluns", "dimarts", "dimecres", "dijous", "divendres", "dissabte", "diumenge",
+                },
+                Months: []string{
+                        "gener", "febrer", "març", "abril", "maig", "juny", "juliol",
+                        "agost", "setembre", "octubre", "novembre", "desembre",
+                },
+                RuleToday:         `avui|aquesta nit`,
+                RuleTomorrow:      `((després )?(de )?demà`,
+                RuleAfterTomorrow: "després",
+                RuleDayOfWeek:     `(el )?(proper )?(dilluns|dimarts|dimecres|dijous|divendres|dissabte|diumenge))`,
+                RuleNextDayOfWeek: "proper",
+                RuleNaturalDate:   `gener|febrer|març|abril|maig|juny|juliol|agost|setembre|octubre|novembre|desembre`,
+        },
+        "nl": {
+                DaysOfWeek: []string{
+                        "maandag", "dinsdag", "woensdag", "donderdag", "vrijdag", "zaterdag", "zondag",
+                },
+                Months: []string{
+                        "januari", "februari", "maart", "april", "mei", "juni", "juli",
+                        "augustus", "september", "oktober", "november", "december",
+                },
+                RuleToday:         `vandaag|vanavond`,
+                RuleTomorrow:      `(na )?morgen`,
+                RuleAfterTomorrow: "na",
+                RuleDayOfWeek:     `(volgende )?(maandag|dinsdag|woensdag|donderdag|vrijdag|zaterdag|zondag)`,
+                RuleNextDayOfWeek: "volgende",
+                RuleNaturalDate:   `januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december`,
+        },
+        "el": {
+                DaysOfWeek: []string{
+                        "δευτέρα", "τρίτη", "τετάρτη", "πέμπτη", "παρασκευή", "σάββατο", "κυριακή",
+                },
+                Months: []string{
+                        "ιανουάριος", "φεβρουάριος", "μάρτιος", "απρίλιος", "μάιος", "ιούνιος", "ιούλιος",
+                        "αύγουστος", "σεπτέμβριος", "οκτώβριος", "νοέμβριος", "δεκέμβριος",
+                },
+                RuleToday:         `σήμερα|απόψε`,
+                RuleTomorrow:      `(μεθ )?άυριο`,
+                RuleAfterTomorrow: "μεθ",
+                RuleDayOfWeek:     `(επόμενη )?(δευτέρα|τρίτη|τετάρτη|πέμπτη|παρασκευή|σάββατο|κυριακή)`,
+                RuleNextDayOfWeek: "επόμενη",
+                RuleNaturalDate:   `ιανουάριος|φεβρουάριος|μάρτιος|απρίλιος|μάιος|ιούνιος|ιούλιος|αύγουστος|σεπτέμβριος|οκτώβριος|νοέμβριος|δεκέμβριος`,
+        },
+}
+
+// A RuleTranslation is all the texts/regexs to match the dates
+type RuleTranslation struct {
+        DaysOfWeek        []string
+        Months            []string
+        RuleToday         string
+        RuleTomorrow      string
+        RuleAfterTomorrow string
+        RuleDayOfWeek     string
+        RuleNextDayOfWeek string
+        RuleNaturalDate   string
+}
+
+var daysOfWeek = map[string]time.Weekday{
+        "monday":    time.Monday,
+        "tuesday":   time.Tuesday,
+        "wednesday": time.Wednesday,
+        "thursday":  time.Thursday,
+        "friday":    time.Friday,
+        "saturday":  time.Saturday,
+        "sunday":    time.Sunday,
+}
+
+func init() <span class="cov8" title="1">{
+        // Register the rules
+        RegisterRule(RuleToday)
+        RegisterRule(RuleTomorrow)
+        RegisterRule(RuleDayOfWeek)
+        RegisterRule(RuleNaturalDate)
+        RegisterRule(RuleDate)
+}</span>
+
+// RuleToday checks for today, tonight, this afternoon dates in the given sentence, then
+// it returns the date parsed.
+func RuleToday(locale, sentence string) (result time.Time) <span class="cov8" title="1">{
+        todayRegex := regexp.MustCompile(RuleTranslations[locale].RuleToday)
+        today := todayRegex.FindString(sentence)
+
+        // Returns an empty date struct if no date has been found
+        if today == "" </span><span class="cov0" title="0">{
+                return time.Time{}
+        }</span>
+
+        <span class="cov8" title="1">return time.Now()</span>
+}
+
+// RuleTomorrow checks for "tomorrow" and "after tomorrow" dates in the given sentence, then
+// it returns the date parsed.
+func RuleTomorrow(locale, sentence string) (result time.Time) <span class="cov8" title="1">{
+        tomorrowRegex := regexp.MustCompile(RuleTranslations[locale].RuleTomorrow)
+        date := tomorrowRegex.FindString(sentence)
+
+        // Returns an empty date struct if no date has been found
+        if date == "" </span><span class="cov0" title="0">{
+                return time.Time{}
+        }</span>
+
+        <span class="cov8" title="1">result = time.Now().Add(day)
+
+        // If the date contains "after", we add 24 hours to tomorrow's date
+        if strings.Contains(date, RuleTranslations[locale].RuleAfterTomorrow) </span><span class="cov8" title="1">{
+                return result.Add(day)
+        }</span>
+
+        <span class="cov8" title="1">return</span>
+}
+
+// RuleDayOfWeek checks for the days of the week and the keyword "next" in the given sentence,
+// then it returns the date parsed.
+func RuleDayOfWeek(locale, sentence string) time.Time <span class="cov8" title="1">{
+        dayOfWeekRegex := regexp.MustCompile(RuleTranslations[locale].RuleDayOfWeek)
+        date := dayOfWeekRegex.FindString(sentence)
+
+        // Returns an empty date struct if no date has been found
+        if date == "" </span><span class="cov0" title="0">{
+                return time.Time{}
+        }</span>
+
+        <span class="cov8" title="1">var foundDayOfWeek int
+        // Find the integer value of the found day of the week
+        for _, dayOfWeek := range daysOfWeek </span><span class="cov8" title="1">{
+                // Down case the day of the week to match the found date
+                stringDayOfWeek := strings.ToLower(dayOfWeek.String())
+
+                if strings.Contains(date, stringDayOfWeek) </span><span class="cov8" title="1">{
+                        foundDayOfWeek = int(dayOfWeek)
+                }</span>
+        }
+
+        <span class="cov8" title="1">currentDay := int(time.Now().Weekday())
+        // Calculate the date of the found day
+        calculatedDate := foundDayOfWeek - currentDay
+
+        // If the day is already passed in the current week, then we add another week to the count
+        if calculatedDate &lt;= 0 </span><span class="cov0" title="0">{
+                calculatedDate += 7
+        }</span>
+
+        // If there is "next" in the sentence, then we add another week
+        <span class="cov8" title="1">if strings.Contains(date, RuleTranslations[locale].RuleNextDayOfWeek) </span><span class="cov0" title="0">{
+                calculatedDate += 7
+        }</span>
+
+        // Then add the calculated number of day to the actual date
+        <span class="cov8" title="1">return time.Now().Add(day * time.Duration(calculatedDate))</span>
+}
+
+// RuleNaturalDate checks for the dates written in natural language in the given sentence,
+// then it returns the date parsed.
+func RuleNaturalDate(locale, sentence string) time.Time <span class="cov8" title="1">{
+        naturalMonthRegex := regexp.MustCompile(
+                RuleTranslations[locale].RuleNaturalDate,
+        )
+        naturalDayRegex := regexp.MustCompile(`\d{2}|\d`)
+
+        month := naturalMonthRegex.FindString(sentence)
+        day := naturalDayRegex.FindString(sentence)
+
+        // Put the month in english to parse the time with time golang package
+        if locale != "en" </span><span class="cov0" title="0">{
+                monthIndex := util.Index(RuleTranslations[locale].Months, month)
+                month = RuleTranslations["en"].Months[monthIndex]
+        }</span>
+
+        <span class="cov8" title="1">parsedMonth, _ := time.Parse("January", month)
+        parsedDay, _ := strconv.Atoi(day)
+
+        // Returns an empty date struct if no date has been found
+        if day == "" &amp;&amp; month == "" </span><span class="cov8" title="1">{
+                return time.Time{}
+        }</span>
+
+        // If only the month is specified
+        <span class="cov8" title="1">if day == "" </span><span class="cov8" title="1">{
+                // Calculate the number of months to add
+                calculatedMonth := parsedMonth.Month() - time.Now().Month()
+                // Add a year if the month is passed
+                if calculatedMonth &lt;= 0 </span><span class="cov0" title="0">{
+                        calculatedMonth += 12
+                }</span>
+
+                // Remove the number of days elapsed in the month to reach the first
+                <span class="cov8" title="1">return time.Now().AddDate(0, int(calculatedMonth), -time.Now().Day()+1)</span>
+        }
+
+        // Parse the date
+        <span class="cov8" title="1">parsedDate := fmt.Sprintf("%d-%02d-%02d", time.Now().Year(), parsedMonth.Month(), parsedDay)
+        date, err := time.Parse("2006-01-02", parsedDate)
+        if err != nil </span><span class="cov0" title="0">{
+                return time.Time{}
+        }</span>
+
+        // If the date has been passed, add a year
+        <span class="cov8" title="1">if time.Now().After(date) </span><span class="cov0" title="0">{
+                date = date.AddDate(1, 0, 0)
+        }</span>
+
+        <span class="cov8" title="1">return date</span>
+}
+
+// RuleDate checks for dates written like mm/dd
+func RuleDate(locale, sentence string) time.Time <span class="cov8" title="1">{
+        dateRegex := regexp.MustCompile(`(\d{2}|\d)/(\d{2}|\d)`)
+        date := dateRegex.FindString(sentence)
+
+        // Returns an empty date struct if no date has been found
+        if date == "" </span><span class="cov0" title="0">{
+                return time.Time{}
+        }</span>
+
+        // Parse the found date
+        <span class="cov8" title="1">parsedDate, err := time.Parse("01/02", date)
+        if err != nil </span><span class="cov0" title="0">{
+                return time.Time{}
+        }</span>
+
+        // Add the current year to the date
+        <span class="cov8" title="1">parsedDate = parsedDate.AddDate(time.Now().Year(), 0, 0)
+
+        // Add another year if the date is passed
+        if time.Now().After(parsedDate) </span><span class="cov0" title="0">{
+                parsedDate = parsedDate.AddDate(1, 0, 0)
+        }</span>
+
+        <span class="cov8" title="1">return parsedDate</span>
+}
+
+// RuleTime checks for an hour written like 9pm
+func RuleTime(sentence string) time.Time <span class="cov8" title="1">{
+        timeRegex := regexp.MustCompile(`(\d{2}|\d)(:\d{2}|\d)?( )?(pm|am|p\.m|a\.m)`)
+        foundTime := timeRegex.FindString(sentence)
+
+        // Returns an empty date struct if no date has been found
+        if foundTime == "" </span><span class="cov0" title="0">{
+                return time.Time{}
+        }</span>
+
+        // Initialize the part of the day asked
+        <span class="cov8" title="1">var part string
+        if strings.Contains(foundTime, "pm") || strings.Contains(foundTime, "p.m") </span><span class="cov8" title="1">{
+                part = "pm"
+        }</span> else<span class="cov0" title="0"> if strings.Contains(foundTime, "am") || strings.Contains(foundTime, "a.m") </span><span class="cov0" title="0">{
+                part = "am"
+        }</span>
+
+        <span class="cov8" title="1">if strings.Contains(foundTime, ":") </span><span class="cov8" title="1">{
+                // Get the hours and minutes of the given time
+                hoursAndMinutesRegex := regexp.MustCompile(`(\d{2}|\d):(\d{2}|\d)`)
+                timeVariables := strings.Split(hoursAndMinutesRegex.FindString(foundTime), ":")
+
+                // Format the time with 2 digits for each
+                formattedTime := fmt.Sprintf("%02s:%02s %s", timeVariables[0], timeVariables[1], part)
+                response, _ := time.Parse("03:04 pm", formattedTime)
+
+                return response
+        }</span>
+
+        <span class="cov0" title="0">digitsRegex := regexp.MustCompile(`\d{2}|\d`)
+        foundDigits := digitsRegex.FindString(foundTime)
+
+        formattedTime := fmt.Sprintf("%02s %s", foundDigits, part)
+        response, _ := time.Parse("03 pm", formattedTime)
+
+        return response</span>
+}
+</pre>
+		
+		<pre class="file" id="file24" style="display: none">package locales
+
+import "github.com/antoniomralmeida/k2/internal/inits"
+
+// Import these packages to trigger the init() function
+
+// Locales is the list of locales's tags and names
+// Please check if the language is supported in https://github.com/tebeka/snowball,
+// if it is please add the correct language name.
+
+func InitStem() <span class="cov0" title="0">{
+        for key := range inits.Locales </span><span class="cov0" title="0">{
+                st, err := inits.NewStem(key)
+                if err != nil </span><span class="cov0" title="0">{
+                        inits.Log(err, inits.Error)
+                }</span> else<span class="cov0" title="0"> {
+                        l := inits.Locales[key]
+                        l.Stemmer = st
+                        inits.Locales[key] = l
+                }</span>
+        }
+}
+
+// GetNameByTag returns the name of the given locale's tag
+func GetNameByTag(tag string) string <span class="cov8" title="1">{
+        return inits.Locales[tag].Description
+}</span>
+
+// GetTagByName returns the tag of the given locale's name
+func GetTagByName(name string) string <span class="cov8" title="1">{
+
+        for key, value := range inits.Locales </span><span class="cov0" title="0">{
+                if value.Description == name </span><span class="cov0" title="0">{
+                        return key
+                }</span>
+        }
+        <span class="cov8" title="1">return inits.DefaultLocale</span>
+}
+
+func GetLocaleByName(name string) inits.Locale <span class="cov0" title="0">{
+        for key, value := range inits.Locales </span><span class="cov0" title="0">{
+                if value.Description == name </span><span class="cov0" title="0">{
+                        return inits.Locales[key]
+                }</span>
+        }
+        <span class="cov0" title="0">return inits.Locales[inits.DefaultLocale]</span>
+}
+
+// Exists checks if the given tag exists in the list of locales
+func Exists(tag string) bool <span class="cov8" title="1">{
+        _, ok := inits.Locales[tag]
+        return ok
+}</span>
+</pre>
+		
+		<pre class="file" id="file25" style="display: none">package network
+
+// Derivative contains the derivatives of `z` and the adjustments
+type Derivative struct {
+        Delta      Matrix
+        Adjustment Matrix
+}
+
+// ComputeLastLayerDerivatives returns the derivatives of the last layer L
+func (network Network) ComputeLastLayerDerivatives() Derivative <span class="cov0" title="0">{
+        l := len(network.Layers) - 1
+        lastLayer := network.Layers[l]
+
+        // Compute derivative for the last layer of weights and biases
+        cost := Difference(network.Output, lastLayer)
+        sigmoidDerivative := Multiplication(lastLayer, ApplyFunction(lastLayer, SubtractsOne))
+
+        // Compute delta and the weights' adjustment
+        delta := Multiplication(
+                ApplyFunction(cost, MultipliesByTwo),
+                sigmoidDerivative,
+        )
+        weights := DotProduct(Transpose(network.Layers[l-1]), delta)
+
+        return Derivative{
+                Delta:      delta,
+                Adjustment: weights,
+        }
+}</span>
+
+// ComputeDerivatives returns the derivatives of a specific layer l defined by i
+func (network Network) ComputeDerivatives(i int, derivatives []Derivative) Derivative <span class="cov0" title="0">{
+        l := len(network.Layers) - 2 - i
+
+        // Compute derivative for the layer of weights and biases
+        delta := Multiplication(
+                DotProduct(
+                        derivatives[i].Delta,
+                        Transpose(network.Weights[l]),
+                ),
+                Multiplication(
+                        network.Layers[l],
+                        ApplyFunction(network.Layers[l], SubtractsOne),
+                ),
+        )
+        weights := DotProduct(Transpose(network.Layers[l-1]), delta)
+
+        return Derivative{
+                Delta:      delta,
+                Adjustment: weights,
+        }
+}</span>
+
+// Adjust make the adjusts
+func (network Network) Adjust(derivatives []Derivative) <span class="cov0" title="0">{
+        for i, derivative := range derivatives </span><span class="cov0" title="0">{
+                l := len(derivatives) - i
+
+                network.Weights[l-1] = Sum(
+                        network.Weights[l-1],
+                        ApplyRate(derivative.Adjustment, network.Rate),
+                )
+                network.Biases[l-1] = Sum(
+                        network.Biases[l-1],
+                        ApplyRate(derivative.Delta, network.Rate),
+                )
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file26" style="display: none">package network
+
+import "math"
+
+// Sigmoid is the activation function
+func Sigmoid(x float64) float64 <span class="cov8" title="1">{
+        return 1 / (1 + math.Exp(-x))
+}</span>
+
+// MultipliesByTwo takes a float and returns the float multiplied by two
+func MultipliesByTwo(x float64) float64 <span class="cov8" title="1">{
+        return 2 * x
+}</span>
+
+// SubtractsOne takes a float and returns the float subtracted by one
+func SubtractsOne(x float64) float64 <span class="cov8" title="1">{
+        return x - 1
+}</span>
+</pre>
+		
+		<pre class="file" id="file27" style="display: none">package network
+
+import (
+        "math/rand"
+
+        "github.com/antoniomralmeida/k2/internal/inits"
+)
+
+// Matrix is an alias for [][]float64
+type Matrix [][]float64
+
+// RandomMatrix returns the value of a random matrix of *rows* and *columns* dimensions and
+// where the values are between *lower* and *upper*.
+func RandomMatrix(rows, columns int) (matrix Matrix) <span class="cov8" title="1">{
+        matrix = make(Matrix, rows)
+
+        for i := 0; i &lt; rows; i++ </span><span class="cov8" title="1">{
+                matrix[i] = make([]float64, columns)
+                for j := 0; j &lt; columns; j++ </span><span class="cov8" title="1">{
+                        matrix[i][j] = rand.Float64()*2.0 - 1.0
+                }</span>
+        }
+
+        <span class="cov8" title="1">return</span>
+}
+
+// CreateMatrix returns an empty matrix which is the size of rows and columns
+func CreateMatrix(rows, columns int) (matrix Matrix) <span class="cov8" title="1">{
+        matrix = make(Matrix, rows)
+
+        for i := 0; i &lt; rows; i++ </span><span class="cov8" title="1">{
+                matrix[i] = make([]float64, columns)
+        }</span>
+
+        <span class="cov8" title="1">return</span>
+}
+
+// Rows returns number of matrix's rows
+func Rows(matrix Matrix) int <span class="cov8" title="1">{
+        return len(matrix)
+}</span>
+
+// Columns returns number of matrix's columns
+func Columns(matrix Matrix) int <span class="cov8" title="1">{
+        return len(matrix[0])
+}</span>
+
+// ApplyFunctionWithIndex returns a matrix where fn has been applied with the indexes provided
+func ApplyFunctionWithIndex(matrix Matrix, fn func(i, j int, x float64) float64) Matrix <span class="cov8" title="1">{
+        for i := 0; i &lt; Rows(matrix); i++ </span><span class="cov8" title="1">{
+                for j := 0; j &lt; Columns(matrix); j++ </span><span class="cov8" title="1">{
+                        matrix[i][j] = fn(i, j, matrix[i][j])
+                }</span>
+        }
+
+        <span class="cov8" title="1">return matrix</span>
+}
+
+// ApplyFunction returns a matrix where fn has been applied
+func ApplyFunction(matrix Matrix, fn func(x float64) float64) Matrix <span class="cov8" title="1">{
+        return ApplyFunctionWithIndex(matrix, func(i, j int, x float64) float64 </span><span class="cov8" title="1">{
+                return fn(x)
+        }</span>)
+}
+
+// ApplyRate returns a matrix where the learning rate has been multiplies
+func ApplyRate(matrix Matrix, rate float64) Matrix <span class="cov8" title="1">{
+        return ApplyFunction(matrix, func(x float64) float64 </span><span class="cov8" title="1">{
+                return rate * x
+        }</span>)
+}
+
+// DotProduct returns a matrix which is the result of the dot product between matrix and matrix2
+func DotProduct(matrix, matrix2 Matrix) Matrix <span class="cov8" title="1">{
+        if Columns(matrix) != Rows(matrix2) </span><span class="cov0" title="0">{
+                inits.Log("Cannot make dot product between these two matrix.", inits.Fatal)
+        }</span>
+
+        <span class="cov8" title="1">return ApplyFunctionWithIndex(
+                CreateMatrix(Rows(matrix), Columns(matrix2)),
+                func(i, j int, x float64) float64 </span><span class="cov8" title="1">{
+                        var sum float64
+
+                        for k := 0; k &lt; Columns(matrix); k++ </span><span class="cov8" title="1">{
+                                sum += matrix[i][k] * matrix2[k][j]
+                        }</span>
+
+                        <span class="cov8" title="1">return sum</span>
+                },
+        )
+}
+
+// Sum returns the sum of matrix and matrix2
+func Sum(matrix, matrix2 Matrix) (resultMatrix Matrix) <span class="cov8" title="1">{
+        ErrorNotSameSize(matrix, matrix2)
+
+        resultMatrix = CreateMatrix(Rows(matrix), Columns(matrix))
+
+        return ApplyFunctionWithIndex(matrix, func(i, j int, x float64) float64 </span><span class="cov8" title="1">{
+                return matrix[i][j] + matrix2[i][j]
+        }</span>)
+}
+
+// Difference returns the difference between matrix and matrix2
+func Difference(matrix, matrix2 Matrix) (resultMatrix Matrix) <span class="cov8" title="1">{
+        ErrorNotSameSize(matrix, matrix2)
+
+        resultMatrix = CreateMatrix(Rows(matrix), Columns(matrix))
+
+        return ApplyFunctionWithIndex(resultMatrix, func(i, j int, x float64) float64 </span><span class="cov8" title="1">{
+                return matrix[i][j] - matrix2[i][j]
+        }</span>)
+}
+
+// Multiplication returns the multiplication of matrix and matrix2
+func Multiplication(matrix, matrix2 Matrix) (resultMatrix Matrix) <span class="cov8" title="1">{
+        ErrorNotSameSize(matrix, matrix2)
+
+        resultMatrix = CreateMatrix(Rows(matrix), Columns(matrix))
+
+        return ApplyFunctionWithIndex(matrix, func(i, j int, x float64) float64 </span><span class="cov8" title="1">{
+                return matrix[i][j] * matrix2[i][j]
+        }</span>)
+}
+
+// Transpose returns the matrix transposed
+func Transpose(matrix Matrix) (resultMatrix Matrix) <span class="cov8" title="1">{
+        resultMatrix = CreateMatrix(Columns(matrix), Rows(matrix))
+
+        for i := 0; i &lt; Rows(matrix); i++ </span><span class="cov8" title="1">{
+                for j := 0; j &lt; Columns(matrix); j++ </span><span class="cov8" title="1">{
+                        resultMatrix[j][i] = matrix[i][j]
+                }</span>
+        }
+
+        <span class="cov8" title="1">return resultMatrix</span>
+}
+
+// ErrorNotSameSize panics if the matrices do not have the same dimension
+func ErrorNotSameSize(matrix, matrix2 Matrix) <span class="cov8" title="1">{
+        if Rows(matrix) != Rows(matrix2) &amp;&amp; Columns(matrix) != Columns(matrix2) </span><span class="cov0" title="0">{
+                inits.Log("These two matrices must have the same dimension.", inits.Fatal)
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file28" style="display: none">package network
+
+import (
+        "encoding/json"
+        "fmt"
+        "math"
+        "os"
+        "time"
+
+        "github.com/antoniomralmeida/k2/internal/inits"
+        "github.com/antoniomralmeida/k2/internal/olivia/locales"
+
+        "github.com/gookit/color"
+        "gopkg.in/cheggaaa/pb.v1"
+)
+
+// Network contains the Layers, Weights, Biases of a neural network then the actual output values
+// and the learning rate.
+type Network struct {
+        Layers  []Matrix
+        Weights []Matrix
+        Biases  []Matrix
+        Output  Matrix
+        Rate    float64
+        Errors  []float64
+        Time    float64
+        Locale  string
+}
+
+// LoadNetwork returns a Network from a specified file
+func LoadNetwork(fileName string) *Network <span class="cov0" title="0">{
+        inF, err := os.Open(fileName)
+        if err != nil </span><span class="cov0" title="0">{
+                inits.Log("Failed to load "+fileName+".", inits.Fatal)
+
+        }</span>
+        <span class="cov0" title="0">defer inF.Close()
+
+        decoder := json.NewDecoder(inF)
+        neuralNetwork := &amp;Network{}
+        err = decoder.Decode(neuralNetwork)
+        if err != nil </span><span class="cov0" title="0">{
+                inits.Log(err, inits.Fatal)
+        }</span>
+
+        <span class="cov0" title="0">return neuralNetwork</span>
+}
+
+// CreateNetwork creates the network by generating the layers, weights and biases
+func CreateNetwork(locale string, rate float64, input, output Matrix, hiddensNodes ...int) Network <span class="cov0" title="0">{
+        input = append([][]float64{
+                make([]float64, len(input[0])),
+        }, input...)
+        output = append([][]float64{
+                make([]float64, len(output[0])),
+        }, output...)
+
+        // Create the layers arrays and add the input values
+        inputMatrix := input
+        layers := []Matrix{inputMatrix}
+        // Generate the hidden layer
+        for _, hiddenNodes := range hiddensNodes </span><span class="cov0" title="0">{
+                layers = append(layers, CreateMatrix(len(input), hiddenNodes))
+        }</span>
+        // Add the output values to the layers arrays
+        <span class="cov0" title="0">layers = append(layers, output)
+
+        // Generate the weights and biases
+        weightsNumber := len(layers) - 1
+        var weights []Matrix
+        var biases []Matrix
+
+        for i := 0; i &lt; weightsNumber; i++ </span><span class="cov0" title="0">{
+                rows, columns := Columns(layers[i]), Columns(layers[i+1])
+
+                weights = append(weights, RandomMatrix(rows, columns))
+                biases = append(biases, RandomMatrix(Rows(layers[i]), columns))
+        }</span>
+
+        <span class="cov0" title="0">return Network{
+                Layers:  layers,
+                Weights: weights,
+                Biases:  biases,
+                Output:  output,
+                Rate:    rate,
+                Locale:  locale,
+        }</span>
+}
+
+// Save saves the neural network in a specified file which can be retrieved with LoadNetwork
+func (network Network) Save(fileName string) <span class="cov0" title="0">{
+        outF, err := os.OpenFile(fileName, os.O_CREATE|os.O_RDWR, 0777)
+        if err != nil </span><span class="cov0" title="0">{
+                inits.Log("Failed to save the network to "+fileName+".", inits.Fatal)
+        }</span>
+        <span class="cov0" title="0">defer outF.Close()
+
+        encoder := json.NewEncoder(outF)
+        err = encoder.Encode(network)
+        if err != nil </span><span class="cov0" title="0">{
+                inits.Log(err, inits.Fatal)
+
+        }</span>
+}
+
+// FeedForward executes forward propagation for the given inputs in the network
+func (network *Network) FeedForward() <span class="cov0" title="0">{
+        for i := 0; i &lt; len(network.Layers)-1; i++ </span><span class="cov0" title="0">{
+                layer, weights, biases := network.Layers[i], network.Weights[i], network.Biases[i]
+
+                productMatrix := DotProduct(layer, weights)
+                Sum(productMatrix, biases)
+                ApplyFunction(productMatrix, Sigmoid)
+
+                // Replace the output values
+                network.Layers[i+1] = productMatrix
+        }</span>
+}
+
+// Predict returns the predicted value for a training example
+func (network *Network) Predict(input []float64) []float64 <span class="cov0" title="0">{
+        network.Layers[0] = Matrix{input}
+        network.FeedForward()
+        return network.Layers[len(network.Layers)-1][0]
+}</span>
+
+// FeedBackward executes back propagation to adjust the weights for all the layers
+func (network *Network) FeedBackward() <span class="cov0" title="0">{
+        var derivatives []Derivative
+        derivatives = append(derivatives, network.ComputeLastLayerDerivatives())
+
+        // Compute the derivatives of the hidden layers
+        for i := 0; i &lt; len(network.Layers)-2; i++ </span><span class="cov0" title="0">{
+                derivatives = append(derivatives, network.ComputeDerivatives(i, derivatives))
+        }</span>
+
+        // Then adjust the weights and biases
+        <span class="cov0" title="0">network.Adjust(derivatives)</span>
+}
+
+// ComputeError returns the average of all the errors after the training
+func (network *Network) ComputeError() float64 <span class="cov0" title="0">{
+        // Feed forward to compute the last layer's values
+        network.FeedForward()
+        lastLayer := network.Layers[len(network.Layers)-1]
+        errors := Difference(network.Output, lastLayer)
+
+        // Make the sum of all the errors
+        var i int
+        var sum float64
+        for _, a := range errors </span><span class="cov0" title="0">{
+                for _, e := range a </span><span class="cov0" title="0">{
+                        sum += e
+                        i++
+                }</span>
+        }
+
+        // Compute the average
+        <span class="cov0" title="0">return sum / float64(i)</span>
+}
+
+// Train trains the neural network with a given number of iterations by executing
+// forward and back propagation
+func (network *Network) Train(iterations int) <span class="cov0" title="0">{
+        // Initialize the start date
+        start := time.Now()
+
+        // Create the progress bar
+        bar := pb.New(iterations).Postfix(fmt.Sprintf(
+                " - %s %s %s",
+                color.FgBlue.Render("Training the"),
+                color.FgRed.Render(locales.GetNameByTag(network.Locale)),
+                color.FgBlue.Render("neural network"),
+        ))
+        bar.Format("(██░)")
+        bar.SetMaxWidth(60)
+        bar.ShowCounters = false
+        bar.Start()
+
+        // Train the network
+        for i := 0; i &lt; iterations; i++ </span><span class="cov0" title="0">{
+                network.FeedForward()
+                network.FeedBackward()
+
+                // Append errors for dashboard data
+                if i%(iterations/20) == 0 </span><span class="cov0" title="0">{
+                        network.Errors = append(
+                                network.Errors,
+                                // Round the error to two decimals
+                                network.ComputeError(),
+                        )
+                }</span>
+
+                // Increment the progress bar
+                <span class="cov0" title="0">bar.Increment()</span>
+        }
+
+        <span class="cov0" title="0">bar.Finish()
+        // Print the error
+        arrangedError := fmt.Sprintf("%.5f", network.ComputeError())
+
+        // Calculate elapsed date
+        elapsed := time.Since(start)
+        // Round the elapsed date at two decimals
+        network.Time = math.Floor(elapsed.Seconds()*100) / 100
+
+        fmt.Printf("The error rate is %s.\n", color.FgGreen.Render(arrangedError))</span>
+}
+</pre>
+		
+		<pre class="file" id="file29" style="display: none">package user
+
+import (
+        "golang.org/x/oauth2"
+)
+
+// Information is the user's information retrieved from the client
+type Information struct {
+        Name           string        `json:"name"`
+        MovieGenres    []string      `json:"movie_genres"`
+        MovieBlacklist []string      `json:"movie_blacklist"`
+        Reminders      []Reminder    `json:"reminders"`
+        SpotifyToken   *oauth2.Token `json:"spotify_token"`
+        SpotifyID      string        `json:"spotify_id"`
+        SpotifySecret  string        `json:"spotify_secret"`
+}
+
+// A Reminder is something the user asked for Olivia to remember
+type Reminder struct {
+        Reason string `json:"reason"`
+        Date   string `json:"date"`
+}
+
+// userInformation is a map which is the cache for user information
+var userInformation = map[string]Information{}
+
+// ChangeUserInformation requires the token of the user and a function which gives the actual
+// information and returns the new information.
+func ChangeUserInformation(token string, changer func(Information) Information) <span class="cov8" title="1">{
+        userInformation[token] = changer(userInformation[token])
+}</span>
+
+// SetUserInformation sets the user's information by its token.
+func SetUserInformation(token string, information Information) <span class="cov8" title="1">{
+        userInformation[token] = information
+}</span>
+
+// GetUserInformation returns the information of a user with his token
+func GetUserInformation(token string) Information <span class="cov8" title="1">{
+        return userInformation[token]
 }</span>
 </pre>
 		

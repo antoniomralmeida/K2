@@ -8,7 +8,7 @@ import (
 
 type Token struct {
 	Id        int       `json:"id"`
-	Tokentype Tokentype `json:"tokentype"`
+	Tokentype TokenType `json:"tokentype"`
 	Rule_id   int       `json:"rule_id"`
 	Rule_jump int       `json:"rule_jump"`
 	Token     string    `json:"token"`
@@ -19,7 +19,7 @@ func (t *Token) GetToken() string {
 	return t.Token
 }
 
-func (t *Token) GetTokenType() Tokentype {
+func (t *Token) GetTokenType() TokenType {
 	return t.Tokentype
 }
 

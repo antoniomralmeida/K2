@@ -19,9 +19,9 @@ type EBNF struct {
 }
 
 func EBNFFactory(ebnfFile string) *EBNF {
-	ebnf := new(EBNF)
-	ebnf.grammarLoad(ebnfFile)
-	return ebnf
+	_ebnf = new(EBNF)
+	_ebnf.grammarLoad(ebnfFile)
+	return _ebnf
 }
 func (e *EBNF) GetBase() *Token {
 	return e.Base
@@ -81,7 +81,7 @@ func (e *EBNF) newStatement(str string) *Statement {
 	return &rule
 }
 
-func (e *EBNF) newToken(rule *Statement, str string, tokentype Tokentype, nexts ...*Token) {
+func (e *EBNF) newToken(rule *Statement, str string, tokentype TokenType, nexts ...*Token) {
 	//Token := Token{Id: len(rule.Tokens) + 1, Token: strings.Trim(str, " "), Rule_id: rule.Id, Tokentype: tokentype}
 	e.last++
 	Token := Token{Id: e.last, Token: strings.Trim(str, " "), Rule_id: rule.Id, Tokentype: tokentype}
@@ -178,8 +178,8 @@ func (e *EBNF) grammarLoad(ebnfFile string) int {
 				t.Rule_jump = e.findRule(t.Token)
 				if t.Rule_jump == -1 {
 					for z := 1; z < t.GetTokenType().Size(); z++ {
-						if t.Token == Tokentype(z).String() {
-							t.Tokentype = Tokentype(z)
+						if t.Token == TokenType(z).String() {
+							t.Tokentype = TokenType(z)
 							break
 						}
 					}

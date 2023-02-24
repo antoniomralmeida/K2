@@ -6,21 +6,12 @@ import (
 
 	"github.com/kamva/mgm/v3"
 
-	"github.com/antoniomralmeida/k2/internal/inits"
-
-	"github.com/subosito/gotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func init() {
-	gotenv.Load("../../configs/.env")
-	inits.ConnectDatabase("K2-TESTS")
-	//Clear collections before tests
-	mgm.Coll(new(KBClass)).DeleteMany(mgm.Ctx(), bson.D{{}})
-}
 func TestKBClassValidateIndex(t *testing.T) {
-	new(KBClass).validateIndex()
+	new(KBClass).ValidateIndex()
 }
 
 func FuzzClassFactory(f *testing.F) {
@@ -127,10 +118,10 @@ func TestFindAllClasses(t *testing.T) {
 	if err == nil {
 		cls, err := FindAllClasses("name")
 		if err != nil {
-			t.Errorf("models.FindAllClasses(%v) => %v", "name", err)
+			t.Errorf("FindAllClasses(%v) => %v", "name", err)
 		}
 		if len(*cls) < 1 {
-			t.Errorf("models.FindAllClasses(%v) => %v", "name", len(*cls))
+			t.Errorf("FindAllClasses(%v) => %v", "name", len(*cls))
 		}
 	}
 }
@@ -144,16 +135,16 @@ func TestKBClassCopy(t *testing.T) {
 		if err == nil {
 			cl2, err := KBClassCopy(c1+"(copy)", cl)
 			if err != nil {
-				t.Errorf("models.KBClassCopy(%v,%v) => %v,%v", c1+"(copy)", cl.ID, cl2, err)
+				t.Errorf("KBClassCopy(%v,%v) => %v,%v", c1+"(copy)", cl.ID, cl2, err)
 			}
 			if cl2 == nil {
-				t.Errorf("models.KBClassCopy(%v,%v) => %v,%v", c1+"(copy)", cl.ID, cl2, err)
+				t.Errorf("KBClassCopy(%v,%v) => %v,%v", c1+"(copy)", cl.ID, cl2, err)
 			} else {
 				if cl.ParentID != cl2.ParentID {
-					t.Errorf("models.KBClassCopy(%v,%v) => %v,%v", c1+"(copy)", cl.ID, cl, cl2)
+					t.Errorf("KBClassCopy(%v,%v) => %v,%v", c1+"(copy)", cl.ID, cl, cl2)
 				}
 				if cl.Icon != cl2.Icon {
-					t.Errorf("models.KBClassCopy(%v,%v) => %v,%v", c1+"(copy)", cl.ID, cl, cl2)
+					t.Errorf("KBClassCopy(%v,%v) => %v,%v", c1+"(copy)", cl.ID, cl, cl2)
 				}
 			}
 		}

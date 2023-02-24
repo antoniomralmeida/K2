@@ -23,7 +23,7 @@ type KBClass struct {
 	ParentClass      *KBClass           `bson:"-"`
 }
 
-func (obj *KBClass) validateIndex() error {
+func (obj *KBClass) ValidateIndex() error {
 	cur, err := mgm.Coll(obj).Indexes().List(mgm.Ctx())
 	inits.Log(err, inits.Error)
 	var result []bson.M

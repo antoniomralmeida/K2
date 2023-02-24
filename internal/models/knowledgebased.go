@@ -102,11 +102,11 @@ func InitKB() {
 	kb_current = KnowledgeBasedFacotory()
 
 	//Check unique index from database collections
-	new(KBClass).validateIndex()
-	new(KBWorkspace).validateIndex()
-	new(KBObject).validateIndex()
+	new(KBClass).ValidateIndex()
+	new(KBWorkspace).ValidateIndex()
+	new(KBObject).ValidateIndex()
 
-	_ebnf = EBNFFactory("./configs/k2.ebnf")
+	EBNFFactory("./configs/k2.ebnf")
 
 	FindAllClasses("_id")
 

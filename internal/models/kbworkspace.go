@@ -42,7 +42,7 @@ func WorkspaceFactory(name string, image string) *KBWorkspace {
 	}
 }
 
-func (obj *KBWorkspace) validateIndex() error {
+func (obj *KBWorkspace) ValidateIndex() error {
 	cur, err := mgm.Coll(obj).Indexes().List(mgm.Ctx())
 	inits.Log(err, inits.Error)
 	var result []bson.M
