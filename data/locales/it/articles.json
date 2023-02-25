@@ -1,0 +1,22 @@
+[
+    {
+        "Regexp": "^.*Stati Uniti.*$",
+        "Article": "degli"
+    },
+    {
+        "Regexp": "^.*Filippine.*$",
+        "Article": "delle"
+    },
+    {
+        "Regexp": "^[aeiouAEIOU]",
+        "Article": "dell"
+    },
+    {
+        "Regexp": "$[aA]",
+        "Article": "della"
+    },
+    {
+        "Regexp": ".*",
+        "Article": "dell"
+    }
+]
