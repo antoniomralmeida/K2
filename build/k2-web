@@ -1,6 +1,6 @@
 FROM scratch  as k2-web
 
-WORKDIR /var/www/k2
+WORKDIR /usr/local/k2
 
 COPY ./bin/k2web.bin ./bin/
 COPY ./configs/* ./configs/ 

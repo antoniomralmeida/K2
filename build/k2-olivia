@@ -1,6 +1,6 @@
 FROM scratch as k2-olivia
 
-WORKDIR /var/www/k2
+WORKDIR /usr/loca/k2
 
 COPY ./bin/k2olivia.bin ./bin/
 COPY ./configs/ ./configs/
