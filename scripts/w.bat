@@ -2,6 +2,7 @@
 
 set GOARCH=amd64
 set GOOS=windows
+set GCO_ENABLED=1
 del bin\*.exe
 
 set version="0.9.0-beta"

@@ -94,11 +94,12 @@ func (sentence Sentence) stem() (tokenizeWords []string) {
 	tokens := sentence.tokenize()
 
 	// Get the string token and push it to tokenizeWord
-	for _, tokenizeWord := range tokens {
-		word := locale.Stemmer.Stem(tokenizeWord)
-		tokenizeWords = append(tokenizeWords, word...)
+	if locale.Stemmer != nil {
+		for _, tokenizeWord := range tokens {
+			word := locale.Stemmer.Stem(tokenizeWord)
+			tokenizeWords = append(tokenizeWords, word...)
+		}
 	}
-
 	return
 }
 

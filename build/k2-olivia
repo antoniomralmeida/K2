@@ -5,7 +5,7 @@ WORKDIR /var/www/k2
 COPY ./bin/k2olivia.bin ./bin/
 COPY ./configs/ ./configs/
 COPY ./log/*.md ./log/
-COPY ./data/* ./data/
+COPY ./data/ ./data/
 
 EXPOSE 8090
 
