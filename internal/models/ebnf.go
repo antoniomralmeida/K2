@@ -20,6 +20,7 @@ type EBNF struct {
 
 func EBNFFactory(ebnfFile string) *EBNF {
 	_ebnf = new(EBNF)
+	fmt.Println(ebnfFile)
 	_ebnf.grammarLoad(ebnfFile)
 	return _ebnf
 }
@@ -104,16 +105,15 @@ func (e *EBNF) grammarLoad(ebnfFile string) int {
 		inits.Log("Could not read the file due to this %s error \n"+err.Error(), inits.Fatal)
 	}
 	ebnf_txt := string(file)
-	ebnf_txt = strings.Replace(ebnf_txt, "\r\n", "", -1)
-	ebnf_txt = strings.Replace(ebnf_txt, "\\n", "", -1)
+	ebnf_txt = strings.Replace(ebnf_txt, "\r\n", " ", -1)
+	ebnf_txt = strings.Replace(ebnf_txt, "\n", " ", -1)
+	ebnf_txt = strings.Replace(ebnf_txt, "\\n", " ", -1)
 	ebnf_txt = strings.Replace(ebnf_txt, "\t", " ", -1)
 	for strings.Contains(ebnf_txt, "  ") {
 		ebnf_txt = strings.Replace(ebnf_txt, "  ", " ", -1)
 	}
-
 	rules := strings.Split(ebnf_txt, ".")
 	for _, rule := range rules {
-
 		var left string
 		var right string
 		for i := 0; i < len(rule); i++ {

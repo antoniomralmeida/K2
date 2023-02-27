@@ -1,16 +1,16 @@
-FROM scratch as k2-olivia
+FROM gcr.io/distroless/base-debian11 as k2-olivia
 
 
-WORKDIR /usr/local/k2
+WORKDIR /k2
 
 COPY ./bin/k2olivia.bin ./bin/
 COPY ./configs/ ./configs/
+COPY ./configs/deploy.env ./configs/.env
 COPY ./log/*.md ./log/
 COPY ./data/ ./data/
-RUN "cp ./config/deploy.env ./config/.env"
 
 EXPOSE 8090
 
-ENTRYPOINT ["./bin/k2olivia.bin"]
+ENTRYPOINT ["/k2/bin/k2olivia.bin"]
 
 

@@ -24,6 +24,7 @@ func InitOlivia() {
 	server := os.Getenv("OLIVIA_SERVER")
 	dsn := dsn.Decode(server)
 	config := Configuration{Host: dsn.Host(), Port: dsn.Port(), SSL: false, DebugLevel: "error", BotName: dsn.Query("botname")}
+	fmt.Println(config)
 	var information map[string]interface{}
 	client, err := chat.NewClient(
 		fmt.Sprintf("%s:%s", config.Host, config.Port),

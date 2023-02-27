@@ -1,14 +1,12 @@
-FROM scratch  as k2-back
-WORKDIR /usr/local/k2
+FROM gcr.io/distroless/base-debian11 as k2-back
+WORKDIR /k2
 
 COPY ./bin/k2.bin ./bin/
+
 COPY ./configs/* ./configs/ 
+COPY ./configs/deploy.env ./configs/.env 
 COPY ./log/*.md ./log/
 
-RUN "cp ./config/deploy.env ./config/.env"
-
-EXPOSE 5050
-
-ENTRYPOINT  ["./bin/k2.bin"]
+ENTRYPOINT ["/k2/bin/k2.bin"]
 
 

@@ -33,8 +33,7 @@ services:
       - app-olivia
     environment: 
       - DSN=mongodb://k2user:SOh3TbYhx8ypJPxmt1oOfL@mongodb
-    ports:
-      - 5050:5050
+
     build:
       dockerfile: build/k2-back
       context: ../
@@ -43,6 +42,7 @@ services:
   app-web:
     depends_on:
       - app-back
+      - app-olivia
     ports:
       - 8080:8080
     build:

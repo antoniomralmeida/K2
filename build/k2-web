@@ -1,17 +1,12 @@
-FROM scratch  as k2-web
-
-WORKDIR /usr/local/k2
-
+FROM gcr.io/distroless/base-debian11 as k2-web
+WORKDIR /k2
 COPY ./bin/k2web.bin ./bin/
 COPY ./configs/* ./configs/ 
+COPY ./configs/deploy.env ./configs/.env
 COPY ./log/*.md ./log/
 COPY ./web/ ./web/
 COPY ./data/ ./data/
 
-RUN "cp ./config/deploy.env ./config/.env"
-
 EXPOSE 8080
-
-ENTRYPOINT ["./bin/k2web.bin"]
-
+ENTRYPOINT ["/k2/bin/k2web.bin"]
 
