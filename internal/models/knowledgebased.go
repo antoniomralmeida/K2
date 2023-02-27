@@ -105,8 +105,8 @@ func InitKB() {
 	new(KBClass).ValidateIndex()
 	new(KBWorkspace).ValidateIndex()
 	new(KBObject).ValidateIndex()
-
-	EBNFFactory("./configs/k2.ebnf")
+	hd := inits.GetHomeDir()
+	EBNFFactory(hd + "/configs/k2.ebnf")
 
 	FindAllClasses("_id")
 

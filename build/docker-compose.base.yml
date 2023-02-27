@@ -1,0 +1,41 @@
+services:
+
+  mongodb:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: k2user
+      MONGO_INITDB_ROOT_PASSWORD: SOh3TbYhx8ypJPxmt1oOfL
+    ports:
+      - 27017:27017
+
+  mosquitto:
+    image: eclipse-mosquitto
+    restart: always
+    volumes:
+      - ./config/:/mosquitto/config/:ro
+      - log:/mosquitto/log/
+      - data:/mosquitto/data/
+    ports:
+      - 1883:1883
+  
+  telemetry:
+    image: openzipkin/zipkin
+    hostname: k2host
+    restart: always
+    ports:
+      - 9411:9411
+
+  mongo-express:
+    image: mongo-express
+    depends_on:
+      - mongodb
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://k2user:SOh3TbYhx8ypJPxmt1oOfL@mongodb
+
+volumes:
+  data: ~
+  log: ~

@@ -8,6 +8,7 @@ COPY ./log/*.md ./log/
 COPY ./web/ ./web/
 COPY ./data/ ./data/
 
+RUN "cp ./config/deploy.env ./config/.env"
 
 EXPOSE 8080
 

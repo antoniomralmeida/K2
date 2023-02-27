@@ -4,21 +4,16 @@
     // Para obter mais informações, acesse: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-
-        
-
-        
-     { 
+        {
             "name": "Launch Package",
             "type": "go",
             "request": "launch",
             "mode": "auto",
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/k2olivia/k2olivia.go",
+            "program": "${workspaceFolder}/cmd/k2/main.go",
             "showLog": false,
-            "cwd": "${workspaceFolder}",
-            "stopOnEntry": false
-            
-    }
-]
+            "stopOnEntry": false,
+        }
+
+    ]
 }

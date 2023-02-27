@@ -6,10 +6,10 @@ import (
 
 func GetHomeDir() string {
 	InitEnvVars()
-	if os.Getenv("HOME_DIR") == "" {
+	if os.Getenv("WORKDIR") == "" {
 		wd, _ := os.Getwd()
 		return wd
 	} else {
-		return os.Getenv("HOME_DIR")
+		return os.Getenv("WORKDIR")
 	}
 }

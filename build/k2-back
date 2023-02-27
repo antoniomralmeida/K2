@@ -1,11 +1,11 @@
 FROM scratch  as k2-back
-
 WORKDIR /usr/local/k2
 
 COPY ./bin/k2.bin ./bin/
 COPY ./configs/* ./configs/ 
 COPY ./log/*.md ./log/
 
+RUN "cp ./config/deploy.env ./config/.env"
 
 EXPOSE 5050
 

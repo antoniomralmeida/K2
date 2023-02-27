@@ -1,11 +1,13 @@
 FROM scratch as k2-olivia
 
-WORKDIR /usr/loca/k2
+
+WORKDIR /usr/local/k2
 
 COPY ./bin/k2olivia.bin ./bin/
 COPY ./configs/ ./configs/
 COPY ./log/*.md ./log/
 COPY ./data/ ./data/
+RUN "cp ./config/deploy.env ./config/.env"
 
 EXPOSE 8090
 

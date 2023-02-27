@@ -110,7 +110,6 @@ func copy(src, dst string) (int64, error) {
 }
 
 func Ping(uri string) error {
-	fmt.Println(runtime.GOOS)
 	if runtime.GOOS == "windows" {
 		parts := dsn.Decode(uri)
 		_, err := net.Dial("tcp", parts.Socket())
