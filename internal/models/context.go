@@ -6,7 +6,6 @@ type Context struct {
 	Locales    map[string]string
 	UserId     string
 	User       string
-	ApiKernel  string
 	Avatar     string
 	Voice      string
 	Workspaces []WorkspaceInfo

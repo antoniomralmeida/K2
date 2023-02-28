@@ -2,13 +2,14 @@ const faceWrapper = document.getElementById("face");
 
 let face;
 const params = new URL(location.href).searchParams;
-const avatar = params.get('avatar');
-const lang = params.get('lang');
+const avatar = getCookie('avatar');
+const lang = getCookie('lang')
+//const lang = params.get('lang');
 const lang2 = navigator.language
 var voices = window.speechSynthesis.getVoices();
 var voice = '';
 
-if (avatar.length <= 1) {
+if (avatar == null) {
   face = faces.generate();
 } else {
   try {
@@ -41,7 +42,7 @@ const speaking = () => {
 var voicesApp = {"Mark":1};
 
 function GetSpeechSynthesisId(voice) {
-  console.log(voicesApp);
+  //console.log(voicesApp);
   for (var key in voicesApp) {
     if (key == voice) {
       return voicesApp[key]
@@ -60,10 +61,12 @@ const Speak = async(text) => {
   // Testing for browser support
 	var speechSynthesisSupported = 'speechSynthesis' in window;
   let Speech = new SpeechSynthesisUtterance();
+  console.log(voices);
   while (voices.length==0) { 
     voices = window.speechSynthesis.getVoices();
     await sleep(50);
   }
+  console.log(voices);
   Speech.addEventListener('start', handleStartSpeechEvent);
   Speech.addEventListener('end', handleEndSpeechEvent);
   id =  GetSpeechSynthesisId(voice);

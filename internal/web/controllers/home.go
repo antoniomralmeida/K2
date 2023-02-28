@@ -2,11 +2,10 @@ package controllers
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"net/http"
 
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
+	"github.com/antoniomralmeida/k2/internal/models"
 	"github.com/antoniomralmeida/k2/internal/web/context"
 	"github.com/antoniomralmeida/k2/internal/web/views"
 	"github.com/gofiber/fiber/v2"
@@ -15,24 +14,23 @@ import (
 func Home(c *fiber.Ctx) error {
 	if lib.ValidateToken(c.Cookies("jwt")) != nil {
 		c.SendStatus(fiber.StatusForbidden)
-		url := c.BaseURL() + "/login?lang=" + c.Query("lang") + "&avatar=" + context.Ctxweb.Avatar
+		url := c.BaseURL() + "/login"
 		return c.Redirect(url)
 	}
-	if context.VerifyAvatar(c) {
+	if context.VerifyCookies(c) {
 		return nil
 	}
 	//Context
 	context.SetContextInfo(c)
-	call := context.Ctxweb.ApiKernel + "/workspaces"
-	resp, err := http.Get(call)
+	works, err := models.KBWorkspacesJson()
 	if err != nil {
 		inits.Log(err, inits.Error)
-	} else {
-		body, err := ioutil.ReadAll(resp.Body)
-		inits.Log(err, inits.Error)
-		err = json.Unmarshal(body, &context.Ctxweb.Workspaces)
-		inits.Log(err, inits.Error)
+		c.Status(fiber.StatusInternalServerError)
 	}
-
+	err = json.Unmarshal([]byte(works), &context.Ctxweb.Workspaces)
+	if err != nil {
+		inits.Log(err, inits.Error)
+		c.Status(fiber.StatusInternalServerError)
+	}
 	return views.HomeView(c)
 }

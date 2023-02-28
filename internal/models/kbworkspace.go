@@ -95,17 +95,21 @@ func FindWorkspaceByName(name string) *KBWorkspace {
 	return nil
 }
 
-func KBWorkspacesJson() string {
+func KBWorkspacesJson() (string, error) {
 	wks := []KBWorkspace{}
 
-	mgm.Coll(new(KBWorkspace)).SimpleFind(&wks, bson.D{{}})
+	if err := mgm.Coll(new(KBWorkspace)).SimpleFind(&wks, bson.D{{}}); err != nil {
+		return "", err
+	}
 	ret := []WorkspaceInfo{}
 	for _, w := range wks {
 		ret = append(ret, WorkspaceInfo{Workspace: w.Workspace, BackgroundImage: w.BackgroundImage})
 	}
 	json, err := json.Marshal(ret)
-	inits.Log(err, inits.Error)
-	return string(json)
+	if err != nil {
+		return "", err
+	}
+	return string(json), nil
 }
 
 func KBGetWorkspacesFromObject(o *KBObject) (ret []*KBWorkspace) {

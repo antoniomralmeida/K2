@@ -20,7 +20,6 @@ type EBNF struct {
 
 func EBNFFactory(ebnfFile string) *EBNF {
 	_ebnf = new(EBNF)
-	fmt.Println(ebnfFile)
 	_ebnf.grammarLoad(ebnfFile)
 	return _ebnf
 }

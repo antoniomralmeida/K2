@@ -16,7 +16,7 @@ import (
 )
 
 func LoginForm(c *fiber.Ctx) error {
-	if context.VerifyAvatar(c) {
+	if context.VerifyCookies(c) {
 		return nil
 	}
 	//Context

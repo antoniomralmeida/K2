@@ -19,7 +19,6 @@ func Run() {
 	views.InitTemplates()
 	inits.ConnectDB()
 
-	context.Ctxweb.ApiKernel = os.Getenv("APIKERNEL")
 	context.Ctxweb.Avatar = os.Getenv("AVATAR")
 	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 KB System ", version.GetVersion(), "[", version.GetBuild(), "]"),
 		DisableStartupMessage: false,
