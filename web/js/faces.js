@@ -8,6 +8,33 @@ const lang2 = navigator.language
 var voices = window.speechSynthesis.getVoices();
 var voice = '';
 
+/*
+ * Check for browser support
+ */
+var supportMsg = document.getElementById('errlabel');
+
+if ('speechSynthesis' in window) {
+	supportMsg.innerHTML = 'Your browser <strong>supports</strong> speech synthesis.';
+} else {
+	supportMsg.innerHTML = 'Sorry your browser <strong>does not support</strong> speech synthesis.<br>Try this in <a href="https://www.google.co.uk/intl/en/chrome/browser/canary.html">Chrome Canary</a>.';
+	supportMsg.classList.add('not-supported');
+}
+
+
+// Fetch the list of voices and populate the voice options.
+function loadVoices() {
+  // Fetch the available voices.
+	
+  var voices = window.speechSynthesis.getVoices();
+}
+
+// Chrome loads voices asynchronously.
+window.speechSynthesis.onvoiceschanged = function(e) {
+  loadVoices();
+};
+
+
+
 if (avatar == null) {
   face = faces.generate();
 } else {
@@ -63,24 +90,18 @@ function GetSpeechSynthesisId(voice) {
   return 0
 }
 
-const Speak = async(text) => {
-  // Testing for browser support
-	var speechSynthesisSupported = 'speechSynthesis' in window;
+function Speak(text) {
+//const Speak = async(text) => {
   let Speech = new SpeechSynthesisUtterance();
-  console.log(voices);
-  while (voices.length==0) { 
-    voices = window.speechSynthesis.getVoices();
-    await sleep(50);
-  }
-  console.log(voices);
   Speech.addEventListener('start', handleStartSpeechEvent);
   Speech.addEventListener('end', handleEndSpeechEvent);
   id =  GetSpeechSynthesisId(voice);
   Speech.voice = voices[id];
   Speech.text = text;
   console.log(voice, id);
-  speechSynthesis.speak(Speech);  
+  window.speechSynthesis.speak(Speech);
 }
+
 var speakingMode = false;
 
 const handleStartSpeechEvent = async() => {
@@ -99,3 +120,4 @@ const handleEndSpeechEvent = async() => {
 }
 
 updateDisplay();
+
