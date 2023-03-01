@@ -3,8 +3,7 @@ const faceWrapper = document.getElementById("face");
 let face;
 const params = new URL(location.href).searchParams;
 const avatar = getCookie('avatar');
-const lang = getCookie('lang')
-//const lang = params.get('lang');
+const lang = params.get('lang');
 const lang2 = navigator.language
 var voices = window.speechSynthesis.getVoices();
 var voice = '';
@@ -39,12 +38,12 @@ const speaking = () => {
   updateDisplay();
 }
 
-var voicesApp = {"Mark":1};
+var voicesApp = {"-":0};
 
 function GetSpeechSynthesisId(voice) {
-  //console.log(voicesApp);
+  console.log(voicesApp);
   for (var key in voicesApp) {
-    if (key == voice) {
+    if (key == voice || key == lang) {
       return voicesApp[key]
     }
   }
@@ -54,7 +53,14 @@ function GetSpeechSynthesisId(voice) {
       return i
     }
   }
-  return 1
+  for (var i=0;i < voices.length;i++) {
+    console.log(voices[i].lang, lang, i);
+    if (voices[i].lang.startsWith(lang)) {
+      voicesApp[lang] = i;
+      return i
+    }
+  }
+  return 0
 }
 
 const Speak = async(text) => {

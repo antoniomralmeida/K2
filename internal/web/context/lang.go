@@ -28,10 +28,8 @@ func SetContextInfo(c *fiber.Ctx) {
 	}
 	var currentLang string
 	currentLang, Ctxweb.Voice = getCurrentLang(c)
-	if Ctxweb.Locale != currentLang {
-		for key := range inits.I18n_en {
-			Ctxweb.I18n[key] = inits.TranslateTag(key, currentLang)
-		}
+	for key := range inits.I18n_en {
+		Ctxweb.I18n[key] = inits.TranslateTag(key, currentLang)
 	}
 	if Ctxweb.Locales == nil {
 		Ctxweb.Locales = make(map[string]string)

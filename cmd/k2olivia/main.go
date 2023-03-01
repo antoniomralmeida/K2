@@ -21,10 +21,11 @@ import (
 var neuralNetworks = map[string]network.Network{}
 
 func init() {
-	oliviaASCII, _ := os.ReadFile("./configs/olivia-ascii.txt")
+	oliviaASCII, _ := os.ReadFile(lib.GetWorkDir() + "/configs/olivia-ascii.txt")
 	fmt.Println(color.FgLightGreen.Render(string(oliviaASCII)))
 
 	inits.LogInit("k2olivia")
+	inits.InitEnvVars()
 	inits.InitLangs()
 	locales.InitStem()
 	msg := fmt.Sprintf("Initializing Olivia from K2 KB System, version: %v build: %v PID: %v", version.GetVersion(), version.GetBuild(), os.Getppid())
@@ -35,7 +36,7 @@ func init() {
 
 func main() {
 	for key := range inits.Locales {
-		path := inits.GetHomeDir() + "/data/locales/" + key + "/"
+		path := lib.GetWorkDir() + "/data/locales/" + key + "/"
 		if ok, _ := lib.Exists(path); !ok {
 			err := os.MkdirAll(path, os.ModePerm)
 			inits.Log(err, inits.Fatal)
@@ -57,7 +58,7 @@ func main() {
 // reTrainModels retrain the given locales
 func reTrainModels(localesFlag string) {
 	// Iterate locales by separating them by comma
-	wd := inits.GetHomeDir()
+	wd := lib.GetWorkDir()
 	for _, localeFlag := range strings.Split(localesFlag, ",") {
 		path := fmt.Sprintf(wd+"/data/locales/%s/training.json", localeFlag)
 		os.Remove(path)

@@ -1,0 +1,23 @@
+{
+	"I18n_accessforbidden": "アクセス禁止！",
+	"I18n_alert": "アラート",
+	"I18n_already": "すでにアカウントをお持ちですか？",
+	"I18n_alreadyregistered": "すでに登録！",
+	"I18n_avatar": "アバター",
+	"I18n_badrequest": "要求の形式が正しくありません！",
+	"I18n_cancel": "キャンセル",
+	"I18n_dateinput": "データ入力",
+	"I18n_forgot": "パスワードをお忘れですか？",
+	"I18n_halt": "ナレッジベースが停止しました!",
+	"I18n_internalservererror": "内部サーバーエラー！",
+	"I18n_invalidcredentials": "無効な資格情報！",
+	"I18n_invalidimage": "無効または空の画像です!",
+	"I18n_register": "K2にアクセスするには登録してください！",
+	"I18n_remember": "私を覚えてますか",
+	"I18n_resume": "ナレッジベースが再開されました!",
+	"I18n_send": "送信",
+	"I18n_title": "K2 KnowledgeBase システム",
+	"I18n_wellcome": "K2へようこそ！",
+	"I18n_wellcome2": "今日は何をしますか？",
+	"I18n_workspace": "ワークスペース"
+}

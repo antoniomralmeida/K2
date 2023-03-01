@@ -11,6 +11,7 @@
             "mode": "auto",
             "program": "./cmd/k2/main.go",
             "console":"externalTerminal",
+            "cwd": "${workspaceRoot}"
         }
     ]
 }

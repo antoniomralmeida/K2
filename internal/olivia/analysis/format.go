@@ -27,7 +27,7 @@ func (sentence *Sentence) arrange() {
 	sentence.Content = strings.TrimSpace(sentence.Content)
 }
 func stopWorksFile(locale string) string {
-	return inits.GetHomeDir() + "/data/locales/" + locale + "/stopwords.txt"
+	return lib.GetWorkDir() + "/data/locales/" + locale + "/stopwords.txt"
 }
 
 // removeStopWords takes an arary of words, removes the stopwords and returns it

@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/antoniomralmeida/k2/internal/inits"
+	"github.com/antoniomralmeida/k2/internal/lib"
 	"github.com/antoniomralmeida/k2/internal/olivia/user"
 	"github.com/antoniomralmeida/k2/internal/olivia/util"
 )
@@ -63,7 +64,7 @@ var (
 
 // SerializeMovies retrieves the content of res/datasets/movies.csv and serialize it
 func SerializeMovies() (movies []Movie) {
-	path := inits.GetHomeDir() + "/data/datasets/movies.csv"
+	path := lib.GetWorkDir() + "/data/datasets/movies.csv"
 	bytes, err := os.Open(path)
 	if err != nil {
 		inits.Log(err, inits.Fatal)

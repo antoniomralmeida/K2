@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/antoniomralmeida/k2/internal/inits"
+	"github.com/antoniomralmeida/k2/internal/lib"
 )
 
 // Country is the serializer of the countries.json file in the res folder
@@ -22,7 +22,7 @@ var countries = SerializeCountries()
 
 // SerializeCountries returns a list of countries, serialized from `res/datasets/countries.json`
 func SerializeCountries() (countries []Country) {
-	wd := inits.GetHomeDir()
+	wd := lib.GetWorkDir()
 	bytes, _ := ioutil.ReadFile(wd + "/data/datasets/countries.json")
 	err := json.Unmarshal(bytes, &countries)
 	if err != nil {

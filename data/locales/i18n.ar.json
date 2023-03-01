@@ -1,0 +1,23 @@
+{
+	"I18n_accessforbidden": "الوصول ممنوع!",
+	"I18n_alert": "تنبيهات",
+	"I18n_already": "هل لديك حساب؟ ",
+	"I18n_alreadyregistered": "مسجل بالفعل!",
+	"I18n_avatar": "الصورة الرمزية",
+	"I18n_badrequest": "اقتراح غير جيد!",
+	"I18n_cancel": "يلغي",
+	"I18n_dateinput": "إدخال بيانات",
+	"I18n_forgot": "هل نسيت كلمة السر؟",
+	"I18n_halt": "توقفت قاعدة المعرفة!",
+	"I18n_internalservererror": "خطأ في الخادم الداخلي!",
+	"I18n_invalidcredentials": "بيانات الاعتماد غير صالحة!",
+	"I18n_invalidimage": "صورة غير صحيحة أو فارغة!",
+	"I18n_register": "يرجى التسجيل للوصول إلى K2!",
+	"I18n_remember": "تذكرنى",
+	"I18n_resume": "تم استئناف KnowledgeBase!",
+	"I18n_send": "يرسل",
+	"I18n_title": "نظام قاعدة المعرفة K2",
+	"I18n_wellcome": "مرحبا بكم في K2!",
+	"I18n_wellcome2": "ما الذي سوف نفعله اليوم؟",
+	"I18n_workspace": "مساحة العمل"
+}

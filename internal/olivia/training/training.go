@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/antoniomralmeida/k2/internal/inits"
+	"github.com/antoniomralmeida/k2/internal/lib"
 	"github.com/antoniomralmeida/k2/internal/olivia/analysis"
 	"github.com/antoniomralmeida/k2/internal/olivia/network"
 	"github.com/antoniomralmeida/k2/internal/olivia/util"
@@ -35,7 +35,7 @@ func TrainData(locale string) (inputs, outputs [][]float64) {
 // trained from TrainData() inputs and targets.
 func CreateNeuralNetwork(locale string, ignoreTrainingFile bool) (neuralNetwork network.Network) {
 	// Decide if the network is created by the save or is a new one
-	wd := inits.GetHomeDir()
+	wd := lib.GetWorkDir()
 	saveFile := wd + "/data/locales/" + locale + "/training.json"
 
 	_, err := os.Open(saveFile)

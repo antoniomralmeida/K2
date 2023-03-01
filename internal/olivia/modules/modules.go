@@ -53,11 +53,11 @@ var (
 )
 
 func modulesFile(locale string) string {
-	return inits.GetHomeDir() + "/data/locales/" + locale + "/modules.json"
+	return lib.GetWorkDir() + "/data/locales/" + locale + "/modules.json"
 }
 
 func articleFile(locale string) string {
-	return inits.GetHomeDir() + "/data/locales/" + locale + "/article.json"
+	return lib.GetWorkDir() + "/data/locales/" + locale + "/article.json"
 }
 
 func init() {

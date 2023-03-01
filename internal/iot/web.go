@@ -19,7 +19,7 @@ func Run() {
 		DisableStartupMessage: true,
 		Prefork:               false})
 
-	wd := inits.GetHomeDir()
+	wd := lib.GetWorkDir()
 	f := wd + os.Getenv("LOGPATH") + "k2iothttp." + time.Now().Format(lib.YYYYMMDD) + ".log"
 	file, err := os.OpenFile(f, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {

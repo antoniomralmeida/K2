@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/antoniomralmeida/k2/internal/inits"
+	"github.com/antoniomralmeida/k2/internal/lib"
 	"github.com/antoniomralmeida/k2/internal/olivia/analysis"
 	"github.com/antoniomralmeida/k2/internal/olivia/util"
 
@@ -33,7 +34,7 @@ func WriteIntents(locale string, intents []analysis.Intent) {
 	bytes, _ := json.MarshalIndent(intents, "", "  ")
 
 	// Write it to the file
-	wd := inits.GetHomeDir()
+	wd := lib.GetWorkDir()
 	file, err := os.Create(wd + "/data/locales/" + locale + "/intents.json")
 	if err != nil {
 

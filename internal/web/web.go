@@ -23,7 +23,7 @@ func Run() {
 	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 KB System ", version.GetVersion(), "[", version.GetBuild(), "]"),
 		DisableStartupMessage: false,
 		Prefork:               false})
-	wd := inits.GetHomeDir()
+	wd := lib.GetWorkDir()
 	f := wd + os.Getenv("LOGPATH") + "k2webhttp." + time.Now().Format(lib.YYYYMMDD) + ".log"
 	file, err := os.OpenFile(f, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {

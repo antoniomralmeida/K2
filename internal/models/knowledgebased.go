@@ -3,7 +3,6 @@ package models
 import (
 	"fmt"
 	"os"
-	"runtime"
 	"sort"
 	"sync"
 	"time"
@@ -105,7 +104,7 @@ func InitKB() {
 	new(KBClass).ValidateIndex()
 	new(KBWorkspace).ValidateIndex()
 	new(KBObject).ValidateIndex()
-	hd := inits.GetHomeDir()
+	hd := lib.GetWorkDir()
 	EBNFFactory(hd + "/configs/k2.ebnf")
 
 	FindAllClasses("_id")
@@ -209,9 +208,7 @@ func KBRun(wg *sync.WaitGroup) {
 	inits.Log(err, inits.Fatal)
 
 	inits.Log("K2 KB System started!", inits.Info)
-	if runtime.GOOS == "windows" {
-		fmt.Println("K2 KB System started! Press ESC to shutdown")
-	}
+	fmt.Println("K2 KB System started! Press ESC to shutdown")
 	for {
 		if lib.KeyPress() == 27 {
 			fmt.Printf("Shutdown...")

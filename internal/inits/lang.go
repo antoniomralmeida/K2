@@ -81,6 +81,7 @@ func inLocalesConfig(locale string) bool {
 }
 
 func GetSupportedLocales() (ret string) {
+
 	ret = ""
 	for key, value := range Locales {
 		ret = ret + value.Description + "[" + key + "] "
@@ -176,7 +177,7 @@ func TranslateTag(tag string, langs string) string {
 }
 
 func TomlFile(code string) string {
-	wd := GetHomeDir()
+	wd := lib.GetWorkDir()
 	path := wd + "/data/locales/"
 	if ok, _ := lib.Exists(path); !ok {
 		err := os.MkdirAll(path, os.ModePerm)
@@ -197,7 +198,7 @@ func NewStem(locale string) (*Stem, error) {
 	stam := new(Stem)
 	stam.stams = make(map[string][]string)
 
-	err, filename := lib.DownloadFile("https://raw.githubusercontent.com/michmech/lemmatization-lists/master/lemmatization-"+locale+".txt", GetHomeDir()+"/data/locales/"+locale+"/")
+	err, filename := lib.DownloadFile("https://raw.githubusercontent.com/michmech/lemmatization-lists/master/lemmatization-"+locale+".txt", lib.GetWorkDir()+"/data/locales/"+locale+"/")
 	if err != nil {
 		return nil, err
 	}

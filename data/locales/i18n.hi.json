@@ -1,0 +1,23 @@
+{
+	"I18n_accessforbidden": "प्रवेश निषिद्ध!",
+	"I18n_alert": "अलर्ट",
+	"I18n_already": "क्या आपके पास पहले से एक खाता मौजूद है? ",
+	"I18n_alreadyregistered": "पहले से ही पंजीकृत!",
+	"I18n_avatar": "अवतार",
+	"I18n_badrequest": "खराब अनुरोध!",
+	"I18n_cancel": "रद्द करना",
+	"I18n_dateinput": "डेटा इनपुट",
+	"I18n_forgot": "पासवर्ड भूल गए?",
+	"I18n_halt": "नॉलेजबेस रुक गया था!",
+	"I18n_internalservererror": "आंतरिक सर्वर त्रुटि!",
+	"I18n_invalidcredentials": "अवैध प्रत्यय पत्र!",
+	"I18n_invalidimage": "अमान्य या खाली छवि!",
+	"I18n_register": "कृपया K2 तक पहुँचने के लिए पंजीकरण करें!",
+	"I18n_remember": "पहचाना की नहीं",
+	"I18n_resume": "नॉलेजबेस रिज्यूमे था!",
+	"I18n_send": "भेजना",
+	"I18n_title": "K2 नॉलेजबेस सिस्टम",
+	"I18n_wellcome": "K2 में आपका स्वागत है!",
+	"I18n_wellcome2": "हम आज क्या करने वाले हैं?",
+	"I18n_workspace": "कार्यस्थान"
+}

@@ -9,4 +9,5 @@ var (
 	InvalidClassError    = errors.New("Invalid class!")
 	CompilerError        = errors.New("Compiler error in statement!")
 	LiteralNotFoundError = errors.New("Literal not found!")
+	InvalidTokenError    = errors.New("Invalid Token")
 )

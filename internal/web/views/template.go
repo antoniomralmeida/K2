@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/antoniomralmeida/k2/internal/inits"
+	"github.com/antoniomralmeida/k2/internal/lib"
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/tdewolff/minify"
@@ -27,7 +28,7 @@ func InitTemplates() {
 	if fiber.IsChild() {
 		return
 	}
-	wd := inits.GetHomeDir()
+	wd := lib.GetWorkDir()
 	T["login"] = Minify("text/html", wd+"/web/login.html")
 	T["home"] = Minify("text/html", wd+"/web/home.html")
 	T["404"] = Minify("text/html", wd+"/web/404.html")

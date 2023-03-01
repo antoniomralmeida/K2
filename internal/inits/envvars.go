@@ -3,15 +3,12 @@ package inits
 import (
 	"log"
 
+	"github.com/antoniomralmeida/k2/internal/lib"
 	"github.com/subosito/gotenv"
 )
 
 func InitEnvVars() {
-	if gotenv.Load("./configs/.env") != nil {
-		if gotenv.Load("../configs/.env") != nil {
-			if err := gotenv.Load("../../configs/.env"); err != nil {
-				log.Fatal(err)
-			}
-		}
+	if err := gotenv.Load(lib.GetWorkDir() + "/configs/.env"); err != nil {
+		log.Fatal(err)
 	}
 }

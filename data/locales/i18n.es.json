@@ -1,0 +1,23 @@
+{
+	"I18n_accessforbidden": "¡Acceso Prohibido!",
+	"I18n_alert": "Alertas",
+	"I18n_already": "¿Ya tienes una cuenta? ",
+	"I18n_alreadyregistered": "¡Ya registrado!",
+	"I18n_avatar": "Avatar",
+	"I18n_badrequest": "¡Solicitud incorrecta!",
+	"I18n_cancel": "Cancelar",
+	"I18n_dateinput": "Entrada de datos",
+	"I18n_forgot": "¿Has olvidado tu contraseña?",
+	"I18n_halt": "KnowledgeBase se detuvo!",
+	"I18n_internalservererror": "¡Error Interno del Servidor!",
+	"I18n_invalidcredentials": "¡Credenciales no válidas!",
+	"I18n_invalidimage": "¡Imagen no válida o vacía!",
+	"I18n_register": "¡Por favor regístrese para acceder a K2!",
+	"I18n_remember": "Acuérdate de mí",
+	"I18n_resume": "KnowledgeBase se reanudó!",
+	"I18n_send": "Enviar",
+	"I18n_title": "Sistema de base de conocimiento K2",
+	"I18n_wellcome": "¡Bienvenido a K2!",
+	"I18n_wellcome2": "¿Que vamos a hacer hoy?",
+	"I18n_workspace": "espacio de trabajo"
+}

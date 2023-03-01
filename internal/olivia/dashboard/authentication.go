@@ -7,13 +7,14 @@ import (
 	"os"
 
 	"github.com/antoniomralmeida/k2/internal/inits"
+	"github.com/antoniomralmeida/k2/internal/lib"
 
 	"github.com/gookit/color"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-var fileName = inits.GetHomeDir() + "/data/authentication.txt"
+var fileName = lib.GetWorkDir() + "/data/authentication.txt"
 
 var authenticationHash []byte
 
