@@ -42,6 +42,7 @@ func Routes(app *fiber.App) {
 
 	api.Get("/chats", GetChats)
 
+	app.Use()
 	// 404 Handler
 	app.Use(func(c *fiber.Ctx) error {
 		return views.NotFoundView(c)

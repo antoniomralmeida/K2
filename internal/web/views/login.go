@@ -13,7 +13,7 @@ func LoginView(c *fiber.Ctx) error {
 	if err != nil {
 		inits.Log(err, inits.Error)
 		c.SendStatus(fiber.StatusInternalServerError)
-		return c.SendFile(T["404"].minify)
+		return NotFoundView(c)
 	}
 	model := template.Must(t, nil)
 	inits.Log(model.Execute(c, context.Ctxweb), inits.Error)
