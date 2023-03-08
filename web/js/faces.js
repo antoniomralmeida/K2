@@ -4,15 +4,25 @@ let face;
 const params = new URL(location.href).searchParams;
 const avatar = getCookie('avatar');
 const lang = params.get('lang');
-const lang2 = navigator.language
-var voices = window.speechSynthesis.getVoices();
+var arrayVoices = []
+Synthesis.getVoices();
 var voice = '';
+
+/*
+ * Check for browser support
+ */
+var supportMsg = document.getElementById('errlabel');
+
+if (!'speechSynthesis' in window)  {
+	supportMsg.innerHTML = 'Sorry your browser <strong>does not support</strong> speech synthesis.<br>Try this in <a href="https://www.google.co.uk/intl/en/chrome/browser/canary.html">Chrome Canary</a>.';
+}
+
 
 if (avatar == null) {
   face = faces.generate();
 } else {
   try {
-      face = JSON.parse(atob(avatar));
+    face = JSON.parse(atob(avatar));
   } catch (error) {
     console.error(error);
     face = faces.generate();
@@ -20,11 +30,11 @@ if (avatar == null) {
 }
 
 
-function sleep(milliseconds) {  
-  return new Promise(resolve => setTimeout(resolve, milliseconds));  
-} 
+function sleep(milliseconds) {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
 
-const updateDisplay  = () => {  
+const updateDisplay = () => {
   faces.display(faceWrapper, face);
 };
 
@@ -38,52 +48,55 @@ const speaking = () => {
   updateDisplay();
 }
 
-var voicesApp = {"-":0};
+var voicesApp = { "-": -1 };
 
 function GetSpeechSynthesisId(voice) {
-  console.log(voicesApp);
+
+  console.log(voicesApp, voice, lang, arrayVoices.length);
+
   for (var key in voicesApp) {
     if (key == voice || key == lang) {
-      return voicesApp[key]
+      return voicesApp[key];
     }
   }
-  for (var i=0;i < voices.length;i++) {
-    if (voices[i].name.includes(voice)) {
+
+  for (var i = 0; i < arrayVoices.length; i++) {
+    if (arrayVoices[i].name.includes(voice)) {
       voicesApp[voice] = i;
-      return i
+      return i;
     }
   }
-  for (var i=0;i < voices.length;i++) {
-    console.log(voices[i].lang, lang, i);
-    if (voices[i].lang.startsWith(lang)) {
+  for (var i = 0; i < arrayVoices.length; i++) {
+    console.log(arrayVoices[i].lang, lang, i);
+    if (arrayVoices[i].lang.startsWith(lang)) {
       voicesApp[lang] = i;
-      return i
+      return i;
     }
   }
-  return 0
+  return -1;
 }
 
-const Speak = async(text) => {
+const Speak = async (text) => {
   // Testing for browser support
-	var speechSynthesisSupported = 'speechSynthesis' in window;
+  var speechSynthesisSupported = 'speechSynthesis' in window;
   let Speech = new SpeechSynthesisUtterance();
-  console.log(voices);
-  while (voices.length==0) { 
-    voices = window.speechSynthesis.getVoices();
+  while (arrayVoices.length==0) { 
+    arrayVoices = window.speechSynthesis.getVoices();
     await sleep(50);
   }
-  console.log(voices);
   Speech.addEventListener('start', handleStartSpeechEvent);
   Speech.addEventListener('end', handleEndSpeechEvent);
-  id =  GetSpeechSynthesisId(voice);
-  Speech.voice = voices[id];
+  id = GetSpeechSynthesisId(voice);
+  Speech.voice = arrayVoices[id];
   Speech.text = text;
   console.log(voice, id);
-  speechSynthesis.speak(Speech);  
+  if (id >= 0) {
+    speechSynthesis.speak(Speech);
+  }
 }
 var speakingMode = false;
 
-const handleStartSpeechEvent = async() => {
+const handleStartSpeechEvent = async () => {
   speakingMode = true;
   document.body.style.cursor = 'wait';
   while (speakingMode) {
@@ -93,7 +106,7 @@ const handleStartSpeechEvent = async() => {
 }
 
 
-const handleEndSpeechEvent = async() => {
+const handleEndSpeechEvent = async () => {
   speakingMode = false;
   document.body.style.cursor = 'default';
 }
