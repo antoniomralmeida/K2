@@ -14,7 +14,7 @@ func Routes(app *fiber.App) {
 	app.Static("/js", "./web/js")
 	app.Static("/vendor", "./web/vendor")
 	app.Static("/scss", "./web/scss")
-	app.Static("/sounds", "./web/sounds")
+	app.Static("/tts", "./web/tts")
 
 	// Allow cors for cookie
 	app.Use(cors.New(cors.Config{
@@ -36,7 +36,9 @@ func Routes(app *fiber.App) {
 
 	api := app.Group("/api/v1")
 	api.Get("/attributes", GetAttributes)
+
 	api.Post("/attributes", PostAttributes)
+
 	api.Get("/chats", GetChats)
 
 	// 404 Handler
