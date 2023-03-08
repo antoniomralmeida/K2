@@ -11,7 +11,7 @@ func GetFace(c *fiber.Ctx) error {
 		return c.Redirect(c.OriginalURL() + "?avatar=" + context.Ctxweb.Avatar)
 	}
 	//Context
-	context.SetContextInfo(c)
+	context.SetContextInfo(c, "")
 
 	return views.FaceView(c)
 }

@@ -26,13 +26,14 @@ func Routes(app *fiber.App) {
 		ContextKey: "csrf",
 	}))
 
-	app.Get("/", Home)
+	app.Get("/", Splash)
+	app.Get("/home", Home)
 	app.Get("/login", LoginForm)
 	app.Post("/login", PostLogin)
 	app.Post("/logout", Logout)
 	app.Get("/face", GetFace)
-	app.Get("/signup", SignupForm)
-	app.Post("/signup", PostSignup)
+	app.Get("/signup", SignUpForm)
+	app.Post("/signup", PostSignUp)
 
 	api := app.Group("/api/v1")
 	api.Get("/attributes", GetAttributes)

@@ -47,16 +47,17 @@ type Locale struct {
 
 var (
 	DefaultLocale = language.English.String()
-	DefaultVoice  = "Mark"
 	Locales       map[string]Locale
 	bundle        *i18n.Bundle
 	I18n_en       map[string]string
+	TTSPathDir    = lib.GetWorkDir() + "/web/tts"
+	TTSURL        = "/tts/"
 )
 
-func I18nTranslate(orignal *map[string]string, locale string) (map[string]string, error) {
+func I18nTranslate(original *map[string]string, locale string) (map[string]string, error) {
 	translated := make(map[string]string)
-	for key := range *orignal {
-		trans, err := golibretranslate.Translate((*orignal)[key], DefaultLocale, locale)
+	for key := range *original {
+		trans, err := golibretranslate.Translate((*original)[key], DefaultLocale, locale)
 		if err == nil {
 			translated[key] = trans
 		} else {
@@ -88,32 +89,32 @@ func GetSupportedLocales() (ret string) {
 	}
 	return
 }
-func NewSupportedLanguage(locale string, voice string) {
+func NewSupportedLanguage(locale string) {
 	if inLocalesConfig(locale) || locale == language.English.String() || locale == language.Portuguese.String() {
-		toen := display.English.Languages()
+		toEN := display.English.Languages()
 		tag := language.MustParse(locale)
-		Locales[locale] = Locale{Description: toen.Name(tag), Voice: voice}
+		Locales[locale] = Locale{Description: toEN.Name(tag)}
 	}
 }
 
 func InitLangs() {
 	Locales = make(map[string]Locale)
 
-	NewSupportedLanguage(DefaultLocale, DefaultVoice)
+	NewSupportedLanguage(DefaultLocale)
 	//
-	NewSupportedLanguage(language.Portuguese.String(), "Daniel")
-	NewSupportedLanguage(language.Spanish.String(), "ManuelEsCU")
-	NewSupportedLanguage(language.German.String(), "Conrad")
-	NewSupportedLanguage(language.Hindi.String(), "Madhur")
-	NewSupportedLanguage(language.Arabic.String(), "Shakir")
-	NewSupportedLanguage(language.Bengali.String(), "Tanishaa")
-	NewSupportedLanguage(language.Russian.String(), "Dmitry")
-	NewSupportedLanguage(language.Japanese.String(), "Nanami")
-	NewSupportedLanguage(language.French.String(), "Henri")
-	NewSupportedLanguage(language.Italian.String(), "Diego")
-	NewSupportedLanguage(language.Chinese.String(), "Yunyang")
-	NewSupportedLanguage(language.Greek.String(), "Nestoras")
-	NewSupportedLanguage(language.Dutch.String(), "Maarten")
+	NewSupportedLanguage(language.Portuguese.String())
+	NewSupportedLanguage(language.Spanish.String())
+	NewSupportedLanguage(language.German.String())
+	NewSupportedLanguage(language.Hindi.String())
+	NewSupportedLanguage(language.Arabic.String())
+	NewSupportedLanguage(language.Bengali.String())
+	NewSupportedLanguage(language.Russian.String())
+	NewSupportedLanguage(language.Japanese.String())
+	NewSupportedLanguage(language.French.String())
+	NewSupportedLanguage(language.Italian.String())
+	NewSupportedLanguage(language.Chinese.String())
+	NewSupportedLanguage(language.Greek.String())
+	NewSupportedLanguage(language.Dutch.String())
 
 	I18n_en = make(map[string]string)
 

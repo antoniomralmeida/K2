@@ -15,18 +15,22 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func SignupForm(c *fiber.Ctx) error {
+func SignUpForm(c *fiber.Ctx) error {
 	if context.VerifyCookies(c) {
 		return nil
 	}
 	//Context
-	context.SetContextInfo(c)
+	err := context.SetContextInfo(c, lib.GetWorkDir()+"/web/register_wellcome.gohtml")
+	if err != nil {
+		inits.Log(err, inits.Error)
+		return fiber.ErrInternalServerError
+	}
 	return views.RegisterView(c)
 }
 
-func PostSignup(c *fiber.Ctx) error {
+func PostSignUp(c *fiber.Ctx) error {
 	req := new(models.SigupRequest)
-	context.SetContextInfo(c)
+	context.SetContextInfo(c, "")
 	if err := c.BodyParser(req); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, context.Ctxweb.I18n[inits.I18n_badrequest]+":"+err.Error())
 	}

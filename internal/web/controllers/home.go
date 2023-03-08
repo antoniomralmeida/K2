@@ -21,7 +21,12 @@ func Home(c *fiber.Ctx) error {
 		return nil
 	}
 	//Context
-	context.SetContextInfo(c)
+	err := context.SetContextInfo(c, lib.GetWorkDir()+"/web/home_wellcome.gohtml")
+	if err != nil {
+		inits.Log(err, inits.Error)
+		return fiber.ErrInternalServerError
+	}
+
 	works, err := models.KBWorkspacesJson()
 	if err != nil {
 		inits.Log(err, inits.Error)

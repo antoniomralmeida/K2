@@ -10,7 +10,7 @@ import (
 
 func RegisterView(c *fiber.Ctx) error {
 	//Render
-	t, err := template.ParseFiles(T["sigup"].minify)
+	t, err := template.ParseFiles(T["signup"].minify)
 	if err != nil {
 		inits.Log(err, inits.Error)
 		c.SendStatus(fiber.StatusInternalServerError)

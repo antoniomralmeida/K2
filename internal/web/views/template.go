@@ -29,11 +29,13 @@ func InitTemplates() {
 		return
 	}
 	wd := lib.GetWorkDir()
-	T["login"] = Minify("text/html", wd+"/web/login.html")
-	T["home"] = Minify("text/html", wd+"/web/home.html")
-	T["404"] = Minify("text/html", wd+"/web/404.html")
-	T["face"] = Minify("text/html", wd+"/web/face.html")
-	T["sigup"] = Minify("text/html", wd+"/web/register.html")
+	T["login"] = Minify("text/html", wd+"/web/login.gohtml")
+	T["home"] = Minify("text/html", wd+"/web/home.gohtml")
+	T["404"] = Minify("text/html", wd+"/web/404.gohtml")
+	T["face"] = Minify("text/html", wd+"/web/face.gohtml")
+	T["signup"] = Minify("text/html", wd+"/web/register.gohtml")
+	T["splash"] = Minify("text/html", wd+"/web/splash.gohtml")
+
 	T["k2.js"] = Minify("text/javascript", wd+"/web/js/k2.js")
 	T["faces.js"] = Minify("text/javascript", wd+"/web/js/faces.js")
 	T["olivia.js"] = Minify("text/javascript", wd+"/web/js/olivia.js")

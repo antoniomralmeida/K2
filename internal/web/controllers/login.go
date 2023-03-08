@@ -20,15 +20,18 @@ func LoginForm(c *fiber.Ctx) error {
 		return nil
 	}
 	//Context
-	context.SetContextInfo(c)
-
+	err := context.SetContextInfo(c, lib.GetWorkDir()+"/web/login_wellcome.gohtml")
+	if err != nil {
+		inits.Log(err, inits.Error)
+		return fiber.ErrInternalServerError
+	}
 	//TODO: Incluir reconhecimento facil no login
 	return views.LoginView(c)
 }
 
 func PostLogin(c *fiber.Ctx) error {
 	req := models.LoginRequest{}
-	context.SetContextInfo(c)
+	context.SetContextInfo(c, "")
 	if err := c.BodyParser(&req); err != nil {
 		msg := context.Ctxweb.I18n[inits.I18n_badrequest] + ":" + err.Error()
 		inits.Log(msg, inits.Info)
@@ -81,7 +84,7 @@ func PostLogin(c *fiber.Ctx) error {
 	c.Cookie(&cookie)
 
 	c.SendStatus(fiber.StatusAccepted)
-	return c.Redirect("/")
+	return c.Redirect("/home")
 }
 
 func Logout(c *fiber.Ctx) error {

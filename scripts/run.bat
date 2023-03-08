@@ -18,6 +18,8 @@ go build  -ldflags "-X 'github.com/antoniomralmeida/k2/pkg/version.Version=%vers
 
 del log\*.json
 del log\*.log
+del web\tts\*.mp3
+
 start .\bin\k2olivia.exe
 timeout 5
 start .\bin\k2web.exe

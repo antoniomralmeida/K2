@@ -13,6 +13,7 @@ require (
 	github.com/gookit/color v1.5.2
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.5.0
+	github.com/hegedustibor/htgo-tts v0.0.0-20220821045517-04f3cda7a12f
 	github.com/kamva/mgm/v3 v3.5.0
 	github.com/madflojo/tasks v1.0.4
 	github.com/mattn/go-tty v0.0.4
@@ -36,6 +37,11 @@ require (
 	golang.org/x/text v0.6.0
 	gonum.org/v1/gonum v0.12.0
 	gopkg.in/cheggaaa/pb.v1 v1.0.28
+)
+
+require (
+	github.com/hajimehoshi/go-mp3 v0.3.3 // indirect
+	github.com/hajimehoshi/oto/v2 v2.2.0 // indirect
 )
 
 require (
