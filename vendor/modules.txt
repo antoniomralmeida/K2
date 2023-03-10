@@ -41,6 +41,10 @@ github.com/gofiber/fiber/v2/middleware/csrf
 github.com/gofiber/fiber/v2/middleware/logger
 github.com/gofiber/fiber/v2/middleware/requestid
 github.com/gofiber/fiber/v2/utils
+# github.com/gofiber/template v1.7.5
+## explicit; go 1.16
+github.com/gofiber/template/html
+github.com/gofiber/template/utils
 # github.com/golang-jwt/jwt v3.2.2+incompatible
 ## explicit
 github.com/golang-jwt/jwt

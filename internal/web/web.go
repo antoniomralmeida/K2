@@ -13,6 +13,7 @@ import (
 	"github.com/antoniomralmeida/k2/pkg/version"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/template/html"
 )
 
 func Run() {
@@ -20,9 +21,17 @@ func Run() {
 	inits.ConnectDB()
 
 	context.Ctxweb.Avatar = os.Getenv("AVATAR")
+	engine := html.New("./web", ".gohtml")
+	inits.Log(engine.Load(), inits.Fatal)
 	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 KB System ", version.GetVersion(), "[", version.GetBuild(), "]"),
 		DisableStartupMessage: false,
-		Prefork:               false})
+		Prefork:               false,
+		Views:                 engine,
+		ErrorHandler: func(c *fiber.Ctx, err error) error {
+			inits.Log(err, inits.Error)
+			return views.ErrorView(c, err)
+		},
+	})
 	wd := lib.GetWorkDir()
 	f := wd + os.Getenv("LOGPATH") + "k2webhttp." + time.Now().Format(lib.YYYYMMDD) + ".log"
 	file, err := os.OpenFile(f, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)

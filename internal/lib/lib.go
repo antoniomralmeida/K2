@@ -126,6 +126,11 @@ func GetWorkDir() string {
 	return wd
 }
 
+func GetFileName(path string) string {
+	base := filepath.Base(path)
+	return base[:len(base)-len(filepath.Ext(base))]
+}
+
 func Identify(name string) string {
 	var specialCharSet = "'\"!@#$%&*+-/ "
 	for _, c := range specialCharSet {

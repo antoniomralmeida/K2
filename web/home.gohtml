@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -364,9 +363,7 @@
   <script src="js/faces.min.js"></script>
   <script src="js/olivia.min.js"></script>
     <script>
-  $(function() {Speak('{{.WellcomeMsg"}}'); });
+  $(function() {Speak('{{.WellcomeMsg}}'); LoadDataInput();});
   </script> 
-  <script>voice = '{{.Voice}}';Speak('{{.User}}, {{index .I18n "I18n_wellcome2"}}');LoadDataInput();</script>
- /body>
-
+ </body>
 </html>

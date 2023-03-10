@@ -31,7 +31,7 @@ func InitTemplates() {
 	wd := lib.GetWorkDir()
 	T["login"] = Minify("text/html", wd+"/web/login.gohtml")
 	T["home"] = Minify("text/html", wd+"/web/home.gohtml")
-	T["404"] = Minify("text/html", wd+"/web/404.gohtml")
+	T["error"] = Minify("text/html", wd+"/web/error.gohtml")
 	T["face"] = Minify("text/html", wd+"/web/face.gohtml")
 	T["signup"] = Minify("text/html", wd+"/web/register.gohtml")
 	T["splash"] = Minify("text/html", wd+"/web/splash.gohtml")

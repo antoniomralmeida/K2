@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/antoniomralmeida/k2/internal/web/views"
+	"github.com/antoniomralmeida/k2/internal/lib"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/csrf"
@@ -37,14 +37,11 @@ func Routes(app *fiber.App) {
 
 	api := app.Group("/api/v1")
 	api.Get("/attributes", GetAttributes)
-
 	api.Post("/attributes", PostAttributes)
-
 	api.Get("/chats", GetChats)
 
-	app.Use()
 	// 404 Handler
 	app.Use(func(c *fiber.Ctx) error {
-		return views.NotFoundView(c)
+		return Error(c, lib.PageNotFoundError)
 	})
 }

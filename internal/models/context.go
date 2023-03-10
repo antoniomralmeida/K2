@@ -8,4 +8,5 @@ type Context struct {
 	Avatar      string
 	WellcomeMsg string
 	Workspaces  []WorkspaceInfo
+	Error       string
 }
