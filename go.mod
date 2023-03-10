@@ -40,10 +40,6 @@ require (
 	gopkg.in/cheggaaa/pb.v1 v1.0.28
 )
 
-require (
-	github.com/hajimehoshi/go-mp3 v0.3.3 // indirect
-	github.com/hajimehoshi/oto/v2 v2.2.0 // indirect
-)
 
 require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
