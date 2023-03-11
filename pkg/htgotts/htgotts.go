@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/hegedustibor/htgo-tts/handlers"
+	"github.com/antoniomralmeida/k2/pkg/htgotts/handlers"
 )
 
 /**
@@ -110,4 +110,14 @@ func (speech *Speech) downloadIfNotExists(fileName string, text string) error {
 func (speech *Speech) generateHashName(name string) string {
 	hash := md5.Sum([]byte(name))
 	return fmt.Sprintf("%s_%s", speech.Language, hex.EncodeToString(hash[:]))
+}
+
+func TTSToFile(text, language, pathDir string) (string, error) {
+	handler := new(handlers.NoPlay)
+	speech := Speech{Folder: pathDir, Language: language, Handler: handler}
+	if err := speech.Speak(text); err != nil {
+		return "", err
+	} else {
+		return handler.FileName, nil
+	}
 }

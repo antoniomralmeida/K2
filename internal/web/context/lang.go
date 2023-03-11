@@ -10,7 +10,8 @@ import (
 
 	"github.com/antoniomralmeida/k2/internal/inits"
 	"github.com/antoniomralmeida/k2/internal/lib"
-	"github.com/antoniomralmeida/k2/pkg/tts"
+	"github.com/antoniomralmeida/k2/pkg/htgotts"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -54,7 +55,7 @@ func SetContextInfo(c *fiber.Ctx, templateMsg string) error {
 			return err
 		}
 		text := tpl.String()
-		file, err := tts.TTSToFile(text, currentLang, inits.TTSPathDir)
+		file, err := htgotts.TTSToFile(text, currentLang, inits.TTSPathDir)
 		if err != nil {
 			return err
 		}
