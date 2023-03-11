@@ -3,8 +3,6 @@ rm log/*.json
 rm log/*.log
 rm web/tts/*.mp3
 
-CGO_ENABLED=1
-
 version="0.9.0-beta"
 build=$(date +%Y%m%d)
 git tag  $version 

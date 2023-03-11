@@ -68,9 +68,9 @@ func Minify(mediatype string, from string) Template {
 	err = m.Minify(mediatype, write, read)
 	if err != nil {
 		inits.Log(err, inits.Error)
-		return Template{from, from}
+		return Template{lib.GetFileName(from), lib.GetFileName(from)}
 	}
 	o.Close()
 	f.Close()
-	return Template{from, to}
+	return Template{lib.GetFileName(from), lib.GetFileName(to)}
 }

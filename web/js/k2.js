@@ -1,6 +1,7 @@
 var div_id = document.getElementById('datainput')
 var div_face_id = document.getElementById('face')
-var apikernel = ''
+const params = new URL(location.href).searchParams;
+const lang = params.get('lang');
 
 
 function SendMessage(text) {
@@ -127,9 +128,9 @@ function PostLogin() {
         success: function (data) {
             errlabel.innerHTML = "";
             if (lang == "") {
-                window.location.href = "/";
+                window.location.href = "/home";
             } else {
-                window.location.href = "/?lang=" + lang
+                window.location.href = "/home?lang=" + lang
             }
         }
     });
@@ -158,9 +159,9 @@ function PostSignup() {
         success: function (data) {
             errlabel.innerHTML = "";
             if (lang == "") {
-                window.location.href = "/";
+                window.location.href = "/login";
             } else {
-                window.location.href = "/?lang=" + lang
+                window.location.href = "/login?lang=" + lang
             }
         }
     });

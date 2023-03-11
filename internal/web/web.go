@@ -27,10 +27,10 @@ func Run() {
 		DisableStartupMessage: false,
 		Prefork:               false,
 		Views:                 engine,
-		ErrorHandler: func(c *fiber.Ctx, err error) error {
+		/*ErrorHandler: func(c *fiber.Ctx, err error) error {
 			inits.Log(err, inits.Error)
 			return views.ErrorView(c, err)
-		},
+		},*/
 	})
 	wd := lib.GetWorkDir()
 	f := wd + os.Getenv("LOGPATH") + "k2webhttp." + time.Now().Format(lib.YYYYMMDD) + ".log"

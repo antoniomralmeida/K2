@@ -80,11 +80,8 @@ func PostLogin(c *fiber.Ctx) error {
 		Expires:  time.Now().Add(time.Hour * 24),
 		HTTPOnly: true,
 	}
-
 	c.Cookie(&cookie)
-
-	c.SendStatus(fiber.StatusAccepted)
-	return c.Redirect("/home")
+	return c.SendStatus(fiber.StatusAccepted)
 }
 
 func Logout(c *fiber.Ctx) error {
@@ -99,5 +96,5 @@ func Logout(c *fiber.Ctx) error {
 	context.Ctxweb.User = ""
 	c.Cookie(&cookie)
 	c.SendStatus(fiber.StatusAccepted)
-	return c.Redirect("/login")
+	return c.Redirect("/")
 }
