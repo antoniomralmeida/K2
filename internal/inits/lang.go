@@ -51,7 +51,7 @@ var (
 	bundle        *i18n.Bundle
 	I18n_en       map[string]string
 	TTSPathDir    = lib.GetWorkDir() + "/web/tts"
-	TTSURL        = "/tts/"
+	TTSURL        = "tts/"
 )
 
 func I18nTranslate(original *map[string]string, locale string) (map[string]string, error) {

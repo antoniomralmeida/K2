@@ -34,9 +34,10 @@ const speaking = () => {
   updateDisplay();
 }
 
+
 const Speak = async(mp3File) => {
   console.log(mp3File);
-  const audio = new Audio(mp3File);
+  var audio = new Audio(mp3File);
   audio.onended = handleEndSpeechEvent;
   audio.onplay = handleStartSpeechEvent;
   audio.play();

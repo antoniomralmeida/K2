@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"github.com/antoniomralmeida/k2/internal/lib"
+	"github.com/antoniomralmeida/k2/vendor/github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/csrf"
 )
 
@@ -15,11 +15,13 @@ func Routes(app *fiber.App) {
 	app.Static("/vendor", "./web/vendor")
 	app.Static("/scss", "./web/scss")
 	app.Static("/tts", "./web/tts")
+	app.Static("/audio", "./web/audio")
 
 	// Allow cors for cookie
 	app.Use(cors.New(cors.Config{
 		AllowCredentials: true,
 	}))
+
 	app.Use(csrf.New(csrf.Config{
 		KeyLookup:  "form:csrf",
 		CookieName: "csrf_",

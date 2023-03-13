@@ -21,16 +21,16 @@ func Run() {
 	inits.ConnectDB()
 
 	context.Ctxweb.Avatar = os.Getenv("AVATAR")
-	engine := html.New("./web", ".gohtml")
+	engine := html.New("./web", ".html")
 	inits.Log(engine.Load(), inits.Fatal)
 	app := fiber.New(fiber.Config{AppName: fmt.Sprint("K2 KB System ", version.GetVersion(), "[", version.GetBuild(), "]"),
 		DisableStartupMessage: false,
 		Prefork:               false,
 		Views:                 engine,
-		/*ErrorHandler: func(c *fiber.Ctx, err error) error {
+		ErrorHandler: func(c *fiber.Ctx, err error) error {
 			inits.Log(err, inits.Error)
 			return views.ErrorView(c, err)
-		},*/
+		},
 	})
 	wd := lib.GetWorkDir()
 	f := wd + os.Getenv("LOGPATH") + "k2webhttp." + time.Now().Format(lib.YYYYMMDD) + ".log"
