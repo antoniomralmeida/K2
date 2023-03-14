@@ -4,9 +4,45 @@
 <head>
   <meta charset="utf-8">
   <title>{{index .I18n "I18n_title"}}</title>
-   <link rel="icon" href="img/favicon.ico">
+  <link rel="icon" href="img/favicon.ico">
+  <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
-    <a href="http://localhost:8080/home"> K2 System </a>
+  <div class="cookie-consent-modal">
+    <div class="content">
+      <h1>Allow Cookies</h1>
+      <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Harum saepe beatae amet iure ipsam, officia
+        exercitationem nam nemo autem? Nam harum, aut libero sapiente quae numquam amet distinctio doloremque, rem
+        reiciendis quas dolorem autem ipsam odio deserunt illo cumque voluptates perferendis! Ipsa voluptatum adipisci
+        exercitationem. Tempora, impedit? Hic, ex accusantium.</p>
+      <div class="btns">
+        <button class="btn cancel">cancel</button>
+        <button class="btn accept">accept</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    let cookieModal = document.querySelector(".cookie-consent-modal")
+    let cancelCookieBtn = document.querySelector(".btn.cancel")
+    let acceptCookieBtn = document.querySelector(".btn.accept")
+
+    cancelCookieBtn.addEventListener("click", function () {
+      cookieModal.classList.remove("active")
+    })
+    acceptCookieBtn.addEventListener("click", function () {
+      cookieModal.classList.remove("active")
+      localStorage.setItem("cookieAccepted", "yes")
+    })
+
+    setTimeout(function () {
+      let cookieAccepted = localStorage.getItem("cookieAccepted")
+      if (cookieAccepted != "yes") {
+        cookieModal.classList.add("active")
+      }
+    }, 2000)
+  </script>
+  <a href="http://localhost:8080/home"> K2 System </a>
 </body>
+
 </html>
