@@ -20,7 +20,7 @@ func LoginForm(c *fiber.Ctx) error {
 		return nil
 	}
 	//Context
-	err := context.SetContextInfo(c, lib.GetWorkDir()+"/web/login_wellcome.html")
+	err := context.SetContextInfo(c, lib.GetWorkDir()+"/web/login_wellcome.gohtml")
 	if err != nil {
 		inits.Log(err, inits.Error)
 		return fiber.ErrInternalServerError

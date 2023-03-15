@@ -1,1 +1,23 @@
-<!doctype html><meta charset=utf-8><title>{{index .I18n "I18n_title"}}</title><link rel=icon href=img/favicon.ico><a href=http://localhost:8080/home>K2 System</a>
+<!doctype html><meta charset=utf-8><title>{{index .I18n "I18n_title"}}</title><link rel=icon href=img/favicon.ico><link rel=stylesheet href=css/style.css><div class=cookie-consent-modal><div class=content><h1>{{index .I18n "I18n_lgpd_cookie_title"}}</h1><p>{{index .I18n "I18n_lgpd_cookie_consent"}}</p><a href=https://unctad.org/page/data-protection-and-privacy-legislation-worldwide>Data Protection Policy
+Statement</a><div class=btns><button class="btn cancel">cancel</button>
+<button class="btn accept">accept</button></div></div></div><script>
+    let cookieModal = document.querySelector(".cookie-consent-modal")
+    let cancelCookieBtn = document.querySelector(".btn.cancel")
+    let acceptCookieBtn = document.querySelector(".btn.accept")
+
+    cancelCookieBtn.addEventListener("click", function () {
+      cookieModal.classList.remove("active")
+    })
+    acceptCookieBtn.addEventListener("click", function () {
+      cookieModal.classList.remove("active")
+      localStorage.setItem("cookieAccepted", "yes")
+      window.location.href = '/home';
+    })
+
+    setTimeout(function () {
+      let cookieAccepted = localStorage.getItem("cookieAccepted")
+      if (cookieAccepted != "yes") {
+        cookieModal.classList.add("active")
+      }
+    }, 2000)
+  </script>

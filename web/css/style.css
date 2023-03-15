@@ -1,7 +1,10 @@
 body{
     font-family: Arial, Helvetica, sans-serif;
     background-color: rgb(250, 211, 161);
-    background-image: url(../img/k2-full.jpg);    
+    background-image: url(../img/k2-full.jpg);
+    height: 100%; 
+    background-repeat: no-repeat;
+    background-position: center center;  
 }
 
     

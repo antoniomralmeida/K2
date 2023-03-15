@@ -12,6 +12,8 @@
 	"I18n_internalservererror": "Erro do Servidor Interno!",
 	"I18n_invalidcredentials": "Credenciais inválidas!",
 	"I18n_invalidimage": "Imagem inválida ou vazia!",
+	"I18n_lgpd_cookie_consent": "Utilizamos cookies para otimizar sua experiência de uso do sistema K2, apenas para armazenar dados não pessoais sobre o status do aplicativo, preferências de uso do aplicativo e segurança das informações no navegador. ",
+	"I18n_lgpd_cookie_title": "Valorizamos a sua privacidade",
 	"I18n_register": "Por favor, registre-se para acessar o K2!",
 	"I18n_remember": "Lembre de mim",
 	"I18n_resume": "KnowledgeBase foi resumido!",

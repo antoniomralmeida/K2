@@ -11,11 +11,13 @@
 <body>
   <div class="cookie-consent-modal">
     <div class="content">
-      <h1>Allow Cookies</h1>
-      <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Harum saepe beatae amet iure ipsam, officia
-        exercitationem nam nemo autem? Nam harum, aut libero sapiente quae numquam amet distinctio doloremque, rem
-        reiciendis quas dolorem autem ipsam odio deserunt illo cumque voluptates perferendis! Ipsa voluptatum adipisci
-        exercitationem. Tempora, impedit? Hic, ex accusantium.</p>
+      <h1> {{index .I18n "I18n_lgpd_cookie_title"}}
+      </h1>
+      <p>
+        {{index .I18n "I18n_lgpd_cookie_consent"}}
+      </p>
+      <a href="https://unctad.org/page/data-protection-and-privacy-legislation-worldwide">Data Protection Policy
+        Statement</a>
       <div class="btns">
         <button class="btn cancel">cancel</button>
         <button class="btn accept">accept</button>
@@ -33,6 +35,7 @@
     acceptCookieBtn.addEventListener("click", function () {
       cookieModal.classList.remove("active")
       localStorage.setItem("cookieAccepted", "yes")
+      window.location.href = '/home';
     })
 
     setTimeout(function () {
@@ -42,7 +45,6 @@
       }
     }, 2000)
   </script>
-  <a href="http://localhost:8080/home"> K2 System </a>
 </body>
 
 </html>

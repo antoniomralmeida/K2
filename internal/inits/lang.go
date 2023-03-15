@@ -37,6 +37,8 @@ const (
 	I18n_wellcome            = "I18n_wellcome"
 	I18n_wellcome2           = "I18n_wellcome2"
 	I18n_workspace           = "I18n_workspace"
+	I18n_lgpd_cookie_consent = "I18n_lgpd_cookie_consent"
+	I18n_lgpd_cookie_title   = "I18n_lgpd_cookie_title"
 )
 
 type Locale struct {
@@ -139,6 +141,8 @@ func InitLangs() {
 	I18n_en[I18n_wellcome] = "Wellcome to K2!"
 	I18n_en[I18n_wellcome2] = "What are we going to do today?"
 	I18n_en[I18n_workspace] = "Workspace"
+	I18n_en[I18n_lgpd_cookie_consent] = "We use cookies to optimize your experience using the K2 system, only to store non-personal data on the application status, application usage preferences and information security in the browser. By clicking \"Accept All\", you agree to the use of cookies on this system."
+	I18n_en[I18n_lgpd_cookie_title] = "We value your privacy"
 
 	bundle = i18n.NewBundle(language.English)
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
