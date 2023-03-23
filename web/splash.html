@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <title>{{index .I18n "I18n_title"}}</title>
   <link rel="icon" href="img/favicon.ico">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/k2.min.css">
 </head>
 
 <body>
@@ -24,30 +24,6 @@
       </div>
     </div>
   </div>
-  <script>
-    let cookieModal = document.querySelector(".cookie-consent-modal")
-    let cancelCookieBtn = document.querySelector(".btn.cancel")
-    let acceptCookieBtn = document.querySelector(".btn.accept")
-    let url = window.location.href +'home';
-
-    cancelCookieBtn.addEventListener("click", function () {
-      cookieModal.classList.remove("active")
-    })
-    acceptCookieBtn.addEventListener("click", function () {
-      cookieModal.classList.remove("active")
-      localStorage.setItem("cookieAccepted", "yes")
-      window.location.href = url;
-    })
-
-    setTimeout(function () {
-      let cookieAccepted = localStorage.getItem("cookieAccepted")
-      if (cookieAccepted != "yes") {
-        cookieModal.classList.add("active");
-      } else {
-        window.location.href = url;
-      }
-    }, 2000)
-  </script>
+  <script src="js/splash.min.js"></script>
 </body>
-
 </html>

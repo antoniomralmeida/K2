@@ -1,0 +1,98 @@
+[
+    {
+        "Regexp": "^.*Marrocos.*$",
+        "Article": "em"
+    },
+    {
+        "Regexp": "^.*Portugal.*$",
+        "Article": "em"
+    },
+    {
+        "Regexp": "^.*Israel.*$",
+        "Article": "em"
+    },
+    {
+        "Regexp": "^.*Cuba.*$",
+        "Article": "em"
+    },
+    {
+        "Regexp": "^.*Angola.*$",
+        "Article": "em"
+    },
+    {
+        "Regexp": "^.*Bahamas.*$",
+        "Article": "em"
+    },
+    {
+        "Regexp": "^.*Cingapura.*$",
+        "Article": "em"
+    },
+    {
+        "Regexp": "^.*Madagascar.*$",
+        "Article": "em"
+    },
+    {
+        "Regexp": "^.*Honduras.*$",
+        "Article": "em"
+    },
+    {
+        "Regexp": "^.*Estaods Unidos.*$",
+        "Article": "dos"
+    },
+    {
+        "Regexp": "^.*Argentina.*$",
+        "Article": "da"
+    },
+    {
+        "Regexp": "^.*Colômbia.*$",
+        "Article": "da"
+    },
+    {
+        "Regexp": "^.*Inglaterra.*$",
+        "Article": "da"
+    },
+    {
+        "Regexp": "^.*China.*$",
+        "Article": "da"
+    },
+    {
+        "Regexp": "^.*França.*$",
+        "Article": "da"
+    },
+    {
+        "Regexp": "^.*Itália.*$",
+        "Article": "da"
+    },
+    {
+        "Regexp": "^.*Alemanha.*$",
+        "Article": "da"
+    },
+    {
+        "Regexp": "^.*Colômbia.*$",
+        "Article": "da"
+    },
+    {
+        "Regexp": "^.*Colômbia.*$",
+        "Article": "da"
+    },
+    {
+        "Regexp": "^.*Espanha.*$",
+        "Article": "da"
+    },
+    {
+        "Regexp": "^.*Rússia.*$",
+        "Article": "da"
+    },
+    {
+        "Regexp": "^.*Noruega.*$",
+        "Article": "da"
+    },
+    {
+        "Regexp": "^.*Suécia.*$",
+        "Article": "da"
+    },
+    {
+        "Regexp": ".*",
+        "Article": "do"
+    }
+]

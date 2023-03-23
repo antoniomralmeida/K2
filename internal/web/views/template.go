@@ -12,6 +12,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/tdewolff/minify"
+	"github.com/tdewolff/minify/css"
 	h "github.com/tdewolff/minify/html"
 	"github.com/tdewolff/minify/js"
 )
@@ -40,6 +41,9 @@ func InitTemplates() {
 	T["faces.js"] = Minify("text/javascript", wd+"/web/js/faces.js")
 	T["olivia.js"] = Minify("text/javascript", wd+"/web/js/olivia.js")
 	T["bundle.js"] = Minify("text/javascript", wd+"/web/js/bundle.js")
+	T["splash.js"] = Minify("text/javascript", wd+"/web/js/splash.js")
+	T["k2.css"] = Minify("text/css", wd+"/web/css/k2.css")
+
 }
 
 func Minify(mediatype string, from string) Template {
@@ -62,6 +66,8 @@ func Minify(mediatype string, from string) Template {
 	//m.AddFunc("text/css", css.Minify)
 	m.AddFunc("text/html", h.Minify)
 	m.AddFunc("text/javascript", js.Minify)
+	m.AddFunc("text/css", css.Minify)
+
 	//m.AddFunc("image/svg+xml", svg.Minify)
 	//m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), json.Minify)
 	//m.AddFuncRegexp(regexp.MustCompile("[/+]xml$"), xml.Minify)

@@ -1,0 +1,10 @@
+[
+    {
+        "Regexp": "^.*Türkiye.*$",
+        "Article": "bir"
+    },
+       {
+        "Regexp": ".*",
+        "Article": ""
+    }
+]
