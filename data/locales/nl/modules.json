@@ -1,0 +1,195 @@
+[
+    {
+        "Tag": "AreaTag",
+        "Patterns": [
+            "Wat is het oppervlakte van ",
+            "Geef mij het oppervlakte van "
+        ],
+        "Responses": [
+            "Het oppervalkte van %s is %gkm²"
+        ],
+        "Replacer": "AreaReplacer"
+    },
+    {
+        "Tag": "CapitalTag",
+        "Patterns": [
+            "Wat is de hoofdstad van ",
+            "Geef mij de hoofdstad van "
+        ],
+        "Responses": [
+            "De hoofdstad van %s is %s"
+        ],
+        "Replacer": "CapitalReplacer"
+    },
+    {
+        "Tag": "CurrencyTag",
+        "Patterns": [
+            "Welke valuta wordt gebruikt in ",
+            "Geef mij de valuta die gebruikt wordt in ",
+            "Geef mij de valuta van ",
+            "Wat is de valuta van ",
+            "Welke munteenheid wordt gebruikt in ",
+            "Geef mij de munteenheid die gebruikt wordt in ",
+            "Geef mij de munteenheid van ",
+            "Wat is de munteenheid van "
+        ],
+        "Responses": [
+            "De valuta van %s is %s"
+        ],
+        "Replacer": "CurrencyReplacer"
+    },
+    {
+        "Tag": "MathTag",
+        "Patterns": [
+            "Geef mij het resultaat van ",
+            "Geef mij de uitkomst van ",
+            "Bereken "
+        ],
+        "Responses": [
+            "Het resultaat is %s",
+            "De uitkomst is %s",
+            "Dat maakt %s"
+        ],
+        "Replacer": "MathReplacer"
+    },
+    {
+        "Tag": "GenresTag",
+        "Patterns": [
+            "Ik hou van films in het genre avontuur en animatie",
+            "Ik kijk science fiction films"
+        ],
+        "Responses": [
+            "Goede keuzes! Ik sla ze in je applicatie op.",
+            "Begrepen, ik stuur dit naar je applicatie."
+        ],
+        "Replacer": "GenresReplacer"
+    },
+    {
+        "Tag": "MoviesTag",
+        "Patterns": [
+            "Kan je een film vinden",
+            "Geef mij een film van",
+            "Zoek een film voor mij van",
+            "Ik wil een film kijken van"
+        ],
+        "Responses": [
+            "Ik vond dit voor je “%s” met de beoordeling %.02f/5",
+            "Natuurlijk, ik vond de film “%s” beoordeling %.02f/5"
+        ],
+        "Replacer": "MovieSearchReplacer",
+        "Context": "MoviesTag"
+    },
+    {
+        "Tag": "MoviesDataTag",
+        "Patterns": [
+            "Ik verveel mij",
+            "Ik weet niet wat ik moet doen"
+        ],
+        "Responses": [
+            "Ik stel je de volgende film voor %s “%s” welke %.02f/5 is beoordeelt"
+        ],
+        "Replacer": "MovieSearchFromInformationReplacer"
+    },
+    {
+        "Tag": "NameGetterTag",
+        "Patterns": [
+            "Weet je mijn naam?"
+        ],
+        "Responses": [
+            "Jouw naam is %s!"
+        ],
+        "Replacer": "NameGetterReplacer"
+    },
+    {
+        "Tag": "NameSetterTag",
+        "Patterns": [
+            "Mijn naam is ",
+            "Noem mij "
+        ],
+        "Responses": [
+            "Geweldig! Hallo %s"
+        ],
+        "Replacer": "NameSetterReplacer"
+    },
+    {
+        "Tag": "RandomTag",
+        "Patterns": [
+            "Geef mij een willekeurig nummer",
+            "Genereer een willekeurig nummer"
+        ],
+        "Responses": [
+            "Het nummer is %s"
+        ],
+        "Replacer": "RandomNumberReplacer"
+    },
+    {
+        "Tag": "ReminderSetterTag",
+        "Patterns": [
+            "Herinner mij er aan om ontbijt te maken om 8 uur",
+            "Herinner mij er aan om mijn moeder te bellen",
+            "Merk op dat ik een examen heb",
+            "Herinner mij aan mijn conference call morgen om 9 uur"
+        ],
+        "Responses": [
+            "Genoteerd! Ik zal je herinneren om: “%s” voor %s"
+        ],
+        "Replacer": "ReminderSetterReplacer"
+    },
+    {
+        "Tag": "ReminderGetterTagr",
+        "Patterns": [
+            "What heb ik je gevraagd om te onthouden",
+            "Vertel mij waar je mij aan zult herinneren"
+        ],
+        "Responses": [
+            "Je hebt mij gevraagd het volgende te onthouden:\n%s"
+        ],
+        "Replacer": "ReminderGetterReplacer"
+    },
+    {
+        "Tag": "SpotifySetterTag",
+        "Patterns": [
+            "Hier zijn mijn spotify tokens",
+            "Mijn spotify tokens"
+        ],
+        "Responses": [
+            "Login is bezig"
+        ],
+        "Replacer": "SpotifySetterReplacer"
+    },
+    {
+        "Tag": "SpotifyPlayerTag",
+        "Patterns": [
+            "Speel van Spotify"
+        ],
+        "Responses": [
+            "Speelt %s door %s op Spotify."
+        ],
+        "Replacer": "SpotifyPlayerReplacer"
+    },
+    {
+        "Tag": "JokesTag",
+        "Patterns": [
+            "Vertel me een grap",
+            "Maak me aan het lachen"
+        ],
+        "Responses": [
+            "Hiero, %s",
+            "Hier is er een, %s"
+        ],
+        "Replacer": "JokesReplacer"
+    },
+    {
+        "Tag": "AdvicesTag",
+        "Patterns": [
+            "Ik geef advies",
+            "Adviseer mij"
+        ],
+        "Responses": [
+            "Hier ben je, %s",
+            "Hier is er een, %s",
+            "Luister goed, %s"
+        ],
+        "Replacer": "AdvicesReplacer"
+    }
+]
