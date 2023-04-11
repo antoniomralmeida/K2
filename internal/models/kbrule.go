@@ -203,6 +203,7 @@ func compilingStatement(tokens []string) ([]*BIN, error, compilingDetail) {
 	pt := _ebnf.GetBase()
 	jumps := []*Token{}
 	nexts := make(map[string]*Token)
+
 	bin := []*BIN{}
 	for _, token := range tokens {
 		var ok = false
@@ -732,7 +733,7 @@ func (r *KBRule) RunConsequent(objs []*KBObject, trust float64) error {
 					ao := attrs[key][idxs[key]]
 					value, _, _ := ao.ValueString()
 					txtout = strings.Replace(txtout, key, value, -1)
-					ws := KBGetWorkspacesFromObject(ao.KbObject)
+					ws, _ := KBGetWorkspacesFromObject(ao.KbObject)
 					for w := range ws {
 						wks[ws[w].ID] = ws[w]
 					}

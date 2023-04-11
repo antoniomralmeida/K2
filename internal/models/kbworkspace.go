@@ -112,14 +112,7 @@ func KBWorkspacesJson() (string, error) {
 	return string(json), nil
 }
 
-func KBGetWorkspacesFromObject(o *KBObject) (ret []*KBWorkspace) {
-	//TODO: From mongoDB
-	for i := range _workspaces {
-		for j := range _workspaces[i].Objects {
-			if _workspaces[i].Objects[j].KBObject == o {
-				ret = append(ret, &_workspaces[i])
-			}
-		}
-	}
+func KBGetWorkspacesFromObject(o *KBObject) (ret []*KBWorkspace, err error) {
+	err = mgm.Coll(new(KBWorkspace)).SimpleFind(&ret, bson.D{{"objects.object_id", o.ID}})
 	return
 }
