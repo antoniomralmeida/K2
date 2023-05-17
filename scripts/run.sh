@@ -3,6 +3,9 @@ rm log/*.json
 rm log/*.log
 rm web/tts/*.mp3
 
+
+  git config --global user.email "manoel.ribeiro@unilab.edu.br"
+  git config --global user.name "Manoel Ribeiro Almeida"
 version="0.9.0-beta"
 build=$(date +%Y%m%d)
 git tag  $version 
