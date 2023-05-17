@@ -8,12 +8,10 @@ import (
 )
 
 type BIN struct {
-	TokenType TokenType `json:"tokentype"`
-	//pcNextCommand int        `json:"-"`
-	LiteralBin LiteralBin `json:"literalbin"`
-	Token      string     `json:"token"`
-	class      *KBClass   `json:"-"`
-	//newAttributes    []KBAttribute        `json:"-"`
+	TokenType        TokenType            `json:"tokentype"`
+	LiteralBin       LiteralBin           `json:"literalbin"`
+	Token            string               `json:"token"`
+	class            *KBClass             `json:"-"`
 	attribute        *KBAttribute         `json:"-"`
 	workspace        *KBWorkspace         `json:"-"`
 	objects          []*KBObject          `json:"-"` //TODO: Poderia ser dinâmico? Tempo de execução?

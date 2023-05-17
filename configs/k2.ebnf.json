@@ -2555,7 +2555,7 @@
             },
             {
                 "Id": "310",
-                "Nexts": "[#311, token: task-queue, type:Literal]",
+                "Nexts": "[#311, token: task_queue, type:Literal]",
                 "Rule_id": "14",
                 "Rule_jump": "0",
                 "Token": "of",
@@ -2566,7 +2566,7 @@
                 "Nexts": "[#312, token: ., type:Control]",
                 "Rule_id": "14",
                 "Rule_jump": "0",
-                "Token": "task-queue",
+                "Token": "task_queue",
                 "Tokentype": "Literal"
             },
             {
@@ -2601,7 +2601,7 @@
             },
             {
                 "Id": "315",
-                "Nexts": "[#316, token: first-task, type:Literal]",
+                "Nexts": "[#316, token: first_task, type:Literal]",
                 "Rule_id": "15",
                 "Rule_jump": "0",
                 "Token": "the",
@@ -2612,12 +2612,12 @@
                 "Nexts": "[#317, token: from, type:Literal]",
                 "Rule_id": "15",
                 "Rule_jump": "0",
-                "Token": "first-task",
+                "Token": "first_task",
                 "Tokentype": "Literal"
             },
             {
                 "Id": "317",
-                "Nexts": "[#318, token: task-queue, type:Literal]",
+                "Nexts": "[#318, token: task_queue, type:Literal]",
                 "Rule_id": "15",
                 "Rule_jump": "0",
                 "Token": "from",
@@ -2628,7 +2628,7 @@
                 "Nexts": "[#319, token: ., type:Control]",
                 "Rule_id": "15",
                 "Rule_jump": "0",
-                "Token": "task-queue",
+                "Token": "task_queue",
                 "Tokentype": "Literal"
             },
             {

@@ -13,9 +13,9 @@ go build  -ldflags "-X 'github.com/antoniomralmeida/k2/pkg/version.Version=$vers
 go build  -ldflags "-X 'github.com/antoniomralmeida/k2/pkg/version.Version=$version' -X 'github.com/antoniomralmeida/k2/pkg/version.Build=$build' " -o ./bin/k2olivia.bin ./cmd/k2olivia/main.go
 go build  -ldflags "-X 'github.com/antoniomralmeida/k2/pkg/version.Version=$version' -X 'github.com/antoniomralmeida/k2/pkg/version.Build=$build' " -o ./bin/k2.bin ./cmd/k2/main.go
 
-konsole -e ./bin/k2olivia.bin & 
+deepin-terminal -e ./bin/k2olivia.bin & 
 sleep 10
-konsole -e ./bin/k2web.bin & 
-konsole -e ./bin/k2.bin  
+deepin-terminal -e ./bin/k2web.bin & 
+deepin-terminal -e ./bin/k2.bin  
 
 pkill -f 'k2'

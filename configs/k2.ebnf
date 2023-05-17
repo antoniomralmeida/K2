@@ -53,9 +53,9 @@ Transfer = transfer Object to Workspace.
 
 Delete = delete Object.
 
-Insert = insert Rule at the end of task-queue.
+Insert = insert Rule at the end of task_queue.
 
-Remove = remove the first-task from task-queue.
+Remove = remove the first_task from task_queue.
 
 Change = change the Object to Color.
 
