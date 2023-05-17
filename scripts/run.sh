@@ -1,3 +1,4 @@
+clear
 rm bin/*.bin
 rm log/*.json
 rm log/*.log
@@ -16,9 +17,10 @@ go build  -ldflags "-X 'github.com/antoniomralmeida/k2/pkg/version.Version=$vers
 go build  -ldflags "-X 'github.com/antoniomralmeida/k2/pkg/version.Version=$version' -X 'github.com/antoniomralmeida/k2/pkg/version.Build=$build' " -o ./bin/k2olivia.bin ./cmd/k2olivia/main.go
 go build  -ldflags "-X 'github.com/antoniomralmeida/k2/pkg/version.Version=$version' -X 'github.com/antoniomralmeida/k2/pkg/version.Build=$build' " -o ./bin/k2.bin ./cmd/k2/main.go
 
-deepin-terminal -e ./bin/k2olivia.bin & 
+#sudo apt install stterm 
+stterm -e ./bin/k2olivia.bin & 
 sleep 10
-deepin-terminal -e ./bin/k2web.bin & 
-deepin-terminal -e ./bin/k2.bin  
+stterm -e ./bin/k2web.bin & 
+stterm -e ./bin/k2.bin  
 
 pkill -f 'k2'
