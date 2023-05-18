@@ -6,5 +6,5 @@ import (
 )
 
 func RegisterView(c *fiber.Ctx) error {
-	return c.Render(T["signup"].minify, context.Ctxweb)
+	return c.Render(T["signup"].Minify, context.Ctxweb)
 }

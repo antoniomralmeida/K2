@@ -20,7 +20,7 @@ func SignUpForm(c *fiber.Ctx) error {
 		return nil
 	}
 	//Context
-	err := context.SetContextInfo(c, lib.GetWorkDir()+"/web/register_wellcome.gohtml")
+	err := context.SetContextInfo(c, views.T["register_wellcome"].FullPath)
 	if err != nil {
 		inits.Log(err, inits.Error)
 		return fiber.ErrInternalServerError

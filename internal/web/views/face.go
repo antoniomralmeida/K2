@@ -6,5 +6,5 @@ import (
 )
 
 func FaceView(c *fiber.Ctx) error {
-	return c.Render(T["face"].minify, context.Ctxweb)
+	return c.Render(T["face"].Minify, context.Ctxweb)
 }

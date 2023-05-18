@@ -18,8 +18,9 @@ import (
 )
 
 type Template struct {
-	original string
-	minify   string
+	FullPath string
+	Original string
+	Minify   string
 }
 
 var T = make(map[string]Template)
@@ -37,6 +38,10 @@ func InitTemplates() {
 	T["signup"] = Minify("text/html", wd+"/web/register.html")
 	T["splash"] = Minify("text/html", wd+"/web/splash.html")
 
+	T["home_wellcome"] = Minify("text/html", wd+"/web/home_wellcome.gohtml")
+	T["login_wellcome"] = Minify("text/html", wd+"/web/login_wellcome.gohtml")
+	T["register_wellcome"] = Minify("text/html", wd+"/web/register_wellcome.gohtml")
+
 	T["k2.js"] = Minify("text/javascript", wd+"/web/js/k2.js")
 	T["faces.js"] = Minify("text/javascript", wd+"/web/js/faces.js")
 	T["olivia.js"] = Minify("text/javascript", wd+"/web/js/olivia.js")
@@ -50,7 +55,7 @@ func Minify(mediatype string, from string) Template {
 	file, err := os.Open(from)
 	if err != nil {
 		inits.Log(fmt.Sprintf("Error opening file!!! %v", from), inits.Fatal)
-		return Template{from, from}
+		return Template{from, from, from}
 	}
 	defer file.Close()
 
@@ -74,9 +79,9 @@ func Minify(mediatype string, from string) Template {
 	err = m.Minify(mediatype, write, read)
 	if err != nil {
 		inits.Log(err, inits.Error)
-		return Template{lib.GetFileName(from), lib.GetFileName(from)}
+		return Template{from, lib.GetFileName(from), lib.GetFileName(from)}
 	}
 	o.Close()
 	f.Close()
-	return Template{lib.GetFileName(from), lib.GetFileName(to)}
+	return Template{from, lib.GetFileName(from), lib.GetFileName(to)}
 }

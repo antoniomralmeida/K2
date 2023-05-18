@@ -8,5 +8,5 @@ import (
 
 func ErrorView(c *fiber.Ctx, err error) error {
 	context.Ctxweb.Error = err.Error()
-	return c.Render(T["error"].original, context.Ctxweb)
+	return c.Render(T["error"].Minify, context.Ctxweb)
 }

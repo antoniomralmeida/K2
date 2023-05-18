@@ -21,7 +21,7 @@ func Home(c *fiber.Ctx) error {
 		return nil
 	}
 	//Context
-	err := context.SetContextInfo(c, lib.GetWorkDir()+"/web/home_wellcome.gohtml")
+	err := context.SetContextInfo(c, views.T["home_wellcome"].FullPath)
 	if err != nil {
 		inits.Log(err, inits.Error)
 		return fiber.ErrInternalServerError

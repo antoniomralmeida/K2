@@ -6,5 +6,5 @@ import (
 )
 
 func HomeView(c *fiber.Ctx) error {
-	return c.Render(T["home"].minify, context.Ctxweb)
+	return c.Render(T["home"].Minify, context.Ctxweb)
 }

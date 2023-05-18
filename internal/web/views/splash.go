@@ -6,5 +6,5 @@ import (
 )
 
 func SplashView(c *fiber.Ctx) error {
-	return c.Render(T["splash"].minify, context.Ctxweb)
+	return c.Render(T["splash"].Minify, context.Ctxweb)
 }

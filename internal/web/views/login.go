@@ -6,5 +6,5 @@ import (
 )
 
 func LoginView(c *fiber.Ctx) error {
-	return c.Render(T["login"].minify, context.Ctxweb)
+	return c.Render(T["login"].Minify, context.Ctxweb)
 }
