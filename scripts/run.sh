@@ -18,9 +18,9 @@ go build  -ldflags "-X 'github.com/antoniomralmeida/k2/pkg/version.Version=$vers
 go build  -ldflags "-X 'github.com/antoniomralmeida/k2/pkg/version.Version=$version' -X 'github.com/antoniomralmeida/k2/pkg/version.Build=$build' " -o ./bin/k2.bin ./cmd/k2/main.go
 
 #sudo apt install stterm 
-stterm -e ./bin/k2olivia.bin & 
+terminalpp -e ./bin/k2olivia.bin & 
 sleep 10
-stterm -e ./bin/k2web.bin & 
-stterm -e ./bin/k2.bin  
+terminalpp -e ./bin/k2web.bin & 
+terminalpp -e ./bin/k2.bin  
 
 pkill -f 'k2'
